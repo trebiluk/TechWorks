@@ -1,0 +1,409 @@
+{
+  "meta": {
+    "title": "TechWorks",
+    "quarterName": "Q1",
+    "currentWeek": 1,
+    "schoolYear": "2026-27",
+    "codes": {
+      "1": 15,
+      "2": 20,
+      "3": 25,
+      "A": 0,
+      "E": 0,
+      "P": -25,
+      "Assist": 10
+    },
+    "bell": [
+      {
+        "period": 1,
+        "grade": 6
+      },
+      {
+        "period": 2,
+        "grade": 8
+      },
+      {
+        "period": 3,
+        "grade": 7
+      },
+      {
+        "period": 6,
+        "grade": 5
+      },
+      {
+        "period": 8,
+        "grade": 7
+      },
+      {
+        "period": 9,
+        "grade": 8
+      },
+      {
+        "period": 10,
+        "grade": 6
+      }
+    ],
+    "market": {
+      "source": "TEACHER",
+      "index": 0,
+      "baseline": 0,
+      "shock": 0,
+      "factor": 1
+    },
+    "sections": [
+      {
+        "course": "TECH 6",
+        "period": 1,
+        "section": 1,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q1"
+      },
+      {
+        "course": "TECH 6",
+        "period": 1,
+        "section": 2,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q2"
+      },
+      {
+        "course": "TECH 6",
+        "period": 1,
+        "section": 3,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q3"
+      },
+      {
+        "course": "TECH 6",
+        "period": 1,
+        "section": 4,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q4"
+      },
+      {
+        "course": "TECH 8",
+        "period": 2,
+        "section": 1,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q1"
+      },
+      {
+        "course": "TECH 8",
+        "period": 2,
+        "section": 2,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q2"
+      },
+      {
+        "course": "TECH 8",
+        "period": 2,
+        "section": 3,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q3"
+      },
+      {
+        "course": "TECH 8",
+        "period": 2,
+        "section": 4,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q4"
+      },
+      {
+        "course": "TECH 7",
+        "period": 3,
+        "section": 1,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q1"
+      },
+      {
+        "course": "TECH 7",
+        "period": 3,
+        "section": 2,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q2"
+      },
+      {
+        "course": "TECH 7",
+        "period": 3,
+        "section": 3,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q3"
+      },
+      {
+        "course": "TECH 7",
+        "period": 3,
+        "section": 4,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q4"
+      },
+      {
+        "course": "TECH 7",
+        "period": 8,
+        "section": 5,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q1"
+      },
+      {
+        "course": "TECH 7",
+        "period": 8,
+        "section": 6,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q2"
+      },
+      {
+        "course": "TECH 7",
+        "period": 8,
+        "section": 7,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q3"
+      },
+      {
+        "course": "TECH 7",
+        "period": 8,
+        "section": 8,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q4"
+      },
+      {
+        "course": "TECH 8",
+        "period": 9,
+        "section": 5,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q1"
+      },
+      {
+        "course": "TECH 8",
+        "period": 9,
+        "section": 6,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q2"
+      },
+      {
+        "course": "TECH 8",
+        "period": 9,
+        "section": 7,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q3"
+      },
+      {
+        "course": "TECH 8",
+        "period": 9,
+        "section": 8,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q4"
+      },
+      {
+        "course": "TECH 6",
+        "period": 10,
+        "section": 5,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q1"
+      },
+      {
+        "course": "TECH 6",
+        "period": 10,
+        "section": 6,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q2"
+      },
+      {
+        "course": "TECH 6",
+        "period": 10,
+        "section": 7,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q3"
+      },
+      {
+        "course": "TECH 6",
+        "period": 10,
+        "section": 8,
+        "days": "A,B",
+        "room": "13",
+        "sem": "Q4"
+      },
+      {
+        "course": "STUDY HALL",
+        "period": 6,
+        "section": 10,
+        "days": "A,B",
+        "room": "136",
+        "sem": "YEAR"
+      }
+    ],
+    "shop": [
+      {
+        "category": "SNACKS",
+        "name": "Snack",
+        "price": 5
+      },
+      {
+        "category": "SNACKS",
+        "name": "Drink",
+        "price": 5
+      },
+      {
+        "category": "TOOLS",
+        "name": "Pencil pack",
+        "price": 5
+      },
+      {
+        "category": "TOOLS",
+        "name": "Headphones day",
+        "price": 10
+      },
+      {
+        "category": "LEISURE",
+        "name": "Seat pick",
+        "price": 10
+      },
+      {
+        "category": "LEISURE",
+        "name": "Music pass",
+        "price": 15
+      },
+      {
+        "category": "LEISURE",
+        "name": "Late pass",
+        "price": 20
+      },
+      {
+        "category": "CHORES",
+        "name": "",
+        "price": 5
+      }
+    ],
+    "config": {
+      "classGoals": [
+        "IDEA STAGE",
+        "DESIGN STAGE",
+        "MODELING STAGE",
+        "FINISHING STAGE",
+        "PRESENTATION PREP",
+        "CRITIQUE DAY",
+        "PRODUCTIVITY",
+        "TRAINING",
+        "DEMONSTRATION",
+        "DRAWING",
+        "FREE DAY"
+      ],
+      "activities": [
+        "PROJ-W",
+        "PROJ-PC",
+        "P",
+        "PTO",
+        "OFF TASK"
+      ],
+      "currentCycle": 1,
+      "cycleGoals": {
+        "5": "PRODUCTIVITY",
+        "6": "IDEA STAGE",
+        "7": "DESIGN STAGE",
+        "8": "MODELING STAGE"
+      },
+      "bellTimes": [
+        {
+          "period": 1,
+          "start": "07:55",
+          "end": "08:35",
+          "attendBy": "08:15"
+        },
+        {
+          "period": 2,
+          "start": "08:38",
+          "end": "09:15",
+          "attendBy": "08:58"
+        },
+        {
+          "period": 3,
+          "start": "09:18",
+          "end": "09:55",
+          "attendBy": "09:38"
+        },
+        {
+          "period": 4,
+          "start": "09:58",
+          "end": "10:35",
+          "attendBy": "10:18"
+        },
+        {
+          "period": 5,
+          "start": "10:38",
+          "end": "11:15",
+          "attendBy": "10:58"
+        },
+        {
+          "period": 6,
+          "start": "11:18",
+          "end": "11:55",
+          "attendBy": "11:38"
+        },
+        {
+          "period": 7,
+          "start": "11:58",
+          "end": "12:35",
+          "attendBy": "12:18"
+        },
+        {
+          "period": 8,
+          "start": "12:38",
+          "end": "13:15",
+          "attendBy": "12:58"
+        },
+        {
+          "period": 9,
+          "start": "13:18",
+          "end": "13:55",
+          "attendBy": "13:38"
+        },
+        {
+          "period": 10,
+          "start": "13:58",
+          "end": "14:37",
+          "attendBy": "14:18"
+        }
+      ],
+      "cleanupFee": 10,
+      "crewRoles": {
+        "8|1|Crew A": "TW-P1-S2-01",
+        "8|2|Crew A": "TW-P2-S2-01",
+        "8|3|Crew A": "TW-P3-S2-01",
+        "8|6|Crew A": "TW-P6-S2-01",
+        "8|8|Crew A": "TW-P8-S2-01",
+        "8|9|Crew A": "TW-P9-S2-01",
+        "8|10|Crew A": "TW-P10-S2-01"
+      },
+      "roleHistory": []
+    },
+    "dayLog": {},
+    "ledger": [],
+    "abAnchor": {
+      "date": "2026-09-08",
+      "letter": "A"
+    },
+    "sessions": []
+  },
+  "crews": [],
+  "students": []
+}

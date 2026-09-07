@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none" role="img" aria-label="BertyBot waving">
+  <defs>
+    <linearGradient id="twwavingBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9af4ff"/><stop offset="35%" stop-color="#2ee6ff"/>
+      <stop offset="70%" stop-color="#1ab8e0"/><stop offset="100%" stop-color="#0d7a9a"/>
+    </linearGradient>
+    <linearGradient id="twwavingRed" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c4b5fd"/><stop offset="40%" stop-color="#8b6cff"/><stop offset="100%" stop-color="#5b41c9"/>
+    </linearGradient>
+    <linearGradient id="twwavingHand" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7ae8ff"/><stop offset="50%" stop-color="#2ee6ff"/><stop offset="100%" stop-color="#1ab8e0"/>
+    </linearGradient>
+    <linearGradient id="twwavingShine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f7f9ff" stop-opacity="0.35"/><stop offset="40%" stop-color="#f7f9ff" stop-opacity="0.08"/><stop offset="100%" stop-color="#000" stop-opacity="0.12"/>
+    </linearGradient>
+    <radialGradient id="twwavingAnt" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#e8fbff"/><stop offset="60%" stop-color="#f0d48a"/><stop offset="100%" stop-color="#8b6cff"/>
+    </radialGradient>
+  </defs>
+  <!-- Legs -->
+  <g>
+    <rect x="60" y="175" width="28" height="55" rx="6" fill="url(#twwavingRed)" stroke="#1a1a1a" stroke-width="2.5"/>
+    <rect x="112" y="175" width="28" height="55" rx="6" fill="url(#twwavingRed)" stroke="#1a1a1a" stroke-width="2.5"/>
+    <rect x="52" y="224" width="42" height="18" rx="4" fill="url(#twwavingHand)" stroke="#1a1a1a" stroke-width="2.2"/>
+    <rect x="106" y="224" width="42" height="18" rx="4" fill="url(#twwavingHand)" stroke="#1a1a1a" stroke-width="2.2"/>
+  </g>
+  <!-- Left arm down -->
+  <g transform="translate(20,98) rotate(18)">
+    <rect x="0" y="0" width="24" height="58" rx="7" fill="url(#twwavingRed)" stroke="#1a1a1a" stroke-width="2.5"/>
+    <g transform="translate(-3,58)">
+      <rect x="0" y="0" width="30" height="16" rx="4" fill="url(#twwavingHand)" stroke="#1a1a1a" stroke-width="2"/>
+      <rect x="-2" y="14" width="8" height="14" rx="2.5" fill="url(#twwavingHand)" stroke="#1a1a1a" stroke-width="1.8"/>
+      <rect x="11" y="15" width="8" height="15" rx="2.5" fill="url(#twwavingHand)" stroke="#1a1a1a" stroke-width="1.8"/>
+      <rect x="24" y="14" width="8" height="14" rx="2.5" fill="url(#twwavingHand)" stroke="#1a1a1a" stroke-width="1.8"/>
+    </g>
+  </g>
+  <!-- Right arm waving high -->
+  <g transform="translate(155,88) rotate(-95)">
+    <rect x="0" y="0" width="24" height="58" rx="7" fill="url(#twwavingRed)" stroke="#1a1a1a" stroke-width="2.5"/>
+    <g transform="translate(-3,58)">
+      <rect x="0" y="0" width="30" height="16" rx="4" fill="url(#twwavingHand)" stroke="#1a1a1a" stroke-width="2"/>
+      <rect x="-2" y="14" width="8" height="14" rx="2.5" fill="url(#twwavingHand)" stroke="#1a1a1a" stroke-width="1.8"/>
+      <rect x="11" y="15" width="8" height="15" rx="2.5" fill="url(#twwavingHand)" stroke="#1a1a1a" stroke-width="1.8"/>
+      <rect x="24" y="14" width="8" height="14" rx="2.5" fill="url(#twwavingHand)" stroke="#1a1a1a" stroke-width="1.8"/>
+    </g>
+  </g>
+  <!-- Torso -->
+  <g>
+    <rect x="55" y="88" width="90" height="92" rx="10" fill="url(#twwavingBody)" stroke="#1a1a1a" stroke-width="2.8"/>
+    <rect x="55" y="88" width="90" height="92" rx="10" fill="url(#twwavingShine)"/>
+    <line x1="55" y1="140" x2="145" y2="140" stroke="#1a1a1a" stroke-width="1.5" opacity="0.25"/>
+    <rect x="55" y="162" width="90" height="14" fill="url(#twwavingRed)" stroke="#1a1a1a" stroke-width="2"/>
+    <circle cx="64" cy="98" r="2.2" fill="#e8fbff" stroke="#1a1a1a" stroke-width="0.8"/>
+    <circle cx="136" cy="98" r="2.2" fill="#e8fbff" stroke="#1a1a1a" stroke-width="0.8"/>
+    <circle cx="78" cy="118" r="9" fill="#2ee6ff" stroke="#1a1a1a" stroke-width="2"/><circle cx="78" cy="118" r="4" fill="#86efac" opacity="0.7"/>
+    <circle cx="98" cy="118" r="9" fill="#8b6cff" stroke="#1a1a1a" stroke-width="2"/><circle cx="98" cy="118" r="4" fill="#93c5fd" opacity="0.7"/>
+    <circle cx="118" cy="118" r="9" fill="#f0d48a" stroke="#1a1a1a" stroke-width="2"/><circle cx="118" cy="118" r="4" fill="#e8fbff" opacity="0.7"/>
+    <circle cx="138" cy="118" r="9" fill="#ef4444" stroke="#1a1a1a" stroke-width="2"/><circle cx="138" cy="118" r="4" fill="#fca5a5" opacity="0.7"/>
+  </g>
+  <rect x="86" y="76" width="28" height="16" rx="3" fill="url(#twwavingRed)" stroke="#1a1a1a" stroke-width="2.2"/>
+  <!-- Head slight tilt -->
+  <g transform="rotate(5 100 55)">
+    <rect x="62" y="28" width="76" height="54" rx="8" fill="url(#twwavingBody)" stroke="#1a1a1a" stroke-width="2.8"/>
+    <rect x="62" y="28" width="76" height="54" rx="8" fill="url(#twwavingShine)"/>
+    <circle cx="70" cy="36" r="2" fill="#e8fbff" stroke="#1a1a1a" stroke-width="0.7"/>
+    <circle cx="130" cy="36" r="2" fill="#e8fbff" stroke="#1a1a1a" stroke-width="0.7"/>
+    <circle cx="88" cy="50" r="9" fill="#f7f9ff" stroke="#1a1a1a" stroke-width="2"/>
+    <circle cx="112" cy="50" r="9" fill="#f7f9ff" stroke="#1a1a1a" stroke-width="2"/>
+    <circle cx="90" cy="49" r="4.5" fill="#1a1a1a"/><circle cx="114" cy="49" r="4.5" fill="#1a1a1a"/>
+    <circle cx="91.5" cy="47" r="1.5" fill="#f7f9ff" opacity="0.8"/><circle cx="115.5" cy="47" r="1.5" fill="#f7f9ff" opacity="0.8"/>
+    <path d="M76 37 L96 34" stroke="#8b6cff" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M104 34 L124 37" stroke="#8b6cff" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M80 60 Q100 76 120 60" fill="none" stroke="#1a1a1a" stroke-width="3.5" stroke-linecap="round"/>
+  </g>
+  <line x1="100" y1="28" x2="100" y2="12" stroke="#8b6cff" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="100" cy="8" r="7" fill="url(#twwavingAnt)" stroke="#1a1a1a" stroke-width="2"/>
+  <circle cx="97" cy="5" r="2" fill="#f7f9ff" opacity="0.45"/>
+</svg>

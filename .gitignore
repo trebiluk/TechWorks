@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.vercel/
+.output/
+*.local
+.env
+.env.*
+.project_id
+.node_modules.lock
+attachments/
+screenshots/
+artifacts/imagine_images/
+*.pdf
+.DS_Store
+*.log

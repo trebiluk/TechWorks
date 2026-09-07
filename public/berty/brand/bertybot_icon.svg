@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" fill="none" role="img" aria-label="BertyBot icon">
+  <defs>
+    <linearGradient id="twiconBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9af4ff"/><stop offset="40%" stop-color="#2ee6ff"/>
+      <stop offset="100%" stop-color="#0d7a9a"/>
+    </linearGradient>
+    <linearGradient id="twiconShine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f7f9ff" stop-opacity="0.4"/><stop offset="100%" stop-color="#000" stop-opacity="0.1"/>
+    </linearGradient>
+    <radialGradient id="twiconAnt" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#e8fbff"/><stop offset="100%" stop-color="#8b6cff"/>
+    </radialGradient>
+  </defs>
+  <!-- antenna -->
+  <line x1="48" y1="22" x2="48" y2="10" stroke="#8b6cff" stroke-width="3.5" stroke-linecap="round"/>
+  <circle cx="48" cy="7" r="5.5" fill="url(#twiconAnt)" stroke="#1a1a1a" stroke-width="1.6"/>
+  <circle cx="46" cy="5" r="1.5" fill="#f7f9ff" opacity="0.5"/>
+  <!-- head -->
+  <rect x="18" y="20" width="60" height="46" rx="8" fill="url(#twiconBody)" stroke="#1a1a1a" stroke-width="2.5"/>
+  <rect x="18" y="20" width="60" height="46" rx="8" fill="url(#twiconShine)"/>
+  <circle cx="24" cy="26" r="2" fill="#e8fbff" stroke="#1a1a1a" stroke-width="0.6"/>
+  <circle cx="72" cy="26" r="2" fill="#e8fbff" stroke="#1a1a1a" stroke-width="0.6"/>
+  <!-- eyes -->
+  <circle cx="36" cy="40" r="8" fill="#f7f9ff" stroke="#1a1a1a" stroke-width="1.8"/>
+  <circle cx="60" cy="40" r="8" fill="#f7f9ff" stroke="#1a1a1a" stroke-width="1.8"/>
+  <circle cx="36" cy="40" r="4" fill="#1a1a1a"/>
+  <circle cx="60" cy="40" r="4" fill="#1a1a1a"/>
+  <circle cx="37.5" cy="38.5" r="1.3" fill="#f7f9ff" opacity="0.9"/>
+  <circle cx="61.5" cy="38.5" r="1.3" fill="#f7f9ff" opacity="0.9"/>
+  <!-- brows -->
+  <path d="M28 30 L42 28" stroke="#8b6cff" stroke-width="3" stroke-linecap="round"/>
+  <path d="M54 28 L68 30" stroke="#8b6cff" stroke-width="3" stroke-linecap="round"/>
+  <!-- smile -->
+  <path d="M34 52 Q48 62 62 52" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/>
+  <!-- neck hint -->
+  <rect x="38" y="64" width="20" height="10" rx="2" fill="#8b6cff" stroke="#1a1a1a" stroke-width="1.5"/>
+  <!-- mini chest lights -->
+  <circle cx="34" cy="82" r="5" fill="#2ee6ff" stroke="#1a1a1a" stroke-width="1.2"/>
+  <circle cx="48" cy="82" r="5" fill="#8b6cff" stroke="#1a1a1a" stroke-width="1.2"/>
+  <circle cx="62" cy="82" r="5" fill="#f0d48a" stroke="#1a1a1a" stroke-width="1.2"/>
+</svg>

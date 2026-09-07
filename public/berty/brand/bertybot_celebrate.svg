@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none" role="img" aria-label="BertyBot celebrating">
+  <defs>
+    <linearGradient id="twcelebrateBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9af4ff"/><stop offset="35%" stop-color="#2ee6ff"/>
+      <stop offset="70%" stop-color="#1ab8e0"/><stop offset="100%" stop-color="#0d7a9a"/>
+    </linearGradient>
+    <linearGradient id="twcelebrateRed" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c4b5fd"/><stop offset="40%" stop-color="#8b6cff"/><stop offset="100%" stop-color="#5b41c9"/>
+    </linearGradient>
+    <linearGradient id="twcelebrateHand" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7ae8ff"/><stop offset="50%" stop-color="#2ee6ff"/><stop offset="100%" stop-color="#1ab8e0"/>
+    </linearGradient>
+    <linearGradient id="twcelebrateShine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f7f9ff" stop-opacity="0.35"/><stop offset="40%" stop-color="#f7f9ff" stop-opacity="0.08"/><stop offset="100%" stop-color="#000" stop-opacity="0.12"/>
+    </linearGradient>
+    <radialGradient id="twcelebrateAnt" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#e8fbff"/><stop offset="60%" stop-color="#f0d48a"/><stop offset="100%" stop-color="#8b6cff"/>
+    </radialGradient>
+  </defs>
+  <g>
+    <rect x="58" y="178" width="28" height="50" rx="6" fill="url(#twcelebrateRed)" stroke="#1a1a1a" stroke-width="2.5" transform="rotate(-12 72 178)"/>
+    <rect x="114" y="178" width="28" height="50" rx="6" fill="url(#twcelebrateRed)" stroke="#1a1a1a" stroke-width="2.5" transform="rotate(12 128 178)"/>
+    <rect x="42" y="220" width="42" height="18" rx="4" fill="url(#twcelebrateHand)" stroke="#1a1a1a" stroke-width="2.2" transform="rotate(-12 63 229)"/>
+    <rect x="116" y="220" width="42" height="18" rx="4" fill="url(#twcelebrateHand)" stroke="#1a1a1a" stroke-width="2.2" transform="rotate(12 137 229)"/>
+  </g>
+  <!-- Left arm up -->
+  <g transform="translate(48,92) rotate(100)">
+    <rect x="0" y="0" width="24" height="58" rx="7" fill="url(#twcelebrateRed)" stroke="#1a1a1a" stroke-width="2.5"/>
+    <g transform="translate(-3,58)">
+      <rect x="0" y="0" width="30" height="16" rx="4" fill="url(#twcelebrateHand)" stroke="#1a1a1a" stroke-width="2"/>
+      <rect x="-2" y="14" width="8" height="14" rx="2.5" fill="url(#twcelebrateHand)" stroke="#1a1a1a" stroke-width="1.8"/>
+      <rect x="11" y="15" width="8" height="15" rx="2.5" fill="url(#twcelebrateHand)" stroke="#1a1a1a" stroke-width="1.8"/>
+      <rect x="24" y="14" width="8" height="14" rx="2.5" fill="url(#twcelebrateHand)" stroke="#1a1a1a" stroke-width="1.8"/>
+    </g>
+  </g>
+  <!-- Right arm up -->
+  <g transform="translate(152,92) rotate(-100)">
+    <rect x="0" y="0" width="24" height="58" rx="7" fill="url(#twcelebrateRed)" stroke="#1a1a1a" stroke-width="2.5"/>
+    <g transform="translate(-3,58)">
+      <rect x="0" y="0" width="30" height="16" rx="4" fill="url(#twcelebrateHand)" stroke="#1a1a1a" stroke-width="2"/>
+      <rect x="-2" y="14" width="8" height="14" rx="2.5" fill="url(#twcelebrateHand)" stroke="#1a1a1a" stroke-width="1.8"/>
+      <rect x="11" y="15" width="8" height="15" rx="2.5" fill="url(#twcelebrateHand)" stroke="#1a1a1a" stroke-width="1.8"/>
+      <rect x="24" y="14" width="8" height="14" rx="2.5" fill="url(#twcelebrateHand)" stroke="#1a1a1a" stroke-width="1.8"/>
+    </g>
+  </g>
+  <g>
+    <rect x="55" y="88" width="90" height="92" rx="10" fill="url(#twcelebrateBody)" stroke="#1a1a1a" stroke-width="2.8"/>
+    <rect x="55" y="88" width="90" height="92" rx="10" fill="url(#twcelebrateShine)"/>
+    <rect x="55" y="162" width="90" height="14" fill="url(#twcelebrateRed)" stroke="#1a1a1a" stroke-width="2"/>
+    <circle cx="64" cy="98" r="2.2" fill="#e8fbff" stroke="#1a1a1a" stroke-width="0.8"/>
+    <circle cx="136" cy="98" r="2.2" fill="#e8fbff" stroke="#1a1a1a" stroke-width="0.8"/>
+    <circle cx="78" cy="118" r="9" fill="#2ee6ff" stroke="#1a1a1a" stroke-width="2"/><circle cx="78" cy="118" r="4" fill="#86efac" opacity="0.7"/>
+    <circle cx="98" cy="118" r="9" fill="#8b6cff" stroke="#1a1a1a" stroke-width="2"/><circle cx="98" cy="118" r="4" fill="#93c5fd" opacity="0.7"/>
+    <circle cx="118" cy="118" r="9" fill="#f0d48a" stroke="#1a1a1a" stroke-width="2"/><circle cx="118" cy="118" r="4" fill="#e8fbff" opacity="0.7"/>
+    <circle cx="138" cy="118" r="9" fill="#ef4444" stroke="#1a1a1a" stroke-width="2"/><circle cx="138" cy="118" r="4" fill="#fca5a5" opacity="0.7"/>
+  </g>
+  <rect x="86" y="76" width="28" height="16" rx="3" fill="url(#twcelebrateRed)" stroke="#1a1a1a" stroke-width="2.2"/>
+  <g>
+    <rect x="62" y="28" width="76" height="54" rx="8" fill="url(#twcelebrateBody)" stroke="#1a1a1a" stroke-width="2.8"/>
+    <rect x="62" y="28" width="76" height="54" rx="8" fill="url(#twcelebrateShine)"/>
+    <circle cx="88" cy="50" r="9" fill="#f7f9ff" stroke="#1a1a1a" stroke-width="2"/>
+    <circle cx="112" cy="50" r="9" fill="#f7f9ff" stroke="#1a1a1a" stroke-width="2"/>
+    <circle cx="88" cy="49" r="4.5" fill="#1a1a1a"/><circle cx="112" cy="49" r="4.5" fill="#1a1a1a"/>
+    <circle cx="90" cy="47" r="1.5" fill="#f7f9ff" opacity="0.85"/><circle cx="114" cy="47" r="1.5" fill="#f7f9ff" opacity="0.85"/>
+    <path d="M76 36 L96 33" stroke="#8b6cff" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M104 33 L124 36" stroke="#8b6cff" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M78 58 Q100 78 122 58" fill="none" stroke="#1a1a1a" stroke-width="3.8" stroke-linecap="round"/>
+  </g>
+  <line x1="100" y1="28" x2="100" y2="10" stroke="#8b6cff" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="100" cy="6" r="7" fill="url(#twcelebrateAnt)" stroke="#1a1a1a" stroke-width="2"/>
+  <circle cx="97" cy="3" r="2" fill="#f7f9ff" opacity="0.45"/>
+</svg>
