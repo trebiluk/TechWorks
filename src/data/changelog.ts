@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.90.1 — 2026-09-09
+
+- Deck: teacher Edit types on the slide. Save keeps it on this desk. Duplicate / add slide. Present still has no PIN. Factory deck restores the original. JSON download is your copy. PowerPoint is still the branded original.
+
 ## 1.90.0 — 2026-09-09
 
 - Shop URL is live: tw.kulibert.net (Cloudflare). Google book, Deck, STEM skills, empty roster (FERPA). Class uses that address — not pages.dev.

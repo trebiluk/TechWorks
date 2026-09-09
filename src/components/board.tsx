@@ -916,7 +916,7 @@ export function Board() {
       ) : view === "polls" ? (
         <PollBoard file={file} unlocked={unlocked} onChange={setFile} onNeedPin={() => setPinOpen(true)} />
       ) : view === "deck" ? (
-        <DeckBoard />
+        <DeckBoard unlocked={unlocked} onNeedPin={() => setPinOpen(true)} />
       ) : view === "week" ? (
         <WeekBoard file={wallFile} list={list} bells={bells} cycle={file.meta.config?.currentCycle ?? 1} onPeriod={(p) => { setJumpPeriod(p); goDesk("score"); }} />
       ) : view === "year" ? (

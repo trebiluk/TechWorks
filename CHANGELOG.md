@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.90.0. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.90.1. -->
 
 # TechWorks changelog
 
-App version **1.90.0**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.90.1**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.90.1 — 2026-09-09
+
+- Deck: teacher Edit types on the slide. Save keeps it on this desk. Duplicate / add slide. Present still has no PIN. Factory deck restores the original. JSON download is your copy. PowerPoint is still the branded original.
 
 ## 1.90.0 — 2026-09-09
 

@@ -124,7 +124,7 @@ const CARDS: Record<string, DescribeCard> = {
   },
   deck: {
     title: "Deck",
-    purpose: "Default navy + violet slides. Present from here, or download PowerPoint. Aliases only.",
+    purpose: "Navy + violet slides. Edit and Save on this desk. Present from here.",
     links: [{ label: "Help", href: "#help" }],
   },
 };

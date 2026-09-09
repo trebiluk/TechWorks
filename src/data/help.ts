@@ -423,9 +423,9 @@ export const HELP_ARTICLES: HelpArticle[] = [
     id: "deck",
     category: "Wall",
     title: "Default deck",
-    tags: ["deck", "slides", "projector", "theme", "navy", "violet", "powerpoint"],
+    tags: ["deck", "slides", "projector", "theme", "navy", "violet", "powerpoint", "edit"],
     wall: true,
-    body: "Dash → Deck. Navy and violet 16:9 slides for the projector: how this class works, four beats, effort 3/2/1, skills 1–4, STEM letters, safety, Do this now, cleanup, plus a blank master. Arrows or tap to advance. Present fills the screen. PowerPoint and PDF download the same deck. Aliases only — no legal names on these slides.",
+    body: "Dash → Deck. Navy and violet 16:9 slides. Teacher: Edit (PIN) and type on the slide. Save keeps it on this desk. Duplicate a slide for today’s job. Present fills the screen with no PIN. Factory deck restores the original. JSON is your copy. PowerPoint is the branded original. Aliases only.",
   },
   {
     id: "roster-ids",
