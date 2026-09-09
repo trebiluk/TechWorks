@@ -5,7 +5,7 @@ import { isLiveStudent, money, periodTitle, score, shopBells } from "@/lib/econo
 import { MarketTape } from "@/components/market-tape";
 import { QuarterChip } from "@/components/quarter-chip";
 import type { DjiaQuote } from "@/lib/djia";
-import { TICKERS, basketPath, cleanPicks, tickerFactor, type TickerId } from "@/lib/tickers";
+import { TICKERS, basketPath, cleanPicks, type TickerId } from "@/lib/tickers";
 import { applySort, decorateRank, type SortKey } from "@/lib/rank";
 import { SortBar } from "@/components/sort-bar";
 import { fillBlankPicks, setCrewPicks, setPicks } from "@/lib/store";
@@ -71,8 +71,6 @@ export function WalletBoard({
     if (p.length !== 3) return;
     onChange(setCrewPicks(file, period, crewKey, p));
   }
-
-  const crews = [...new Set(kids.map((s) => s.crewName || s.crewKey))];
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto">

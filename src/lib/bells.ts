@@ -1,5 +1,5 @@
 export type BellTime = { period: number; start: string; end: string; attendBy: string };
-export type ScheduleId = "regular" | "delay1" | "delay2" | "half";
+export type ScheduleId = "regular" | "delay1" | "delay2" | "half" | "assembly";
 
 function t(period: number, start: string, end: string, attendBy: string): BellTime {
   return { period, start, end, attendBy };
@@ -60,13 +60,47 @@ export const SCHEDULES: Record<ScheduleId, { label: string; times: BellTime[] }>
       t(4, "10:13", "10:55", "10:33"),
     ],
   },
+  assembly: {
+    label: "Assembly",
+    times: [
+      t(1, "07:55", "08:35", "08:15"),
+      t(2, "08:38", "09:15", "08:58"),
+      t(3, "09:18", "09:55", "09:38"),
+      t(4, "09:58", "10:35", "10:18"),
+      t(5, "10:38", "11:15", "10:58"),
+      t(6, "11:18", "11:55", "11:38"),
+      t(7, "11:58", "12:35", "12:18"),
+      t(8, "12:38", "13:15", "12:58"),
+      t(9, "13:18", "13:55", "13:38"),
+      t(10, "13:58", "14:37", "14:18"),
+    ],
+  },
 };
 
 export const BELL_TIMES = SCHEDULES.regular.times;
 
 export function scheduleOf(id?: string): ScheduleId {
-  if (id === "delay1" || id === "delay2" || id === "half") return id;
+  if (id === "delay1" || id === "delay2" || id === "half" || id === "assembly") return id;
   return "regular";
+}
+
+export type BellPack = { id: string; label: string; times: BellTime[] };
+
+export function builtinPacks(): BellPack[] {
+  return (Object.keys(SCHEDULES) as ScheduleId[]).map((id) => ({
+    id,
+    label: SCHEDULES[id].label,
+    times: SCHEDULES[id].times,
+  }));
+}
+
+export function specialLive(start: string, end: string, now = new Date()): boolean {
+  const t = nowMinutes(now);
+  return t >= toMin(start) && t <= toMin(end);
+}
+
+export function windowsOverlap(a0: string, a1: string, b0: string, b1: string): boolean {
+  return toMin(a0) < toMin(b1) && toMin(a1) > toMin(b0);
 }
 
 export type AgendaStep = "attend" | "input" | "cleanup" | "verify";

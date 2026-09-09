@@ -33,7 +33,7 @@ export function Fold({
       style={style}
       className={cn(
         "flex flex-col rounded-2xl [contain:layout]",
-        dark ? "bg-elevated text-white" : "bg-surface",
+        dark ? "bg-elevated text-fg" : "bg-surface",
         grow && open ? "min-h-0 flex-1" : "shrink-0",
         className,
       )}
@@ -53,7 +53,7 @@ export function Fold({
           {Icon ? <Icon className="size-3.5 shrink-0 opacity-80" strokeWidth={2} aria-hidden /> : null}
           <span className="font-display text-sm font-semibold tracking-tight">{label}</span>
           {hint ? (
-            <span className={cn("ml-auto truncate text-xs", dark ? "text-white/80" : "text-fg/70")}>{hint}</span>
+            <span className={cn("ml-auto truncate text-xs", dark ? "text-muted" : "text-fg/70")}>{hint}</span>
           ) : null}
         </button>
         {tools ? <div className="flex shrink-0 items-center gap-0.5 pr-2">{tools}</div> : null}

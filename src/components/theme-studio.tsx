@@ -1,101 +1,84 @@
 import { useMemo, useState } from "react";
-import {
-  commitPalette,
-  PALETTE_FIELDS,
-  paletteStyle,
-  SOLVAY_PALETTE,
-  storedPalette,
-  type Palette,
-} from "@/lib/palette";
-import { commitFont, FONT_PACKS, storedFont, type FontId } from "@/lib/fonts";
-import { commitLook, FINISHES, LOOK_FIELDS, lookStyle, paintLook, SOLVAY_LOOK, storedLook, type CapsMode, type FinishId, type Look } from "@/lib/look";
+import { PALETTE_FIELDS, TEXT_FIELDS, paletteStyle, type Palette } from "@/lib/palette";
+import { FONT_PACKS, type FontId } from "@/lib/fonts";
+import { FINISHES, LOOK_FIELDS, lookStyle, type CapsMode, type FinishId, type Look } from "@/lib/look";
 import { TwWordmark } from "@/components/tw-mark";
 import { commitLang, LANGS, storedLang, type LangId } from "@/lib/i18n";
-import { saveCustomTheme } from "@/lib/theme";
 import { useLang } from "@/lib/i18n-hook";
 import { cn } from "@/lib/utils";
 
 type ToolTab = "finish" | "size" | "color" | "type" | "caps" | "lang";
 
-export function ThemeStudio() {
+export function ThemeStudio({
+  draft,
+  onDraft,
+  look,
+  onLook,
+  font,
+  onFont,
+  preview,
+  hovering,
+  dirty,
+  onApply,
+  onRevert,
+  onSave,
+}: {
+  draft: Palette;
+  onDraft: (p: Palette) => void;
+  look: Look;
+  onLook: (l: Look) => void;
+  font: FontId;
+  onFont: (f: FontId) => void;
+  preview: Palette;
+  hovering?: boolean;
+  dirty?: boolean;
+  onApply: () => void;
+  onRevert: () => void;
+  onSave: (name: string) => void;
+}) {
   const { t } = useLang();
-  const [tab, setTab] = useState<ToolTab>("finish");
-  const [draft, setDraft] = useState<Palette>(() => storedPalette() ?? SOLVAY_PALETTE);
-  const [font, setFont] = useState<FontId>(() => storedFont());
-  const [look, setLook] = useState<Look>(() => storedLook() ?? SOLVAY_LOOK);
+  const [tab, setTab] = useState<ToolTab>("color");
   const [langId, setLangId] = useState<LangId>(() => storedLang());
   const [saveName, setSaveName] = useState("");
-  const [savedNote, setSavedNote] = useState("");
   const pack = FONT_PACKS.find((f) => f.id === font) ?? FONT_PACKS[0];
+  const shown = hovering ? preview : draft;
   const style = useMemo(
     () => ({
-      ...paletteStyle(draft),
+      ...paletteStyle(shown),
       ...lookStyle(look),
       fontFamily: pack.sans,
       ["--font-display" as string]: pack.display,
       ["--font-sans" as string]: pack.sans,
     }),
-    [draft, pack, look],
+    [shown, pack, look],
   );
 
   function slide(key: keyof Look, value: number) {
-    const next = { ...look, [key]: value };
-    setLook(next);
-    paintLook(next);
+    onLook({ ...look, [key]: value });
   }
 
   function caps(mode: CapsMode) {
-    const next = { ...look, caps: mode };
-    setLook(next);
-    paintLook(next);
-  }
-
-  function apply() {
-    commitPalette(draft);
-    commitFont(font);
-    commitLook(look);
-    commitLang(langId);
-  }
-
-  function reset() {
-    setDraft(SOLVAY_PALETTE);
-    setFont("archivo");
-    setLook(SOLVAY_LOOK);
-    setLangId("en");
-    commitPalette(null);
-    commitFont(null);
-    commitLook(SOLVAY_LOOK);
-    commitLang("en");
-  }
-
-  const tabs: { id: ToolTab; label: string }[] = [
-    { id: "finish", label: t("Finish") },
-    { id: "size", label: t("Size") },
-    { id: "color", label: t("Color") },
-    { id: "type", label: t("Type") },
-    { id: "caps", label: t("Caps") },
-    { id: "lang", label: t("Language") },
-  ];
-
-  function saveAs() {
-    apply();
-    const row = saveCustomTheme(saveName);
-    setSavedNote(`Saved ${row.label}`);
-    setSaveName("");
+    onLook({ ...look, caps: mode });
   }
 
   function pickFinish(id: FinishId) {
     const f = FINISHES.find((x) => x.id === id);
     if (!f) return;
-    const next: Look = { ...look, finish: id, lift: f.lift, stroke: f.stroke, corners: f.corners, wallpaper: f.wallpaper };
-    setLook(next);
-    paintLook(next);
+    onLook({ ...look, finish: id, lift: f.lift, stroke: f.stroke, corners: f.corners, wallpaper: f.wallpaper });
   }
+
+  const tabs: { id: ToolTab; label: string }[] = [
+    { id: "color", label: t("Color") },
+    { id: "finish", label: t("Finish") },
+    { id: "size", label: t("Size") },
+    { id: "type", label: t("Type") },
+    { id: "caps", label: t("Caps") },
+    { id: "lang", label: t("Language") },
+  ];
 
   return (
     <div className="mt-4">
-      <p className="text-sm font-medium uppercase tracking-wider text-subtle">{t("Theme tools")}</p>
-      <div className="mt-3 grid min-w-0 gap-3 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+      <div className="mt-1 grid min-w-0 gap-3 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
         <div className="min-w-0">
           <div className="flex flex-wrap gap-1">
             {tabs.map((x) => (
@@ -166,14 +149,14 @@ export function ThemeStudio() {
                   <input
                     type="color"
                     value={hexOf(draft[f.key])}
-                    onChange={(e) => setDraft((d) => ({ ...d, [f.key]: e.target.value }))}
+                    onChange={(e) => onDraft({ ...draft, [f.key]: e.target.value })}
                     className="size-8 shrink-0 cursor-pointer rounded border-0 bg-transparent"
                     aria-label={f.label}
                   />
                   <span className="w-24 text-xs font-semibold uppercase tracking-wider text-subtle">{t(f.label)}</span>
                   <input
                     value={draft[f.key]}
-                    onChange={(e) => setDraft((d) => ({ ...d, [f.key]: e.target.value }))}
+                    onChange={(e) => onDraft({ ...draft, [f.key]: e.target.value })}
                     className="min-w-0 flex-1 bg-transparent font-mono text-xs outline-none"
                   />
                 </label>
@@ -182,12 +165,14 @@ export function ThemeStudio() {
           ) : null}
 
           {tab === "type" ? (
-            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+            <div className="mt-3 space-y-3">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Fonts</p>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {FONT_PACKS.map((f) => (
                 <button
                   key={f.id}
                   type="button"
-                  onClick={() => setFont(f.id)}
+                  onClick={() => onFont(f.id)}
                   className={cn(
                     "min-h-16 rounded-md px-2 py-2 text-left ring-1",
                     font === f.id ? "bg-elevated ring-fg" : "bg-surface ring-transparent",
@@ -199,28 +184,36 @@ export function ThemeStudio() {
                   <span className="block text-[10px] text-muted">{f.vibe}</span>
                 </button>
               ))}
+              </div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Text colors</p>
+              {TEXT_FIELDS.map((f) => (
+                <label key={f.key} className="flex min-h-11 items-center gap-2 rounded-md bg-elevated px-2">
+                  <input
+                    type="color"
+                    value={hexOf(draft[f.key] || "#f7f9ff")}
+                    onChange={(e) => onDraft({ ...draft, [f.key]: e.target.value })}
+                    className="size-8 shrink-0 cursor-pointer rounded border-0 bg-transparent"
+                    aria-label={f.label}
+                  />
+                  <span className="w-20 text-xs font-semibold uppercase tracking-wider text-subtle">{t(f.label)}</span>
+                  <span className="hidden text-[10px] text-muted sm:inline">{f.hint}</span>
+                  <input
+                    value={draft[f.key] || ""}
+                    onChange={(e) => onDraft({ ...draft, [f.key]: e.target.value })}
+                    className="min-w-0 flex-1 bg-transparent font-mono text-xs outline-none"
+                  />
+                </label>
+              ))}
             </div>
           ) : null}
 
           {tab === "caps" ? (
             <div className="mt-3 grid gap-2">
-              <ToggleRow
-                on={look.caps === "off"}
-                label={t("Off")}
-                onClick={() => caps("off")}
-              />
+              <ToggleRow on={look.caps === "off"} label={t("Off")} onClick={() => caps("off")} />
               <ToggleRow on={look.caps === "small"} label={t("Small caps")} onClick={() => caps("small")} />
               <ToggleRow on={look.caps === "upper"} label={t("All caps")} onClick={() => caps("upper")} />
-              <ToggleRow
-                on={look.lift > 0}
-                label={t("Shadows")}
-                onClick={() => slide("lift", look.lift > 0 ? 0 : 70)}
-              />
-              <ToggleRow
-                on={look.wallpaper > 0}
-                label={t("Glow")}
-                onClick={() => slide("wallpaper", look.wallpaper > 0 ? 0 : 80)}
-              />
+              <ToggleRow on={look.lift > 0} label={t("Shadows")} onClick={() => slide("lift", look.lift > 0 ? 0 : 70)} />
+              <ToggleRow on={look.wallpaper > 0} label={t("Glow")} onClick={() => slide("wallpaper", look.wallpaper > 0 ? 0 : 80)} />
             </div>
           ) : null}
 
@@ -233,13 +226,10 @@ export function ThemeStudio() {
                   onClick={() => {
                     setLangId(l.id);
                     commitLang(l.id);
-                    if (l.id === "ar" || l.id === "fa") setFont("naskh");
-                    if (l.id === "uk" || l.id === "ru") setFont("noto");
+                    if (l.id === "ar" || l.id === "fa") onFont("naskh");
+                    if (l.id === "uk" || l.id === "ru") onFont("noto");
                   }}
-                  className={cn(
-                    "min-h-14 rounded-md px-3 py-2 text-left",
-                    langId === l.id ? "bg-gold text-bg" : "bg-elevated",
-                  )}
+                  className={cn("min-h-14 rounded-md px-3 py-2 text-left", langId === l.id ? "bg-gold text-bg" : "bg-elevated")}
                   dir={l.dir}
                 >
                   <span className="block text-sm font-semibold">{l.native}</span>
@@ -250,26 +240,34 @@ export function ThemeStudio() {
           ) : null}
 
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <button type="button" onClick={apply} className="min-h-11 rounded-md bg-accent px-3 text-sm font-semibold text-accent-fg">
-              {t("Apply look")}
+            <button type="button" onClick={onApply} className="min-h-11 rounded-md bg-accent px-3 text-sm font-semibold text-accent-fg">
+              {t("Apply")}
+            </button>
+            <button type="button" onClick={onRevert} className="min-h-11 rounded-md bg-elevated px-3 text-sm font-semibold">
+              {t("Revert")}
             </button>
             <input
               value={saveName}
               onChange={(e) => setSaveName(e.target.value)}
-              placeholder="Name this look"
+              placeholder="Custom name"
               className="min-h-11 min-w-0 flex-1 rounded-md bg-elevated px-3 text-sm outline-none"
             />
-            <button type="button" onClick={saveAs} className="min-h-11 rounded-md bg-gold px-3 text-sm font-semibold text-bg">
-              {t("Save theme")}
+            <button
+              type="button"
+              onClick={() => {
+                onSave(saveName);
+                setSaveName("");
+              }}
+              className="min-h-11 rounded-md bg-gold px-3 text-sm font-semibold text-bg"
+            >
+              {t("Save custom")}
             </button>
-            <button type="button" onClick={reset} className="min-h-11 rounded-md bg-elevated px-3 text-sm font-semibold">
-              {t("Reset Solvay")}
-            </button>
-            {savedNote ? <span className="text-sm text-gold">{savedNote}</span> : null}
+            {dirty ? <span className="text-sm text-gold">Unsaved edits</span> : hovering ? <span className="text-sm text-muted">Preview only</span> : null}
           </div>
         </div>
 
-        <div className="grid min-w-0 gap-3 overflow-hidden rounded-xl p-2 sm:p-3" style={style} data-caps={look.caps} data-finish={look.finish}>
+        <div className="grid min-w-0 gap-3 rounded-xl p-2 sm:p-3" style={style} data-caps={look.caps} data-finish={look.finish}>
+          <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">{hovering ? "Preview" : "This look"}</p>
           <DashPreview />
           <DataPreview />
         </div>

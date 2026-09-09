@@ -1,62 +1,44 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Undo2, Users } from "lucide-react";
 import { PeriodRewardChip } from "@/components/reward-bar";
+import { BertyCueBot } from "@/components/berty";
 import type { DayCode, EconomyFile } from "@/lib/economy";
-import { bellFor, dayPay, isLiveStudent, money, periodTitle, score, shopBells } from "@/lib/economy";
-import { cycleDayLabel, cycleProgress, daySlot, formatSchoolDate, isSchoolDay, quarterNow, quarterProgress, scoreDate as nearestScoreDate, stepSchoolDay, todayIso, weekOn, yearProgress } from "@/lib/calendar";
+import { dayPay, money, shopBells } from "@/lib/economy";
+import { cycleDayLabel, cycleProgress, daySlot, formatSchoolDate, isSchoolDay, quarterNow, quarterProgress, scoreDate as nearestScoreDate, stepSchoolDay, todayIso, yearProgress } from "@/lib/calendar";
 import {
   abOn,
-  activityFor,
-  agendaStep,
-  askInvest,
   approveInvest,
-  cleanupOn,
   crewLeaderId,
-  cycleGoalFor,
   setCrewLeader,
-  investCrew,
   isSubDay,
   loadFocus,
   lunchOn,
-  DEFAULT_CYCLE_GOALS,
-  resetAbCycle,
-  setCurrentCycle,
-  setSchedule,
-  setShop,
+  deskBellId,
+  deskPacks,
+  setDayBell,
   markOn,
-  onAbRoster,
-  paintCheck,
-  saveFocus,
   setAbDay,
-  setAgendaStep,
-  setCleanup,
   setCrewMark,
-  setCycleGoal,
-  setPaintCheck,
   setSchooltoolDone,
   setStudentCleanup,
   setStudentMark,
-  setStudentNote,
-  setAffect,
   setSubDay,
   setStudentAssist,
   studentAssist,
+  attendOn,
+  setStudentAttend,
+  passOpen,
   bumpMoney,
   schooltoolDone,
-  STAGES,
   studentCleanup,
-  toggleInvest,
 } from "@/lib/store";
-import { AGENDA, attendLate, beep, bellForPeriod, bellTimes, formatBell, periodClock, periodNow, periodPast, ringBell, scheduleOf, SCHEDULES, SCHOOLTOOL_URL, workshopDay } from "@/lib/bells";
-import { CHANGELOG_MD, APP_VERSION, changelogFileName } from "@/data/changelog";
-import { VERSION_LABEL } from "@/lib/version";
-import { downloadText } from "@/lib/live";
-import { CREW_PIN } from "@/lib/pin";
-import { QuarterChip } from "@/components/quarter-chip";
+import { attendLate, beep, bellForPeriod, formatBell, periodClock, periodNow, periodPast, ringBell, SCHOOLTOOL_URL } from "@/lib/bells";
 import { WeatherChip } from "@/components/weather-chip";
 import { DayFacts } from "@/components/day-facts";
 import { cn } from "@/lib/utils";
 import { useShopClock } from "@/lib/use-clock";
+import { PollPad } from "@/components/polls";
+import { crewDone, crewPulse, crewsOf } from "@/lib/crews";
 
 const PERIOD_CLASS: Record<number, string> = {
   1: "bg-period-1",
@@ -67,17 +49,6 @@ const PERIOD_CLASS: Record<number, string> = {
   9: "bg-period-5",
   10: "bg-period-6",
 };
-
-const SCORE_CODES: { code: DayCode; hint: string }[] = [
-  { code: "3", hint: "$25" },
-  { code: "2", hint: "$20" },
-  { code: "1", hint: "$15" },
-  { code: "A", hint: "no-show" },
-  { code: "E", hint: "excused" },
-  { code: "P", hint: "−$25" },
-];
-
-const FACES = ["😞", "😐", "🙂", "😄", "😴"] as const;
 
 function tone(code: string) {
   const c = String(code).toUpperCase();
@@ -92,25 +63,6 @@ function tone(code: string) {
   if (c === "ASSIST") return "bg-work-pto text-accent-fg";
   return "bg-elevated text-subtle";
 }
-
-import { crewDone, crewPulse, crewsOf } from "@/lib/crews";
-import { agendaFor, skillName } from "@/lib/projects";
-import { SKILL_MARKS, setSkillScore, skillScore, skillXp, crossedBand } from "@/lib/skills";
-
-function Pulse({ kind }: { kind: "done" | "due" | "late" | "open" }) {
-  if (kind === "done") return <span className="text-sm text-gain">done</span>;
-  if (kind === "late") return <span className="text-sm font-medium text-loss">late</span>;
-  if (kind === "due") return <span className="text-sm font-medium text-loss">due</span>;
-  return <span className="text-sm text-subtle">open</span>;
-}
-
-const WORK_TONE: Record<string, string> = {
-  "PROJ-W": "bg-work-w text-fg",
-  "PROJ-PC": "bg-work-pc text-fg",
-  P: "bg-work-p text-fg",
-  PTO: "bg-work-pto text-accent-fg",
-  "OFF TASK": "bg-loss text-accent-fg",
-};
 
 function PeriodMeter({
   clock,
@@ -138,247 +90,18 @@ function PeriodMeter({
             style={{ width: `${clock.live || clock.pct >= 100 ? clock.pct : 0}%` }}
           />
         </div>
-        {clock.cleanup ? <p className="mt-2 text-sm font-semibold uppercase tracking-widest">Cleanup</p> : null}
+        {clock.cleanup ? (
+          <p className="mt-2 flex items-center gap-2 text-sm font-semibold uppercase tracking-widest">
+            <BertyCueBot on={false} cue={{ cleanup: true }} size="icon" />
+            Cleanup
+          </p>
+        ) : null}
       </div>
       <PeriodRewardChip file={file} period={period} className="self-center" />
     </div>
   );
 }
 
-function ShopLists({
-  file,
-  onChange,
-}: {
-  file: EconomyFile;
-  onChange: (next: EconomyFile) => void;
-}) {
-  const shop = file.meta.shop ?? [];
-  const cats = [...new Set(["SNACKS", "LEISURE", "CHORES", "TOOLS", ...shop.map((x) => x.category)])];
-  const [open, setOpen] = useState<Record<string, boolean>>({ SNACKS: true });
-  const [newCat, setNewCat] = useState("");
-
-  function patch(next: typeof shop) {
-    onChange(setShop(file, next));
-  }
-
-  return (
-    <div className="mt-4">
-      <p className="text-sm font-medium uppercase tracking-wider text-subtle">Store lists · type to edit</p>
-      {cats.map((cat) => {
-        const rows = shop.map((item, i) => ({ item, i })).filter((x) => x.item.category === cat);
-        return (
-          <div key={cat} className="mt-2 rounded-md bg-elevated">
-            <button
-              type="button"
-              onClick={() => setOpen((o) => ({ ...o, [cat]: !o[cat] }))}
-              className="flex min-h-11 w-full items-center justify-between px-3 text-left text-sm font-semibold uppercase tracking-wide"
-            >
-              <span>
-                {cat} · {rows.length}
-              </span>
-              <span className="text-subtle">{open[cat] ? "hide" : "show"}</span>
-            </button>
-            {open[cat] ? (
-              <div className="space-y-1 px-3 pb-3">
-                {rows.map(({ item, i }) => (
-                  <div key={i} className="flex gap-1">
-                    <input
-                      value={item.name}
-                      onChange={(e) => {
-                        const next = shop.map((x, j) => (j === i ? { ...x, name: e.target.value } : x));
-                        patch(next);
-                      }}
-                      placeholder="item"
-                      className="min-h-10 min-w-0 flex-1 rounded-md bg-surface px-2 text-sm outline-none"
-                    />
-                    <input
-                      inputMode="numeric"
-                      value={item.price}
-                      onChange={(e) => {
-                        const price = Math.max(0, Number(e.target.value.replace(/[^\d.]/g, "")) || 0);
-                        patch(shop.map((x, j) => (j === i ? { ...x, price } : x)));
-                      }}
-                      className="min-h-10 w-16 rounded-md bg-surface px-2 text-sm outline-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => patch(shop.filter((_, j) => j !== i))}
-                      className="min-h-10 rounded-md px-2 text-sm text-loss"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => patch([...shop, { category: cat, name: "", price: 5 }])}
-                  className="min-h-10 w-full rounded-md bg-surface text-sm text-muted"
-                >
-                  + add {cat.toLowerCase()}
-                </button>
-              </div>
-            ) : null}
-          </div>
-        );
-      })}
-      <div className="mt-2 flex gap-2">
-        <input
-          value={newCat}
-          onChange={(e) => setNewCat(e.target.value.toUpperCase())}
-          placeholder="NEW LIST NAME"
-          className="min-h-10 min-w-0 flex-1 rounded-md bg-elevated px-3 text-sm outline-none"
-        />
-        <button
-          type="button"
-          onClick={() => {
-            const c = newCat.trim();
-            if (!c) return;
-            patch([...shop, { category: c, name: "", price: 5 }]);
-            setOpen((o) => ({ ...o, [c]: true }));
-            setNewCat("");
-          }}
-          className="min-h-10 rounded-md bg-elevated px-3 text-sm"
-        >
-          Add list
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function SkillLists({
-  file,
-  onChange,
-}: {
-  file: EconomyFile;
-  onChange: (next: EconomyFile) => void;
-}) {
-  const list = file.meta.config?.skills?.length
-    ? file.meta.config.skills
-    : [
-        { id: "safety", name: "SAFETY" },
-        { id: "measure", name: "MEASURE" },
-        { id: "draw", name: "DRAW" },
-        { id: "model", name: "MODEL" },
-        { id: "material", name: "MATERIAL" },
-        { id: "tools", name: "TOOLS" },
-        { id: "finish", name: "FINISH" },
-        { id: "present", name: "PRESENT" },
-        { id: "digital", name: "DIGITAL" },
-        { id: "team", name: "TEAM" },
-      ];
-  return (
-    <div className="mt-4">
-      <p className="text-sm font-medium uppercase tracking-wider text-subtle">Skills list</p>
-      <p className="mt-1 text-sm text-muted">E/P/A on the Skills tab. Not pay. Add or rename here.</p>
-      <div className="mt-2 grid grid-cols-2 gap-2">
-        {list.map((sk, i) => (
-          <input
-            key={sk.id}
-            value={sk.name}
-            onChange={(e) => {
-              const next = structuredClone(file);
-              const skills = [...(next.meta.config?.skills ?? list)];
-              skills[i] = { ...skills[i], name: e.target.value.toUpperCase() };
-              next.meta.config = { ...(next.meta.config ?? {}), skills };
-              onChange(next);
-            }}
-            className="min-h-11 rounded-md bg-elevated px-2 text-sm uppercase outline-none"
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ChangelogCard() {
-  const [open, setOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
-  return (
-    <div className="mt-4 rounded-md bg-elevated p-3">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex min-h-11 w-full items-center justify-between text-left text-sm font-semibold uppercase tracking-wide"
-      >
-        Changelog · {VERSION_LABEL}
-        <span className="text-subtle">{open ? "hide" : "export"}</span>
-      </button>
-      {open ? (
-        <div className="mt-2 space-y-2">
-          <textarea readOnly value={CHANGELOG_MD} className="min-h-40 w-full rounded-md bg-surface p-2 font-mono text-xs text-fg outline-none" />
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={async () => {
-                try {
-                  await navigator.clipboard.writeText(CHANGELOG_MD);
-                  setCopied(true);
-                  window.setTimeout(() => setCopied(false), 1600);
-                } catch {
-                  window.prompt("Copy changelog", CHANGELOG_MD);
-                }
-              }}
-              className="min-h-11 flex-1 rounded-md bg-surface text-sm font-semibold"
-            >
-              {copied ? "Copied" : "Copy"}
-            </button>
-            <button
-              type="button"
-              onClick={() => downloadText(changelogFileName(), CHANGELOG_MD, "text/markdown")}
-              className="min-h-11 flex-1 rounded-md bg-fg text-sm font-semibold text-bg"
-            >
-              Download .md
-            </button>
-          </div>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function EmbedCard() {
-  const [open, setOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const origin = typeof window === "undefined" ? "https://your-techworks-host" : window.location.origin;
-  const src = `${origin}/?embed=1`;
-  const html = `<iframe src="${src}" title="TechWorks Board" width="100%" height="720" style="border:0;background:#0a0a0b" allow="fullscreen" loading="lazy"></iframe>`;
-  return (
-    <div className="mt-4 rounded-md bg-elevated p-3">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex min-h-11 w-full items-center justify-between text-left text-sm font-semibold uppercase tracking-wide"
-      >
-        Show embed
-        <span className="text-subtle">{open ? "hide" : "Google Site"}</span>
-      </button>
-      {open ? (
-        <div className="mt-2 space-y-2">
-          <p className="text-sm text-muted">
-            Google Site → Insert → Embed → Embed code. This loads Overview only (no Crew, no Desk, no names vault).
-          </p>
-          <textarea readOnly value={html} className="min-h-24 w-full rounded-md bg-surface p-2 font-mono text-xs text-fg outline-none" />
-          <button
-            type="button"
-            onClick={async () => {
-              try {
-                await navigator.clipboard.writeText(html);
-                setCopied(true);
-                window.setTimeout(() => setCopied(false), 1600);
-              } catch {
-                window.prompt("Copy iframe", html);
-              }
-            }}
-            className="min-h-11 w-full rounded-md bg-fg text-sm font-semibold text-bg"
-          >
-            {copied ? "Copied" : "Copy iframe HTML"}
-          </button>
-        </div>
-      ) : null}
-    </div>
-  );
-}
 
 function MiniBar({ label, done, total }: { label: string; done: number; total: number }) {
   const pct = total <= 0 ? 0 : Math.min(100, Math.round((done / total) * 100));
@@ -407,8 +130,8 @@ export function ScoreDesk({
   onOpenSettings,
   mode = "teacher",
   panel = "score",
-  startPad = "effort",
-  onRankUp,
+  startPad: _startPad = "effort",
+  onRankUp: _onRankUp,
 }: {
   file: EconomyFile;
   onChange: (next: EconomyFile) => void;
@@ -426,7 +149,6 @@ export function ScoreDesk({
 }) {
   const bells = shopBells(file);
   const crewMode = mode === "crew";
-  const list = useMemo(() => score(file), [file]);
   const [date, setDate] = useState(() => nearestScoreDate());
   const [period, setPeriod] = useState(bells[0]?.period ?? 1);
   const periodCrews = crewsOf(file, period, date);
@@ -435,13 +157,11 @@ export function ScoreDesk({
   const undoRef = useRef<EconomyFile | null>(null);
   const warnKey = useRef("");
   const [canUndo, setCanUndo] = useState(false);
-  const now = useShopClock(file.meta.config?.schedule, "beat");
-  const livePeriod = periodNow(file.meta.config?.schedule, now);
-  const [crewOverride, setCrewOverride] = useState(false);
-  const [crewPin, setCrewPin] = useState(false);
-  const [crewPinCode, setCrewPinCode] = useState("");
-  const [crewPinErr, setCrewPinErr] = useState("");
-  const [noteOpen, setNoteOpen] = useState<string | null>(null);
+  const bellsId = deskBellId(file, date);
+  const now = useShopClock(bellsId, "beat");
+  const livePeriod = periodNow(bellsId, now);
+  const crewOverride = false;
+  const [allCrewsDone, setAllCrewsDone] = useState(false);
   const [moreId, setMoreId] = useState<string | null>(null);
   const [daily, setDaily] = useState(() => {
     try {
@@ -451,7 +171,6 @@ export function ScoreDesk({
     }
   });
   const deskMode = "score";
-  const pendingPeriod = useRef<number | null>(null);
 
   useEffect(() => {
     if (panel === "config") onOpenSettings();
@@ -462,14 +181,17 @@ export function ScoreDesk({
       setPeriod(jumpPeriod);
       if (jumpDate) setDate(jumpDate);
       const crews = crewsOf(file, jumpPeriod, jumpDate || date);
-      const next = (jumpCrew && crews.find((c) => c.key === jumpCrew)) || crews[0];
+      const next =
+        (jumpCrew && crews.find((c) => c.key === jumpCrew)) ||
+        crews.find((c) => !crewDone(c.kids, jumpDate || date)) ||
+        crews[0];
       if (next) setCrewKey(next.key);
       return;
     }
-    const live = periodNow(file.meta.config?.schedule);
+    const live = periodNow(bellsId);
     if (live && bells.some((b) => b.period === live)) {
       setPeriod(live);
-      const next = crewsOf(file, live, date)[0];
+      const next = crewsOf(file, live, date).find((c) => !crewDone(c.kids, date)) ?? crewsOf(file, live, date)[0];
       setCrewKey(next?.key ?? "Crew A");
       return;
     }
@@ -496,7 +218,7 @@ export function ScoreDesk({
 
   const p1In = schooltoolDone(file, date, 1);
   const subDay = isSubDay(file, date);
-  const sched = file.meta.config?.schedule;
+  const sched = bellsId;
   useEffect(() => {
     const tick = () => {
       if (date !== todayIso() || subDay || !isSchoolDay(date)) return;
@@ -510,19 +232,13 @@ export function ScoreDesk({
   const slot = daySlot(date);
   const school = isSchoolDay(date);
   const today = todayIso();
-  const week = weekOn(date);
   const cycle = file.meta.config?.currentCycle ?? file.meta.currentWeek ?? 1;
 
   const crew = periodCrews.find((c) => c.key === crewKey) ?? periodCrews[0] ?? null;
-  const classGoal = cycleGoalFor(file, period);
-  const classAct = activityFor(file, date, period);
-  const painting = /paint/i.test(classGoal);
   const sub = isSubDay(file, date);
   const letter = abOn(file, date);
-  const nextDay = stepSchoolDay(date, 1);
-  const nextLetter = letter === "A" ? "B" : "A";
-  const bell = bellForPeriod(period, file.meta.config?.schedule);
-  const clock = periodClock(period, file.meta.config?.schedule, now);
+  const bell = bellForPeriod(period, bellsId);
+  const clock = periodClock(period, bellsId, now);
 
   useEffect(() => {
     if (!clock?.cleanup) return;
@@ -531,9 +247,6 @@ export function ScoreDesk({
     warnKey.current = key;
     ringBell();
   }, [clock?.cleanup, clock?.end, period]);
-  const shop = workshopDay(classAct, classGoal);
-  const step = crew ? agendaStep(file, date, period, crew.key) : "attend";
-  const cleaned = crew ? cleanupOn(file, date, period, crew.key) : "";
   const leadId = crew ? crewLeaderId(file, period, crew.key) : "";
   const lead = crew?.kids.find((s) => s.id === leadId);
   const stDone = schooltoolDone(file, date, period);
@@ -542,51 +255,33 @@ export function ScoreDesk({
     !sub &&
     date === today &&
     period === 1 &&
-    attendLate(1, file.meta.config?.schedule) &&
+    attendLate(1, bellsId) &&
     !schooltoolDone(file, date, 1);
-  const weekProg = (() => {
-    const days = (week?.days ?? []).filter((d) => d <= date && !isSubDay(file, d));
-    let done = 0;
-    let total = 0;
-    for (const d of days) {
-      for (const c of bells.flatMap((b) => crewsOf(file, b.period, d))) {
-        total += 1;
-        if (crewDone(c.kids, d)) done += 1;
-      }
-    }
-    return { done, total };
-  })();
 
   function pickPeriod(p: number) {
-    if (crewMode && !crewOverride && p !== livePeriod) {
-      pendingPeriod.current = p;
-      setCrewPinCode("");
-      setCrewPinErr("");
-      setCrewPin(true);
-      return;
-    }
+    if (crewMode && !crewOverride && p !== livePeriod) return;
     setPeriod(p);
-    const next = crewsOf(file, p, date)[0];
+    const crews = crewsOf(file, p, date);
+    const next = crews.find((c) => !crewDone(c.kids, date)) ?? crews[0];
     setCrewKey(next?.key ?? "Crew A");
   }
 
   function goNextCrew() {
     const mine = crewsOf(file, period, date);
     const i = mine.findIndex((c) => c.key === (crew?.key ?? crewKey));
-    if (i >= 0 && i < mine.length - 1) {
-      setCrewKey(mine[i + 1].key);
+    const later = mine.slice(i + 1).find((c) => !crewDone(c.kids, date));
+    if (later) {
+      setCrewKey(later.key);
+      setAllCrewsDone(false);
       return;
     }
-    if (crewMode && !crewOverride) return;
-    const pi = bells.findIndex((b) => b.period === period);
-    for (let j = pi + 1; j < bells.length; j++) {
-      const more = crewsOf(file, bells[j].period, date);
-      if (more.length) {
-        setPeriod(bells[j].period);
-        setCrewKey(more[0].key);
-        return;
-      }
+    const earlier = mine.find((c) => !crewDone(c.kids, date));
+    if (earlier) {
+      setCrewKey(earlier.key);
+      setAllCrewsDone(false);
+      return;
     }
+    setAllCrewsDone(true);
   }
 
   function commit(next: EconomyFile) {
@@ -630,293 +325,138 @@ export function ScoreDesk({
     if (!skipAdvance.current) window.setTimeout(() => goNextCrew(), 280);
   }
 
-  const agenda = agendaFor(file, period, date, crew?.key);
-  const watchId = agenda.skillId || "build";
-  const watchLabel = skillName(watchId) || "Skill";
-
-  function tapSkill(id: string, n: number) {
-    if (!unlocked) {
-      onNeedPin();
-      return;
-    }
-    const row = file.students.find((s) => s.id === id);
-    if (!row) return;
-    const cur = skillScore(row, watchId);
-    const before = skillXp(file, id);
-    const next = setSkillScore(file, id, watchId, cur === n ? 0 : n);
-    commit(next);
-    const band = crossedBand(file, before, skillXp(next, id));
-    if (band) onRankUp?.(row.first, band);
-  }
-
-  function tapSkillCrew(n: number) {
-    if (!unlocked) {
-      onNeedPin();
-      return;
-    }
-    if (!crew) return;
-    let next = file;
-    for (const s of crew.kids) {
-      if (skillScore(s, watchId) === 0) next = setSkillScore(next, s.id, watchId, n);
-    }
-    commit(next);
-    if (!skipAdvance.current) window.setTimeout(() => goNextCrew(), 280);
-  }
-
   if (crewMode) {
     const kids = crew?.kids ?? [];
+    const liveTech = livePeriod != null && livePeriod !== 6 && period === livePeriod;
     return (
-      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden text-fg">
-        <p className="shrink-0 flex flex-wrap items-center gap-2 font-display text-2xl font-semibold tracking-tight">
-          Hi, Team Leader {lead?.first ?? "friend"}, <span className="text-crew-hi">please score your team below.</span>
-          <QuarterChip date={date} />
+      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden bg-crew p-1 text-fg">
+        <p className="flex shrink-0 flex-wrap items-center gap-2 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+          <BertyCueBot on cue={{ greeting: true, passing: !liveTech, cleanup: Boolean(clock?.cleanup) }} size="sm" />
+          Hi, Team Leader {lead?.first ?? "friend"}
+          <span className="ml-2 text-crew-hi">score your crew.</span>
         </p>
-        {clock ? <div className="shrink-0"><PeriodMeter clock={clock} period={period} file={file} /></div> : null}
-        <div className="flex shrink-0 flex-wrap items-center gap-1">
-          {bells.map((b) => {
-            const open = crewOverride || b.period === livePeriod;
-            const gone = periodPast(b.period, file.meta.config?.schedule, now);
-            return (
-            <button
-              key={b.period}
-              type="button"
-              onClick={() => pickPeriod(b.period)}
-              className={cn(
-                "min-h-10 rounded-full px-3 text-sm font-semibold",
-                period === b.period ? "bg-crew-hi text-bg" : gone ? "bg-crew-card/30 text-subtle" : open ? "bg-crew-card text-fg" : "bg-crew-card/40 text-subtle",
-              )}
-            >
-              {`P${b.period}`}
-            </button>
-            );
-          })}
-          {crewOverride ? (
-            <button type="button" onClick={() => setCrewOverride(false)} className="min-h-10 rounded-full bg-work-pto px-3 text-sm font-semibold text-accent-fg">
-              Override
-            </button>
-          ) : (
-            <button type="button" onClick={() => setCrewPin(true)} className="min-h-10 rounded-full bg-crew-card px-3 text-sm text-muted">
-              Override
-            </button>
-          )}
-        </div>
-        {!crewOverride && livePeriod !== period ? (
-          <p className="shrink-0 rounded-xl bg-crew-card p-3 text-sm">
-            {livePeriod ? `Period ${livePeriod} only until the bell.` : "Between periods. Override PIN to open a class."}
-          </p>
+        {crew?.motto ? <p className="shrink-0 text-sm text-muted">{crew.icon ? `${crew.icon} ` : ""}{crew.motto}</p> : null}
+        <p className="shrink-0 text-xs font-semibold uppercase tracking-wide text-muted">3 · 2 · 1 or Absent / Excused / Personal → next crew. No wallet.</p>
+        {clock && liveTech ? (
+          <div className="shrink-0">
+            <PeriodMeter clock={clock} period={period} file={file} />
+          </div>
         ) : null}
         {sub ? (
           <p className="flex min-h-0 flex-1 items-center justify-center rounded-2xl bg-crew-card p-6 text-center text-xl font-semibold">
-            SUB day · no scores. Next class is the next cycle day.
+            SUB day · no scores.
           </p>
-        ) : crewOverride || period === livePeriod ? (
-        <>
-        <div className="flex shrink-0 flex-wrap gap-1">
-          {periodCrews.map((c) => (
-            <button
-              key={c.key}
-              type="button"
-              onClick={() => setCrewKey(c.key)}
-              className={cn(
-                "min-h-10 rounded-full px-4 text-sm font-semibold",
-                crew?.key === c.key ? "bg-fg text-bg" : "bg-crew-card text-muted",
-              )}
-            >
-              {c.name}
+        ) : !liveTech ? (
+          <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 rounded-2xl bg-crew-card p-6 text-center">
+            <p className="text-xl font-semibold">
+              {livePeriod === 6 ? "Study hall · Tech crews after." : livePeriod ? `P${livePeriod} only. Wait for your class.` : "Between classes. Lock when done."}
+            </p>
+            <button type="button" onClick={onOpenSettings} className="tw-tap min-h-11 rounded-full bg-crew px-4 text-sm font-semibold">
+              Edit our crew
             </button>
-          ))}
-          <button
-            type="button"
-            onClick={() => tapCrew("3")}
-            className="min-h-10 rounded-full bg-crew-hi px-4 text-sm font-semibold text-bg"
-          >
-            Crew 3
-          </button>
-        </div>
-        <div className="grid min-h-0 flex-1 grid-cols-2 grid-rows-2 gap-2 overflow-hidden">
-          {Array.from({ length: 4 }, (_, i) => kids[i] ?? null).map((s, i) =>
-            s ? (
-              <div key={s.id} className="flex min-h-0 flex-col gap-1 overflow-hidden rounded-2xl bg-crew-card p-2">
-                <p className="truncate font-display text-xl font-semibold">{s.first}</p>
-                <div className="grid min-h-0 flex-1 grid-cols-3 gap-1">
-                  {(["3", "2", "1"] as const).map((code) => (
-                    <button
-                      key={code}
-                      type="button"
-                      onClick={() => tap(s.id, code)}
-                      className={cn(
-                        "flex min-h-0 items-center justify-center rounded-xl font-display text-2xl font-semibold",
-                        markOn(s, date) === code ? "bg-crew-hi text-bg" : "bg-crew text-fg",
-                      )}
-                    >
-                      {code}
-                    </button>
-                  ))}
-                </div>
-                <div className="grid grid-cols-3 gap-1">
-                  {(
-                    [
-                      ["A", "ABSENT"],
-                      ["E", "EXCUSED"],
-                      ["P", "PERSONAL"],
-                    ] as const
-                  ).map(([code, label]) => (
-                    <button
-                      key={code}
-                      type="button"
-                      onClick={() => tap(s.id, code)}
-                      className={cn(
-                        "min-h-10 rounded-xl px-1 text-center text-[11px] font-semibold uppercase leading-tight tracking-wide sm:text-sm",
-                        markOn(s, date) === code ? "bg-crew-hi text-bg" : "bg-crew text-fg",
-                      )}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
+          </div>
+        ) : allCrewsDone ? (
+          <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 rounded-2xl bg-crew-card p-6 text-center">
+            <p className="font-display text-2xl font-semibold">All crews scored</p>
+            <p className="text-sm text-muted">Lock this pad. Your teacher verifies.</p>
+            <div className="flex flex-wrap justify-center gap-1">
+              {periodCrews.map((c) => (
                 <button
-                  type="button"
-                  onClick={() => setNoteOpen(noteOpen === s.id ? null : s.id)}
-                  className="min-h-8 self-start rounded-xl px-2 text-[10px] font-semibold uppercase tracking-wide text-subtle"
-                >
-                  More
-                </button>
-                {noteOpen === s.id ? (
-                  <>
-                <button
-                  type="button"
-                  disabled={!["3", "2", "1"].includes(markOn(s, date))}
-                  onClick={() => commit(askInvest(file, s.id, date))}
-                  className={cn(
-                    "min-h-8 rounded-xl text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-30",
-                    Number(s.investDays?.[date] || 0) > 0
-                      ? "bg-gain text-bg"
-                      : s.investAsk?.[date]
-                        ? "bg-work-pto text-accent-fg"
-                        : "bg-crew text-muted",
-                  )}
-                >
-                  {Number(s.investDays?.[date] || 0) > 0 ? "INVESTED" : s.investAsk?.[date] ? "WANTS TO INVEST" : "INVEST?"}
-                </button>
-                <div className="flex items-center gap-0.5">
-                  {FACES.map((f) => (
-                    <button
-                      key={f}
-                      type="button"
-                      aria-label={`Mood ${f}`}
-                      onClick={() => commit(setAffect(file, s.id, date, f))}
-                      className={cn(
-                        "flex size-8 items-center justify-center rounded-md text-sm",
-                        (s.affect ?? {})[date] === f ? "bg-crew ring-1 ring-fg" : "opacity-50",
-                      )}
-                    >
-                      {f}
-                    </button>
-                  ))}
-                </div>
-                  </>
-                ) : null}
-              </div>
-            ) : (
-              <div key={`empty-${i}`} className="rounded-2xl bg-crew-card/40" />
-            ),
-          )}
-        </div>
-        <div className="flex shrink-0 gap-2">
-          <button
-            type="button"
-            disabled={!crew}
-            onClick={() => tapCrew("3")}
-            className="min-h-12 flex-1 rounded-full bg-crew-card text-sm font-semibold"
-          >
-            Whole crew earned a 3
-          </button>
-          <button
-            type="button"
-            onClick={() => goNextCrew()}
-            className="min-h-12 flex-1 rounded-full bg-crew-hi text-sm font-semibold text-bg"
-          >
-            Next crew
-          </button>
-        </div>
-        </>
-        ) : null}
-        {crewPin ? (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-crew/80 p-4">
-            <div className="w-full max-w-sm rounded-3xl bg-crew-card p-6">
-              <p className="text-sm font-semibold uppercase tracking-widest text-crew-hi">Crew override</p>
-              <p className="mt-2 text-sm text-muted">PIN 2222 unlocks other periods for this session.</p>
-              <input
-                inputMode="numeric"
-                autoFocus
-                value={crewPinCode}
-                onChange={(e) => {
-                  setCrewPinCode(e.target.value.replace(/\D/g, "").slice(0, 4));
-                  setCrewPinErr("");
-                }}
-                onKeyDown={(e) => {
-                  if (e.key !== "Enter") return;
-                  if (crewPinCode === CREW_PIN) {
-                    setCrewOverride(true);
-                    setCrewPin(false);
-                    const p = pendingPeriod.current;
-                    pendingPeriod.current = null;
-                    if (p) {
-                      setPeriod(p);
-                      const next = crewsOf(file, p, date)[0];
-                      setCrewKey(next?.key ?? "Crew A");
-                    }
-                  } else {
-                    setCrewPinErr("Wrong PIN");
-                    setCrewPinCode("");
-                  }
-                }}
-                className="mt-4 min-h-12 w-full rounded-2xl bg-crew px-4 font-mono text-xl tracking-[0.4em] outline-none"
-                placeholder="••••"
-              />
-              {crewPinErr ? <p className="mt-2 text-sm text-loss">{crewPinErr}</p> : null}
-              <div className="mt-4 flex gap-2">
-                <button
+                  key={c.key}
                   type="button"
                   onClick={() => {
-                    if (crewPinCode === CREW_PIN) {
-                      setCrewOverride(true);
-                      setCrewPin(false);
-                      const p = pendingPeriod.current;
-                      pendingPeriod.current = null;
-                      if (p) {
-                        setPeriod(p);
-                        const next = crewsOf(file, p, date)[0];
-                        setCrewKey(next?.key ?? "Crew A");
-                      }
-                    } else {
-                      setCrewPinErr("Wrong PIN");
-                      setCrewPinCode("");
-                    }
+                    setAllCrewsDone(false);
+                    setCrewKey(c.key);
                   }}
-                  className="min-h-12 flex-1 rounded-full bg-crew-hi text-sm font-semibold text-accent-fg"
+                  className="tw-tap min-h-11 rounded-full bg-crew px-4 text-sm font-semibold"
                 >
-                  Unlock periods
+                  {c.name}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCrewPin(false);
-                    pendingPeriod.current = null;
-                  }}
-                  className="tw-btn-2 min-h-12 flex-1 rounded-full text-sm font-semibold"
-                >
-                  Cancel
-                </button>
-              </div>
+              ))}
             </div>
           </div>
-        ) : null}
+        ) : (
+          <>
+            <div className="flex shrink-0 flex-wrap gap-1">
+              {periodCrews.map((c) => (
+                <button
+                  key={c.key}
+                  type="button"
+                  onClick={() => {
+                    setAllCrewsDone(false);
+                    setCrewKey(c.key);
+                  }}
+                  className={cn(
+                    "tw-tap min-h-11 rounded-full px-4 text-sm font-semibold",
+                    crew?.key === c.key ? "bg-fg text-bg" : "bg-crew-card text-muted",
+                  )}
+                >
+                  {c.icon ? <span className="mr-1">{c.icon}</span> : null}
+                  {c.name}
+                </button>
+              ))}
+            </div>
+            <PollPad file={file} kids={kids} onChange={commit} />
+            <div className="grid min-h-0 flex-1 grid-cols-2 grid-rows-2 gap-2 overflow-hidden">
+              {Array.from({ length: 4 }, (_, i) => kids[i] ?? null).map((s, i) =>
+                s ? (
+                  <div key={s.id} className="flex min-h-0 flex-col gap-1 overflow-hidden rounded-2xl bg-crew-card p-2">
+                    <p className="truncate font-display text-xl font-semibold">{s.first}</p>
+                    <div className="grid min-h-0 flex-1 grid-cols-3 gap-1">
+                      {(["3", "2", "1"] as const).map((code) => (
+                        <button
+                          key={code}
+                          type="button"
+                          onClick={() => tap(s.id, code)}
+                          className={cn(
+                            "tw-tap flex min-h-0 items-center justify-center rounded-xl font-display text-2xl font-semibold",
+                            markOn(s, date) === code ? "bg-crew-hi text-bg" : "bg-crew text-fg",
+                          )}
+                        >
+                          {code}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-3 gap-1">
+                      {(
+                        [
+                          ["A", "ABSENT"],
+                          ["E", "EXCUSED"],
+                          ["P", "PERSONAL"],
+                        ] as const
+                      ).map(([code, label]) => (
+                        <button
+                          key={code}
+                          type="button"
+                          onClick={() => tap(s.id, code)}
+                          className={cn(
+                            "tw-tap min-h-11 rounded-xl px-1 text-center text-[11px] font-semibold uppercase leading-tight tracking-wide sm:text-sm",
+                            markOn(s, date) === code ? "bg-crew-hi text-bg" : "bg-crew text-fg",
+                          )}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div key={`empty-${i}`} className="rounded-2xl bg-crew-card/40" />
+                ),
+              )}
+            </div>
+            <div className="flex shrink-0 gap-2">
+              <button type="button" disabled={!crew} onClick={() => tapCrew("3")} className="tw-tap min-h-12 flex-1 rounded-full bg-crew-card text-sm font-semibold">
+                Whole crew 3
+              </button>
+              <button type="button" onClick={() => goNextCrew()} className="tw-tap min-h-12 flex-1 rounded-full bg-crew-hi text-sm font-semibold text-bg">
+                Next crew
+              </button>
+            </div>
+          </>
+        )}
       </div>
     );
   }
-
-  const goals = { ...DEFAULT_CYCLE_GOALS, ...(file.meta.config?.cycleGoals ?? {}) };
 
   return (
     <div className="desk-edit flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
@@ -961,6 +501,9 @@ export function ScoreDesk({
             P{period} {formatBell(bell.start)}–{formatBell(bell.end)}
           </span>
         ) : null}
+        <a href={SCHOOLTOOL_URL} target="_blank" rel="noreferrer" className={cn("min-h-9 rounded-lg px-2 py-1 text-xs font-semibold", stDone ? "bg-gain text-bg" : p1Alarm ? "bg-loss text-accent-fg" : "bg-elevated text-muted")}>
+          {stDone ? "ST in" : p1Alarm ? "ST due" : "ST"}
+        </a>
         <button
           type="button"
           onClick={() => {
@@ -993,14 +536,14 @@ export function ScoreDesk({
               <span className="text-xs text-subtle">Lunch</span>
               <span className="min-w-0 truncate">{lunchOn(file, date) || "Admin → Lunch"}</span>
             </p>
-            {(Object.keys(SCHEDULES) as (keyof typeof SCHEDULES)[]).map((id) => (
+            {deskPacks(file).map((pack) => (
               <button
-                key={id}
+                key={pack.id}
                 type="button"
-                onClick={() => onChange(setSchedule(file, id))}
-                className={cn("min-h-9 rounded-md px-2 text-xs font-semibold", scheduleOf(file.meta.config?.schedule) === id ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+                onClick={() => onChange(setDayBell(file, date, pack.id))}
+                className={cn("min-h-9 rounded-md px-2 text-xs font-semibold", bellsId === pack.id ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
               >
-                {SCHEDULES[id].label}
+                {pack.label}
               </button>
             ))}
             <a href={SCHOOLTOOL_URL} target="_blank" rel="noreferrer" className="min-h-9 rounded-lg bg-elevated px-2 py-1 text-xs text-muted">
@@ -1056,13 +599,13 @@ export function ScoreDesk({
 
       {p1Alarm && !daily ? (
         <div className="flex shrink-0 items-center gap-2 rounded-lg bg-loss px-3 py-1 text-xs font-semibold uppercase tracking-widest text-accent-fg">
-          P1 SchoolTool · past {formatBell(bellForPeriod(1, file.meta.config?.schedule)?.attendBy ?? "08:15")}
+          P1 SchoolTool · past {formatBell(bellForPeriod(1, bellsId)?.attendBy ?? "08:15")}
         </div>
       ) : null}
 
       {deskMode === "score" ? (
       <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
-        <div data-periods className="flex shrink-0 gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div data-periods className="flex shrink-0 flex-wrap gap-1">
           {(typeof document !== "undefined" && document.documentElement.dataset.layout === "mobile" && livePeriod && !crewOverride
             ? bells.filter((b) => b.period === livePeriod || b.period === period)
             : bells
@@ -1072,7 +615,7 @@ export function ScoreDesk({
             const late = crews.filter((c) => crewPulse(c.kids, date, today, date, sub) === "late").length;
             const due = crews.filter((c) => crewPulse(c.kids, date, today, date, sub) === "due").length;
             const live = livePeriod === b.period;
-            const gone = date === today && periodPast(b.period, file.meta.config?.schedule, now);
+            const gone = date === today && periodPast(b.period, bellsId, now);
             return (
               <button
                 key={b.period}
@@ -1118,7 +661,10 @@ export function ScoreDesk({
                 <button
                   key={c.key}
                   type="button"
-                  onClick={() => setCrewKey(c.key)}
+                  onClick={() => {
+                    setCrewKey(c.key);
+                    setAllCrewsDone(false);
+                  }}
                   className={cn("inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-sm font-semibold", crew?.key === c.key ? "bg-gold text-bg" : "bg-surface text-muted")}
                 >
                   {c.name}
@@ -1128,6 +674,17 @@ export function ScoreDesk({
               );
             })}
           </div>
+          {allCrewsDone ? (
+            <p className="shrink-0 rounded-lg bg-gain/20 px-3 py-2 text-sm font-semibold">
+              P{period} done · {periodCrews.length} crews. Stay here or tap the next-job chip to save.
+            </p>
+          ) : periodCrews.length ? (
+            <p className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-muted">
+              {periodCrews.filter((c) => crewDone(c.kids, date)).length}/{periodCrews.length} crews · last score on a crew jumps to the next open one
+            </p>
+          ) : null}
+
+          <PollPad file={file} kids={crew?.kids ?? []} onChange={commit} />
 
           <div data-score-grid className="grid min-h-0 flex-1 grid-cols-1 gap-1.5 overflow-auto sm:grid-cols-2">
             {(crew?.kids ?? []).map((s) => (
@@ -1153,7 +710,7 @@ export function ScoreDesk({
                       </button>
                     ))}
                   </div>
-                  <div className="grid shrink-0 grid-cols-3 gap-1">
+                  <div className="grid shrink-0 grid-cols-4 gap-1">
                     {(["A", "E", "P"] as const).map((code) => (
                       <button
                         key={code}
@@ -1164,6 +721,19 @@ export function ScoreDesk({
                         {code === "A" ? "Abs" : code === "E" ? "Exc" : "PTO"}
                       </button>
                     ))}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const here = attendOn(s, date) === "nurse";
+                        commit(setStudentAttend(file, s.id, date, here ? "" : "nurse"));
+                      }}
+                      className={cn(
+                        "tw-tap min-h-9 rounded-md text-[10px] font-semibold uppercase leading-tight",
+                        attendOn(s, date) === "nurse" ? "bg-loss text-accent-fg" : "bg-elevated text-muted",
+                      )}
+                    >
+                      {attendOn(s, date) === "nurse" ? `Back ${passOpen(s, date)?.out ?? ""}` : "Nurse"}
+                    </button>
                   </div>
                   <button
                     type="button"

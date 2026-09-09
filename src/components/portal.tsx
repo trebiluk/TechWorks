@@ -6,8 +6,10 @@ import { publicHandle } from "@/lib/live";
 import { abOn, markOn, onAbRoster } from "@/lib/store";
 import { todayIso } from "@/lib/calendar";
 import { lockPortal, portalOpen, unlockPortal } from "@/lib/pin";
+import { PinField } from "@/components/pin-pad";
 import { QuarterChip } from "@/components/quarter-chip";
 import { codeGlyph } from "@/lib/glyphs";
+import { ReportCard } from "@/components/report-card";
 import { cn } from "@/lib/utils";
 
 export function WorkerPortal({ file }: { file: EconomyFile }) {
@@ -49,18 +51,20 @@ export function WorkerPortal({ file }: { file: EconomyFile }) {
           <p className="mt-2 text-sm text-muted">
             Private class. Aliases only — your real name never shows here. Enter the class portal PIN to see your badge.
           </p>
-          <input
-            inputMode="numeric"
+          <PinField
             autoFocus
             value={code}
-            onChange={(e) => {
-              setCode(e.target.value.replace(/\D/g, "").slice(0, 6));
+            onChange={(v) => {
+              setCode(v);
               setErr("");
+              if (v.length >= 4 && unlockPortal(v)) {
+                setInGate(false);
+                setCode("");
+              }
             }}
-            onKeyDown={(e) => e.key === "Enter" && enter()}
-            className="mt-4 min-h-12 w-full rounded-md bg-elevated px-3 font-mono text-2xl tracking-[0.5em] outline-none"
-            placeholder="••••"
-            aria-label="Portal PIN"
+            onEnter={enter}
+            className="mt-4 [&_input]:min-h-12 [&_input]:text-2xl [&_span]:text-2xl"
+            label="Portal PIN"
           />
           {err ? <p className="mt-2 text-sm text-loss">{err}</p> : null}
           <button type="button" onClick={enter} className="mt-4 min-h-12 w-full rounded-lg bg-accent text-sm font-semibold text-accent-fg">
@@ -149,7 +153,8 @@ export function WorkerPortal({ file }: { file: EconomyFile }) {
               </div>
             );
           })()}
-          <p className="mt-4 text-sm text-muted">At home with a parent: look at today and ◆ XP. Real names stay off this portal.</p>
+          <p className="mt-4 text-sm text-muted">XP is the class story. $ and stock are games. Scroll for the family report — aliases only.</p>
+          <ReportCard file={file} id={me.id} names={false} />
         </article>
       ) : (
         <p className="text-sm text-muted">Tap your alias. If it is not here, you are on the other A/B day.</p>

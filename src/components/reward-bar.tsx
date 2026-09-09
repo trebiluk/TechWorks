@@ -74,9 +74,17 @@ export function RewardBar({
     <div className="mt-2 px-0.5">
       <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-subtle">Class rewards · by period</p>
       <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-3">
-        {rows.filter((p) => p.period !== 6).map((p) => (
-          <PeriodRewardChip key={p.period} file={file} period={p.period ?? 0} />
-        ))}
+        {rows
+          .filter((p) => p.period !== 6)
+          .map((p) => (
+            <div key={p.period} className="min-w-0" title={`${p.title} · ${Math.round(p.combined * 100)}%`}>
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="truncate text-xs font-semibold">{p.earned ? `Earned · ${p.title}` : p.title}</span>
+                <span className="shrink-0 font-mono text-xs tabular-nums text-gold">{Math.round(p.combined * 100)}%</span>
+              </div>
+              <Meter pct={p.combined} gold={p.earned} />
+            </div>
+          ))}
       </div>
     </div>
   );

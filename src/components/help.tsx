@@ -7,26 +7,63 @@ import { HELP_CATEGORIES, helpMarkdown, searchHelp } from "@/data/help";
 import { downloadText } from "@/lib/live";
 import { cn } from "@/lib/utils";
 
-export function HelpPanel({ onClose }: { onClose: () => void }) {
+function WelcomeArea({ wallOnly }: { wallOnly?: boolean }) {
+  return (
+    <section className="mb-4 rounded-2xl bg-elevated p-4">
+      <div className="flex items-start gap-3">
+        <BertyPeek pose="waving" />
+        <div className="min-w-0">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-gold">Welcome</p>
+          <h1 className="font-display text-3xl font-semibold tracking-tight">What is TechWorks?</h1>
+          <p className="mt-2 text-sm leading-relaxed text-muted">
+            This is a real workshop class. You build in a crew. You get better at tools and teamwork. The board is a scoreboard for that work — friendly, not a report card on the wall.
+          </p>
+        </div>
+      </div>
+      <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+        {[
+          { k: "Gold XP", v: "Skill. Measure, cut, finish, teach a friend. This is the main thing." },
+          { k: "Class $", v: "Perks for showing up and doing the job. A game. Not your grade." },
+          { k: "3 · 2 · 1", v: "Crew lead: on the job, needs a nudge, or not with the crew." },
+          { k: "Coral", v: "Cleanup time. Tools, scraps, seats. Berty will point." },
+        ].map((row) => (
+          <li key={row.k} className="rounded-xl bg-surface px-3 py-2">
+            <p className="text-sm font-semibold">{row.k}</p>
+            <p className="text-xs leading-relaxed text-muted">{row.v}</p>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-3 text-xs leading-relaxed text-muted">
+        Names on the projector are shop aliases. Families: tap a name → Family for the real project grade in plain words.
+        {wallOnly ? "" : " Teachers: Unlock desk for scoring, skills, and the store."}
+      </p>
+    </section>
+  );
+}
+
+export function HelpPanel({ onClose, wallOnly }: { onClose: () => void; wallOnly?: boolean }) {
   const [q, setQ] = useState("");
-  const [cat, setCat] = useState("All");
+  const [cat, setCat] = useState("Welcome");
   const hits = useMemo(() => {
-    const list = searchHelp(q);
+    const list = searchHelp(q, wallOnly);
     return cat === "All" ? list : list.filter((a) => a.category === cat);
-  }, [q, cat]);
+  }, [q, cat, wallOnly]);
+  const cats = wallOnly ? ["All", "Welcome", "Wall"] : ["All", ...HELP_CATEGORIES];
 
   return (
     <div className="tw-scrim fixed inset-0 z-[80] flex items-start justify-center overflow-auto p-4 pt-12">
-      <div className="flex max-h-[88dvh] w-full max-w-3xl flex-col rounded-xl bg-surface">
+      <div className="tw-gadget tw-hud flex max-h-[88dvh] w-full max-w-3xl flex-col bg-surface">
         <header className="flex items-center gap-2 border-b border-border p-4">
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold uppercase tracking-wider text-subtle">Help · {VERSION_LABEL}</p>
+            <p className="text-sm font-semibold uppercase tracking-wider text-subtle">
+              {wallOnly ? "How this class works" : `Help · ${VERSION_LABEL}`}
+            </p>
             <p className="mt-0.5 text-[11px] text-muted">{COPYRIGHT_LINE}</p>
             <input
               autoFocus
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search features, PINs, skills, lunch…"
+              placeholder={wallOnly ? "What is TechWorks? XP, cleanup, family…" : "What is TechWorks? PIN, skills, lunch…"}
               className="mt-2 min-h-11 w-full rounded-md bg-elevated px-3 text-sm outline-none"
             />
           </div>
@@ -35,7 +72,7 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
           </button>
         </header>
         <div className="flex flex-wrap gap-1 px-4 py-2">
-          {["All", ...HELP_CATEGORIES].map((c) => (
+          {cats.map((c) => (
             <button
               key={c}
               type="button"
@@ -47,10 +84,13 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
           ))}
         </div>
         <div className="min-h-0 flex-1 overflow-auto px-4 pb-4">
+          {!q.trim() && (cat === "All" || cat === "Welcome" || cat === "Wall") ? <WelcomeArea wallOnly={wallOnly} /> : null}
           {hits.length === 0 ? (
             <p className="py-8 text-sm text-muted">No articles for “{q}”.</p>
           ) : (
-            hits.map((a) => (
+            hits
+              .filter((a) => q.trim() || cat === "Welcome" || a.category !== "Welcome")
+              .map((a) => (
               <article key={a.id} className="border-t border-border py-3">
                 <p className="text-xs font-semibold uppercase tracking-widest text-subtle">{a.category}</p>
                 <h2 className="mt-1 text-base font-semibold">{a.title}</h2>
@@ -64,6 +104,7 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
             <BertyPeek />
             {TRADEMARK_NOTICE}
           </p>
+          {wallOnly ? null : (
           <button
             type="button"
             onClick={() => downloadText(`TECHWORKS-HELP-v${APP_VERSION}.md`, helpMarkdown(), "text/markdown")}
@@ -71,6 +112,7 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
           >
             Download help file
           </button>
+          )}
         </footer>
       </div>
     </div>

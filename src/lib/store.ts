@@ -1,13 +1,14 @@
-import { bellFor, dayPay, isLiveStudent, legalFirstOf, legalLastOf, score, type DayCode, type EconomyFile, type RawStudent } from "@/lib/economy";
+import { bellFor, dayPay, isLiveStudent, score, type DayCode, type EconomyFile, type RawStudent } from "@/lib/economy";
 import { generateAlias, type LegalRosterRow } from "@/lib/alias-bank";
+import { aliasAfterId, newStudentId } from "@/lib/ids";
 import { DEFAULT_LEVEL_BANDS, skillXp, type LevelBand } from "@/lib/skills";
 import { cleanPicks } from "@/lib/tickers";
 import { daySlot, schoolDays, sessions, todayIso, weekOn } from "@/lib/calendar";
 import { writeTape } from "@/lib/tape";
 import type { DjiaQuote } from "@/lib/djia";
 import { afterAffectMaybeConfirm, afterCrewLeaderChange, roleHistoryOf } from "@/lib/roles";
-import { cloneFile } from "@/lib/clone";
-import { persistPack, readLocal, writeLocal, writePack, packDesk, migrateDesk } from "@/lib/vault";
+import { persistPack, readLocal, writePack, packDesk, migrateDesk } from "@/lib/vault";
+import { builtinPacks, type BellPack, type ScheduleId } from "@/lib/bells";
 
 const FOCUS_KEY = "techworks-focus";
 const MONEY_STEP = 5;
@@ -39,11 +40,24 @@ export const DEFAULT_CYCLE_GOALS: Record<string, string> = {
 };
 
 function clone(file: EconomyFile): EconomyFile {
-  return cloneFile(file);
+  return {
+    ...file,
+    students: file.students.slice(),
+    crews: file.crews.slice(),
+    meta: {
+      ...file.meta,
+      config: { ...(file.meta.config ?? {}) },
+      dayLog: { ...(file.meta.dayLog ?? {}) },
+      ledger: (file.meta.ledger ?? []).slice(),
+    },
+  };
 }
 
 let saveTimer = 0;
 let savePending: EconomyFile | null = null;
+let persistHandle = 0;
+let persistJson = "";
+let persistPackObj: ReturnType<typeof packDesk> | null = null;
 
 export function saveDesk(file: EconomyFile) {
   if (typeof window === "undefined") return;
@@ -55,7 +69,7 @@ export function saveDesk(file: EconomyFile) {
     savePending = null;
     if (!next) return;
     flushDesk(next);
-  }, 800);
+  }, 480);
 }
 
 export function saveDeskNow(file: EconomyFile) {
@@ -68,10 +82,31 @@ export function saveDeskNow(file: EconomyFile) {
   flushDesk(file);
 }
 
+export function deskSavePending(): boolean {
+  return Boolean(savePending) || saveTimer !== 0;
+}
+
 function flushDesk(file: EconomyFile) {
   const pack = packDesk(file);
-  writePack(pack);
-  void persistPack(pack);
+  const json = JSON.stringify(pack);
+  writePack(pack, json);
+  persistPackObj = pack;
+  persistJson = json;
+  if (persistHandle) return;
+  const ric = (window as Window & { requestIdleCallback?: (fn: () => void, opts?: { timeout: number }) => number }).requestIdleCallback;
+  persistHandle = ric
+    ? ric(() => {
+        persistHandle = 0;
+        const p = persistPackObj;
+        const body = persistJson;
+        if (p) void persistPack(p, body);
+      }, { timeout: 2500 })
+    : window.setTimeout(() => {
+        persistHandle = 0;
+        const p = persistPackObj;
+        const body = persistJson;
+        if (p) void persistPack(p, body);
+      }, 400);
 }
 
 function days4(days: string[] | undefined): string[] {
@@ -201,7 +236,7 @@ export function setCurrentCycle(file: EconomyFile, n: number): EconomyFile {
   return next;
 }
 
-export function setSchedule(file: EconomyFile, schedule: "regular" | "delay1" | "delay2" | "half"): EconomyFile {
+export function setSchedule(file: EconomyFile, schedule: ScheduleId): EconomyFile {
   const next = clone(file);
   next.meta.config = { ...(next.meta.config ?? {}), schedule };
   return next;
@@ -332,15 +367,26 @@ export function attendOn(s: EconomyFile["students"][number], date: string): stri
 
 export function setStudentAttend(file: EconomyFile, id: string, date: string, code: string): EconomyFile {
   const next = clone(file);
+  const stamp = `${String(new Date().getHours()).padStart(2, "0")}:${String(new Date().getMinutes()).padStart(2, "0")}`;
+  const away = new Set(["nurse", "library", "teacher", "testing", "office", "excused", "absent"]);
   next.students = next.students.map((s) => {
     if (s.id !== id) return s;
     const attend = { ...(s.attend ?? {}) };
     if (code) attend[date] = code;
     else delete attend[date];
     const gone = Boolean(code);
+    let passes = [...(s.passes ?? [])];
+    if (code && away.has(code)) {
+      const open = passes.findIndex((p) => p.date === date && !p.in);
+      if (open >= 0) passes[open] = { ...passes[open], where: code };
+      else passes.push({ date, where: code, out: stamp, period: s.period });
+    } else {
+      passes = passes.map((p) => (p.date === date && !p.in ? { ...p, in: stamp } : p));
+    }
     return {
       ...s,
       attend,
+      passes,
       markTape: s.period === 6 && gone ? writeTape(s.markTape, date, "") : s.markTape,
       trackDays: s.period === 6 && gone ? { ...(s.trackDays ?? {}), [date]: "" } : s.trackDays,
     };
@@ -498,24 +544,29 @@ export function setCrewMark(
 }
 
 function ensureDay(file: EconomyFile, date: string) {
-  file.meta.dayLog = file.meta.dayLog ?? {};
-  file.meta.dayLog[date] = file.meta.dayLog[date] ?? {
-    periodGoals: {},
-    crewGoals: {},
-    periodActivity: {},
-    crewActivity: {},
+  const prev = file.meta.dayLog?.[date];
+  const day = {
+    ...(prev ?? {
+      periodGoals: {},
+      crewGoals: {},
+      periodActivity: {},
+      crewActivity: {},
+    }),
+    periodGoals: { ...(prev?.periodGoals ?? {}) },
+    crewGoals: { ...(prev?.crewGoals ?? {}) },
+    periodActivity: { ...(prev?.periodActivity ?? {}) },
+    crewActivity: { ...(prev?.crewActivity ?? {}) },
+    paintCheck: { ...(prev?.paintCheck ?? {}) },
+    agenda: { ...(prev?.agenda ?? {}) },
+    cleanup: { ...(prev?.cleanup ?? {}) },
+    schooltool: { ...(prev?.schooltool ?? {}) },
+    happened: { ...(prev?.happened ?? {}) },
+    visits: { ...(prev?.visits ?? {}) },
+    crewPhase: { ...(prev?.crewPhase ?? {}) },
+    goalPhase: { ...(prev?.goalPhase ?? {}) },
+    specials: [...(prev?.specials ?? [])],
   };
-  const day = file.meta.dayLog[date];
-  day.periodActivity = day.periodActivity ?? {};
-  day.crewActivity = day.crewActivity ?? {};
-  day.paintCheck = day.paintCheck ?? {};
-  day.agenda = day.agenda ?? {};
-  day.cleanup = day.cleanup ?? {};
-  day.schooltool = day.schooltool ?? {};
-  day.happened = day.happened ?? {};
-  day.visits = day.visits ?? {};
-  day.crewPhase = day.crewPhase ?? {};
-  day.goalPhase = day.goalPhase ?? {};
+  file.meta.dayLog = { ...(file.meta.dayLog ?? {}), [date]: day };
   return day;
 }
 
@@ -857,7 +908,10 @@ export function setAlias(file: EconomyFile, id: string, first: string): EconomyF
   const next = clone(file);
   const name = first.trim().slice(0, 24);
   if (!name) return file;
-  next.students = next.students.map((s) => (s.id === id ? { ...s, first: name } : s));
+  const taken = next.students.filter((s) => s.id !== id).map((s) => s.first);
+  const clash = taken.some((n) => n.trim().toLowerCase() === name.toLowerCase());
+  const alias = clash ? aliasAfterId(id, taken) : name;
+  next.students = next.students.map((s) => (s.id === id ? { ...s, first: alias } : s));
   return next;
 }
 
@@ -904,21 +958,123 @@ export function rerollAlias(file: EconomyFile, id: string): EconomyFile {
   const target = next.students.find((s) => s.id === id);
   if (!target) return file;
   const used = next.students.filter((s) => s.id !== id).map((s) => s.first);
-  const seed = `${legalLastOf(target)}|${legalFirstOf(target)}|${id}|${Date.now()}`;
-  const alias = generateAlias(seed, used);
+  const alias = generateAlias(`${id}|${Date.now()}`, used);
   next.students = next.students.map((s) => (s.id === id ? { ...s, first: alias } : s));
   return next;
 }
 
-function newOnboardId(period: number, idx: number): string {
-  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
-  return `TW-P${period}-${rand}-${String(idx + 1).padStart(2, "0")}`;
+function blankWorker(partial: {
+  id: string;
+  first: string;
+  legalFirst?: string;
+  legalLast?: string;
+  period: number;
+  grade?: number;
+  crewKey: string;
+  section?: number;
+  course?: string;
+  sem?: string;
+}): RawStudent {
+  const legalLast = (partial.legalLast ?? "").trim().slice(0, 40);
+  const legalFirst = (partial.legalFirst ?? "").trim().slice(0, 40);
+  const period = partial.period;
+  return {
+    id: partial.id,
+    first: partial.first,
+    last: legalLast,
+    legalFirst: legalFirst || undefined,
+    legalLast: legalLast || undefined,
+    period,
+    grade: partial.grade,
+    crewKey: partial.crewKey,
+    section: partial.section,
+    course: partial.course,
+    sem: partial.sem,
+    days: ["", "", "", ""],
+    marks: {},
+    investDays: {},
+    investAsk: {},
+    bonus: 0,
+    deduct: 0,
+    clutch: 0,
+    opening: 0,
+    flags: {},
+    purchases: [],
+    prints: {},
+    abDay: "BOTH",
+    attend: {},
+    affect: {},
+    notes: {},
+    cleanupDays: {},
+    assistDays: {},
+    skills: {},
+    skillLog: [],
+    picks: [],
+    gradeOverrides: {},
+    groups: period === 6 ? { hall: true } : period === 0 ? { club: true } : undefined,
+  };
 }
 
+export type TypedStudent = {
+  legalFirst?: string;
+  legalLast?: string;
+  period: number;
+  crewKey?: string;
+  section?: number;
+  grade?: number;
+  course?: string;
+  sem?: string;
+};
+
 function defaultCrewKey(file: EconomyFile, period: number, idx: number): string {
+  if (period === 6) return "Hall";
+  if (period === 0) return "CLUB";
   const crews = file.crews.filter((c) => c.period === period);
   if (!crews.length) return "Crew A";
   return crews[idx % crews.length]?.key ?? crews[0].key;
+}
+
+/** Mint a locked id, then an alias. Legal names never become the wall name. */
+export function addTypedStudent(file: EconomyFile, row: TypedStudent): EconomyFile {
+  const legalLast = (row.legalLast ?? "").trim();
+  const legalFirst = (row.legalFirst ?? "").trim();
+  if (!legalLast && !legalFirst) return file;
+  const next = clone(file);
+  const id = newStudentId(next.students.map((s) => s.id));
+  const used = next.students.map((s) => s.first);
+  const alias = aliasAfterId(id, used);
+  const bells = bellFor(next);
+  const period = row.period;
+  const grade = row.grade ?? bells.find((b) => b.period === period)?.grade ?? 6;
+  const crewKey = row.crewKey?.trim() || defaultCrewKey(next, period, next.students.filter((s) => s.period === period).length);
+  const quarter = next.meta.quarterName || "Q1";
+  const kid = blankWorker({
+    id,
+    first: alias,
+    legalFirst,
+    legalLast,
+    period,
+    grade,
+    crewKey,
+    section: row.section ?? (period === 6 ? 10 : 1),
+    course: row.course ?? (period === 6 ? "STUDY HALL" : period === 0 ? "TECH CLUB" : `TECH ${grade}`),
+    sem: row.sem ?? (period === 0 ? "CLUB" : period === 6 ? "YEAR" : quarter),
+  });
+  next.students = [...next.students, kid];
+  return next;
+}
+
+export function patchStudent(
+  file: EconomyFile,
+  id: string,
+  patch: Partial<Pick<RawStudent, "crewKey" | "period" | "section" | "grade" | "sem" | "course" | "abDay">>,
+): EconomyFile {
+  const next = clone(file);
+  next.students = next.students.map((s) => {
+    if (s.id !== id) return s;
+    return { ...s, ...patch, id: s.id };
+  });
+  return next;
 }
 
 export function importLegalRoster(file: EconomyFile, rows: LegalRosterRow[]): EconomyFile {
@@ -927,51 +1083,35 @@ export function importLegalRoster(file: EconomyFile, rows: LegalRosterRow[]): Ec
   const used = next.students.map((s) => s.first);
   const quarter = next.meta.quarterName || "Q1";
   const bells = bellFor(next);
-  const baseIdx = next.students.length;
+  const ids = next.students.map((s) => s.id);
 
   const added: RawStudent[] = rows.map((row, i) => {
-    const seed = `${row.legalLast}|${row.legalFirst}|${row.period}|${i}|${Date.now()}`;
-    const alias = generateAlias(seed, used);
+    const id = newStudentId(ids);
+    ids.push(id);
+    const alias = aliasAfterId(id, used);
     used.push(alias);
     const grade = bells.find((b) => b.period === row.period)?.grade ?? 6;
     const crewKey = row.crewKey?.trim() || defaultCrewKey(next, row.period, i);
     const legalLast = row.legalLast.trim().slice(0, 40);
     const legalFirst = row.legalFirst.trim().slice(0, 40);
-    const id = newOnboardId(row.period, baseIdx + i);
     return {
-      id,
-      first: alias,
-      last: legalLast,
-      legalFirst,
-      legalLast,
-      period: row.period,
-      grade,
-      crewKey,
-      section: 1,
-      course: grade === 5 ? "STUDY HALL" : `TECH ${grade}`,
-      sem: quarter,
-      days: ["", "", "", ""],
-      marks: {},
-      investDays: {},
-      investAsk: {},
-      bonus: 0,
-      deduct: 0,
-      clutch: 0,
-      opening: 0,
+      ...blankWorker({
+        id,
+        first: alias,
+        legalFirst,
+        legalLast,
+        period: row.period,
+        grade,
+        crewKey,
+        section: 1,
+        course: grade === 5 ? "STUDY HALL" : `TECH ${grade}`,
+        sem: quarter,
+      }),
       flags: {
         iep: Boolean(row.iep),
         plan504: Boolean(row.plan504),
       },
-      purchases: [],
       abDay: row.period === 6 ? (i % 2 === 0 ? "A" : "B") : "BOTH",
-      attend: {},
-      affect: {},
-      notes: {},
-      cleanupDays: {},
-      assistDays: {},
-      skills: {},
-      picks: [],
-      gradeOverrides: {},
     };
   });
 
@@ -1217,3 +1357,63 @@ export function cycleVisit(file: EconomyFile, date: string, period: number): Eco
   const i = VISIT_STATES.indexOf(cur);
   return setVisit(file, date, period, VISIT_STATES[(i + 1) % VISIT_STATES.length]);
 }
+
+export function deskPacks(file: EconomyFile): BellPack[] {
+  const extra = file.meta.config?.bellPacks;
+  return extra?.length ? extra : builtinPacks();
+}
+
+export function deskBellId(file: EconomyFile, date = todayIso()): string {
+  return file.meta.dayLog?.[date]?.bell || file.meta.config?.schedule || "regular";
+}
+
+export function setDayBell(file: EconomyFile, date: string, id: string): EconomyFile {
+  const next = clone(file);
+  ensureDay(next, date).bell = id;
+  return next;
+}
+
+export type DaySpecial = { title: string; who?: string; place?: string; start?: string; end?: string; period?: number };
+
+export function specialsOn(file: EconomyFile, date: string): DaySpecial[] {
+  const d = file.meta.dayLog?.[date];
+  if (d?.specials?.length) return d.specials;
+  if (d?.special) return [d.special];
+  return [];
+}
+
+export function setSpecials(file: EconomyFile, date: string, list: DaySpecial[]): EconomyFile {
+  const next = clone(file);
+  ensureDay(next, date).specials = list;
+  return next;
+}
+
+export function passOpen(s: EconomyFile["students"][number], date: string) {
+  return (s.passes ?? []).find((p) => p.date === date && !p.in);
+}
+
+export function outNow(file: EconomyFile, date: string) {
+  const away = new Set(["nurse", "library", "teacher", "testing", "office"]);
+  return file.students.flatMap((s) => {
+    const where = attendOn(s, date);
+    const pass = passOpen(s, date);
+    if (!pass && !away.has(where)) return [];
+    return [{ student: s, where: where || pass?.where || "", pass }];
+  });
+}
+
+export function grantClubEarn(file: EconomyFile, id: string, date: string): EconomyFile {
+  const next = clone(file);
+  next.students = next.students.map((s) => {
+    if (s.id !== id) return s;
+    if (s.clubDays?.[date]) return s;
+    return {
+      ...s,
+      clubDays: { ...(s.clubDays ?? {}), [date]: true },
+      bonus: Number(s.bonus || 0) + 10,
+      bonusXp: Number(s.bonusXp || 0) + 2,
+    };
+  });
+  return next;
+}
+

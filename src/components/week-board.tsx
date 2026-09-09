@@ -153,7 +153,7 @@ export function WeekBoard({
   }
 
   return (
-    <div className="relative flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
+    <div className="relative flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-y-contain">
       {featureOn(file, "berty") ? <BertyPeek className="absolute bottom-1 right-2" /> : null}
       <header className="rounded-xl bg-surface px-3 py-3">
         <div className="flex flex-wrap items-end justify-between gap-2">
@@ -202,7 +202,7 @@ export function WeekBoard({
       </div>
 
       {opts.view === "classes" ? (
-        <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 overflow-hidden md:grid-cols-2 xl:grid-cols-3 xl:grid-rows-2">
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
           {shown.map((b) => {
             const kids = ranked.filter((s) => s.period === b.period);
             const xp = kids.reduce((n, s) => n + s.xp, 0);

@@ -23,18 +23,14 @@ export function ClubPulseCard({ pulse, onOpen }: { pulse: ClubPulse; onOpen?: ()
       type="button"
       onClick={onOpen}
       className={cn(
-        "flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left",
-        cancel ? "bg-elevated" : hot ? (pulse.kind === "cleanup" ? "bg-cleanup text-accent-fg" : "bg-accent text-bg") : "bg-surface ring-1 ring-accent/40",
+        "flex w-full items-center gap-3 rounded-full px-3 py-1.5 text-left",
+        cancel ? "bg-elevated" : hot ? (pulse.kind === "cleanup" ? "bg-cleanup text-accent-fg" : "bg-accent text-bg") : "bg-elevated",
       )}
     >
-      <span className="min-w-0">
-        <span className="block text-[11px] font-semibold uppercase tracking-[0.18em] opacity-80">
-          {pulse.kind === "next" ? "Upcoming" : pulse.kind === "cancelled" ? "Notice" : "Tech Club"}
-        </span>
-        <span className="block font-display text-base font-semibold leading-tight">{pulse.title}</span>
-        <span className={cn("block text-sm", hot || cancel ? "opacity-90" : "text-muted")}>{pulse.sub}</span>
+      <span className="min-w-0 truncate font-display text-sm font-semibold">
+        {pulse.title}
+        <span className={cn("ml-2 font-sans text-xs font-medium", hot || cancel ? "opacity-80" : "text-muted")}>{pulse.sub}</span>
       </span>
-      <span className="shrink-0 text-xs font-semibold uppercase tracking-wide opacity-80">{onOpen ? "Open" : ""}</span>
     </button>
   );
 }

@@ -68,6 +68,12 @@ export function lock() {
   window.sessionStorage.removeItem(CREW_UNLOCK);
 }
 
+/** Crew kiosk is one sitting. Refresh returns the wall. Teacher unlock can persist. */
+export function lockCrew() {
+  if (typeof window === "undefined") return;
+  window.sessionStorage.removeItem(CREW_UNLOCK);
+}
+
 export function storedPortalPin(): string {
   if (typeof window === "undefined") return DEFAULT_PORTAL_PIN;
   return window.localStorage.getItem(PORTAL_STORE) || DEFAULT_PORTAL_PIN;

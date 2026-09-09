@@ -9,15 +9,15 @@ html {
 }
 
 /* Teacher edit mode: red ring on fields, not a red wall. */
-html[data-edit="on"] input:not([type="hidden"]):not(:disabled),
-html[data-edit="on"] select:not(:disabled),
-html[data-edit="on"] textarea:not(:disabled) {
+/* Teacher edit mode: red ring only on marked fields, never Find / chrome. */
+html[data-edit="on"] .edit-field {
   box-shadow: inset 0 0 0 1.5px var(--color-loss);
 }
 
 /* Locked brand lockup. Never follows theme tokens. Full word, not just the T. */
 .tw-lockup {
   display: inline-flex;
+  position: relative;
   height: 44px;
   min-width: 148px;
   align-items: center;
@@ -28,6 +28,20 @@ html[data-edit="on"] textarea:not(:disabled) {
   overflow: hidden;
   flex-shrink: 0;
   box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 12%, transparent);
+}
+.tw-lockup::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 36%,
+    color-mix(in oklab, #fff 28%, transparent) 50%,
+    transparent 64%
+  );
+  transform: translateX(-130%);
+  animation: tw-shine 7s ease-in-out 0.8s 1;
 }
 .tw-lockup-img {
   display: block;
@@ -43,6 +57,10 @@ html[data-edit="on"] textarea:not(:disabled) {
   border-radius: 4px;
 }
 
+.font-display {
+  color: var(--color-title, var(--color-fg));
+}
+
 /* Instrument plates — Cash-App contrast, one glow, hard bezel. */
 .tw-gadget {
   position: relative;
@@ -54,6 +72,53 @@ html[data-edit="on"] textarea:not(:disabled) {
     inset 0 1px 0 color-mix(in oklab, #fff 16%, transparent),
     inset 0 -2px 8px color-mix(in oklab, #000 38%, transparent),
     0 12px 28px -14px color-mix(in oklab, #000 55%, transparent);
+}
+.tw-hud::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 7px;
+  border-radius: 10px;
+  opacity: 0.55;
+  background:
+    linear-gradient(var(--color-accent), var(--color-accent)) top left / 11px 1.5px no-repeat,
+    linear-gradient(var(--color-accent), var(--color-accent)) top left / 1.5px 11px no-repeat,
+    linear-gradient(var(--color-accent), var(--color-accent)) top right / 11px 1.5px no-repeat,
+    linear-gradient(var(--color-accent), var(--color-accent)) top right / 1.5px 11px no-repeat,
+    linear-gradient(var(--color-accent), var(--color-accent)) bottom left / 11px 1.5px no-repeat,
+    linear-gradient(var(--color-accent), var(--color-accent)) bottom left / 1.5px 11px no-repeat,
+    linear-gradient(var(--color-accent), var(--color-accent)) bottom right / 11px 1.5px no-repeat,
+    linear-gradient(var(--color-accent), var(--color-accent)) bottom right / 1.5px 11px no-repeat;
+}
+.tw-live {
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #fff 16%, transparent),
+    inset 0 -2px 8px color-mix(in oklab, #000 38%, transparent),
+    0 0 0 1px color-mix(in oklab, var(--color-accent) 55%, transparent),
+    0 0 28px -6px color-mix(in oklab, var(--color-accent) 55%, transparent);
+  animation: tw-breathe 2.6s ease-in-out infinite;
+}
+.tw-podium {
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--color-gold) 22%, transparent),
+    transparent 58%
+  );
+}
+.tw-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 8px var(--color-accent);
+  flex-shrink: 0;
+}
+.tw-dot-on {
+  animation: tw-blink 1.6s ease-in-out infinite;
+}
+.tw-dot-warn {
+  background: var(--color-cleanup);
+  box-shadow: 0 0 10px var(--color-cleanup);
 }
 .tw-led {
   height: 10px;
@@ -166,6 +231,30 @@ html[data-edit="on"] textarea:not(:disabled) {
 .tw-ring-gain { --ring: var(--color-gain); }
 .tw-ring-warn { --ring: var(--color-cleanup); }
 .tw-ring-accent { --ring: var(--color-accent); }
+.tw-ring-live {
+  animation: tw-breathe 2.6s ease-in-out infinite;
+}
+@keyframes tw-shine {
+  0% { transform: translateX(-130%); }
+  18% { transform: translateX(130%); }
+  100% { transform: translateX(130%); }
+}
+@keyframes tw-breathe {
+  0%, 100% { filter: none; }
+  50% { filter: drop-shadow(0 0 10px color-mix(in oklab, var(--color-accent) 45%, transparent)); }
+}
+@keyframes tw-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tw-lockup::after,
+  .tw-live,
+  .tw-ring-live,
+  .tw-dot-on {
+    animation: none !important;
+  }
+}
 .tw-readout {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
@@ -200,6 +289,8 @@ html[data-edit="on"] textarea:not(:disabled) {
   --color-surface: #0B1A40;
   --color-elevated: #132A5C;
   --color-fg: #F7F9FF;
+  --color-title: #F7F9FF;
+  --color-chip: #F7F9FF;
   --color-muted: #B7C4EA;
   --color-subtle: #7e8cb8;
   --color-border: color-mix(in oklab, var(--color-fg) 16%, transparent);
@@ -654,6 +745,91 @@ html[data-theme="contrast"] {
   --color-crew-hi: #ffffff;
 }
 
+html[data-theme="daylight"] {
+  --color-bg: #f4f6fb;
+  --color-surface: #ffffff;
+  --color-elevated: #e8edf7;
+  --color-fg: #0b1a40;
+  --color-muted: #3d4d73;
+  --color-subtle: #6b7a99;
+  --color-accent: #e85820;
+  --color-accent-fg: #ffffff;
+  --color-gold: #e85820;
+  --color-gain: #1E4BAF;
+}
+html[data-theme="manila"] {
+  --color-bg: #f4ead8;
+  --color-surface: #fff8ec;
+  --color-elevated: #ead9b8;
+  --color-fg: #3f2a14;
+  --color-muted: #6b4e2e;
+  --color-subtle: #8a6a44;
+  --color-accent: #b45309;
+  --color-accent-fg: #fff8ec;
+  --color-gold: #b45309;
+  --color-gain: #7c2d12;
+}
+html[data-theme="polar"] {
+  --color-bg: #ffffff;
+  --color-surface: #f8fafc;
+  --color-elevated: #e2e8f0;
+  --color-fg: #111827;
+  --color-muted: #334155;
+  --color-subtle: #64748b;
+  --color-accent: #2563eb;
+  --color-accent-fg: #ffffff;
+  --color-gold: #2563eb;
+  --color-gain: #0f766e;
+}
+html[data-theme="projector"] {
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-elevated: #f3f4f6;
+  --color-fg: #000000;
+  --color-muted: #111111;
+  --color-subtle: #444444;
+  --color-accent: #000000;
+  --color-accent-fg: #ffffff;
+  --color-gold: #000000;
+  --color-gain: #000000;
+}
+html[data-theme="wrapping"] {
+  --color-bg: #fefce8;
+  --color-surface: #ffffff;
+  --color-elevated: #dcfce7;
+  --color-fg: #14532d;
+  --color-muted: #166534;
+  --color-subtle: #3f6212;
+  --color-accent: #b91c1c;
+  --color-accent-fg: #fefce8;
+  --color-gold: #b91c1c;
+  --color-gain: #15803d;
+}
+html[data-theme="valentine"] {
+  --color-bg: #fff1f2;
+  --color-surface: #ffffff;
+  --color-elevated: #ffe4e6;
+  --color-fg: #9f1239;
+  --color-muted: #be123c;
+  --color-subtle: #9f1239;
+  --color-accent: #fb7185;
+  --color-accent-fg: #4c0519;
+  --color-gold: #fb7185;
+  --color-gain: #e11d48;
+}
+html[data-theme="pumpkin"] {
+  --color-bg: #fff7ed;
+  --color-surface: #ffedd5;
+  --color-elevated: #fed7aa;
+  --color-fg: #7c2d12;
+  --color-muted: #9a3412;
+  --color-subtle: #c2410c;
+  --color-accent: #ea580c;
+  --color-accent-fg: #fff7ed;
+  --color-gold: #ea580c;
+  --color-gain: #c2410c;
+}
+
 /* Web-view override: black / white / contrast on top of any theme. */
 html[data-contrast="high"] {
   --color-bg: #000000;
@@ -674,7 +850,7 @@ html[data-contrast="high"] {
 }
 
 html[data-layout="mobile"] body {
-  font-size: 16px;
+  font-size: 18px;
 }
 
 html[data-layout="mobile"] [data-score-cards] button,
@@ -751,13 +927,19 @@ html[data-layout="mobile"] textarea {
 
 html[data-layout="mobile"] header.desk-chrome {
   gap: 0.35rem;
-  overflow: visible;
+  overflow-x: hidden;
 }
 
 html[data-layout="mobile"] header.desk-chrome .nav-cluster {
   width: 100%;
-  flex-wrap: nowrap;
-  overflow: visible;
+  flex-wrap: wrap;
+  overflow-x: hidden;
+}
+
+html[data-layout="mobile"] header.desk-chrome nav {
+  flex-wrap: wrap !important;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 html[data-layout="mobile"] .tw-lockup {
@@ -822,6 +1004,18 @@ html[data-layout="mobile"] .desk-edit {
 }
 html[data-layout="mobile"] .desk-edit [data-score-grid] {
   min-height: 12rem;
+}
+html[data-crew="on"] .board-root,
+.board-root[data-crew="on"] {
+  background: var(--color-crew, var(--color-bg));
+}
+html[data-crew="on"] .board-main,
+.board-root[data-crew="on"] .board-main {
+  overflow: hidden;
+}
+html[data-crew="on"] .phone-dock,
+html[data-crew="on"] header.desk-chrome {
+  display: none !important;
 }
 
 html[data-layout="mobile"] .berty-float-img,
@@ -999,9 +1193,62 @@ html[data-finish="felt"] .bg-surface,
   color: var(--color-fg);
   box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-fg) 45%, transparent);
 }
+.tw-tap {
+  cursor: pointer;
+}
+.tw-tap:focus-visible {
+  outline: 2px solid var(--color-gold, #e8c547);
+  outline-offset: 2px;
+}
 .tw-tap:active {
   transform: translateY(1px);
   box-shadow: 0 0 0 2px var(--color-fg);
+}
+
+/* Nested plates step radius down. No white hover fills. */
+.tw-gadget .tw-gadget {
+  border-radius: 12px;
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #fff 10%, transparent),
+    0 6px 16px -12px color-mix(in oklab, #000 40%, transparent);
+}
+.desk-chrome {
+  border-radius: 14px;
+  padding: 0.4rem 0.55rem;
+}
+.board-root input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+.board-root textarea,
+.board-root select {
+  background: var(--color-elevated);
+  color: var(--color-fg);
+  border: 0;
+  border-radius: 8px;
+}
+.board-root option,
+.board-root optgroup {
+  background: var(--color-surface);
+  color: var(--color-fg);
+}
+.board-root .bg-elevated:hover:not(:disabled) {
+  background-color: color-mix(in oklab, var(--color-elevated) 86%, var(--color-fg));
+}
+html[data-kind="light"] .tw-gadget {
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #fff 55%, transparent),
+    0 10px 24px -16px color-mix(in oklab, #000 28%, transparent);
+}
+html[data-kind="light"] .tw-hud::before {
+  opacity: 0.35;
+}
+.phone-dock {
+  background: var(--color-surface);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 12%, transparent);
+}
+.phone-dock button[aria-current="page"] {
+  color: var(--color-accent);
+}
+.phone-dock button[aria-current="page"] .dock-mark {
+  background: var(--color-accent);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -1024,4 +1271,28 @@ html[dir="rtl"] .board-root { direction: rtl; }
 @media (max-width: 900px) {
   html { font-size: min(var(--ui-base, 16px), 15px); }
   html[data-look] .min-h-11 { min-height: 2.5rem; }
+}
+
+@media print {
+  header.desk-chrome,
+  .phone-dock,
+  .tw-lockup::after,
+  .parent-print button {
+    display: none !important;
+  }
+  .board-root {
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+    color: #111 !important;
+  }
+  .parent-sheet,
+  .parent-print {
+    box-shadow: none !important;
+    background: #fff !important;
+    color: #111 !important;
+  }
+  .parent-sheet::before {
+    display: none !important;
+  }
 }

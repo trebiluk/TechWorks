@@ -5,6 +5,7 @@ import { isLiveStudent } from "@/lib/economy";
 import {
   abOn,
   attendOn,
+  passOpen,
   hallOf,
   happenedOn,
   lineLeaderOn,
@@ -22,6 +23,7 @@ import {
   setStudentReady,
   setTrack,
   studentCleanup,
+  deskBellId,
   type LinePick,
 } from "@/lib/store";
 import { formatSchoolDate, stepSchoolDay, todayIso } from "@/lib/calendar";
@@ -67,7 +69,7 @@ export function StudyHallBoard({
   onWall?: () => void;
 }) {
   const [date, setDate] = useState(() => todayIso());
-  const now = useShopClock(file.meta.config?.schedule);
+  const now = useShopClock(deskBellId(file));
   const [noteId, setNoteId] = useState<string | null>(null);
   const [outId, setOutId] = useState<string | null>(null);
   const [spin, setSpin] = useState<string | null>(null);
@@ -85,8 +87,8 @@ export function StudyHallBoard({
   );
   const leadId = lineLeaderOn(file, date);
   const lead = kids.find((s) => s.id === leadId);
-  const bell = bellForPeriod(P6, file.meta.config?.schedule);
-  const clock = periodClock(P6, file.meta.config?.schedule, now);
+  const bell = bellForPeriod(P6, deskBellId(file));
+  const clock = periodClock(P6, deskBellId(file), now);
   const happened = happenedOn(file, date, P6);
   const hereN = kids.filter((s) => !OUT.has(attendOn(s, date))).length;
 
@@ -259,7 +261,7 @@ export function StudyHallBoard({
                         onClick={() => gate() && onChange(setStudentAttend(file, s.id, date, where === code ? "" : code))}
                         className={cn("tw-tap min-h-14 rounded-lg text-[11px] font-semibold uppercase", where === code ? "bg-fg text-bg" : "bg-surface text-muted")}
                       >
-                        {code}
+                        {where === code && passOpen(s, date)?.out ? `${code} ${passOpen(s, date)?.out}` : code}
                       </button>
                     ))}
                     <button

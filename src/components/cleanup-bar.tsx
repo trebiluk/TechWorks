@@ -5,7 +5,7 @@ import { Berty } from "@/components/berty";
 import { cn } from "@/lib/utils";
 
 export function CleanupBar({ schedule }: { schedule?: string }) {
-  const now = useShopClock(schedule);
+  const now = useShopClock(schedule, "fine");
   const rang = useRef("");
   const live = periodNow(schedule, now);
   const clock = live != null ? periodClock(live, schedule, now) : null;
@@ -41,7 +41,7 @@ export function CleanupBar({ schedule }: { schedule?: string }) {
 }
 
 export function CleanupChip({ schedule, className }: { schedule?: string; className?: string }) {
-  const now = useShopClock(schedule);
+  const now = useShopClock(schedule, "fine");
   const live = periodNow(schedule, now);
   if (live == null) return null;
   const clock = periodClock(live, schedule, now);

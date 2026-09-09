@@ -48,8 +48,8 @@ function listen(fn: Listener, precision: Precision, sched?: string) {
   };
 }
 
-/** One timer for the shop. `fine` ticks each second while a period is live. `beat` only on minute / period / cleanup. */
-export function useShopClock(sched?: string, precision: Precision = "fine") {
+/** One timer for the shop. `fine` ticks each second while a period is live. `beat` only on minute / period / cleanup. Default beat so screens don't redraw every second. */
+export function useShopClock(sched?: string, precision: Precision = "beat") {
   const [now, setNow] = useState(lastNow);
   useEffect(() => listen((n) => setNow(n), precision, sched), [sched, precision]);
   return now;

@@ -37,9 +37,14 @@ const CARDS: Record<string, DescribeCard> = {
     purpose: "Catalog. Purchases debit the wallet only.",
     links: [{ label: "Help", href: "#help" }],
   },
+  prints: {
+    title: "Prints",
+    purpose: "Fidget gallery. Variants, wild cards, released vs in-wild vs bin. Buy/trade/bin need PIN. 2 rare or 3 shiny smalls = one large.",
+    links: [{ label: "Help", href: "#help" }],
+  },
   crew: {
     title: "Crew",
-    purpose: "Live period only. 3 / 2 / 1 or Absent, Excused, Personal.",
+    purpose: "Kiosk. Crew lead PIN opens Daily scoring + Our crew only. Gold signed-in bar. Projector stays the wall.",
     links: [{ label: "Help", href: "#help" }],
   },
   score: {
@@ -60,6 +65,11 @@ const CARDS: Record<string, DescribeCard> = {
   wallet: {
     title: "Stocks",
     purpose: "Optional market. Rankings on the wall ignore this.",
+    links: [{ label: "Help", href: "#help" }],
+  },
+  lucky: {
+    title: "Lucky Bench",
+    purpose: "Die and Friday pot. Class cash only. House edge ~8%. Not XP or grades.",
     links: [{ label: "Help", href: "#help" }],
   },
   portal: {
@@ -107,6 +117,16 @@ const CARDS: Record<string, DescribeCard> = {
     purpose: "Score pad and the book. Blank is not a zero. CSV for Classroom.",
     links: [{ label: "Help", href: "#help" }],
   },
+  teach: {
+    title: "Teach",
+    purpose: "Do this now. Lesson slots and the day’s goal on the projector.",
+    links: [{ label: "Help", href: "#help" }],
+  },
+  deck: {
+    title: "Deck",
+    purpose: "Default navy + violet slides. Present from here, or download PowerPoint. Aliases only.",
+    links: [{ label: "Help", href: "#help" }],
+  },
 };
 
 export function describeCard(view: string, panel?: string): DescribeCard {
@@ -125,5 +145,10 @@ export function storedDescribe(): boolean {
 
 export function commitDescribe(on: boolean) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(DESCRIBE_KEY, on ? "1" : "0");
+  try {
+    window.localStorage.setItem(DESCRIBE_KEY, on ? "1" : "0");
+  } catch {
+    /* */
+  }
 }
+

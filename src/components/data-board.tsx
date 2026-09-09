@@ -11,6 +11,7 @@ import { SortBar } from "@/components/sort-bar";
 import { QuarterChip } from "@/components/quarter-chip";
 import { XpBit, PerkBit } from "@/components/marks";
 import { ensurePriorYear, PRIOR_YEAR } from "@/lib/prior-year";
+import { loadClub } from "@/lib/club";
 import { cn } from "@/lib/utils";
 
 const METRICS = [
@@ -72,6 +73,7 @@ export function DataBoard({ file, onOpenProfile }: { file: EconomyFile; onOpenPr
   const ranked = applySort(decorateRank(src, cards), sort);
   const [id, setId] = useState(cards[0]?.id ?? "");
   const [copied, setCopied] = useState("");
+  const [bookBusy, setBookBusy] = useState(false);
   const [q, setQ] = useState("");
   const card = cards.find((c) => c.id === id) ?? cards[0] ?? null;
   const shown = ranked.filter((s) => !q.trim() || s.first.toLowerCase().includes(q.trim().toLowerCase()) || String(s.period) === q.trim());
@@ -138,7 +140,7 @@ export function DataBoard({ file, onOpenProfile }: { file: EconomyFile; onOpenPr
         <p className="mt-1 text-sm text-muted">
           {archived
             ? "2025-26 fake year · 72 workshop + 14 study hall · four sessions. Not your live roster. Charts and Sheets copy only."
-            : "Charts and Sheets. Tech classes only unless you mix study hall (fun / building-wide)."}
+            : "Charts and the Google book. Tech classes only unless you mix study hall (fun / building-wide)."}
         </p>
         {archived && !arch ? <p className="mt-2 text-sm text-gold">{archErr || "Building 2025-26…"}</p> : null}
         {archived && arch?.meta.sessions?.length ? (
@@ -289,6 +291,17 @@ export function DataBoard({ file, onOpenProfile }: { file: EconomyFile; onOpenPr
             <CopyBtn label={copied === "log" ? "Copied" : "LOG"} onClick={() => void copy("log")} />
             <CopyBtn label={copied === "master" ? "Copied" : "MASTER"} onClick={() => void copy("master")} />
             <CopyBtn label={copied === "ledger" ? "Copied" : "Ledger"} onClick={() => void copy("ledger")} />
+            <CopyBtn
+              label={bookBusy ? "Book…" : "Google book"}
+              onClick={() => {
+                if (bookBusy) return;
+                setBookBusy(true);
+                void import("@/lib/book-xlsx")
+                  .then((m) => m.downloadGoogleBook(src, loadClub()))
+                  .then(() => setCopied("book"))
+                  .finally(() => setBookBusy(false));
+              }}
+            />
           </div>
         </aside>
       ) : null}

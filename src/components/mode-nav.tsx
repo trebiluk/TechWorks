@@ -19,7 +19,7 @@ const MODES: { id: Mode; label: string }[] = [
 ];
 
 export function modeOf(view: string): Mode {
-  if (view === "overview" || view === "week" || view === "year") return "board";
+  if (view === "overview" || view === "week" || view === "year" || view === "prints" || view === "teach" || view === "polls" || view === "deck") return "board";
   if (view === "score" || view === "crew") return "desk";
   if (view === "skills" || view === "grades" || view === "projects") return "learn";
   return "admin";
@@ -43,8 +43,8 @@ export function ModeBar({
   const modes = allow?.length ? MODES.filter((m) => allow.includes(m.id)) : MODES;
   const shown = subs.filter((s) => !s.hidden);
   return (
-    <div className={cn("desk-modes pointer-events-none flex min-w-0 flex-1 items-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden", className)}>
-      <nav className="tw-gadget pointer-events-auto flex shrink-0 items-center gap-0.5 p-0.5" aria-label="Mode">
+    <div className={cn("desk-modes pointer-events-none flex min-w-0 flex-1 flex-wrap items-center gap-2", className)}>
+      <nav className="tw-gadget pointer-events-auto flex max-w-full shrink-0 flex-wrap items-center gap-0.5 rounded-[14px] p-1" aria-label="Mode">
         {modes.map((m) => (
           <button
             key={m.id}
@@ -54,9 +54,9 @@ export function ModeBar({
             onPointerEnter={() => onWarm?.(m.id)}
             onFocus={() => onWarm?.(m.id)}
             className={cn(
-              "tw-tap min-h-11 shrink-0 rounded-md px-3 text-xs font-bold uppercase tracking-[0.14em] sm:min-h-9 sm:px-3.5",
+              "tw-tap min-h-11 shrink-0 rounded-lg px-3 text-xs font-bold uppercase tracking-[0.14em] sm:min-h-9 sm:px-3.5",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold",
-              mode === m.id ? "bg-accent text-accent-fg" : "text-muted hover:text-fg",
+              mode === m.id ? "bg-accent text-accent-fg" : "text-muted hover:bg-elevated hover:text-fg",
             )}
           >
             {m.label}
@@ -66,7 +66,7 @@ export function ModeBar({
       {shown.length >= 2 ? (
         <>
           <span className="hidden h-4 w-px shrink-0 bg-border sm:block" aria-hidden />
-          <nav className="pointer-events-auto flex min-w-0 items-center gap-1" aria-label="Section">
+          <nav className="pointer-events-auto flex min-w-0 max-w-full flex-wrap items-center gap-1 overflow-x-hidden" aria-label="Section">
             {shown.map((s) => (
               <button
                 key={s.id}

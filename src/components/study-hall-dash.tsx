@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
 import { isLiveStudent } from "@/lib/economy";
-import { abOn, attendOn, hallOf, happenedOn, lineLeaderOn, onAbRoster, pickLineLeader, setHallShow, setLineLeader, type LinePick } from "@/lib/store";
+import { abOn, attendOn, deskBellId, hallOf, happenedOn, lineLeaderOn, onAbRoster, pickLineLeader, setHallShow, setLineLeader, specialsOn, type LinePick } from "@/lib/store";
 import { roleHistoryOf } from "@/lib/roles";
 import { todayIso } from "@/lib/calendar";
 import { formatBell, leftClock, periodClock, periodNow } from "@/lib/bells";
@@ -40,12 +40,13 @@ export function StudyHallDash({
   onOpenId: (id: string) => void;
   onChange?: (next: EconomyFile) => void;
 }) {
-  const now = useShopClock(file.meta.config?.schedule, "beat");
+  const bellsId = deskBellId(file);
+  const now = useShopClock(bellsId, "beat");
   const [spin, setSpin] = useState<string | null>(null);
   const today = todayIso();
   const letter = abOn(file, today);
-  const clock = periodClock(P6, file.meta.config?.schedule, now);
-  const live = periodNow(file.meta.config?.schedule, now);
+  const clock = periodClock(P6, bellsId, now);
+  const live = periodNow(bellsId, now);
   const hall = hallOf(file);
   const kids = useMemo(
     () =>
@@ -59,7 +60,6 @@ export function StudyHallDash({
   const here = kids.filter((s) => !OUT.has(attendOn(s, today)));
   const away = kids.filter((s) => OUT.has(attendOn(s, today)));
   const shop = file.meta.bell?.filter((b) => b.period !== 6).map((b) => b.period) ?? [1, 2, 3, 8, 9, 10];
-  const tick = clock?.live ? leftClock(clock.left) : null;
   const happened = happenedOn(file, today, P6);
   const notesOn = hall.showNotes && hall.notes.length > 0;
   const owesOn = hall.showOwes && hall.owes.length > 0;
@@ -151,7 +151,7 @@ export function StudyHallDash({
         </div>
       </section>
 
-      <DayStrip schedule={file.meta.config?.schedule} shop={shop} view={6} onPeriod={onPeriod} />
+      <DayStrip schedule={bellsId} shop={shop} view={6} onPeriod={onPeriod} specials={specialsOn(file, today)} />
 
       <section className="grid gap-2 lg:grid-cols-[minmax(0,1.2fr)_minmax(12rem,0.7fr)]">
         <article className="rounded-3xl bg-surface px-5 py-4">
@@ -273,7 +273,7 @@ function HallTime({
               strokeWidth="9"
               strokeLinecap="round"
               strokeDasharray={`${drawn} ${c}`}
-              className={hot ? "text-white" : "text-gold"}
+              className={hot ? "text-accent-fg" : "text-gold"}
             />
           </svg>
           <div className="absolute inset-0 grid place-items-center">

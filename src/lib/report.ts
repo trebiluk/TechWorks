@@ -1,5 +1,5 @@
-import { dayPay, money, score, type EconomyFile, type RawStudent, type ScoredStudent } from "@/lib/economy";
-import { cycleDayLabel, daySlot, formatSchoolDate } from "@/lib/calendar";
+import { dayPay, score, type EconomyFile, type RawStudent, type ScoredStudent } from "@/lib/economy";
+import { cycleDayLabel, daySlot } from "@/lib/calendar";
 import { activityFor, crewGoal, happenedOn, markOn, periodGoal } from "@/lib/store";
 import { eachTapeMark } from "@/lib/tape";
 import { byCombo } from "@/lib/rank";

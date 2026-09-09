@@ -1,45 +1,57 @@
-import { X } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
 import { boardCardsOf, isSubDay, resetAbCycle, setBoardCard, setCleanupMins, setCleanupSound, setCurrentCycle, setLevelConfig, setSchedule, setSubDay, setVisit, setVisitAll, visitOn, VISIT_STATES } from "@/lib/store";
 import { DEFAULT_LEVEL_BANDS, levelBandsOf } from "@/lib/skills";
 import { storedLeadXp, setLeadXpBonus, clampLeadXp } from "@/lib/roles";
 import { RosterOnboard } from "@/components/roster-onboard";
+import { YearRoster } from "@/components/year-roster";
 import { VersionChip } from "@/components/version-chip";
 import { todayIso } from "@/lib/calendar";
 import { CLEANUP_SOUNDS, clampCleanupMins, cleanupMinsNow, cleanupSoundOf, previewCleanupSound, SCHEDULES, scheduleOf } from "@/lib/bells";
 import { LayoutToggle } from "@/components/layout-toggle";
+import { NavToggle } from "@/components/app-nav";
+import { useNavV2 } from "@/lib/app-nav";
 import { ThemePicker } from "@/components/theme-picker";
 import { LunchPanel } from "@/components/lunch-panel";
-import { QuarterChip } from "@/components/quarter-chip";
 import { commitContrast, storedContrast } from "@/lib/theme";
 import { savePortalPin, storedPortalPin } from "@/lib/pin";
+import { PinField } from "@/components/pin-pad";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { COPYRIGHT_LONG } from "@/lib/copy";
+import { HOUSE_BERTY, HOUSE_MRK } from "@/lib/house";
 import { RewardBar, RewardEditor } from "@/components/reward-bar";
 import { ShopLists, SkillLists } from "@/components/score-panels";
-import { commitDescribe, storedDescribe } from "@/lib/describe";
+import { commitDescribe } from "@/lib/describe";
 import { FEATURES, FEATURE_GROUPS, featureOn, setFeature, type FeatureId } from "@/lib/features";
 import { VisitPad } from "@/components/visit-chip";
 import { DEMO_SETS, commitDemo, storedDemo, type DemoId } from "@/lib/demo";
-import { downloadDeskBackup, unpackDesk, isLiveWallText, listDeskBackups, restoreBackupDay } from "@/lib/vault";
-import { saveDeskNow } from "@/lib/store";
+import { TEACH_PACKS, setDefaultTeachPack } from "@/lib/teach";
+import { VaultBoard } from "@/components/vault-board";
 
 export const SETTINGS_TABS = [
-  { id: "room", label: "Look" },
-  { id: "day", label: "Day" },
-  { id: "lunch", label: "Lunch" },
+  { id: "vault", label: "Records" },
   { id: "roster", label: "Roster" },
-  { id: "economy", label: "Money" },
-  { id: "skills", label: "Skills" },
+  { id: "day", label: "Day" },
+  { id: "economy", label: "Class" },
   { id: "modules", label: "Modules" },
-  { id: "privacy", label: "Privacy" },
-  { id: "vault", label: "Device" },
+  { id: "room", label: "Theme" },
   { id: "about", label: "About" },
 ] as const;
 
-export type SettingsTab = (typeof SETTINGS_TABS)[number]["id"];
-export type AdminPane = "today" | SettingsTab;
+export type SettingsTab = (typeof SETTINGS_TABS)[number]["id"] | "lunch" | "skills" | "privacy";
+export type AdminPane = "today" | "crews" | SettingsTab;
+
+const OPEN_MOD: Record<string, string> = {
+  club: "club",
+  studyhall: "studyhall",
+  prints: "prints",
+  stocks: "wallet",
+  lucky: "lucky",
+  store: "store",
+  polls: "polls",
+  teach: "teach",
+  crews: "crews",
+};
 
 const TABS = SETTINGS_TABS;
 
@@ -53,6 +65,9 @@ export function SettingsBody({
   onSave,
   onTips,
   onDesk,
+  onOpenId,
+  onOpenMod,
+  embed,
 }: {
   file: EconomyFile;
   tab: SettingsTab;
@@ -63,22 +78,20 @@ export function SettingsBody({
   onSave?: () => void;
   onTips?: (on: boolean) => void;
   onDesk?: () => void;
+  onOpenId?: (id: string) => void;
+  onOpenMod?: (id: string) => void;
+  embed?: boolean;
 }) {
   const cycle = file.meta.config?.currentCycle ?? file.meta.currentWeek ?? 1;
-  const [contrast, setContrast] = useState(() => storedContrast());
+  const [navV2, setNavV2] = useNavV2();
+  const [, setContrast] = useState(() => storedContrast());
   const [portalPin, setPortalPin] = useState(() => storedPortalPin());
   const [leadXp, setLeadXp] = useState(() => storedLeadXp());
   const [demoId, setDemoId] = useState<DemoId>(() => storedDemo());
   const [rosterOpen, setRosterOpen] = useState(false);
-  const [vaultMsg, setVaultMsg] = useState("");
-  const [backups, setBackups] = useState<{ day: string }[]>([]);
-  useEffect(() => {
-    if (tab !== "vault") return;
-    void listDeskBackups().then(setBackups);
-  }, [tab, file.meta.savedAt]);
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-1 py-2 pb-10 sm:px-2">
+    <div className={cn(embed ? "px-0 py-0" : "px-1 py-2 pb-16 sm:px-2")}>
             {onTab ? (
               <nav className="mb-3 flex flex-wrap gap-1" aria-label="Settings">
                 {TABS.map((t) => (
@@ -95,10 +108,15 @@ export function SettingsBody({
             ) : null}
             {tab === "room" ? (
               <section>
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Look</h2>
-                <p className="mt-1 text-sm text-muted">Theme, projector vs phone, contrast. Preview stays in this row.</p>
+                <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Theme</h2>
+                <p className="mt-1 text-sm text-muted">Hover a chip to paint the whole desk (logo stays). Click to keep it.</p>
                 <p className="mt-4 text-sm font-medium uppercase tracking-wider text-subtle">Screen</p>
                 <LayoutToggle className="mt-2 w-full" />
+                <p className="mt-6 text-sm font-medium uppercase tracking-wider text-subtle">Menu</p>
+                <p className="mt-1 text-sm text-muted">New: Dashboard · Teach · Learn · Other. Club and Study Hall live under Other. Classic: Dashboard · Desk · Learn · Admin.</p>
+                <div className="mt-2">
+                  <NavToggle on={navV2} onChange={setNavV2} />
+                </div>
                 <div className="mt-6">
                   <ThemePicker />
                 </div>
@@ -107,8 +125,8 @@ export function SettingsBody({
 
             {tab === "day" ? (
               <section>
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Day</h2>
-                <p className="mt-1 text-sm text-muted">Cycle, bells, A/B, sub. Sub voids scores and the projector. Lunch has its own tab.</p>
+                {embed ? null : <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Day</h2>}
+                <p className={cn("text-sm text-muted", embed ? "mt-0" : "mt-1")}>Cycle, bells, A/B, sub. Sub voids scores and the projector.</p>
                 <button
                   type="button"
                   onClick={() => onChange(setSubDay(file, todayIso(), !isSubDay(file, todayIso())))}
@@ -227,6 +245,24 @@ export function SettingsBody({
                 >
                   Reset A/B · today is A
                 </button>
+                <p className="mt-6 text-sm font-medium uppercase tracking-wider text-subtle">Teach · default pack</p>
+                <p className="mt-1 text-sm text-muted">Used when a period has no override. You can still pin a slot on Teach.</p>
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {TEACH_PACKS.map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      title={p.hint}
+                      onClick={() => onChange(setDefaultTeachPack(file, p.id))}
+                      className={cn(
+                        "min-h-10 rounded-full px-3 text-xs font-semibold",
+                        (file.meta.config?.teachPack || "shop") === p.id ? "bg-fg text-bg" : "bg-elevated text-muted",
+                      )}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
                 <p className="mt-6 text-sm font-medium uppercase tracking-wider text-subtle">Announcements</p>
                 <p className="mt-1 text-sm text-muted">Up to two cards on the projector. Leave the title blank to hide.</p>
                 {([0, 1] as const).map((i) => {
@@ -249,40 +285,58 @@ export function SettingsBody({
                     </div>
                   );
                 })}
+                <p className="mt-6 text-sm font-medium uppercase tracking-wider text-subtle">Lunch</p>
+                <LunchPanel file={file} onChange={onChange} />
               </section>
             ) : null}
 
             {tab === "lunch" ? <LunchPanel file={file} onChange={onChange} /> : null}
 
-            {tab === "roster" ? (
+            {tab === "roster" || tab === "privacy" ? (
               <section>
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Roster</h2>
-                <p className="mt-1 text-sm text-muted">Paste legal names. The wall only gets aliases. IEP/504 stay vault-only.</p>
+                {tab === "roster" ? (
+                  <YearRoster file={file} onChange={onChange} onOpenId={onOpenId} onImport={() => setRosterOpen(true)} />
+                ) : (
+                  <>
+                    <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">People</h2>
+                    <p className="mt-1 text-sm text-muted">Paste legal names. The wall only gets aliases. IEP/504 stay vault-only.</p>
+                  </>
+                )}
+                <p className="mt-6 text-sm font-medium uppercase tracking-wider text-subtle">Privacy</p>
+                <p className="mt-1 text-sm text-muted">Wall is aliases only. Teacher PIN stays 1111 unless you change it on the lock bar.</p>
+                <p className="mt-4 text-sm font-medium uppercase tracking-wider text-subtle">Worker portal PIN</p>
+                <p className="mt-1 text-sm text-muted">Only if the portal module is on. Default 2627. Not the teacher PIN.</p>
+                <PinField
+                  value={portalPin}
+                  onChange={setPortalPin}
+                  className="mt-2"
+                  placeholder="portal PIN"
+                  label="Worker portal PIN"
+                />
                 <button
                   type="button"
-                  onClick={() => setRosterOpen(true)}
-                  className="mt-4 min-h-11 rounded-md bg-elevated px-3 text-sm font-semibold"
+                  onClick={() => {
+                    savePortalPin(portalPin);
+                    setPortalPin(storedPortalPin());
+                  }}
+                  className="mt-2 min-h-11 rounded-md bg-elevated px-3 text-sm font-semibold"
                 >
-                  Add / import roster
+                  Save portal PIN
                 </button>
-                {rosterOpen ? (
-                  <RosterOnboard
-                    file={file}
-                    onChange={onChange}
-                    onClose={() => setRosterOpen(false)}
-                    onDesk={() => {
-                      setRosterOpen(false);
-                      onDesk?.();
-                    }}
-                  />
-                ) : null}
+                <button
+                  type="button"
+                  onClick={onExportNames}
+                  className="mt-6 min-h-11 rounded-lg bg-elevated px-4 text-sm font-medium"
+                >
+                  Export names vault (private)
+                </button>
               </section>
             ) : null}
 
-            {tab === "economy" ? (
+            {tab === "economy" || tab === "skills" ? (
               <section>
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Money</h2>
-                <p className="mt-1 text-sm text-muted">Class reward is XP · grade · effort — not pay. Lead XP is Skills only.</p>
+                <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Class</h2>
+                <p className="mt-1 text-sm text-muted">Reward is XP · grade · effort — not pay. Skills are 1–4, XP only.</p>
                 <p className="mt-4 text-sm font-medium uppercase tracking-wider text-subtle">Class reward</p>
                 <RewardBar file={file} detail />
                 <RewardEditor file={file} onChange={onChange} />
@@ -304,13 +358,8 @@ export function SettingsBody({
                   Save lead XP ({leadXp})
                 </button>
                 <ShopLists file={file} onChange={onChange} />
-              </section>
-            ) : null}
-
-            {tab === "skills" ? (
-              <section>
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Skills</h2>
-                <p className="mt-1 text-sm text-muted">Dashboard shows XP. Color-by-level is reserved for later.</p>
+                <p className="mt-6 text-sm font-medium uppercase tracking-wider text-subtle">Skill levels</p>
+                <p className="mt-1 text-sm text-muted">Dashboard shows XP. Color-by-level is optional.</p>
                 <button
                   type="button"
                   onClick={() =>
@@ -353,23 +402,18 @@ export function SettingsBody({
             {tab === "modules" ? (
               <section>
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Modules</h2>
-                <p className="mt-1 text-sm text-muted">Off greys the icon. Scoring, Overview, Crew, Desk, and Skills stay on.</p>
+                <p className="mt-1 text-sm text-muted">Tap a card to turn it on or off. Open jumps to that desk.</p>
                 {FEATURE_GROUPS.map((g) => (
                   <div key={g} className="mt-4">
                     <p className="text-xs font-semibold uppercase tracking-wider text-subtle">{g}</p>
-                    <ul className="mt-1 divide-y divide-border rounded-md bg-elevated">
+                    <ul className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
                       {FEATURES.filter((f) => f.group === g).map((f) => {
                         const on = featureOn(file, f.id);
+                        const jump = OPEN_MOD[f.id];
                         return (
-                          <li key={f.id} className="flex items-center justify-between gap-2 px-3 py-2">
-                            <span>
-                              <span className="block text-sm font-semibold">{f.label}</span>
-                              <span className="text-xs text-subtle">{f.hint}</span>
-                            </span>
+                          <li key={f.id} className={cn("tw-gadget flex flex-col gap-2 p-3", on ? "" : "opacity-60")}>
                             <button
                               type="button"
-                              role="switch"
-                              aria-checked={on}
                               onClick={() => {
                                 const next = !on;
                                 onChange(setFeature(file, f.id as FeatureId, next));
@@ -387,10 +431,19 @@ export function SettingsBody({
                                   setContrast(next);
                                 }
                               }}
-                              className={cn("relative h-7 w-12 shrink-0 rounded-full", on ? "bg-gold" : "bg-surface")}
+                              className="text-left"
                             >
-                              <span className={cn("absolute top-1 size-5 rounded-full bg-fg transition-transform", on ? "left-6" : "left-1")} />
+                              <span className="block text-sm font-semibold">{f.label}</span>
+                              <span className="text-[11px] text-subtle">{f.hint}</span>
                             </button>
+                            <div className="mt-auto flex items-center justify-between gap-2">
+                              <span className={cn("text-[10px] font-bold uppercase tracking-wider", on ? "text-gold" : "text-muted")}>{on ? "On" : "Off"}</span>
+                              {jump && on && onOpenMod ? (
+                                <button type="button" onClick={() => onOpenMod(jump)} className="tw-tap min-h-8 rounded-full bg-elevated px-2 text-[11px] font-semibold">
+                                  Open
+                                </button>
+                              ) : null}
+                            </div>
                           </li>
                         );
                       })}
@@ -424,146 +477,15 @@ export function SettingsBody({
               </section>
             ) : null}
 
-            {tab === "privacy" ? (
-              <section>
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Privacy</h2>
-                <p className="mt-1 text-sm text-muted">Wall is aliases only. Teacher PIN stays 1111 unless you change it on the lock bar.</p>
-                <p className="mt-4 text-sm font-medium uppercase tracking-wider text-subtle">Worker portal PIN</p>
-                <p className="mt-1 text-sm text-muted">Only if the portal module is on. Default 2627. Not the teacher PIN.</p>
-                <input
-                  inputMode="numeric"
-                  value={portalPin}
-                  onChange={(e) => setPortalPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                  className="mt-2 min-h-11 w-full rounded-md bg-elevated px-3 font-mono tracking-[0.3em] outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    savePortalPin(portalPin);
-                    setPortalPin(storedPortalPin());
-                  }}
-                  className="mt-2 min-h-11 rounded-md bg-elevated px-3 text-sm font-semibold"
-                >
-                  Save portal PIN
-                </button>
-                <button
-                  type="button"
-                  onClick={onExportNames}
-                  className="mt-6 min-h-11 rounded-lg bg-elevated px-4 text-sm font-medium"
-                >
-                  Export names vault (private)
-                </button>
-              </section>
-            ) : null}
-
             {tab === "vault" ? (
-              <section>
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">This device</h2>
-                <p className="mt-1 text-sm text-muted">
-                  The gradebook lives here (this phone or computer). Drive comes later. Live wall export stays — aliases only, no names.
-                </p>
-                <p className="mt-3 font-mono text-sm text-subtle">
-                  Last save {file.meta.savedAt ? new Date(file.meta.savedAt).toLocaleString() : "not yet"} · schema {file.meta.schema ?? "—"}
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      saveDeskNow(file);
-                      onChange({ ...file, meta: { ...file.meta, savedAt: new Date().toISOString(), schema: file.meta.schema } });
-                      onSave?.();
-                      setVaultMsg("Saved on this device");
-                    }}
-                    className="min-h-11 rounded-md bg-accent px-3 text-sm font-semibold text-accent-fg"
-                  >
-                    Save now
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      downloadDeskBackup(file);
-                      setVaultMsg("Desk backup downloaded · keep it private (names inside)");
-                    }}
-                    className="min-h-11 rounded-md bg-elevated px-3 text-sm font-semibold"
-                  >
-                    Download desk backup
-                  </button>
-                  <label className="inline-flex min-h-11 cursor-pointer items-center rounded-md bg-elevated px-3 text-sm font-semibold">
-                    Restore from file
-                    <input
-                      type="file"
-                      accept="application/json,.json,.txt"
-                      className="hidden"
-                      onChange={async (e) => {
-                        const f = e.target.files?.[0];
-                        e.target.value = "";
-                        if (!f) return;
-                        const text = await f.text();
-                        if (isLiveWallText(text)) {
-                          setVaultMsg("That’s the live wall file (no names). Use a desk backup to restore.");
-                          return;
-                        }
-                        const next = unpackDesk(text);
-                        if (!next) {
-                          setVaultMsg("Couldn’t read that file.");
-                          return;
-                        }
-                        saveDeskNow(next);
-                        onChange(next);
-                        setVaultMsg(`Restored ${next.students.length} workers from ${f.name}`);
-                      }}
-                    />
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onExport?.();
-                      setVaultMsg("Live wall downloaded · aliases only");
-                    }}
-                    className="min-h-11 rounded-md bg-elevated px-3 text-sm font-semibold"
-                  >
-                    Download live wall
-                  </button>
-                  <button
-                    type="button"
-                    onClick={onExportNames}
-                    className="min-h-11 rounded-md bg-elevated px-3 text-sm font-semibold"
-                  >
-                    Names vault
-                  </button>
-                </div>
-                {vaultMsg ? <p className="mt-3 text-sm text-gold">{vaultMsg}</p> : null}
-                {backups.length ? (
-                  <div className="mt-6">
-                    <p className="text-sm font-medium uppercase tracking-wider text-subtle">Daily snapshots on this device</p>
-                    <ul className="mt-2 space-y-1">
-                      {backups.map((b) => (
-                        <li key={b.day} className="flex items-center justify-between gap-2 rounded-md bg-elevated px-3 py-2">
-                          <span className="font-mono text-sm">{b.day}</span>
-                          <button
-                            type="button"
-                            onClick={async () => {
-                              const next = await restoreBackupDay(b.day);
-                              if (!next) {
-                                setVaultMsg("Snapshot missing.");
-                                return;
-                              }
-                              saveDeskNow(next);
-                              onChange(next);
-                              setVaultMsg(`Restored snapshot ${b.day}`);
-                            }}
-                            className="min-h-9 rounded-md px-2 text-sm font-semibold text-gold"
-                          >
-                            Restore
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : (
-                  <p className="mt-4 text-sm text-subtle">Snapshots appear after the first save.</p>
-                )}
-              </section>
+              <VaultBoard
+                file={file}
+                onChange={onChange}
+                onExport={onExport}
+                onExportNames={onExportNames}
+                onSave={onSave}
+                onImport={() => setRosterOpen(true)}
+              />
             ) : null}
 
             {tab === "about" ? (
@@ -572,6 +494,16 @@ export function SettingsBody({
                 <p className="mt-2">
                   <VersionChip />
                 </p>
+                {onOpenId ? (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button type="button" onClick={() => onOpenId(HOUSE_BERTY)} className="tw-tap min-h-11 rounded-full bg-elevated px-4 text-sm font-semibold">
+                      Berty
+                    </button>
+                    <button type="button" onClick={() => onOpenId(HOUSE_MRK)} className="tw-tap min-h-11 rounded-full bg-elevated px-4 text-sm font-semibold">
+                      Mr. K
+                    </button>
+                  </div>
+                ) : null}
                 <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted">{COPYRIGHT_LONG}</p>
                 <p className="mt-6 text-sm text-muted">Workshop noise for the projector. Opens in a new tab.</p>
                 <a
@@ -584,6 +516,17 @@ export function SettingsBody({
                 </a>
               </section>
             ) : null}
+      {rosterOpen ? (
+        <RosterOnboard
+          file={file}
+          onChange={onChange}
+          onClose={() => setRosterOpen(false)}
+          onDesk={() => {
+            setRosterOpen(false);
+            onDesk?.();
+          }}
+        />
+      ) : null}
     </div>
   );
 }

@@ -1,27 +1,28 @@
 "use client";
 
 import { lazy, startTransition, Suspense, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { Search } from "lucide-react";
+import { CircleHelp, Search } from "lucide-react";
 import { TwWordmark } from "@/components/tw-mark";
 import snapshot from "@/data/economy.json";
 import type { EconomyFile } from "@/lib/economy";
 import { bellFor, isLiveStudent, score } from "@/lib/economy";
-import { loadDesk, saveDesk, saveDeskNow, applyDjia, abOn, stampLiveExport, isSubDay, exportedThisPeriod, lunchOn } from "@/lib/store";
+import { loadDesk, saveDesk, saveDeskNow, applyDjia, stampLiveExport, isSubDay, exportedThisPeriod, lunchOn, deskBellId, deskSavePending } from "@/lib/store";
 import { hydrateVault } from "@/lib/vault";
 import { LockBar, PinPad } from "@/components/pin-pad";
 import { DescribeBar } from "@/components/describe-bar";
-import { commitDescribe, storedDescribe } from "@/lib/describe";
+import { storedDescribe } from "@/lib/describe";
 import { TipsProvider } from "@/lib/tips";
 import { Dashboard } from "@/components/dashboard";
 import { featureOn } from "@/lib/features";
 import { paintDemo, storedDemo, type DemoId } from "@/lib/demo";
-import { isUnlocked, crewUnlocked, ensureDefaultPin } from "@/lib/pin";
-import { cycleDayLabel, daySlot, isSchoolDay, todayIso } from "@/lib/calendar";
+import { isUnlocked, lockCrew, ensureDefaultPin } from "@/lib/pin";
+import { daySlot, isSchoolDay, todayIso } from "@/lib/calendar";
 import { loadDjia, type DjiaQuote } from "@/lib/djia";
 import { downloadText, periodPulses, publicHandle, publishLive, splitExport } from "@/lib/live";
-import { paintCleanup, periodNow } from "@/lib/bells";
+import { paintCleanup, periodNow, SCHOOLTOOL_URL } from "@/lib/bells";
 import { CleanupStage } from "@/components/cleanup-wall";
 import { NowDock } from "@/components/now-dock";
+import { NextJobChip } from "@/components/next-job";
 import { installLayoutWatch, surfaceOf, useLayout } from "@/lib/layout";
 import { PhoneDock } from "@/components/phone-dock";
 import { LayoutToggle } from "@/components/layout-toggle";
@@ -33,14 +34,22 @@ import { AdminHub } from "@/components/admin-hub";
 import type { LearnStart } from "@/components/learning-center";
 import type { AdminPane } from "@/components/settings";
 import { ModeBar, modeOf, type Mode, type ModeSub } from "@/components/mode-nav";
+import { AppNav } from "@/components/app-nav";
+import { sectionOf, useNavV2, type AppSection, type NavTab } from "@/lib/app-nav";
+import { ADMIN_GROUPS, defaultPane, paneInGroup } from "@/lib/admin-nav";
 import { cn } from "@/lib/utils";
+import { HOUSE_BERTY, HOUSE_MRK, houseHits } from "@/lib/house";
+import type { NextJob } from "@/lib/workflow";
 
 const ScoreDesk = lazy(() => import("@/components/score").then((m) => ({ default: m.ScoreDesk })));
+const CrewLead = lazy(() => import("@/components/crew-lead").then((m) => ({ default: m.CrewLead })));
 const SkillsBoard = lazy(() => import("@/components/learning-center").then((m) => ({ default: m.LearningCenter })));
 const WalletBoard = lazy(() => import("@/components/wallet").then((m) => ({ default: m.WalletBoard })));
+const LuckyBoard = lazy(() => import("@/components/lucky-board").then((m) => ({ default: m.LuckyBoard })));
 const Dossier = lazy(() => import("@/components/dossier").then((m) => ({ default: m.Dossier })));
 const HelpPanel = lazy(() => import("@/components/help").then((m) => ({ default: m.HelpPanel })));
 const StoreBoard = lazy(() => import("@/components/store-board").then((m) => ({ default: m.StoreBoard })));
+const PrintsBoard = lazy(() => import("@/components/prints-board").then((m) => ({ default: m.PrintsBoard })));
 const WorkerPortal = lazy(() => import("@/components/portal").then((m) => ({ default: m.WorkerPortal })));
 const StudyHallBoard = lazy(() => import("@/components/study-hall-board").then((m) => ({ default: m.StudyHallBoard })));
 const StudyHallDash = lazy(() => import("@/components/study-hall-dash").then((m) => ({ default: m.StudyHallDash })));
@@ -48,10 +57,14 @@ const ClubBoard = lazy(() => import("@/components/club-board").then((m) => ({ de
 const WeekBoard = lazy(() => import("@/components/week-board").then((m) => ({ default: m.WeekBoard })));
 const YearBoard = lazy(() => import("@/components/year-board").then((m) => ({ default: m.YearBoard })));
 const DataBoard = lazy(() => import("@/components/data-board").then((m) => ({ default: m.DataBoard })));
+const TeachBoard = lazy(() => import("@/components/teach-board").then((m) => ({ default: m.TeachBoard })));
+const LessonBoard = lazy(() => import("@/components/lesson-board").then((m) => ({ default: m.LessonBoard })));
+const PollBoard = lazy(() => import("@/components/polls").then((m) => ({ default: m.PollBoard })));
+const DeckBoard = lazy(() => import("@/components/deck-board").then((m) => ({ default: m.DeckBoard })));
 
 const RANK_KEY = "techworks-rank-board";
 
-type View = "crew" | "score" | "overview" | "week" | "year" | "data" | "wallet" | "skills" | "store" | "portal" | "grades" | "studyhall" | "hallwall" | "club" | "clubwall" | "projects" | "admin";
+type View = "crew" | "score" | "overview" | "week" | "year" | "data" | "wallet" | "lucky" | "skills" | "store" | "prints" | "portal" | "grades" | "studyhall" | "hallwall" | "club" | "clubwall" | "projects" | "admin" | "teach" | "polls" | "deck";
 type DeskPanel = "score" | "schedule" | "config";
 
 export function Board() {
@@ -69,7 +82,9 @@ export function Board() {
   const bells = useMemo(() => bellFor(wallFile), [wallFile]);
   const [view, setView] = useState<View>("overview");
   const [learnStart, setLearnStart] = useState<LearnStart>("grades");
-  const [deskPanel, setDeskPanel] = useState<DeskPanel>("score");
+  const [teachStart, setTeachStart] = useState<"now" | "plans">("now");
+  const [navV2] = useNavV2();
+  const [deskPanel] = useState<DeskPanel>("score");
   const [pendingView, setPendingView] = useState<View | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [quote, setQuote] = useState<DjiaQuote | null>(null);
@@ -94,25 +109,36 @@ export function Board() {
     return Object.values(p).reduce((n, x) => n + x.due + x.overdue, 0);
   }, [file, today]);
   const slot = daySlot(today);
-  const hits = query.trim()
+  const qFind = query.trim().toLowerCase();
+  const houseMatch = qFind ? houseHits(qFind) : [];
+  const hits = qFind
     ? file.students
         .filter((s) => isLiveStudent(s, file.meta.quarterName) && (view === "studyhall" || view === "data" || s.period !== 6))
         .filter((s) => {
-          const q = query.trim().toLowerCase();
-          return s.first.toLowerCase().includes(q) || publicHandle(s.id).toLowerCase().includes(q) || s.id.toLowerCase().includes(q);
+          return s.first.toLowerCase().includes(qFind) || publicHandle(s.id).toLowerCase().includes(qFind) || s.id.toLowerCase().includes(qFind);
         })
         .slice(0, 8)
     : [];
+
+  function openHouse(id: string) {
+    setQuery("");
+    setOpenId(id);
+  }
+
+  const verChip = <VersionChip peek onBerty={() => setOpenId(HOUSE_BERTY)} onMrk={() => setOpenId(HOUSE_MRK)} />;
 
   function go(next: View) {
     if (embed) {
       setView("overview");
       return;
     }
-    const teacher = ["admin", "score", "grades", "projects", "skills", "store", "studyhall"].includes(next);
-    if (teacher && !unlocked) {
+    const teacher = ["admin", "score", "grades", "projects", "skills", "store", "studyhall", "crew", "lucky"].includes(next);
+    if (teacher && !unlocked && !(next === "crew" && crewOn)) {
       setPendingView(next);
       setPinOpen(true);
+      return;
+    }
+    if (crewOn && next !== "crew") {
       return;
     }
     startTransition(() => {
@@ -133,12 +159,28 @@ export function Board() {
         flashMsg("Stocks is off · Admin");
         return;
       }
+      if (next === "lucky" && !featureOn(file, "lucky")) {
+        flashMsg("Lucky Bench is off · Admin");
+        return;
+      }
       if (next === "store" && !featureOn(file, "store")) {
         flashMsg("Store is off · Admin");
         return;
       }
+      if (next === "prints" && !featureOn(file, "prints")) {
+        flashMsg("Prints is off · Admin");
+        return;
+      }
       if (next === "portal" && !featureOn(file, "portal")) {
         flashMsg("Portal is off · Admin");
+        return;
+      }
+      if (next === "polls" && !featureOn(file, "polls")) {
+        flashMsg("Polls is off · Admin");
+        return;
+      }
+      if (next === "teach" && !featureOn(file, "teach")) {
+        flashMsg("Teach is off · Admin");
         return;
       }
       setView(next);
@@ -146,12 +188,45 @@ export function Board() {
   }
 
   function goDesk(_panel?: DeskPanel) {
+    if (crewOn) return;
     if (!unlocked) {
       setPendingView("score");
       setPinOpen(true);
       return;
     }
     startTransition(() => setView("score"));
+  }
+
+  function runJob(job: NextJob) {
+    if (job.go === "schooltool") {
+      window.open(SCHOOLTOOL_URL, "_blank", "noreferrer");
+      return;
+    }
+    if (job.go === "export") {
+      void exportLive();
+      return;
+    }
+    if (job.go === "score") {
+      if (job.period) setJumpPeriod(job.period);
+      if (job.crew) setJumpCrew(job.crew);
+      if (job.date) setJumpDate(job.date);
+      goDesk("score");
+      return;
+    }
+    if (job.go === "hall") {
+      go(unlocked ? "studyhall" : "hallwall");
+      return;
+    }
+    if (job.go === "teach") {
+      go("teach");
+      return;
+    }
+    if (job.go === "admin") {
+      setAdminPane("today");
+      go("admin");
+      return;
+    }
+    go("overview");
   }
 
   function flashMsg(msg: string, tone?: "ok" | "warn" | "loss") {
@@ -220,7 +295,8 @@ export function Board() {
     }
     try {
       setUnlocked(isUnlocked());
-      setCrewOn(crewUnlocked());
+      lockCrew();
+      setCrewOn(false);
       applyTheme(storedTheme());
       applyVibe(storedVibe());
       paintContrast(storedContrast());
@@ -236,12 +312,13 @@ export function Board() {
       void import("@/components/learning-center");
       void import("@/components/admin-hub");
     };
+    if (document.documentElement.dataset.layout === "mobile") return;
     const ric = (window as Window & { requestIdleCallback?: (fn: () => void, opts?: { timeout: number }) => number }).requestIdleCallback;
     if (ric) {
-      const id = ric(run, { timeout: 1200 });
+      const id = ric(run, { timeout: 4000 });
       return () => (window as Window & { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback?.(id);
     }
-    const t = window.setTimeout(run, 400);
+    const t = window.setTimeout(run, 2200);
     return () => window.clearTimeout(t);
   }, []);
 
@@ -251,6 +328,29 @@ export function Board() {
       return;
     }
     saveDesk(file);
+  }, [file]);
+
+  useEffect(() => {
+    const flush = () => {
+      if (deskSavePending()) saveDeskNow(file);
+    };
+    const onLeave = (e: BeforeUnloadEvent) => {
+      if (!deskSavePending()) return;
+      saveDeskNow(file);
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    const onHide = () => {
+      if (document.visibilityState === "hidden") flush();
+    };
+    window.addEventListener("pagehide", flush);
+    window.addEventListener("visibilitychange", onHide);
+    window.addEventListener("beforeunload", onLeave);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      window.removeEventListener("visibilitychange", onHide);
+      window.removeEventListener("beforeunload", onLeave);
+    };
   }, [file]);
 
   useEffect(() => {
@@ -282,30 +382,32 @@ export function Board() {
 
   useEffect(() => {
     if (!unlocked) {
-      const ok = ["overview", "week", "year", "portal"];
+      const ok = ["overview", "week", "year", "portal", "prints", "teach", "polls", "deck"];
       if (crewOn) ok.push("crew");
       if (!ok.includes(view)) setView("overview");
     }
   }, [unlocked, view]);
 
-  const liveP = periodNow(file.meta.config?.schedule);
+  const liveP = periodNow(deskBellId(file));
   const mode = modeOf(view);
   const layout = useLayout();
   const phone = layout === "mobile";
   const surface = surfaceOf(layout, { unlocked, embed, portal: portalMode });
-  const projector = surface === "projector";
   const workstation = surface === "workstation";
 
   useEffect(() => {
     if (typeof document === "undefined") return;
     document.documentElement.dataset.edit = unlocked ? "on" : "off";
     document.documentElement.dataset.surface = surface;
+    document.documentElement.dataset.crew = crewOn ? "on" : "off";
     return () => {
       document.documentElement.dataset.edit = "off";
+      document.documentElement.dataset.crew = "off";
     };
-  }, [unlocked, surface]);
+  }, [unlocked, surface, crewOn]);
 
   function goMode(next: Mode) {
+    if (crewOn) return;
     if (next === "board") go("overview");
     else if (next === "desk") {
       setDeskPad("effort");
@@ -326,52 +428,144 @@ export function Board() {
     mode === "board"
       ? [
           { id: "overview", label: "Overview", on: view === "overview", onClick: () => go("overview") },
+          { id: "teach", label: "Teach", on: view === "teach", onClick: () => go("teach"), hidden: !featureOn(file, "teach") },
+          { id: "deck", label: "Deck", on: view === "deck", onClick: () => go("deck") },
+          { id: "polls", label: "Polls", on: view === "polls", onClick: () => go("polls"), hidden: !featureOn(file, "polls") },
           { id: "week", label: "Week", on: view === "week", onClick: () => go("week") },
           { id: "year", label: "YTD", on: view === "year", onClick: () => go("year") },
+          { id: "prints", label: "Prints", on: view === "prints", onClick: () => go("prints"), hidden: !featureOn(file, "prints") },
         ]
       : mode === "desk"
         ? [
-            { id: "effort", label: "Check-in", on: view === "score", onClick: () => { setDeskPad("effort"); goDesk("score"); } },
-            { id: "crew", label: "Crew", on: view === "crew", onClick: () => go("crew") },
+            { id: "effort", label: "Daily scoring", on: view === "score", onClick: () => { setDeskPad("effort"); goDesk("score"); } },
           ]
         : mode === "learn"
           ? [
               { id: "book", label: "Book", on: learnStart === "grades" || learnStart === "book", onClick: () => { setLearnStart("grades"); go("skills"); } },
               { id: "projects", label: "Projects", on: learnStart === "projects", onClick: () => { setLearnStart("projects"); go("skills"); } },
               { id: "skills", label: "Skills", on: learnStart === "skills", onClick: () => { setLearnStart("skills"); setView("skills"); } },
+              { id: "words", label: "Words", on: learnStart === "words", onClick: () => { setLearnStart("words"); go("skills"); } },
               { id: "guide", label: "Guide", on: learnStart === "guide" || learnStart === "bench", onClick: () => { setLearnStart("guide"); go("skills"); } },
             ]
           : [
-              { id: "today", label: "Today", on: view === "admin" && adminPane === "today", onClick: () => { setAdminPane("today"); go("admin"); } },
-              { id: "data", label: "Data", on: view === "data", onClick: () => go("data") },
-              { id: "wallet", label: "Stocks", on: view === "wallet", onClick: () => go("wallet"), hidden: !featureOn(file, "stocks") },
-              { id: "studyhall", label: "Hall Mgr", on: view === "studyhall" || view === "hallwall", onClick: () => go("studyhall"), hidden: !featureOn(file, "studyhall") },
-              { id: "club", label: "Club", on: view === "club" || view === "clubwall", onClick: () => go("club"), hidden: !featureOn(file, "club") },
-              { id: "vault", label: "Device", on: view === "admin" && adminPane === "vault", onClick: () => { setAdminPane("vault"); go("admin"); } },
-              { id: "more", label: "More", on: view === "admin" && adminPane !== "today" && adminPane !== "vault", onClick: () => { setAdminPane("modules"); go("admin"); } },
+              ...ADMIN_GROUPS.map((g) => ({
+                id: g.id,
+                label: g.label,
+                on: view === "admin" && paneInGroup(adminPane, g.id),
+                onClick: () => {
+                  if (!paneInGroup(adminPane, g.id)) setAdminPane(defaultPane(g.id));
+                  go("admin");
+                },
+              })),
             ];
+
+  const wallBoard = subs.filter((s) => ["overview", "teach", "deck", "polls", "week", "year"].includes(s.id));
+  const section = sectionOf(view);
+
+  function goSection(next: AppSection) {
+    if (crewOn) return;
+    if (next === "dash") go("overview");
+    else if (next === "learn") {
+      setLearnStart("grades");
+      go("skills");
+    } else if (next === "crew") {
+      if (unlocked) {
+        setDeskPad("effort");
+        goDesk("score");
+        return;
+      }
+      setPendingView("crew");
+      setPinOpen(true);
+    } else if (unlocked) {
+      setAdminPane("today");
+      go("admin");
+    } else {
+      setPendingView("admin");
+      setPinOpen(true);
+    }
+  }
+
+  const v2Tabs: NavTab[] =
+    section === "dash"
+      ? [
+          { id: "wall", label: "Wall", on: view === "overview", onClick: () => go("overview") },
+          { id: "teach", label: "Teach", on: view === "teach", onClick: () => go("teach"), hidden: !featureOn(file, "teach") },
+          { id: "deck", label: "Deck", on: view === "deck", onClick: () => go("deck") },
+          { id: "week", label: "Week", on: view === "week", onClick: () => go("week") },
+          { id: "year", label: "YTD", on: view === "year", onClick: () => go("year") },
+          { id: "polls", label: "Polls", on: view === "polls", onClick: () => go("polls"), hidden: phone || !featureOn(file, "polls") },
+          { id: "data", label: "Data", on: view === "data", onClick: () => go("data"), hidden: phone },
+          { id: "clubwall", label: "Club wall", on: view === "clubwall", onClick: () => go("clubwall"), hidden: phone || !featureOn(file, "club") },
+          { id: "hallwall", label: "Hall wall", on: view === "hallwall", onClick: () => go("hallwall"), hidden: phone || !featureOn(file, "studyhall") },
+        ]
+      : section === "learn"
+        ? [
+            { id: "book", label: "Book", on: learnStart === "grades" || learnStart === "book", onClick: () => { setLearnStart("grades"); go("skills"); } },
+            { id: "projects", label: "Projects", on: learnStart === "projects", onClick: () => { setLearnStart("projects"); go("skills"); } },
+            { id: "skills", label: "Skills", on: learnStart === "skills", onClick: () => { setLearnStart("skills"); go("skills"); } },
+            { id: "words", label: "Words", on: learnStart === "words", onClick: () => { setLearnStart("words"); go("skills"); } },
+            { id: "guide", label: "Guide", on: learnStart === "guide" || learnStart === "bench", onClick: () => { setLearnStart("guide"); go("skills"); } },
+          ]
+        : section === "crew"
+          ? []
+          : [
+              ...ADMIN_GROUPS.map((g) => ({
+                id: g.id,
+                label: g.label,
+                on: view === "admin" && paneInGroup(adminPane, g.id),
+                onClick: () => {
+                  if (!paneInGroup(adminPane, g.id)) setAdminPane(defaultPane(g.id));
+                  go("admin");
+                },
+              })),
+              { id: "club", label: "Club", on: view === "club", onClick: () => go("club"), hidden: phone || !featureOn(file, "club") },
+              { id: "hall", label: "Hall", on: view === "studyhall", onClick: () => go("studyhall"), hidden: phone || !featureOn(file, "studyhall") },
+              { id: "prints", label: "Prints", on: view === "prints", onClick: () => go("prints"), hidden: phone || !featureOn(file, "prints") },
+              { id: "stocks", label: "Stocks", on: view === "wallet", onClick: () => go("wallet"), hidden: phone || !featureOn(file, "stocks") },
+              { id: "lucky", label: "Lucky", on: view === "lucky", onClick: () => go("lucky"), hidden: phone || !featureOn(file, "lucky") },
+              { id: "store", label: "Store", on: view === "store", onClick: () => go("store"), hidden: phone || !featureOn(file, "store") },
+            ];
+
+  const navBar = navV2 ? null : workstation ? (
+    <ModeBar
+      mode={mode}
+      onMode={goMode}
+      subs={mode === "admin" ? [] : unlocked ? subs : mode === "board" ? wallBoard : []}
+      allow={wallModes}
+      onWarm={(m) => {
+        if (m === "desk") void import("@/components/score");
+        if (m === "learn") void import("@/components/learning-center");
+      }}
+      className="desk-modes"
+    />
+  ) : !phone ? (
+    <ModeBar mode={mode} onMode={goMode} subs={mode === "board" ? wallBoard : []} allow={wallModes} className="desk-modes" />
+  ) : null;
+
+  const appStrip =
+    navV2 && !crewOn ? <AppNav section={section} onSection={goSection} tabs={v2Tabs} unlocked={unlocked} hideSections={phone} /> : null;
 
   return (
     <TipsProvider on={describeOn}>
     <div className={cn(
       "board-root flex h-svh min-h-svh min-w-0 flex-col overflow-x-hidden overflow-y-hidden px-2 py-2 sm:px-3 sm:py-3 bg-bg",
       phone && (view === "score" || view === "crew" || view === "skills" || view === "grades" || view === "projects") ? "board-score" : "",
-    )} data-surface={surface}>
+      crewOn ? "p-0" : "",
+    )} data-surface={surface} data-crew={crewOn ? "on" : "off"}>
       {embed || portalMode ? (
         <div className="mb-1 flex items-center gap-2">
           <TwWordmark />
-          <VersionChip peek />
+          {verChip}
         </div>
-      ) : (
+      ) : crewOn && view === "crew" ? null : (
         <>
-        <header className="desk-chrome tw-gadget mb-1 min-w-0 px-2 py-1">
+        <header className="desk-chrome tw-gadget tw-hud mb-1 min-w-0">
           {phone ? (
             <>
               <div className="flex min-w-0 items-center gap-2">
                 <button type="button" onClick={() => go("overview")} title="FERPA wall · aliases only" className="min-w-0 shrink">
                   <TwWordmark />
                 </button>
-                <LayoutToggle compact />
                 <LockBar
                   unlocked={unlocked || crewOn}
                   onAsk={() => setPinOpen(true)}
@@ -381,9 +575,45 @@ export function Board() {
                     setView("overview");
                   }}
                 />
-                <VersionChip peek />
+                {unlocked && dueN ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAdminPane("today");
+                      go("admin");
+                    }}
+                    className="tw-tap min-h-11 rounded-full bg-loss px-3 text-sm font-bold text-accent-fg"
+                  >
+                    {dueN}
+                  </button>
+                ) : null}
+                <button type="button" title="How this class works" aria-label="Help" onClick={() => setHelpOpen(true)} className="tw-tap relative z-30 ml-auto inline-flex size-11 shrink-0 items-center justify-center rounded-md text-fg hover:bg-elevated">
+                  <CircleHelp className="size-6" />
+                </button>
               </div>
-              <div className="mt-1.5 flex items-center gap-2">
+              <div className="mt-1.5 min-w-0">
+                {navV2 ? (
+                  appStrip
+                ) : (
+                  <div className="flex flex-wrap items-center gap-2">
+                {featureOn(file, "teach") ? (
+                  <button
+                    type="button"
+                    onClick={() => go("teach")}
+                    className={cn("tw-tap min-h-11 rounded-full px-4 text-base font-semibold", view === "teach" ? "bg-fg text-bg" : "bg-elevated")}
+                  >
+                    Teach
+                  </button>
+                ) : null}
+                {featureOn(file, "polls") ? (
+                  <button
+                    type="button"
+                    onClick={() => go("polls")}
+                    className={cn("tw-tap min-h-11 rounded-full px-4 text-base font-semibold", view === "polls" ? "bg-fg text-bg" : "bg-elevated")}
+                  >
+                    Polls
+                  </button>
+                ) : null}
                 {featureOn(file, "studyhall") ? (
                   <button
                     type="button"
@@ -408,46 +638,17 @@ export function Board() {
                 >
                   Admin
                 </button>
-                {unlocked && dueN ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAdminPane("today");
-                      go("admin");
-                    }}
-                    className="tw-tap ml-auto min-h-10 rounded-full bg-loss px-3 text-xs font-semibold uppercase tracking-wide text-accent-fg"
-                  >
-                    {dueN} due
-                  </button>
-                ) : null}
+                  </div>
+                )}
               </div>
             </>
           ) : (
+            <div className="flex min-w-0 flex-col gap-1">
             <div className="nav-cluster flex min-w-0 items-center gap-1 sm:flex-nowrap sm:gap-2">
               <button type="button" onClick={() => go("overview")} title="FERPA wall · aliases only" className="shrink-0">
                 <TwWordmark />
               </button>
-              {workstation ? (
-                <ModeBar
-                  mode={mode}
-                  onMode={goMode}
-                  subs={mode === "admin" ? [] : unlocked ? subs : []}
-                  allow={wallModes}
-                  onWarm={(m) => {
-                    if (m === "desk") void import("@/components/score");
-                    if (m === "learn") void import("@/components/learning-center");
-                  }}
-                  className="desk-modes"
-                />
-              ) : !phone ? (
-                <ModeBar
-                  mode={mode}
-                  onMode={goMode}
-                  subs={[]}
-                  allow={wallModes}
-                  className="desk-modes"
-                />
-              ) : null}
+              {navBar}
               <div className="relative z-20 ml-auto flex shrink-0 items-center gap-1">
                 {unlocked && workstation ? (
                   <div className="relative hidden md:block">
@@ -459,13 +660,41 @@ export function Board() {
                       placeholder="Find"
                       className="h-9 w-24 rounded-md bg-elevated pl-7 pr-2 text-sm outline-none"
                     />
+                    {qFind && (houseMatch.length || hits.length) ? (
+                      <ul className="absolute right-0 top-10 z-40 w-56 overflow-hidden rounded-xl bg-surface ring-1 ring-border">
+                        {houseMatch.map((h) => (
+                          <li key={h.id}>
+                            <button type="button" onClick={() => openHouse(h.id)} className="tw-tap flex min-h-10 w-full items-center px-3 text-left text-sm font-semibold">
+                              {h.alias}
+                              <span className="ml-auto text-[10px] uppercase tracking-wide text-muted">{h.role}</span>
+                            </button>
+                          </li>
+                        ))}
+                        {hits.map((s) => (
+                          <li key={s.id}>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setQuery("");
+                                setOpenId(s.id);
+                              }}
+                              className="tw-tap flex min-h-10 w-full items-center px-3 text-left text-sm"
+                            >
+                              {s.first}
+                              <span className="ml-auto font-mono text-[10px] text-muted">P{s.period}</span>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
                   </div>
                 ) : null}
+                {unlocked ? <NextJobChip file={file} onGo={runJob} /> : null}
                 {workstation ? (
                   <NowDock
-                    schedule={file.meta.config?.schedule}
+                    schedule={deskBellId(file)}
                     lunch={lunchOn(file, todayIso())}
-                    onClick={() => go("overview")}
+                    onClick={() => runJob({ id: "now", label: "Now", hint: "", tone: "ok", go: "overview" })}
                   />
                 ) : null}
                 <LayoutToggle compact />
@@ -478,8 +707,11 @@ export function Board() {
                     setView("overview");
                   }}
                 />
-                <VersionChip peek />
-                {unlocked && dueN ? (
+                <button type="button" title="How this class works" aria-label="Help" onClick={() => setHelpOpen(true)} className="tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-md text-fg hover:bg-elevated">
+                  <CircleHelp className="size-5" />
+                </button>
+                {verChip}
+                {unlocked && dueN && mode !== "board" ? (
                   <button
                     type="button"
                     onClick={() => {
@@ -492,6 +724,8 @@ export function Board() {
                   </button>
                 ) : null}
               </div>
+            </div>
+            {navV2 ? appStrip : null}
             </div>
           )}
         </header>
@@ -516,7 +750,7 @@ export function Board() {
           onHelp={() => setHelpOpen(true)}
         />
       ) : null}
-      {workstation && unlocked && slot.fridayPay && file.meta.config?.lastLiveExport !== todayIso() ? (
+      {workstation && unlocked && mode !== "board" && slot.fridayPay && file.meta.config?.lastLiveExport !== todayIso() ? (
         <button
           type="button"
           onClick={() => void exportLive()}
@@ -524,7 +758,7 @@ export function Board() {
         >
           Friday · export live (no names) before you leave. Names vault is a separate private file.
         </button>
-      ) : unlocked && liveP && isSchoolDay(today) && !isSubDay(file, today) && !exportedThisPeriod(file, today, liveP) ? (
+      ) : unlocked && mode !== "board" && liveP && isSchoolDay(today) && !isSubDay(file, today) && !exportedThisPeriod(file, today, liveP) ? (
         <button
           type="button"
           onClick={() => void exportLive()}
@@ -533,8 +767,8 @@ export function Board() {
           Export P{liveP} live · at least once this period. Names stay in the vault.
         </button>
       ) : null}
-      <div className="board-main flex min-h-0 flex-1 flex-col overflow-auto">
-      <CleanupStage file={file} unlocked={unlocked} onChange={setFile} off={view === "club" || view === "clubwall"}>
+      <div className="board-main flex min-h-0 flex-1 flex-col overflow-hidden">
+      <CleanupStage file={file} unlocked={unlocked} onChange={setFile} off={view !== "overview"}>
       <Suspense fallback={<p className="px-3 py-8 text-center text-sm text-gold">Loading wall…</p>}>
       {view === "admin" && unlocked ? (
         <AdminHub
@@ -561,10 +795,15 @@ export function Board() {
             go("skills");
           }}
           onStocks={() => go("wallet")}
+          onLucky={() => go("lucky")}
           onStore={() => go("store")}
+          onPrints={() => go("prints")}
           onStudyHall={() => go("studyhall")}
           onClub={() => go("club")}
           onData={() => go("data")}
+          onTeach={() => go("teach")}
+          onPolls={() => go("polls")}
+          onOpenId={(id) => setOpenId(id)}
           onExport={() => void exportLive()}
           onSave={saveNow}
           onHelp={() => setHelpOpen(true)}
@@ -590,30 +829,16 @@ export function Board() {
           startPad={deskPad}
           onRankUp={rankUp}
         />
-      ) : view === "crew" ? (
-        <ScoreDesk
+      ) : view === "crew" && crewOn ? (
+        <CrewLead
           file={file}
           onChange={setFile}
-          unlocked={unlocked}
           onNeedPin={() => setPinOpen(true)}
-          onOpenId={(id) => {
-            if (!unlocked) {
-              setPendingId(id);
-              setPinOpen(true);
-              return;
-            }
-            setOpenId(id);
+          onSignOut={() => {
+            setCrewOn(false);
+            lockCrew();
+            setView("overview");
           }}
-          jumpPeriod={jumpPeriod}
-          jumpCrew={jumpCrew}
-          jumpDate={jumpDate}
-          onOpenSettings={() => {
-            setAdminPane("room");
-            go("admin");
-          }}
-          mode="crew"
-          panel="score"
-          onRankUp={rankUp}
         />
       ) : view === "portal" || portalMode ? (
         <WorkerPortal file={file} />
@@ -643,8 +868,12 @@ export function Board() {
         />
       ) : view === "wallet" ? (
         <WalletBoard file={file} quote={quote} unlocked={unlocked} onNeedPin={() => setPinOpen(true)} onChange={setFile} />
+      ) : view === "lucky" ? (
+        <LuckyBoard file={file} unlocked={unlocked} onNeedPin={() => setPinOpen(true)} onChange={setFile} onFlash={(m) => flashMsg(m, m.includes("−") || m.includes("needs") ? "loss" : "ok")} />
       ) : view === "store" ? (
         <StoreBoard file={file} unlocked={unlocked} onNeedPin={() => setPinOpen(true)} onChange={setFile} onFlash={(m) => flashMsg(m, m.includes("can't") ? "loss" : "ok")} />
+      ) : view === "prints" ? (
+        <PrintsBoard file={file} unlocked={unlocked} onNeedPin={() => setPinOpen(true)} onChange={setFile} onFlash={(m) => flashMsg(m, m.includes("can't") ? "loss" : "ok")} />
       ) : view === "hallwall" ? (
         <StudyHallDash
           file={file}
@@ -666,9 +895,28 @@ export function Board() {
           onWall={() => go("hallwall")}
         />
       ) : view === "clubwall" ? (
-        <ClubBoard unlocked={unlocked} onNeedPin={() => setPinOpen(true)} wall onWall={() => go("club")} />
+        <ClubBoard unlocked={unlocked} onNeedPin={() => setPinOpen(true)} wall onWall={() => go("club")} desk={file} onDesk={setFile} />
       ) : view === "club" ? (
-        <ClubBoard unlocked={unlocked} onNeedPin={() => setPinOpen(true)} onWall={() => go("clubwall")} />
+        <ClubBoard unlocked={unlocked} onNeedPin={() => setPinOpen(true)} onWall={() => go("clubwall")} desk={file} onDesk={setFile} />
+      ) : view === "teach" ? (
+        teachStart === "plans" ? (
+          <LessonBoard
+            file={file}
+            unlocked={unlocked}
+            onChange={setFile}
+            onNeedPin={() => setPinOpen(true)}
+            onNow={() => {
+              setTeachStart("now");
+              go("teach");
+            }}
+          />
+        ) : (
+        <TeachBoard file={file} unlocked={unlocked} onChange={setFile} onNeedPin={() => setPinOpen(true)} onPolls={() => go("polls")} onBerty={() => setOpenId(HOUSE_BERTY)} />
+        )
+      ) : view === "polls" ? (
+        <PollBoard file={file} unlocked={unlocked} onChange={setFile} onNeedPin={() => setPinOpen(true)} />
+      ) : view === "deck" ? (
+        <DeckBoard />
       ) : view === "week" ? (
         <WeekBoard file={wallFile} list={list} bells={bells} cycle={file.meta.config?.currentCycle ?? 1} onPeriod={(p) => { setJumpPeriod(p); goDesk("score"); }} />
       ) : view === "year" ? (
@@ -695,10 +943,33 @@ export function Board() {
           onOpenId={(id) => setOpenId(id)}
           onChange={setFile}
           onClub={() => go("club")}
+          onHelp={() => setHelpOpen(true)}
+          onPrints={featureOn(file, "prints") ? () => go("prints") : undefined}
+          onOpenMod={(id) => {
+            if (id === "teach") go("teach");
+            else if (id === "polls") go("polls");
+            else if (id === "prints") go("prints");
+            else if (id === "lucky") go("lucky");
+            else if (id === "store") go("store");
+            else if (id === "stocks") go("wallet");
+            else if (id === "club") go("club");
+            else if (id === "studyhall") go(unlocked ? "studyhall" : "hallwall");
+            else if (id === "grades" || id === "nytech" || id === "projects") {
+              setLearnStart(id === "projects" ? "projects" : "book");
+              go("skills");
+            } else if (id === "crews") {
+              setAdminPane("crews");
+              go("admin");
+            } else if (id === "achievements") {
+              /* profile via search */
+            } else if (id === "picker" || id === "timer") {
+              /* tools live on dash */
+            } else if (id === "help" || id === "tips") setHelpOpen(true);
+          }}
         />
         </ErrorGate>
       )}
-      {helpOpen ? <HelpPanel onClose={() => setHelpOpen(false)} /> : null}
+      {helpOpen && !crewOn ? <HelpPanel onClose={() => setHelpOpen(false)} wallOnly={!unlocked} /> : null}
       {openId ? (
         <Dossier
           file={file}
@@ -712,12 +983,18 @@ export function Board() {
       </Suspense>
       </CleanupStage>
       </div>
-      {embed || portalMode ? null : (
+      {embed || portalMode || (crewOn && view === "crew") ? null : (
         <PhoneDock
           view={view === "skills" && learnStart === "projects" ? "projects" : view}
           pad={deskPad}
+          navV2={navV2}
           onBoard={() => go("overview")}
-          onCrew={() => go("crew")}
+          onCrew={() => goSection("crew")}
+          onTeach={() => {
+            setTeachStart("now");
+            go("teach");
+          }}
+          onOther={() => goSection("admin")}
           onSkills={() => {
             setLearnStart("grades");
             go("skills");
@@ -735,6 +1012,7 @@ export function Board() {
       </div>
       {pinOpen ? (
         <PinPad
+          want={pendingView === "crew" ? "crew" : "teacher"}
           onClose={() => {
             setPinOpen(false);
             setPendingView(null);
@@ -744,6 +1022,7 @@ export function Board() {
             if (kind === "crew") {
               setCrewOn(true);
               setUnlocked(false);
+              setHelpOpen(false);
               setView("crew");
               setPendingView(null);
               return;
@@ -751,7 +1030,7 @@ export function Board() {
             setUnlocked(true);
             setCrewOn(false);
             const next = pendingView;
-            if (next === "score") setView("score");
+            if (next === "score" || next === "crew") setView("score");
             else if (next === "grades" || next === "projects" || next === "skills") {
               setLearnStart(next === "grades" ? "grades" : next === "projects" ? "projects" : "skills");
               setView("skills");

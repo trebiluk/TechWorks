@@ -1,11 +1,34 @@
-import type { EconomyFile } from "@/lib/economy";
-import { bellFor, money } from "@/lib/economy";
-import { formatSchoolDate } from "@/lib/calendar";
-import { gradeSlots, letterOf, postedFor, recipeLine, sessionMark } from "@/lib/grades";
-import { skillsOf, skillScore } from "@/lib/skills";
+import type { EconomyFile, RawStudent } from "@/lib/economy";
+import { bellFor } from "@/lib/economy";
+import { formatSchoolDate, todayIso } from "@/lib/calendar";
+import { gradeSlots, letterOf, postedFor, sessionMark } from "@/lib/grades";
+import { SKILL_MARKS, skillsOf, skillScore } from "@/lib/skills";
+import { stemOf } from "@/lib/stems";
 import { workerCards } from "@/lib/report";
+import { APP_MARK } from "@/lib/copy";
 import { cn } from "@/lib/utils";
 
+function displayName(s: RawStudent, names: boolean) {
+  if (!names) return s.first;
+  const first = s.legalFirst || s.first;
+  const last = s.legalLast || s.last || "";
+  return last ? `${first} ${last}` : first;
+}
+
+function courseLine(file: EconomyFile, period: number, grade: number) {
+  const sec = file.meta.sections?.find((x) => x.period === period);
+  return sec?.course ? `${sec.course} · Grade ${grade}` : `Technology · Grade ${grade}`;
+}
+
+function skillWord(n: number) {
+  return SKILL_MARKS.find((m) => m.n === n)?.name ?? "";
+}
+
+function prettySkill(name: string) {
+  return name.charAt(0) + name.slice(1).toLowerCase();
+}
+
+/** Parent / family conference sheet. Wallet, IEP, and 3/2/1 codes stay off. */
 export function ReportCard({ file, id, names, print }: { file: EconomyFile; id: string; names: boolean; print?: boolean }) {
   const s = file.students.find((x) => x.id === id);
   if (!s) return null;
@@ -14,104 +37,96 @@ export function ReportCard({ file, id, names, print }: { file: EconomyFile; id: 
   const rows = slots.map((slot) => postedFor(file, s, slot));
   const avg = sessionMark(rows);
   const card = workerCards(file).find((c) => c.id === id);
-  const skills = skillsOf(file);
-  const projects = rows.filter((r) => r.slot.kind === "project");
-  const cycles = rows.filter((r) => r.slot.kind === "cycle");
-  const skillRows = rows.filter((r) => r.slot.kind === "skill");
+  const seen = skillsOf(file)
+    .map((sk) => ({ id: sk.id, name: prettySkill(sk.name), n: skillScore(s, sk.id) }))
+    .filter((sk) => sk.n > 0);
+  const present = (card?.counts["3"] ?? 0) + (card?.counts["2"] ?? 0) + (card?.counts["1"] ?? 0);
+  const excused = card?.counts.E ?? 0;
+  const absent = card?.counts.A ?? 0;
+  const personal = card?.counts.P ?? 0;
 
   return (
-    <section className={cn("mt-5 rounded-lg bg-elevated p-4 print:bg-white print:text-black", print ? "parent-print" : "")}>
-      <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-medium uppercase tracking-wider text-subtle">Report card</p>
+    <section className={cn("parent-sheet tw-gadget tw-hud mt-5 p-5 print:mt-0 print:rounded-none print:bg-white print:p-8 print:text-black print:shadow-none", print ? "parent-print" : "")}>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-subtle print:text-neutral-500">{APP_MARK} · family view</p>
+          <h2 className="mt-1 font-display text-3xl font-semibold tracking-tight">{displayName(s, names)}</h2>
+          <p className="mt-1 text-sm text-muted print:text-neutral-600">
+            {courseLine(file, s.period, grade)} · Period {s.period}
+            {s.crewKey ? ` · Crew ${s.crewKey}` : ""}
+          </p>
+          <p className="text-xs text-subtle print:text-neutral-500">{formatSchoolDate(todayIso())} · {file.meta.quarterName ?? "this quarter"}</p>
+        </div>
         {print ? (
-          <button type="button" onClick={() => window.print()} className="min-h-11 rounded-md bg-surface px-3 text-sm font-semibold print:hidden">
-            Print for parent
+          <button type="button" onClick={() => window.print()} className="tw-tap min-h-11 rounded-md bg-accent px-3 text-sm font-semibold text-accent-fg print:hidden">
+            Print for family
           </button>
         ) : null}
       </div>
-      <p className="mt-1 font-display text-2xl font-semibold">
-        {names && s.last ? `${s.first} ${s.last}` : s.first}
-        <span className="ml-2 text-base font-normal text-muted">
-          P{s.period} · {s.crewKey}
-        </span>
-      </p>
-      <p className="mt-1 font-mono text-3xl font-semibold tabular-nums">
-        {avg == null ? "—" : avg}
-        <span className="ml-2 text-xl text-muted">{letterOf(avg)}</span>
-      </p>
-      <p className="mt-1 text-xs text-subtle">{recipeLine()}</p>
 
-      <p className="mt-4 text-sm font-semibold uppercase tracking-wide text-subtle">Projects</p>
-      <ul className="mt-1 space-y-1 text-sm">
-        {(projects.length ? projects : cycles).map((r) => (
-          <li key={r.slot.id} className="flex justify-between gap-3 border-t border-border py-1">
-            <span>
-              {r.slot.title}
-              <span className="mt-0.5 block text-xs text-subtle">{r.evidence}</span>
-            </span>
-            <span className="font-mono">
-              {r.posted == null ? "—" : r.posted} {letterOf(r.posted)}
-              {r.edited ? <span className="ml-1 text-xs text-subtle">edit</span> : null}
-            </span>
-          </li>
-        ))}
-      </ul>
-
-      {skillRows.length ? (
-        <>
-      <p className="mt-4 text-sm font-semibold uppercase tracking-wide text-subtle">What can they do?</p>
-      <ul className="mt-1 space-y-1 text-sm">
-        {skillRows.map((r) => (
-          <li key={r.slot.id} className="flex justify-between gap-3 border-t border-border py-1">
-            <span>
-              {r.slot.title}
-              <span className="mt-0.5 block text-xs text-subtle">{r.evidence}</span>
-            </span>
-            <span className="font-mono">
-              {r.posted == null ? "—" : r.posted} {letterOf(r.posted)}
-              {r.edited ? <span className="ml-1 text-xs text-subtle">edit</span> : null}
-            </span>
-          </li>
-        ))}
-      </ul>
-        </>
-      ) : (
-        <p className="mt-4 text-sm font-semibold uppercase tracking-wide text-subtle">Skill growth lives inside each activity · not a second mark</p>
-      )}
-
-      {card ? (
-        <>
-          <p className="mt-4 text-sm font-semibold uppercase tracking-wide text-subtle">Evidence (not in the mark)</p>
-          <p className="mt-1 text-sm text-muted">
-            Effort 3/2/1: {card.counts["3"] ?? 0} / {card.counts["2"] ?? 0} / {card.counts["1"] ?? 0}
-            <span className="mx-2">·</span>
-            Absent {card.counts.A ?? 0} · Excused {card.counts.E ?? 0} · Personal {card.counts.P ?? 0}
+      <div className="mt-5 grid gap-3 sm:grid-cols-[auto_1fr] sm:items-center">
+        <div className="rounded-xl bg-elevated px-5 py-4 print:border print:border-neutral-300 print:bg-white">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-subtle">Marking period</p>
+          <p className="mt-1 font-display text-5xl font-semibold tabular-nums leading-none">
+            {avg == null ? "—" : avg}
+            <span className="ml-2 font-display text-3xl text-muted print:text-neutral-500">{letterOf(avg)}</span>
           </p>
-          <p className="text-sm text-muted">
-            Perks {money(card.quarter)} · stock {money(card.stock)} — wallet is a class game, not a grade.
-          </p>
-          <p className="mt-2 text-sm font-semibold">Wallet and stock are classroom games. They are not the report-card mark.</p>
-          <div className="mt-2 flex flex-wrap gap-1">
-            {skills.map((sk) => (
-              <span key={sk.id} className={cn("rounded-md bg-surface px-2 py-1 text-xs", skillScore(s, sk.id) ? "text-fg" : "text-subtle")}>
-                {sk.name} {skillScore(s, sk.id) || "—"}
+        </div>
+        <p className="text-sm leading-relaxed text-muted print:text-neutral-700">
+          One grade for the project, from shop skills (Beginning → Distinguished). Showing up and the class perk game are not this number. Blank means not scored yet — not a zero.
+        </p>
+      </div>
+
+      <p className="mt-6 text-[11px] font-semibold uppercase tracking-wider text-subtle">Project</p>
+      <ul className="mt-1">
+        {rows.map((r) => (
+          <li key={r.slot.id} className="flex items-baseline justify-between gap-3 border-t border-border py-2 print:border-neutral-200">
+            <span>
+              <span className="font-semibold">{r.slot.title}</span>
+              <span className="mt-0.5 block text-sm text-muted print:text-neutral-600">
+                {r.posted == null ? "In progress — no mark posted yet." : r.evidence}
               </span>
-            ))}
-          </div>
-          <p className="mt-4 text-sm font-semibold uppercase tracking-wide text-subtle">What happened</p>
-          <ul className="mt-1 text-sm">
-            {card.stamps.filter((st) => st.happened || st.note || st.activity).slice(-8).map((st) => (
-              <li key={st.date} className="border-t border-border py-1 text-muted">
-                {formatSchoolDate(st.date)}
-                {st.goal ? ` · ${st.goal}` : ""}
-                {st.activity ? ` · ${st.activity}` : ""}
-                {st.happened ? ` — ${st.happened}` : ""}
-                {st.note ? ` (${st.note})` : ""}
+            </span>
+            <span className="shrink-0 font-mono text-lg tabular-nums">
+              {r.posted == null ? "—" : r.posted} <span className="text-sm text-muted">{letterOf(r.posted)}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      {seen.length ? (
+        <>
+          <p className="mt-6 text-[11px] font-semibold uppercase tracking-wider text-subtle">What they can do</p>
+          <ul className="mt-1 divide-y divide-border print:divide-neutral-200">
+            {seen.map((sk) => (
+              <li key={sk.id} className="flex items-baseline justify-between gap-3 py-2">
+                <span>
+                  <span className="font-semibold">{sk.name}</span>
+                  <span className="mt-0.5 block text-sm text-muted print:text-neutral-600">{stemOf(sk.id, sk.n) || skillWord(sk.n)}</span>
+                </span>
+                <span className="shrink-0 text-sm font-semibold">
+                  {sk.n} · {skillWord(sk.n)}
+                </span>
               </li>
             ))}
           </ul>
         </>
-      ) : null}
+      ) : (
+        <p className="mt-6 text-sm text-muted">Skill marks will appear here once workshop work is scored.</p>
+      )}
+
+      <p className="mt-6 text-[11px] font-semibold uppercase tracking-wider text-subtle">Time in class</p>
+      <p className="mt-1 text-sm text-muted print:text-neutral-700">
+        Present {present}
+        {excused ? ` · Excused ${excused}` : ""}
+        {absent ? ` · Absent ${absent}` : ""}
+        {personal ? ` · Personal day ${personal}` : ""}
+        <span className="block text-xs text-subtle">Presence is recorded. It is not averaged into the project grade.</span>
+      </p>
+
+      <p className="mt-6 text-xs leading-relaxed text-subtle print:text-neutral-500">
+        Classroom perks and the stock game are practice, not this report. Real names do not appear on the public class wall.
+      </p>
     </section>
   );
 }

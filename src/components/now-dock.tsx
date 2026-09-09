@@ -1,5 +1,6 @@
 import { leftClock, periodClock, periodNow } from "@/lib/bells";
 import { useShopClock } from "@/lib/use-clock";
+import { BertyPeek } from "@/components/berty";
 import { cn } from "@/lib/utils";
 
 export function NowDock({
@@ -11,7 +12,7 @@ export function NowDock({
   lunch?: string;
   onClick?: () => void;
 }) {
-  const now = useShopClock(schedule);
+  const now = useShopClock(schedule, "fine");
   const live = periodNow(schedule, now);
   const clock = live != null ? periodClock(live, schedule, now) : null;
   const hot = Boolean(clock?.cleanup);
@@ -28,6 +29,7 @@ export function NowDock({
     >
       <span className="hidden text-[10px] font-semibold uppercase tracking-widest opacity-70 sm:inline">Now</span>
       <span className="font-display text-sm font-semibold">{live != null ? `P${live}` : "—"}</span>
+      {hot ? <BertyPeek pose="point" /> : null}
       <span className="font-mono text-sm tabular-nums">{clock?.live ? tick : "idle"}</span>
       {lunch ? <span className="hidden max-w-[9rem] truncate text-xs opacity-80 lg:inline">{lunch}</span> : null}
     </button>

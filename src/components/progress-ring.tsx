@@ -6,18 +6,20 @@ export function ProgressRing({
   sub,
   tone = "accent",
   size = "sm",
+  live,
 }: {
   pct: number;
   label: string;
   sub?: string;
   tone?: "accent" | "gold" | "gain" | "warn";
   size?: "sm" | "md";
+  live?: boolean;
 }) {
   const p = Math.max(0, Math.min(100, Number.isFinite(pct) ? pct : 0));
   return (
     <div className="flex flex-col items-center gap-1">
       <div
-        className={cn("tw-ring", size === "md" ? "tw-ring-md" : "", `tw-ring-${tone}`)}
+        className={cn("tw-ring", size === "md" ? "tw-ring-md" : "", `tw-ring-${tone}`, live && "tw-ring-live")}
         style={{ ["--pct" as string]: p }}
         role="img"
         aria-label={`${sub ?? ""} ${Math.round(p)} percent`}

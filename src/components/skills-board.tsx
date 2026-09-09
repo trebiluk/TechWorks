@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
-import { bellFor, isLiveStudent, periodTitle, score, shopBells } from "@/lib/economy";
-import { PORTRAIT, SKILL_MARKS, SKILL_WHY, SKILL_TRACK, SOFT_TRACK, ALL_TRACK, crossedBand, setSkillScore, skillForGoal, skillScore, skillTrackOf, skillXp, skillsOfFamily, workerLevel, xpIntoLevel, type SkillFamily } from "@/lib/skills";
-import { abOn, onAbRoster, periodGoal } from "@/lib/store";
+import { isLiveStudent, periodTitle, score, shopBells } from "@/lib/economy";
+import { PORTRAIT, SKILL_MARKS, SKILL_WHY, ALL_TRACK, crossedBand, setSkillScore, skillForGoal, skillScore, skillTrackOf, skillXp, skillsOfFamily, workerLevel, xpIntoLevel, type SkillFamily } from "@/lib/skills";
+import { STEM_LABEL, stemLettersOf, stemOf, stemsOf } from "@/lib/stems";
+import { abOn, deskBellId, onAbRoster, periodGoal } from "@/lib/store";
+import { crewsOf } from "@/lib/crews";
 import { agendaFor } from "@/lib/projects";
 import { todayIso } from "@/lib/calendar";
 import { periodNow } from "@/lib/bells";
@@ -47,6 +49,7 @@ function SkillGuide() {
               <tr className="text-subtle">
                 <th className="py-1 font-medium">Skill</th>
                 <th className="py-1 font-medium">What you actually watch</th>
+                <th className="py-1 font-medium">STEM</th>
                 <th className="py-1 font-medium">Portrait</th>
                 <th className="py-1 font-medium">NY Standard 5</th>
               </tr>
@@ -56,6 +59,9 @@ function SkillGuide() {
                 <tr key={s.id} className="border-t border-border">
                   <td className="py-1.5 font-semibold">{s.name}</td>
                   <td className="py-1.5 text-muted">{s.does}</td>
+                  <td className="py-1.5 font-mono text-xs text-gold" title={stemLettersOf(s.id).map((L) => STEM_LABEL[L]).join(" · ")}>
+                    {stemLettersOf(s.id).join("")}
+                  </td>
                   <td className="py-1.5 text-xs text-subtle">{PORTRAIT.find((p) => p.id === s.pog)?.label}</td>
                   <td className="py-1.5 font-mono text-xs text-subtle">{s.mst.join(" · ")}</td>
                 </tr>
@@ -72,7 +78,7 @@ function SkillGuide() {
               </li>
             ))}
           </ul>
-          <p className="mt-2 text-xs text-subtle">Marks are 1–4 (Beginning → Distinguished), same ladder as NY Tech. XP, not pay. Portrait of a Graduate is the attribute, not a second grade.</p>
+          <p className="mt-2 text-xs text-subtle">Marks are 1–4 (Beginning → Distinguished). Watch shows the four evidence stems — not a second MST score. XP, not pay. Portrait of a Graduate is the attribute, not a second grade.</p>
         </div>
       ) : null}
     </div>
@@ -114,7 +120,7 @@ export function SkillsBoard({
   const today = todayIso();
   const letter = abOn(file, today);
   const skills = skillsOfFamily(file, family);
-  const live = periodNow(file.meta.config?.schedule);
+  const live = periodNow(deskBellId(file));
   const [period, setPeriod] = useState(() =>
     live && bells.some((b) => b.period === live) ? live : (bells[0]?.period ?? 1),
   );
@@ -141,21 +147,14 @@ export function SkillsBoard({
     return applySort(decorateRank(file, liveKids), sort);
   }, [file, period, letter, sort]);
 
-  const crews = useMemo(() => {
-    const keys = [...new Set(kids.map((s) => s.crewKey))];
-    keys.sort();
-    return keys.map((key) => ({
-      key,
-      name: file.crews.find((c) => c.period === period && c.key === key)?.name ?? key,
-      kids: kids.filter((s) => s.crewKey === key),
-    }));
-  }, [kids, file.crews, period]);
+  const crews = useMemo(() => crewsOf(file, period, today), [file, period, today]);
+  const crew = crews.find((c) => c.key === crewKey);
 
   useEffect(() => {
     if (!crews.some((c) => c.key === crewKey)) setCrewKey(crews[0]?.key ?? "");
   }, [crews, crewKey]);
 
-  const crew = crews.find((c) => c.key === crewKey) ?? crews[0];
+  const target = (agenda.activity?.expect ?? 3) as 1 | 2 | 3 | 4;
   function goNextCrew() {
     if (!crews.length) return;
     const i = crews.findIndex((c) => c.key === crew?.key);
@@ -167,7 +166,7 @@ export function SkillsBoard({
   const skill = skills.find((s) => s.id === parentId) ?? skills[0];
   const sub = skillTrackOf(parentId)?.subs.find((x) => `${parentId}:${x.id}` === skillId);
   const seen = kids.filter((s) => skillScore(s, skillId) > 0).length;
-  const need = kids.filter((s) => skillScore(s, skillId) <= 1);
+  const need = kids.filter((s) => skillScore(s, skillId) === 0);
 
   function tap(id: string, sk: string, n: number) {
     if (!unlocked) {
@@ -178,10 +177,18 @@ export function SkillsBoard({
     if (!row) return;
     const cur = skillScore(row, sk);
     const before = skillXp(file, id);
-    const next = setSkillScore(file, id, sk, cur === n ? 0 : n);
+    const next = setSkillScore(file, id, sk, cur === n ? 0 : n, {
+      source: mode,
+      crewKey: crew?.key,
+      projectId: agenda.project?.id || agenda.title,
+    });
     const band = crossedBand(file, before, skillXp(next, id));
     onChange(next);
     if (band) onRankUp?.(row.first, band);
+    if (mode === "watch" && crew && cur === 0 && n > 0) {
+      const left = crew.kids.filter((s) => s.id !== id && skillScore(s, sk) === 0);
+      if (!left.length) window.setTimeout(() => goNextCrew(), 220);
+    }
   }
 
   function tapMst(id: string, sid: MstSkillId, n: number) {
@@ -194,7 +201,7 @@ export function SkillsBoard({
   }
 
   const modes = [
-    { id: "watch" as const, label: "Watch", hint: "One skill. Walk the room." },
+    { id: "watch" as const, label: "Watch", hint: "One skill. Four stems. Walk the room." },
     { id: "map" as const, label: "Sit-down", hint: "Every skill for this class. PIN." },
     ...(featureOn(file, "nytech")
       ? [{ id: "standard" as const, label: "NY Tech", hint: "State Standard 5 on the project." }]
@@ -211,7 +218,7 @@ export function SkillsBoard({
               key={b.period}
               type="button"
               onClick={() => setPeriod(b.period)}
-              className={cn("min-h-11 rounded-md px-3 text-sm font-semibold", period === b.period ? "bg-accent text-accent-fg" : "text-muted hover:bg-elevated")}
+              className={cn("min-h-12 rounded-lg px-3 text-base font-semibold", period === b.period ? "bg-accent text-accent-fg" : "text-muted hover:bg-elevated")}
             >
               {periodTitle(b.period, bells)}
             </button>
@@ -230,7 +237,7 @@ export function SkillsBoard({
                 }
                 setMode(m.id);
               }}
-              className={cn("min-h-11 rounded-md px-3 text-sm font-semibold", mode === m.id ? "bg-gold text-bg" : "text-muted hover:bg-elevated")}
+              className={cn("min-h-12 rounded-lg px-4 text-base font-semibold", mode === m.id ? "bg-gold text-bg" : "text-muted hover:bg-elevated")}
             >
               {m.label}
             </button>
@@ -250,7 +257,20 @@ export function SkillsBoard({
                 {sub ? ` · ${sub.name}` : ""}
               </p>
               <p className="text-sm text-muted">{sub?.does ?? skillTrackOf(skill.id)?.does ?? SKILL_WHY[skill.id]}</p>
+              <span className="font-mono text-[11px] uppercase tracking-wider text-gold">
+                {stemLettersOf(skillId).join(" · ")}
+              </span>
             </div>
+            {agenda.project?.prompt ? <p className="mt-1 text-sm text-gold">{agenda.project.prompt}</p> : null}
+            <p className="mt-1 text-xs text-subtle">Look for a {target}: {stemOf(skillId, target)}</p>
+            <ol className="mt-2 grid gap-1 sm:grid-cols-2">
+              {stemsOf(skillId).map((row) => (
+                <li key={row.n} className="flex gap-2 text-sm">
+                  <span className={cn("font-mono font-semibold", agenda.activity?.expect === row.n ? "text-gold" : "text-fg")}>{row.n}</span>
+                  <span className="text-muted">{row.text}</span>
+                </li>
+              ))}
+            </ol>
             <div className="mt-1 flex flex-wrap items-center gap-2 text-sm">
               <span className="text-subtle">Goal: {goal || "—"}</span>
               <span className="text-subtle">
@@ -321,30 +341,31 @@ export function SkillsBoard({
               );
             })}
           </div>
-          <div className="grid min-h-0 flex-1 grid-cols-1 gap-1.5 overflow-auto sm:grid-cols-2">
+          <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 overflow-auto sm:grid-cols-2">
             {(crew?.kids ?? []).map((s) => {
               const cur = skillScore(s, skillId);
               return (
-                <article key={s.id} className="flex flex-col gap-1 rounded-xl bg-surface p-2">
-                  <button type="button" onClick={() => onOpenId(s.id)} className="truncate text-left font-display text-lg font-semibold">
+                <article key={s.id} className={cn("flex min-h-0 flex-col gap-2 rounded-2xl bg-surface p-3", cur === 0 ? "ring-1 ring-gold/60" : "")}>
+                  <button type="button" onClick={() => onOpenId(s.id)} className="truncate text-left font-display text-2xl font-semibold">
                     {s.first}
                   </button>
-                  <div className="grid h-14 grid-cols-4 gap-1">
+                  <div className="grid min-h-20 flex-1 grid-cols-4 gap-1.5">
                     {MARKS.map((m) => (
                       <button
                         key={m.n}
                         type="button"
-                        title={m.why}
+                        title={stemOf(skillId, m.n)}
                         onClick={() => tap(s.id, skillId, m.n)}
                         className={cn(
-                          "tw-tap rounded-lg font-display text-2xl font-semibold",
-                          cur === m.n ? "bg-accent text-accent-fg" : "bg-elevated text-muted",
+                          "tw-tap min-h-16 rounded-xl font-display text-3xl font-semibold",
+                          cur === m.n ? "bg-accent text-accent-fg" : agenda.activity?.expect === m.n ? "bg-elevated text-gold ring-1 ring-gold/50" : "bg-elevated text-muted",
                         )}
                       >
                         {m.n}
                       </button>
                     ))}
                   </div>
+                  {cur ? <p className="text-sm text-muted">{stemOf(skillId, cur)}</p> : <p className="text-sm font-semibold text-gold">Not seen</p>}
                 </article>
               );
             })}
@@ -361,19 +382,20 @@ export function SkillsBoard({
                 if (!crew) return;
                 let next = file;
                 for (const s of crew.kids) {
-                  if (skillScore(s, skillId) === 0) next = setSkillScore(next, s.id, skillId, 3);
+                  if (skillScore(s, skillId) === 0) next = setSkillScore(next, s.id, skillId, target, { source: "watch", crewKey: crew.key, projectId: agenda.project?.id });
                 }
                 onChange(next);
               }}
-              className="inline-flex min-h-12 flex-1 items-center justify-center rounded-lg bg-elevated text-sm font-medium disabled:opacity-40"
+              className="inline-flex min-h-14 flex-1 items-center justify-center rounded-xl bg-elevated text-base font-semibold disabled:opacity-40"
+              title={stemOf(skillId, target)}
             >
-              All 3s
+              All {target}s
             </button>
             <button
               type="button"
               disabled={!crew}
               onClick={goNextCrew}
-              className="inline-flex min-h-12 flex-1 items-center justify-center rounded-lg bg-accent text-sm font-medium text-accent-fg disabled:opacity-40"
+              className="inline-flex min-h-14 flex-1 items-center justify-center rounded-xl bg-accent text-base font-semibold text-accent-fg disabled:opacity-40"
             >
               Next crew
             </button>

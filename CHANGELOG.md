@@ -1,8 +1,329 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.80.28. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.90.0. -->
 
 # TechWorks changelog
 
-App version **1.80.28**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.90.0**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.90.0 — 2026-09-09
+
+- Shop URL is live: tw.kulibert.net (Cloudflare). Google book, Deck, STEM skills, empty roster (FERPA). Class uses that address — not pages.dev.
+
+## 1.83.1 — 2026-09-09
+
+- Deck stays on the projector without a teacher PIN (it was snapping back to the wall).
+
+## 1.83.0 — 2026-09-09
+
+- Default deck: Dash → Deck. Navy + violet 16:9 slides (how the class works, four beats, 3/2/1, skills 1–4, STEM, safety, Do this now, cleanup, blank master). Present full screen. PowerPoint download. Aliases only.
+
+## 1.82.0 — 2026-09-09
+
+- Google book: one 2026–27 workbook from Admin → Records (also Data). Tabs: README, LOCK, YEAR, a mini dashboard per class (P1 / P2 / P3 / P8 / P9 / P10), study hall, club, UNITS, STEM stems, SKILLS, full-year YEAR MARKS (C1D1–C8D4), LOG, MASTER, LEDGER, VAULT, CALENDAR, CONFIG.
+- Gold headers (`tw_` keys) are locked for the desk. extra_1–extra_8 are yours — rename the label, type anything. Do not insert columns between gold headers. VAULT is legal names; class tabs are aliases only. No Apps Script.
+
+## 1.81.0 — 2026-09-08
+
+
+- Skills are STEM units now: every workshop and soft skill (and subskill) has a 1–4 evidence stem — one sentence you can see in the room. Watch shows the four stems, gold-rings the expected mark, and stores the sentence on the skill log.
+- Projects are units: a driving question plus S/T/E/M chips. Activities carry the expected Watch mark. Dash and Watch show the question. Gradebook hover and the family sheet quote the stem, not just Beginning/Developing.
+- Learn → Guide lists the four stems per skill. Words covers STEM, driving question, and evidence stem. Not a second MST score — Standard 5 stays on NY Tech.
+
+## 1.80.99 — 2026-09-08
+
+- Cleanup: dropped unused scoring leftovers (dead shop/skill lists, changelog/embed cards, unused pin state). ESLint prefer-const and unused imports across desk files.
+
+## 1.80.98 — 2026-09-08
+
+- Admin is Today · Records · Crews · Day · Class · Theme · About. Records opens Backups then Roster (snapshot → download → import). Day (cycle, bells, sub) is its own chip again.
+- Cloudflare Pages: when `CF_PAGES` is set, Nitro uses `cloudflare_pages` (not Vercel). Build on GitHub: Node 22, command `npm run build`, output `.output/public`. `npm run build:pages` locally. Classroom book still lives on this device until the live pipe is wired.
+- Modules stay Wall · Crew · Learn · Tools · After school · Games · Extra.
+
+## 1.80.97 — 2026-09-08
+
+- Day 0: seed roster is empty. Clear workers (Roster or Admin → Backups) snapshots first, then wipes workers and the ledger. Crews, bells, theme, and projects stay.
+- Local backups manager: named snapshots, daily autos (30 days), download full backup (desk + Tech Club), restore from file, download all snapshots, CSV template. Empty desks save and reload — an older bigger roster cannot overwrite a newer clear.
+- Import: CSV or paste Last, First, Period, IEP, 504. Period in the file is kept. Ready for real names.
+
+## 1.80.96 — 2026-09-08
+
+- Roster: every worker gets a locked unique id first; the wall alias is generated after add (not from the legal name). Type Last, First on the roster to add. Edit alias, legal names, crew, and flags in the table. Auto-save on this device plus a Save chip; leaving the page flushes a pending save.
+- Existing ids stay put. Missing or duplicate ids are repaired on load without rewriting unique rows. Scores, XP, cash, skills, and ledger stay keyed to the id.
+
+## 1.80.95 — 2026-09-08
+
+- Menus wrap. Nothing scrolls sideways. Phone Dash chips: Wall · Teach · Week · YTD.
+- Crew lead PIN opens a gold **CREW LEAD · SIGNED IN** kiosk: 1 Daily scoring, 2 Our crew (roster, avatar, notes, here/nurse/library, color, logo). No Admin, no Dash tools.
+- Teacher keeps seating, bans, color, and logo in Admin → People. The Crew tab is daily scoring only.
+- Admin Today is side-by-side: My day on the left, schedule / meetings / announcements on the right. The extra Day tab is gone.
+- Modules regrouped: Wall · Crew · Learn · Tools · After school · Games · Extra.
+
+## 1.80.94 — 2026-09-08
+
+- Phone Learn: one nav (bottom dock + Book/Projects/Skills chips). Duplicate Learn rows gone. 1–4 skill pads are full-width and taller.
+
+## 1.80.93 — 2026-09-08
+
+- Week / Teach / after-school Dash actually scroll. Wall show-hide is one **Wall** button (On/Off + ↑↓), not a row of tiny ‹ › chips on every card.
+
+## 1.80.92 — 2026-09-08
+
+- Performance: scoring no longer deep-clones the whole desk on every tap. IndexedDB save waits for idle. Teach no longer re-paints the lesson every second (only the ring ticks).
+
+## 1.80.91 — 2026-09-08
+
+- One next-job chip (duplicate Score Pixel gone). Find is not a red “edit” field. Teach pad is lesson shapes only; objective edits on the CREW WORK card. Draw/Crew tools say Tap until you roll.
+
+## 1.80.90 — 2026-09-08
+
+- Next-job chip (unlock): one tap for SchoolTool, score the open crew, cleanup, or save this period. Scoring skips finished crews and stays in the period when the last crew is done.
+
+## 1.80.89 — 2026-09-08
+
+- Teach no longer turns into a giant CLEAN UP card (cleanup stays a chip; the lesson stays on screen). Shop pack is Workshop. Empty Settings strip is gone from Dash/Teach — settings live in Admin. Teach pad is one compact row.
+
+## 1.80.88 — 2026-09-08
+
+- Wall CSS is inlined in the page (plus /tw.css) so a missing hashed stylesheet cannot leave a white unstyled desk. Logo is 44px tall in HTML even if CSS is late.
+
+## 1.80.87 — 2026-09-08
+
+- Stale-script snag after a publish: Reload (not Try again) pulls a fresh desk, drops old caches, auto-retries once. HTML is not cached so the next open gets the new files.
+
+## 1.80.86 — 2026-09-08
+
+- Ribbon is only DASH · LEARN · CREW · ADMIN. Teach/walls under Dash. Check-in under Crew. Club/Hall/games under Admin. Settings drawer on every unlocked module (hide/show). Modules are on/off cards with Open. Look renamed Theme. Hover a theme paints the whole desk except the logo. Theme → Type: title, body, muted, chip, gold colors.
+
+## 1.80.85 — 2026-09-08
+
+- Roster for a class is a gradebook: alias, crew, this-cycle D1–D4, quarter 3/2/1 counts, XP, wallet $, one column per project, session mark. Same override as Learn → Book.
+
+## 1.80.84 — 2026-09-08
+
+- Admin is five tabs: Today · People · Room · Class · Device. People = Roster + Crews. Room = Day + Look. Class = Pay + Modules. Device = Backup + About. Club/Hall/Stocks stay under Other.
+
+## 1.80.83 — 2026-09-08
+
+- Roster now matches SchoolTool: 24 Tech sections (room 13, A/B, section 1–4 AM / 5–8 PM) plus Study Hall section 10 in room 136 for Q1–Q4. Tech Club stays extra (not ST). SchoolTool table view. Kids stamp course + section on load.
+
+## 1.80.82 — 2026-09-08
+
+- Theme Tools: hover only paints the Dash/Data preview. Click applies the theme, clears leftover palette locks, and loads those colors into the editor. Apply / Revert / Save custom. Daylight, Manila, Polar, Projector, Wrapping, Valentine, Pumpkin now have real CSS so chips aren’t dead.
+
+## 1.80.81 — 2026-09-08
+
+- Theme Tools: chip selector with wall / accent / type dots. No hover cards. Studio sits in the same Look section.
+
+## 1.80.80 — 2026-09-08
+
+- Roster module (Admin → Roster): all 24 Tech sections (6 periods × Q1–Q4) plus Study Hall and Tech Club. Year list of every kid — live, later-quarter, or club-only. Club names can be held on a worker id so skills stay until they have a Tech class. Place a held kid into a future section. Aliases only.
+
+## 1.80.79 — 2026-09-08
+
+- Teach Pad is off unless you tap Pad. Learn has the same card chips as Club/Dash: Book · Projects · Skills · Words · Guide, strike to hide.
+
+## 1.80.78 — 2026-09-08
+
+- Today’s goal card: project name, one “do this now” line, period + stage. No more Shop / Crew Work Day / skill stack. Crew rings only if crews are on different stages.
+
+## 1.80.77 — 2026-09-08
+
+- Copy: students do not carry bags. Enter / cleanup / help say sit with crew and keep aisles clear.
+
+## 1.80.76 — 2026-09-08
+
+- Club wall: competitions, upcoming events, activity timer. Cards toggle in Club settings. Cleanup wall owns 3:00–3:05 (jobs, stations, late bus) — class cleanup does not override club.
+
+## 1.80.75 — 2026-09-08
+
+- Cleanup wall only on the main Dashboard (kids all day). Teach / Learn / Desk / Other stay themselves — Teach gets a small Cleanup chip, not an orange takeover. Cleanup board now fills: jobs, project + goal, crews, next bell, extra-tidy cash.
+
+## 1.80.74 — 2026-09-08
+
+- Wall layout is back on the dash (unlocked): ‹ › reorder, tap a chip to hide/show, ▾ collapse a row in place. Order actually moves the cards.
+
+## 1.80.73 — 2026-09-08
+
+- Fewer taps: PIN opens when the digits are right. Unlocked period strip goes straight to Score on the first incomplete crew. Teach editor is always on (no Pad). New menu lives in Look, not the header.
+
+## 1.80.72 — 2026-09-08
+
+- Dash: Wall chip no longer owns a blank row. Now/class pack to content; school/year don’t stretch empty. Teach: hero isn’t a full-screen empty plate — period slots fill the rest.
+
+## 1.80.71 — 2026-09-08
+
+- One Admin submenu (Today · Crews · Look · Day · People · Class · Modules · Device). Duplicate Admin/Settings chip rows gone. Club/Hall/Prints stay under Other; Data lives on Dashboard. Theme swatches apply on tap — no hover preview cards.
+
+## 1.80.70 — 2026-09-08
+
+- Teach → Plans: date picker + week chips. Tap a period (with grade) to park the selected plan on that day in advance. Tap again to clear. Dashboard still reads the parked plan.
+
+## 1.80.69 — 2026-09-08
+
+- PIN fields show asterisks, not digits (desk lock, new PIN, portal, settings).
+
+## 1.80.68 — 2026-09-08
+
+- Dashboard info card reads Teach: lesson plan, current slot, objective. Project · stage · skill sit on the same card. Tap the title to open Teach.
+
+## 1.80.67 — 2026-09-08
+
+- Menu strip is its own full-width row. Tabs no longer sit in the logo/tools cluster or get clipped. Scroll sideways if the board is narrow.
+
+## 1.80.66 — 2026-09-08
+
+- New menu (toggle): **Dashboard · Teach · Learn · Other**. Tabs under each. Club + Study Hall under Other. Teach → Plans are reusable lesson cards (apply to any period / next quarter). Classic menu still available.
+
+## 1.80.65 — 2026-09-08
+
+- Cleanup on a phone: full-screen overlay, stacked jobs (not two empty columns), big type, catch chips scroll sideways. Works even if Web layout is on.
+
+## 1.80.64 — 2026-09-08
+
+- Projector pass: no export / due nags on Dashboard or Teach. SchoolTool is a chip. Module grid off by default. Teach fills the wall (big type, Berty, Pad folded). Empty $0 / same-phase crew rings cleaned up. Off-class periods on the strip stay quiet.
+
+## 1.80.63 — 2026-09-08
+
+- House profiles: **Berty** (mascot, poses, no wallet) and **Mr. K** (teacher card). Open from the version chip, Find, Teach tap, or Admin → About. Not student records.
+
+## 1.80.62 — 2026-09-08
+
+- Full class polls: Yes/No, A–D, 1–4, emoji, custom. Wall = bars only. Crew pad takes votes. History + question bank. Never touches grades, XP, or cash.
+
+## 1.80.61 — 2026-09-08
+
+- Save path stringifies the desk once (localStorage + IndexedDB). Clock default is beat; only countdown chips tick each second.
+
+## 1.80.60 — 2026-09-08
+
+- Dashboard stays the goals wall. Teach is the live pad (DO THIS NOW). Same Tools on both: timer, draw worker, draw crew. Unlock Teach to show/hide Slots · Tools · Packs · Objective.
+
+## 1.80.59 — 2026-09-08
+
+- Teach check for today: slots no longer overlap cleanup; after the bell it follows the next class (not leftover CLEAN UP on P1). Phone has a Teach chip. Empty schedule shows a fix hint.
+
+## 1.80.58 — 2026-09-08
+
+- Projects: left-column library. Drag titles into Grade 6 / 7 / 8. Click a title for every setting on the right. Save is the file. Assign to a grade or a crew from there.
+- Seeds in Library: Logo design, Crew logo, Minecraft contest, Sanding challenge.
+- Skill scaffold: each mark is dated, year-stamped, and tagged with crew/project/source. Profile → Skills shows year columns + best-ever. Crew changes do not reset the skill.
+
+## 1.80.57 — 2026-09-08
+
+- Crew leaders tap **Our crew** to set name, mark, and motto. Seats still teacher-only. Admin Crews has the same fields.
+
+## 1.80.56 — 2026-09-08
+
+- Settings: Look · Day · People · Class · Modules · Device · About. Lunch, privacy, and skill bands live in those. Default Teach pack is on Day.
+- Skills Watch: 2×2 crew, gold ring if not seen, auto next crew, groups match today’s seats. Unseen ≠ Beginning.
+
+## 1.80.55 — 2026-09-08
+
+- Berty is one pose map everywhere: Teach, procedure, crew kiosk, Now dock, phone, cleanup. Cleanup / passing still win if the module is off.
+
+## 1.80.54 — 2026-09-08
+
+- Teach mode: Do this now. Shop / Demo / Critique / Training / Short / Sub packs stretch to the bell (delays included). Pin a slot, set today’s objective. Cleanup always wins. FERPA wall — no names.
+
+## 1.80.53 — 2026-09-08
+
+- Faster dash: module cards are light plates (ON only, no nested widgets). Reward meters computed once. Phone shows 8 cards max.
+
+## 1.80.52 — 2026-09-08
+
+- Dashboard Modules row: a card for every feature. Wall shows safe ON modules. Unlocked desk shows all (off cards dim). Tap opens the module.
+
+## 1.80.51 — 2026-09-08
+
+- Crew manager: daily group history, 3–4 seats, principal do-not-pair lock (off the wall). Scoring uses that date’s crew, not today’s.
+
+## 1.80.50 — 2026-09-07
+
+- Workflow polish: Admin Today is SchoolTool → Score → Save first. Assemblies folded away. Desk ST chip always on. Help opens on What is TechWorks? Trace hides idle rows.
+
+## 1.80.49 — 2026-09-07
+
+- Help: friendly “What is TechWorks?” welcome — XP, class $, 3·2·1, cleanup — for the wall and families.
+
+## 1.80.48 — 2026-09-07
+
+- Specials are a list: Grade 6 / 7 / 8 / All, any period (even not yours). Full 10-period strip marks ASM. Kids can read who/where/when.
+
+## 1.80.47 — 2026-09-07
+
+- Special / assembly days: pin title, place, and window on the dash for one date. Bell pack (Assembly, delay, half, or custom) applies that date only — default bells stay.
+
+## 1.80.46 — 2026-09-07
+
+- Role trace: Admin Today lists SchoolTool, crew scores, save, nurse, hall, club, cash. Help → Roles is the path for each person.
+
+## 1.80.45 — 2026-09-07
+
+- Lucky Bench: d6 (house ~8%) and Friday pot. Class cash only, 3 rolls/day. PIN. Not XP or grades.
+
+## 1.80.44 — 2026-09-07
+
+- Nurse / out-of-room: stamps leave and return time. Sets attendance. Tech with no 3/2/1 becomes Excused. Admin Today lists who is out.
+
+## 1.80.43 — 2026-09-07
+
+- Fidget census: variants, wild cards, made / released / in-wild / bin counts. Add pieces on the fly. +Var duplicates a color/finish.
+
+## 1.80.42 — 2026-09-07
+
+- Print catalog: Dragon / Axolotl / Snake S-M-L, Cheese Clicker, Keychain, Custom Choice S-M-L, Teacher Gift (grant, not cash).
+
+## 1.80.41 — 2026-09-07
+
+- Prints: 3D collection gallery (public photos + rarity). Cash buys. 2 rare or 3 shiny smalls → one large. Teacher bin + print-run log. Not XP.
+
+## 1.80.40 — 2026-09-07
+
+- Phone boot: crew kiosk no longer sticks after refresh. Dock stays. Heavy chunks wait until you unlock.
+
+## 1.80.39 — 2026-09-07
+
+- Crew lead kiosk: PIN 2222 on phone/iPad opens only the 2×2 for the live period. Auto-next crew. Projector stays the wall. Lock to exit.
+
+## 1.80.38 — 2026-09-07
+
+- Visuals pass: token text on Now/phone (no forced white), nested plate radii, no white CLOSED chip, dock mark, inputs stay on-theme, light-kind plates.
+
+## 1.80.37 — 2026-09-06
+
+- Look / themes: one page scroll (no nested max-height box). Preview sticks. Swatch grid + optional color tools.
+
+## 1.80.36 — 2026-09-06
+
+- Learn → Words: shop glossary (safety, measure, tools, materials, process, design, crew, grades, class). Kid definition + in-the-shop sentence. Project the card.
+
+## 1.80.35 — 2026-09-06
+
+- Tech Club IN pays class perks $10 and +2 XP once per day when the alias matches a class worker. Not effort, not the project grade. OUT does not claw it back.
+
+## 1.80.34 — 2026-09-06
+
+- Dashboard Tools toggle: focus timer, draw a worker, draw a crew, Ambient Chaos if that module is on. Off by default so the wall stays clean.
+
+## 1.80.33 — 2026-09-06
+
+- Berty back on cleanup (large, pointing) and between classes (procedure: enter → listen → work → clean). Always, even if the mascot module is off.
+- Technical spec in Drive: TECHWORKS TECHNICAL DETAILS, VERSION 6.0 (HTML). Changelog twin: TECHWORKS-CHANGELOG-v1.80.33.md.
+
+## 1.80.32 — 2026-09-06
+
+- Public help: ? on chrome. Wall articles only (no PINs). Teacher help still full after unlock.
+
+## 1.80.31 — 2026-09-06
+
+- Profile: HUD sheet with Now / Skills / Family / Desk. KPI row. Roster + money stay behind PIN.
+
+## 1.80.30 — 2026-09-06
+
+- Family view: one project mark, 1–4 skill words, presence not averaged, no wallet/IEP on the print sheet. Portal shows the same card under the badge.
+
+## 1.80.29 — 2026-09-06
+
+- Cool factor: HUD corners, live LED + breathe on Now, podium glow on #1, one-shot logo shine.
 
 ## 1.80.28 — 2026-09-06
 

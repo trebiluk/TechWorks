@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { QuarterChip } from "@/components/quarter-chip";
 import { SettingsBody, type AdminPane } from "@/components/settings";
-import { isSubDay, lunchOn, meetingsOn, schooltoolDone, setTodayMeeting } from "@/lib/store";
+import { ROLE_PATHS, traceToday } from "@/lib/workflow";
 import { cycleDayLabel, daySlot, formatSchoolDate, todayIso } from "@/lib/calendar";
 import { currentCycleOf } from "@/lib/roles";
 import { periodTitle, shopBells } from "@/lib/economy";
@@ -9,10 +9,12 @@ import { dueCrews, scoredToday } from "@/lib/crews";
 import { agendaFor, skillName } from "@/lib/projects";
 import { periodClock, periodNow, periodNext, SCHOOLTOOL_URL } from "@/lib/bells";
 import { useShopClock } from "@/lib/use-clock";
-import { exportedThisPeriod } from "@/lib/store";
-import { abOn } from "@/lib/store";
+import { abOn, deskBellId, deskPacks, exportedThisPeriod, isSubDay, lunchOn, meetingsOn, outNow, schooltoolDone, setDayBell, setSpecials, specialsOn, setTodayMeeting } from "@/lib/store";
 import type { EconomyFile } from "@/lib/economy";
+import { CrewDesk } from "@/components/crew-desk";
 import { cn } from "@/lib/utils";
+import { useNavV2 } from "@/lib/app-nav";
+import { ADMIN_GROUPS, PANE_LABEL, groupOfPane } from "@/lib/admin-nav";
 
 type Jump = (period: number, crewKey?: string, date?: string) => void;
 
@@ -23,18 +25,23 @@ export function AdminHub({
   onScore,
   onScoreCrew,
   onGrades,
-  onProjects,
-  onSkills,
+  onProjects: _onProjects,
+  onSkills: _onSkills,
   onStocks,
+  onLucky,
   onStore,
+  onPrints,
   onStudyHall,
   onClub,
   onExport,
   onSave,
-  onHelp,
+  onHelp: _onHelp,
   onExportNames,
   onTips,
-  onData,
+  onData: _onData,
+  onOpenId,
+  onTeach,
+  onPolls,
 }: {
   file: EconomyFile;
   onChange: (next: EconomyFile) => void;
@@ -45,7 +52,9 @@ export function AdminHub({
   onProjects: () => void;
   onSkills: () => void;
   onStocks: () => void;
+  onLucky?: () => void;
   onStore: () => void;
+  onPrints?: () => void;
   onStudyHall: () => void;
   onClub?: () => void;
   onExport: () => void;
@@ -54,20 +63,30 @@ export function AdminHub({
   onExportNames: () => void;
   onTips?: (on: boolean) => void;
   onData?: () => void;
+  onOpenId?: (id: string) => void;
+  onTeach?: () => void;
+  onPolls?: () => void;
 }) {
   const [pane, setPane] = useState<AdminPane>(start);
+  const [navV2] = useNavV2();
   const [meetDraft, setMeetDraft] = useState("");
+  const [specDate, setSpecDate] = useState(() => todayIso());
+  const [draftWho, setDraftWho] = useState("Grade 6");
+  const [draftTitle, setDraftTitle] = useState("Assembly");
+  const [draftPlace, setDraftPlace] = useState("Auditorium");
+  const [draftStart, setDraftStart] = useState("08:00");
+  const [draftEnd, setDraftEnd] = useState("08:40");
   useEffect(() => {
     setPane(start);
   }, [start]);
-  const now = useShopClock(file.meta.config?.schedule, "beat");
+  const now = useShopClock(deskBellId(file), "beat");
   const today = todayIso();
   const sub = isSubDay(file, today);
   const cycle = currentCycleOf(file);
   const slot = daySlot(today);
   const letter = abOn(file, today);
-  const live = periodNow(file.meta.config?.schedule, now);
-  const nxt = periodNext(file.meta.config?.schedule, now);
+  const live = periodNow(deskBellId(file), now);
+  const nxt = periodNext(deskBellId(file), now);
   const shopPeriods = shopBells(file).map((b) => b.period);
   const shown =
     live != null && shopPeriods.includes(live)
@@ -75,7 +94,7 @@ export function AdminHub({
       : nxt && shopPeriods.includes(nxt.period)
         ? nxt.period
         : (shopPeriods[0] ?? 1);
-  const clock = shown ? periodClock(shown, file.meta.config?.schedule, now) : null;
+  const clock = shown ? periodClock(shown, deskBellId(file), now) : null;
   const agenda = agendaFor(file, shown);
   const due = useMemo(() => dueCrews(file, today), [file, today]);
   const late = due.filter((d) => d.kind === "late");
@@ -86,17 +105,19 @@ export function AdminHub({
   const meets = meetingsOn(file, today);
   const lunch = lunchOn(file, today);
   const sent = live != null ? exportedThisPeriod(file, today, live) : true;
-  const nav: { id: string; label: string; on: boolean; go: () => void }[] = [
-    { id: "today", label: "Today", on: pane === "today", go: () => setPane("today") },
-    { id: "data", label: "Data", on: false, go: () => onData?.() },
-    { id: "hall", label: "Hall Mgr", on: false, go: onStudyHall },
-    ...(onClub ? [{ id: "club", label: "Club", on: false, go: onClub }] : []),
-    { id: "vault", label: "Device", on: pane === "vault", go: () => setPane("vault") },
-    { id: "more", label: "More", on: pane !== "today" && pane !== "vault", go: () => setPane("modules") },
-  ];
+  const away = outNow(file, today);
+  const group = groupOfPane(pane);
+  const inner = group.panes.length > 1 ? [...group.panes] : [];
+  const nav = ADMIN_GROUPS.map((g) => ({
+    id: g.id,
+    label: g.label,
+    on: group.id === g.id,
+    go: () => setPane(g.panes[0] as AdminPane),
+  }));
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+      {!navV2 ? (
       <nav className="tw-gadget mb-2 flex flex-wrap gap-1 p-1" aria-label="Admin">
         {nav.map((n) => (
           <button
@@ -109,28 +130,61 @@ export function AdminHub({
           </button>
         ))}
       </nav>
+      ) : null}
 
-      <div className="min-h-0 flex-1 overflow-auto">
-        {pane !== "today" ? (
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        {inner.length ? (
+          <div className="mb-2 flex flex-wrap gap-1 px-1">
+            {inner.map((id) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setPane(id as AdminPane)}
+                className={cn("tw-tap min-h-9 rounded-full px-3 text-xs font-semibold", pane === id ? "bg-fg text-bg" : "bg-elevated text-muted")}
+              >
+                {PANE_LABEL[id] ?? id}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        {pane === "crews" ? (
+          <CrewDesk file={file} onChange={onChange} startPeriod={shown} />
+        ) : pane !== "today" && pane !== "day" ? (
           <SettingsBody
             file={file}
             tab={pane}
             onChange={onChange}
-            onTab={setPane}
+            onTab={undefined}
             onExportNames={onExportNames}
             onExport={onExport}
             onSave={onSave}
             onTips={onTips}
             onDesk={onScore}
+            onOpenId={onOpenId}
+            onOpenMod={(id) => {
+              if (id === "crews") {
+                setPane("crews");
+                return;
+              }
+              if (id === "club") onClub?.();
+              else if (id === "studyhall") onStudyHall();
+              else if (id === "prints") onPrints?.();
+              else if (id === "wallet") onStocks();
+              else if (id === "lucky") onLucky?.();
+              else if (id === "store") onStore();
+              else if (id === "polls") onPolls?.();
+              else if (id === "teach") onTeach?.();
+            }}
           />
         ) : (
+    <div className="grid items-start gap-3 lg:grid-cols-2">
     <div className="flex flex-col gap-3">
       {sub ? (
         <section className="rounded-xl bg-cleanup px-4 py-4 text-accent-fg">
           <p className="text-xs font-semibold uppercase tracking-[0.2em]">Sub today</p>
           <p className="mt-1 font-display text-2xl font-semibold">No scores. Next class is the next cycle day.</p>
-          <button type="button" onClick={() => setPane("day")} className="mt-3 min-h-11 rounded-md bg-gold px-3 text-sm font-semibold text-bg">
-            Day settings
+          <button type="button" onClick={() => setPane("today")} className="mt-3 min-h-11 rounded-md bg-gold px-3 text-sm font-semibold text-bg">
+            Schedule
           </button>
         </section>
       ) : (
@@ -157,25 +211,7 @@ export function AdminHub({
               ))}
             </div>
           ) : (
-            <form
-              className="mt-3 flex flex-wrap gap-1"
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (!meetDraft.trim()) return;
-                onChange(setTodayMeeting(file, today, meetDraft.trim()));
-                setMeetDraft("");
-              }}
-            >
-              <input
-                value={meetDraft}
-                onChange={(e) => setMeetDraft(e.target.value)}
-                placeholder="Meeting today · Faculty Meeting"
-                className="min-h-10 min-w-48 flex-1 rounded-md bg-elevated px-3 text-sm outline-none"
-              />
-              <button type="submit" className="min-h-10 rounded-md bg-elevated px-3 text-xs font-semibold">
-                Pin
-              </button>
-            </form>
+            <p className="mt-3 text-sm text-muted">Pin a meeting on the right.</p>
           )}
           <div className="mt-3 flex flex-wrap gap-2">
             <a
@@ -207,6 +243,21 @@ export function AdminHub({
               Book
             </button>
           </div>
+          {away.length ? (
+            <div className="mt-3 rounded-lg bg-cleanup/20 px-3 py-2 ring-1 ring-cleanup">
+              <p className="text-[11px] font-bold uppercase tracking-wide text-cleanup">Out of room</p>
+              {away.map(({ student, where, pass }) => (
+                <p key={student.id} className="text-sm font-semibold">
+                  {student.first}
+                  <span className="ml-2 font-mono text-muted">
+                    {where}
+                    {pass?.out ? ` · left ${pass.out}` : ""}
+                    {pass?.in ? ` · back ${pass.in}` : ""}
+                  </span>
+                </p>
+              ))}
+            </div>
+          ) : null}
           <p className="mt-2 text-sm text-muted">
             {classMine ? (
               <>
@@ -223,6 +274,35 @@ export function AdminHub({
             {late.length ? <span className="ml-2 font-semibold text-loss">{late.length} late</span> : null}
             {lunch ? <span className="ml-2">Lunch {lunch}</span> : null}
           </p>
+          <ol className="mt-3 grid gap-1 sm:grid-cols-2">
+            {traceToday(file, today).map((t) => (
+              <li
+                key={`${t.role}-${t.label}`}
+                className={cn(
+                  "flex items-baseline justify-between gap-2 rounded-md px-2 py-1 text-sm",
+                  t.state === "due" ? "bg-loss/15" : "bg-elevated/60",
+                )}
+              >
+                <span className="font-semibold">
+                  <span className={cn("mr-1.5 inline-block size-1.5 rounded-full", t.state === "ok" ? "bg-gain" : t.state === "due" ? "bg-loss" : "bg-muted")} />
+                  {t.label}
+                </span>
+                <span className="truncate text-xs text-muted">{t.detail}</span>
+              </li>
+            ))}
+          </ol>
+          <details className="mt-2 text-xs text-muted">
+            <summary className="cursor-pointer font-semibold uppercase tracking-wide">Role paths</summary>
+            <div className="mt-2 grid gap-2 sm:grid-cols-2">
+              {ROLE_PATHS.map((r) => (
+                <p key={r.id}>
+                  <span className="font-semibold text-fg">{r.title}</span>
+                  <span> · {r.who}</span>
+                  <span className="block">{r.steps.join(" → ")}</span>
+                </p>
+              ))}
+            </div>
+          </details>
         </section>
       )}
 
@@ -259,6 +339,114 @@ export function AdminHub({
           </ul>
         )}
       </section>
+    </div>
+    <div className="flex flex-col gap-3">
+      <section className="tw-gadget p-3">
+        <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Schedule · announcements</p>
+        <p className="mt-1 text-sm text-muted">Bells, cycle, sub, lunch, wall cards. Same controls Day used to live on.</p>
+        <form
+          className="mt-3 flex flex-wrap gap-1"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!meetDraft.trim()) return;
+            onChange(setTodayMeeting(file, today, meetDraft.trim()));
+            setMeetDraft("");
+          }}
+        >
+          <input
+            value={meetDraft}
+            onChange={(e) => setMeetDraft(e.target.value)}
+            placeholder="Meeting today · Faculty Meeting"
+            className="min-h-10 min-w-48 flex-1 rounded-md bg-elevated px-3 text-sm outline-none"
+          />
+          <button type="submit" className="min-h-10 rounded-md bg-elevated px-3 text-xs font-semibold">
+            Pin
+          </button>
+        </form>
+        <details className="mt-3 text-sm" open={specialsOn(file, specDate).length > 0}>
+          <summary className="cursor-pointer text-xs font-semibold uppercase tracking-wide text-muted">
+            Assembly / specials
+            {specialsOn(file, specDate).length ? ` · ${specialsOn(file, specDate).length}` : ""}
+          </summary>
+          <form
+            className="mt-2 flex flex-col gap-2 rounded-lg bg-elevated/80 p-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              onChange(
+                setSpecials(file, specDate, [
+                  ...specialsOn(file, specDate),
+                  { title: draftTitle, who: draftWho, place: draftPlace, start: draftStart, end: draftEnd },
+                ]),
+              );
+            }}
+          >
+            <input type="date" value={specDate} onChange={(e) => setSpecDate(e.target.value || specDate)} className="min-h-10 w-44 rounded-md bg-bg px-2 text-sm" />
+            <ul className="flex flex-col gap-1">
+              {specialsOn(file, specDate).map((s, i) => (
+                <li key={`${s.title}-${i}`} className="flex flex-wrap items-center justify-between gap-2 rounded-md bg-bg px-2 py-1 text-sm text-fg">
+                  <span>
+                    <span className="font-semibold">{s.who || "All"}</span> · {s.title}
+                    <span className="ml-2 text-muted">
+                      {s.place} {s.start}–{s.end}
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    className="text-xs text-muted"
+                    onClick={() => onChange(setSpecials(file, specDate, specialsOn(file, specDate).filter((_, j) => j !== i)))}
+                  >
+                    Drop
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <div className="flex flex-wrap gap-1">
+              {["Grade 6", "Grade 7", "Grade 8", "All"].map((w) => (
+                <button key={w} type="button" onClick={() => setDraftWho(w)} className={cn("min-h-9 rounded-full px-3 text-xs font-semibold", draftWho === w ? "bg-fg text-bg" : "bg-bg text-muted")}>
+                  {w}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-1">
+              <input value={draftTitle} onChange={(e) => setDraftTitle(e.target.value)} placeholder="Assembly" className="min-h-10 min-w-32 flex-1 rounded-md bg-bg px-2 text-sm" />
+              <input value={draftPlace} onChange={(e) => setDraftPlace(e.target.value)} placeholder="Auditorium" className="min-h-10 w-36 rounded-md bg-bg px-2 text-sm" />
+              <input type="time" value={draftStart} onChange={(e) => setDraftStart(e.target.value)} className="min-h-10 rounded-md bg-bg px-2 text-sm" />
+              <input type="time" value={draftEnd} onChange={(e) => setDraftEnd(e.target.value)} className="min-h-10 rounded-md bg-bg px-2 text-sm" />
+              <button type="submit" className="min-h-10 rounded-md bg-gold px-3 text-xs font-semibold text-bg">
+                Add to board
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {deskPacks(file).map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => onChange(setDayBell(file, specDate, p.id))}
+                  className={cn("min-h-9 rounded-full px-3 text-xs font-semibold", deskBellId(file, specDate) === p.id ? "bg-fg text-bg" : "bg-bg text-muted")}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </form>
+        </details>
+        <div className="mt-3">
+          <SettingsBody
+            file={file}
+            tab="day"
+            embed
+            onChange={onChange}
+            onTab={undefined}
+            onExportNames={onExportNames}
+            onExport={onExport}
+            onSave={onSave}
+            onTips={onTips}
+            onDesk={onScore}
+            onOpenId={onOpenId}
+          />
+        </div>
+      </section>
+    </div>
     </div>
         )}
       </div>

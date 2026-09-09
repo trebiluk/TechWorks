@@ -1,6 +1,7 @@
 import type { EconomyFile, RawStudent } from "@/lib/economy";
 import { daySlot, sessionOn, todayIso } from "@/lib/calendar";
-import { skillScore, skillsOf } from "@/lib/skills";
+import { skillScore, stemForScore } from "@/lib/skills";
+import { stemOf } from "@/lib/stems";
 import { eachTapeMark } from "@/lib/tape";
 import {
   activitiesOf,
@@ -112,13 +113,15 @@ export function calcActivityGrade(s: RawStudent, activityId: string, file: Econo
   for (const [date, code] of Object.entries(s.marks ?? {})) bump(date, code);
   eachTapeMark(s.markTape, bump);
   const effort = mean(pts);
-  const skillPts = act?.skillId ? skillToPoints(skillScore(s, act.skillId)) : null;
-  const parts = [effort, skillPts].filter((n): n is number => n != null);
+  const n = act?.skillId ? skillScore(s, act.skillId) : 0;
+  const skillPts = n ? skillToPoints(n) : null;
+  const stem = n && act?.skillId ? stemForScore(s, act.skillId) || stemOf(act.skillId, n) : "";
+  const parts = [effort, skillPts].filter((x): x is number => x != null);
   const name = act?.name ?? "Activity";
   if (!parts.length) return { points: null, evidence: `${name} · not scored yet` };
   return {
     points: mean(parts),
-    evidence: [pts.length ? `${pts.length} days` : "", skillPts != null ? "skill" : "", name].filter(Boolean).join(" · "),
+    evidence: [pts.length ? `${pts.length} days` : "", stem, name].filter(Boolean).join(" · "),
   };
 }
 
@@ -127,7 +130,8 @@ export function calcProjectGrade(s: RawStudent, projectId: string, file: Economy
   const acts = activitiesOf(project);
   const rows = acts.map((a) => ({ name: a.name, ...calcActivityGrade(s, a.id, file, project) }));
   const parts = rows.map((r) => r.points).filter((n): n is number => n != null);
-  const evidence = rows.map((r) => `${r.name} ${r.points ?? "—"}`).join(" · ");
+  const tag = project.stem?.length ? project.stem.join("") : "";
+  const evidence = [project.prompt, tag, ...rows.map((r) => `${r.name} ${r.points ?? "—"}`)].filter(Boolean).join(" · ");
   if (!parts.length) return { points: null, evidence: evidence || `${project.title} · not scored yet` };
   return { points: mean(parts), evidence };
 }
@@ -181,13 +185,14 @@ export function calcSkillGrade(s: RawStudent, skillId: string, file?: EconomyFil
   if (n > 0) {
     const label =
       n >= 4
-        ? "Distinguished — can teach a classmate"
+        ? "Distinguished"
         : n === 3
-          ? "Proficient — independent"
+          ? "Proficient"
           : n === 2
-            ? "Developing — works with a check-in"
-            : "Beginning — needs a demo";
-    return { points: skillToPoints(n), evidence: label };
+            ? "Developing"
+            : "Beginning";
+    const stem = stemForScore(s, skillId) || stemOf(skillId, n);
+    return { points: skillToPoints(n), evidence: stem ? `${label} — ${stem}` : label };
   }
   if (!file) return { points: null, evidence: "Not seen yet" };
   const grade = file.meta.bell?.find((b) => b.period === s.period)?.grade ?? 6;
@@ -250,7 +255,7 @@ export function letterOf(n: number | null): string {
 }
 
 export function recipeLine(): string {
-  return "One mark per project. Each activity averages its own 3/2/1 days (100/85/70) plus that activity’s skill (4/3/2/1 → 100/90/85/70). The project grade is the average of those activities. Only days on the crew assigned that cycle count. Blank is not a zero. Wallet and PTO stay out.";
+  return "One mark per project. Each activity averages its own 3/2/1 days (100/85/70) plus that activity’s skill (4/3/2/1 → 100/90/85/70). Hover a cell for the evidence stem — the sentence you saw. Blank is not a zero. Wallet and PTO stay out.";
 }
 
 export function classroomCsv(file: EconomyFile, opts: { names: boolean; period?: number }): string {

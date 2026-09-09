@@ -22,10 +22,7 @@ export function RosterOnboard({
   const [period, setPeriod] = useState(bells[0]?.period ?? 1);
   const [paste, setPaste] = useState("");
   const [showLegal, setShowLegal] = useState(false);
-  const parsed = useMemo(
-    () => parseLegalRosterText(paste).map((r) => ({ ...r, period })),
-    [paste, period],
-  );
+  const parsed = useMemo(() => parseLegalRosterText(paste), [paste]);
   const recent = file.students.filter((s) => s.period === period).slice(-24);
 
   return (
@@ -34,7 +31,7 @@ export function RosterOnboard({
         <header className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wider text-subtle">Add a class · 4 taps</p>
-            <p className="text-xs text-muted">1 period · 2 paste · 3 aliases · 4 desk</p>
+            <p className="text-xs text-muted">1 period · 2 paste · 3 locked ids + aliases · 4 desk</p>
           </div>
           <button type="button" aria-label="Close" onClick={onClose} className="size-11 rounded-lg bg-elevated">
             <X className="mx-auto size-4" />
@@ -56,22 +53,41 @@ export function RosterOnboard({
               </button>
             ))}
           </div>
-          <p className="text-sm font-medium">2 · Paste names</p>
+          <p className="text-sm font-medium">2 · Paste names or CSV</p>
           <textarea
             value={paste}
             onChange={(e) => {
               setPaste(e.target.value);
             }}
             rows={5}
-            placeholder={"Last, First\nSmith, Jordan"}
+            placeholder={"Last, First, Period\nSmith, Jordan, 1"}
             className="w-full rounded-md bg-elevated px-3 py-2 font-mono text-sm outline-none"
           />
-          <p className="text-xs text-muted">{parsed.length} for P{period} · legal stays vault-only</p>
+          <div className="flex flex-wrap gap-2">
+            <label className="tw-tap inline-flex min-h-11 cursor-pointer items-center rounded-md bg-elevated px-3 text-sm font-semibold">
+              Open CSV
+              <input
+                type="file"
+                accept=".csv,.txt,text/csv,text/plain"
+                className="hidden"
+                onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  e.target.value = "";
+                  if (!f) return;
+                  setPaste(await f.text());
+                }}
+              />
+            </label>
+            <p className="self-center text-xs text-muted">Last, First, Period, IEP, 504 · Period in the file wins if present</p>
+          </div>
+          <p className="text-xs text-muted">
+            {parsed.length} rows · missing period uses P{period} · id first, then alias · legal stays vault-only
+          </p>
           <button
             type="button"
             disabled={!parsed.length}
             onClick={() => {
-              onChange(importLegalRoster(file, parsed));
+              onChange(importLegalRoster(file, parsed.map((r) => ({ ...r, period: r.period || period }))));
               setPaste("");
             }}
             className={cn(
@@ -79,7 +95,7 @@ export function RosterOnboard({
               parsed.length ? "bg-accent text-accent-fg" : "bg-elevated text-muted",
             )}
           >
-            3 · Generate aliases
+            3 · Mint ids + aliases
           </button>
 
           <div className="flex items-center justify-between">

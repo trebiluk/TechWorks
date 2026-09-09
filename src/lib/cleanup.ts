@@ -17,7 +17,7 @@ export const WORKSHOP_JOBS = [
 export const CLASS_JOBS = [
   "Chairs in",
   "Desks clear",
-  "Bags out of the aisle",
+  "Aisles clear",
   "Sit with your crew",
   "Ready for the bell",
 ];

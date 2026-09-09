@@ -110,7 +110,7 @@ export function afterCrewLeaderChange(
   if (!studentId) return file;
   const day = date || todayIso();
   const cycle = currentCycleOf(file);
-  let history = [...roleHistoryOf(file)];
+  const history = [...roleHistoryOf(file)];
   const key = crewLeadKey(cycle, period, crewKey, day, studentId);
   const idx = history.findIndex((e) => entryMatchKey(e) === key);
   if (idx < 0) {
@@ -124,7 +124,7 @@ export function afterCrewLeaderChange(
       confirmed: false,
     });
   }
-  let next = withRoleHistory(file, history);
+  const next = withRoleHistory(file, history);
   return confirmCrewLead(next, period, crewKey, day);
 }
 

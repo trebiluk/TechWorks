@@ -19,7 +19,15 @@ export function TwMark({ className, size = 32 }: { className?: string; size?: nu
 export function TwWordmark({ className }: { className?: string; mark?: number; compact?: boolean }) {
   return (
     <span className={cn("tw-lockup", className)} title={LEGAL_TITLE} aria-label="TechWorks">
-      <img src="/brand/techworks.png" alt="TechWorks" className="tw-lockup-img" draggable={false} />
+      <img
+        src="/brand/techworks.png"
+        alt="TechWorks"
+        width={180}
+        height={44}
+        className="tw-lockup-img"
+        style={{ height: 44, width: "auto", maxWidth: 220, display: "block" }}
+        draggable={false}
+      />
     </span>
   );
 }

@@ -1,6 +1,7 @@
 import type { EconomyFile, RawStudent } from "@/lib/economy";
 import { weekOn, todayIso } from "@/lib/calendar";
 import { packMarks, trimTape } from "@/lib/tape";
+import { compactPolls } from "@/lib/polls";
 
 function emptyMap(v: unknown): boolean {
   if (!v || typeof v !== "object") return true;
@@ -32,6 +33,9 @@ export function compactStudent(s: RawStudent): RawStudent {
     clutch: Number(s.clutch || 0) || 0,
     opening: Number(s.opening || 0) || 0,
   };
+  if (s.crewByCycle && Object.keys(s.crewByCycle).length) next.crewByCycle = s.crewByCycle;
+  const crewDays = slimMap(s.crewDays as Record<string, unknown> | undefined);
+  if (crewDays) next.crewDays = crewDays as RawStudent["crewDays"];
   if (s.legalFirst) next.legalFirst = s.legalFirst;
   if (s.legalLast) next.legalLast = s.legalLast;
   if (s.grade) next.grade = s.grade;
@@ -48,6 +52,7 @@ export function compactStudent(s: RawStudent): RawStudent {
   if (ask) next.investAsk = ask as RawStudent["investAsk"];
   const skills = slimMap(s.skills as Record<string, unknown> | undefined);
   if (skills) next.skills = skills as RawStudent["skills"];
+  if (s.skillLog?.length) next.skillLog = s.skillLog.slice(-120);
   const notes = slimMap(s.notes as Record<string, unknown> | undefined);
   if (notes) next.notes = notes as RawStudent["notes"];
   const affect = slimMap(s.affect as Record<string, unknown> | undefined);
@@ -64,13 +69,21 @@ export function compactStudent(s: RawStudent): RawStudent {
   if (track) next.trackDays = track as RawStudent["trackDays"];
   const attend = slimMap(s.attend as Record<string, unknown> | undefined);
   if (attend) next.attend = attend as RawStudent["attend"];
+  if (s.passes?.length) next.passes = s.passes;
+  if (s.lucky?.length) next.lucky = s.lucky;
   const grades = slimMap(s.gradeOverrides as Record<string, unknown> | undefined);
   if (grades) next.gradeOverrides = grades as RawStudent["gradeOverrides"];
   if (s.picks?.length) next.picks = s.picks;
   if (s.icon) next.icon = s.icon;
   if (s.purchases?.length) next.purchases = s.purchases;
+  const prints = slimMap(s.prints as Record<string, unknown> | undefined);
+  if (prints) next.prints = prints as RawStudent["prints"];
   if (s.quietNotes) next.quietNotes = s.quietNotes;
   if (s.bonusXp) next.bonusXp = s.bonusXp;
+  const clubDays = slimMap(s.clubDays as Record<string, unknown> | undefined);
+  if (clubDays) next.clubDays = clubDays as RawStudent["clubDays"];
+  const groups = slimMap(s.groups as Record<string, unknown> | undefined);
+  if (groups) next.groups = groups as RawStudent["groups"];
   return next;
 }
 
@@ -97,6 +110,7 @@ export function compactFile(file: EconomyFile): EconomyFile {
       ...file.meta,
       dayLog: hotDayLog(file),
       ledger: (file.meta.ledger ?? []).slice(-400),
+      polls: compactPolls(file),
     },
   };
 }

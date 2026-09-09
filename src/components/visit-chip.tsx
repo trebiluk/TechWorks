@@ -2,10 +2,10 @@ import { VISIT_STATES, type VisitState } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 const TONE: Record<VisitState, string> = {
-  OPEN: "bg-gain text-white",
-  MEETING: "bg-period-2 text-white",
-  CLOSED: "bg-white text-fg ring-1 ring-fg",
-  SUB: "bg-cleanup text-white",
+  OPEN: "bg-gain text-bg",
+  MEETING: "bg-period-2 text-accent-fg",
+  CLOSED: "bg-elevated text-fg ring-1 ring-fg",
+  SUB: "bg-cleanup text-accent-fg",
 };
 
 export function VisitChip({

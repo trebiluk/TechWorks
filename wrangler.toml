@@ -1,5 +1,5 @@
-# Cloudflare Pages Git builds. Dashboard project is techworks-52m.
-name = "techworks"
+# Cloudflare Pages (GitHub → kulibert-desk). Grok/Vercel ignore this file.
+name = "kulibert-desk"
 compatibility_date = "2026-09-08"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".output/public"

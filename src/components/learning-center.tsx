@@ -2,25 +2,29 @@ import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
 import { isLiveStudent, periodTitle, shopBells } from "@/lib/economy";
 import { ALL_TRACK, PORTRAIT, SKILL_TRACK, SOFT_TRACK, skillScore } from "@/lib/skills";
+import { STEM_LABEL, stemLettersOf, stemsOf } from "@/lib/stems";
 import { MST_SKILLS } from "@/lib/mst";
 import { abOn, onAbRoster } from "@/lib/store";
 import { todayIso } from "@/lib/calendar";
 import { SkillsBoard } from "@/components/skills-board";
 import { ProjectsBoard } from "@/components/projects-board";
+import { GlossaryDesk } from "@/components/glossary";
 import { Chip } from "@/components/ui";
-import { GraduationCap, Landmark, Hammer, Heart, FolderKanban } from "lucide-react";
+import { BookOpen, GraduationCap, Landmark, Hammer, Heart, FolderKanban } from "lucide-react";
 import { Word } from "@/lib/tips";
+import { LEARN_CARDS, learnCardOn, loadLearnLook, saveLearnLook, toggleLearnCard, type LearnLook } from "@/lib/learn-look";
 import { cn } from "@/lib/utils";
 
 const GradeBoard = lazy(() => import("@/components/grade-board").then((m) => ({ default: m.GradeBoard })));
 
-export type LearnPane = "book" | "skills" | "projects" | "guide";
+export type LearnPane = "book" | "skills" | "projects" | "guide" | "words";
 export type LearnStart = LearnPane | "eval" | "score" | "grades" | "soft" | "bench" | "data";
 
 function splitStart(start: LearnStart): { pane: LearnPane; family: "shop" | "soft" } {
   if (start === "projects") return { pane: "projects", family: "shop" };
   if (start === "skills" || start === "soft") return { pane: "skills", family: start === "soft" ? "soft" : "shop" };
   if (start === "guide" || start === "bench" || start === "data") return { pane: "guide", family: "shop" };
+  if (start === "words") return { pane: "words", family: "shop" };
   return { pane: "book", family: "shop" };
 }
 
@@ -31,10 +35,10 @@ export function LearningCenter({
   onNeedPin,
   onOpenId,
   start = "grades",
-  jumpPeriod,
-  jumpCrew,
-  jumpDate,
-  onOpenSettings,
+  jumpPeriod: _jumpPeriod,
+  jumpCrew: _jumpCrew,
+  jumpDate: _jumpDate,
+  onOpenSettings: _onOpenSettings,
   onRankUp,
 }: {
   file: EconomyFile;
@@ -52,22 +56,44 @@ export function LearningCenter({
   const first = splitStart(start);
   const [pane, setPane] = useState<LearnPane>(first.pane);
   const [family, setFamily] = useState<"shop" | "soft">(first.family);
+  const [look, setLook] = useState<LearnLook>(() => loadLearnLook());
   useEffect(() => {
     const next = splitStart(start);
     setPane(next.pane);
     setFamily(next.family);
   }, [start]);
-  const nav: { id: LearnPane; label: string; Icon: typeof Hammer; on: boolean; go: () => void }[] = [
+  function flipCard(id: (typeof LEARN_CARDS)[number]["id"]) {
+    const next = toggleLearnCard(look, id);
+    setLook(next);
+    saveLearnLook(next);
+    if (!learnCardOn(next, pane) && next.wallOn[0]) setPane(next.wallOn[0] as LearnPane);
+  }
+  const nav = [
     { id: "book", label: "Book", Icon: GraduationCap, on: pane === "book", go: () => setPane("book") },
     { id: "projects", label: "Projects", Icon: FolderKanban, on: pane === "projects", go: () => setPane("projects") },
     { id: "skills", label: "Skills", Icon: Hammer, on: pane === "skills", go: () => setPane("skills") },
+    { id: "words", label: "Words", Icon: BookOpen, on: pane === "words", go: () => setPane("words") },
     { id: "guide", label: "Guide", Icon: Landmark, on: pane === "guide", go: () => setPane("guide") },
-  ];
+  ].filter((t) => learnCardOn(look, t.id as LearnPane));
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      <header className="mb-1 shrink-0 sm:mb-2">
+      <header className="mb-1 hidden shrink-0 sm:mb-2 md:block">
         <p className="hidden px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-subtle sm:block">Learn · grades and skills, not daily pay</p>
-        <nav className="flex gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Learning">
+        {unlocked ? (
+          <div className="mb-1 flex flex-wrap gap-1">
+            {LEARN_CARDS.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => flipCard(c.id)}
+                className={cn("tw-tap min-h-8 rounded-full px-3 text-[11px] font-semibold", learnCardOn(look, c.id) ? "bg-fg text-bg" : "bg-elevated text-muted line-through")}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        <nav className="flex flex-wrap gap-1" aria-label="Learning">
           {nav.map((t) => (
             <button
               key={t.id}
@@ -92,9 +118,10 @@ export function LearningCenter({
           </Suspense>
         ) : null}
         {pane === "guide" ? <GuideDesk file={file} /> : null}
+        {pane === "words" ? <GlossaryDesk /> : null}
         {pane === "skills" ? (
           <div className="flex h-full min-h-0 flex-col overflow-hidden">
-            <div className="mb-2 flex gap-1">
+            <div className="mb-2 hidden gap-1 md:flex">
               <Chip on={family === "shop"} onClick={() => setFamily("shop")}>
                 <Hammer className="mr-1 size-3.5" />
                 <Word>Workshop</Word>
@@ -137,14 +164,26 @@ function GuideDesk({ file }: { file: EconomyFile }) {
 function BenchPane() {
   return (
     <div className="space-y-3 pb-4">
-      <p className="text-sm text-muted">1 Beginning · 2 Developing · 3 Proficient · 4 Distinguished. Blank is not a zero.</p>
+      <p className="text-sm text-muted">1 Beginning · 2 Developing · 3 Proficient · 4 Distinguished. The four sentences are evidence stems — what you can see. Blank is not a zero.</p>
       <section className="rounded-xl bg-surface px-4 py-3">
         <p className="text-xs font-semibold uppercase tracking-wider text-subtle">Workshop</p>
         <ul className="mt-2 grid gap-2 sm:grid-cols-2">
           {SKILL_TRACK.map((s) => (
             <li key={s.id} className="rounded-lg bg-elevated px-3 py-2">
-              <p className="font-semibold">{s.name}</p>
+              <p className="font-semibold">
+                {s.name}
+                <span className="ml-2 font-mono text-[11px] font-normal uppercase tracking-wider text-gold">
+                  {stemLettersOf(s.id).map((L) => STEM_LABEL[L][0]).join(" · ")}
+                </span>
+              </p>
               <p className="text-sm text-muted">{s.bench}</p>
+              <ol className="mt-2 space-y-0.5 text-xs text-muted">
+                {stemsOf(s.id).map((row) => (
+                  <li key={row.n}>
+                    <span className="font-mono text-fg">{row.n}</span> {row.text}
+                  </li>
+                ))}
+              </ol>
               <p className="mt-1 text-xs text-subtle">{s.mst.join(" · ")} · {PORTRAIT.find((p) => p.id === s.pog)?.label}</p>
             </li>
           ))}
@@ -155,8 +194,20 @@ function BenchPane() {
         <ul className="mt-2 grid gap-2 sm:grid-cols-2">
           {SOFT_TRACK.map((s) => (
             <li key={s.id} className="rounded-lg bg-elevated px-3 py-2">
-              <p className="font-semibold">{s.name}</p>
+              <p className="font-semibold">
+                {s.name}
+                <span className="ml-2 font-mono text-[11px] font-normal uppercase tracking-wider text-gold">
+                  {stemLettersOf(s.id).map((L) => STEM_LABEL[L][0]).join(" · ")}
+                </span>
+              </p>
               <p className="text-sm text-muted">{s.bench}</p>
+              <ol className="mt-2 space-y-0.5 text-xs text-muted">
+                {stemsOf(s.id).map((row) => (
+                  <li key={row.n}>
+                    <span className="font-mono text-fg">{row.n}</span> {row.text}
+                  </li>
+                ))}
+              </ol>
               {s.subs.length ? <p className="mt-1 text-xs text-subtle">{s.subs.map((x) => x.name).join(" · ")}</p> : null}
             </li>
           ))}

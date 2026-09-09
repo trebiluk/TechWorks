@@ -1,10 +1,12 @@
-const KEY = "techworks-dash-layout-v3";
-const LEGACY = ["techworks-dash-layout-v1", "techworks-dash-order-v1"];
+const KEY = "techworks-dash-layout-v6";
+const LEGACY = ["techworks-dash-layout-v5", "techworks-dash-layout-v4", "techworks-dash-layout-v3", "techworks-dash-layout-v1", "techworks-dash-order-v1"];
 
 export const DASH_ROWS = [
   { id: "now", label: "Now" },
   { id: "strip", label: "Schedule" },
   { id: "class", label: "Goals" },
+  { id: "mods", label: "Modules" },
+  { id: "tools", label: "Tools" },
   { id: "notes", label: "Announce" },
   { id: "kpis", label: "School" },
 ] as const;
@@ -28,7 +30,7 @@ const IDS = DASH_ROWS.map((r) => r.id);
 
 export const DEFAULT_LAYOUT: DashLayout = {
   order: [...IDS],
-  hidden: [],
+  hidden: ["tools", "mods"],
   schoolN: 10,
   liveProc: false,
   nowGoal: true,
@@ -60,6 +62,8 @@ function normalize(raw: Partial<DashLayout> | null, flagsFromSave: boolean): Das
     }
   }
   const hidden = [...new Set((raw?.hidden ?? []).map(asId).filter((x): x is DashRowId => Boolean(x)))];
+  const savedOrder = Array.isArray(raw?.order) ? raw!.order : [];
+  if (!savedOrder.includes("tools") && !hidden.includes("tools")) hidden.push("tools");
   const schoolN = raw?.schoolN === 5 ? 5 : 10;
   return {
     order,

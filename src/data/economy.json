@@ -402,8 +402,150 @@
       "date": "2026-09-08",
       "letter": "A"
     },
-    "sessions": []
+    "sessions": [],
+    "clearedAt": "2026-09-08T20:00:00.000Z"
   },
-  "crews": [],
+  "crews": [
+    {
+      "period": 1,
+      "key": "Crew A",
+      "name": "Sprocket"
+    },
+    {
+      "period": 1,
+      "key": "Crew B",
+      "name": "Rivet"
+    },
+    {
+      "period": 1,
+      "key": "Crew C",
+      "name": "Truss"
+    },
+    {
+      "period": 1,
+      "key": "Crew D",
+      "name": "Plumb"
+    },
+    {
+      "period": 2,
+      "key": "Crew A",
+      "name": "Bit"
+    },
+    {
+      "period": 2,
+      "key": "Crew B",
+      "name": "Kernel"
+    },
+    {
+      "period": 2,
+      "key": "Crew C",
+      "name": "Latch"
+    },
+    {
+      "period": 2,
+      "key": "Crew D",
+      "name": "Flux"
+    },
+    {
+      "period": 3,
+      "key": "Crew A",
+      "name": "Bevel"
+    },
+    {
+      "period": 3,
+      "key": "Crew B",
+      "name": "Kerf"
+    },
+    {
+      "period": 3,
+      "key": "Crew C",
+      "name": "Jig"
+    },
+    {
+      "period": 3,
+      "key": "Crew D",
+      "name": "Fence"
+    },
+    {
+      "period": 6,
+      "key": "Crew A",
+      "name": "Quiet"
+    },
+    {
+      "period": 6,
+      "key": "Crew B",
+      "name": "Focus"
+    },
+    {
+      "period": 6,
+      "key": "Crew C",
+      "name": "Anchor"
+    },
+    {
+      "period": 6,
+      "key": "Crew D",
+      "name": "Pulse"
+    },
+    {
+      "period": 8,
+      "key": "Crew A",
+      "name": "Cope"
+    },
+    {
+      "period": 8,
+      "key": "Crew B",
+      "name": "Miter"
+    },
+    {
+      "period": 8,
+      "key": "Crew C",
+      "name": "Rabbet"
+    },
+    {
+      "period": 8,
+      "key": "Crew D",
+      "name": "Spline"
+    },
+    {
+      "period": 9,
+      "key": "Crew A",
+      "name": "Pixel"
+    },
+    {
+      "period": 9,
+      "key": "Crew B",
+      "name": "Frame"
+    },
+    {
+      "period": 9,
+      "key": "Crew C",
+      "name": "Layer"
+    },
+    {
+      "period": 9,
+      "key": "Crew D",
+      "name": "Mask"
+    },
+    {
+      "period": 10,
+      "key": "Crew A",
+      "name": "Cam"
+    },
+    {
+      "period": 10,
+      "key": "Crew B",
+      "name": "Idler"
+    },
+    {
+      "period": 10,
+      "key": "Crew C",
+      "name": "Gear"
+    },
+    {
+      "period": 10,
+      "key": "Crew D",
+      "name": "Belt"
+    }
+  ],
   "students": []
 }

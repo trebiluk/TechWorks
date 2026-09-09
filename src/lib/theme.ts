@@ -1,4 +1,4 @@
-import { paintPalette, storedPalette, SOLVAY_PALETTE, type Palette } from "@/lib/palette";
+import { paintPalette, SOLVAY_PALETTE, type Palette } from "@/lib/palette";
 import { paintFont, storedFont, type FontId } from "@/lib/fonts";
 import { paintLook, storedLook, SOLVAY_LOOK, type Look } from "@/lib/look";
 import { paintLang, storedLang } from "@/lib/i18n";
@@ -32,7 +32,6 @@ export const THEMES = [
 
 export type ThemeId = (typeof THEMES)[number]["id"] | string;
 export type ThemeGroup = (typeof THEMES)[number]["group"] | "custom";
-
 export type ThemeKind = (typeof THEMES)[number]["kind"];
 
 export const THEME_GROUPS: { id: ThemeGroup; label: string }[] = [
@@ -42,6 +41,48 @@ export const THEME_GROUPS: { id: ThemeGroup; label: string }[] = [
   { id: "web", label: "High contrast" },
   { id: "custom", label: "Saved" },
 ];
+
+export function cssThemeId(id: ThemeId): string {
+  if (id.startsWith("custom:")) return "solvay";
+  if (THEMES.some((t) => t.id === id)) return String(id);
+  return "solvay";
+}
+
+export function paletteOf(id: ThemeId): Palette {
+  if (id.startsWith("custom:")) {
+    return { ...SOLVAY_PALETTE, ...(savedThemes().find((t) => t.id === id)?.palette ?? {}) };
+  }
+  const t = THEMES.find((x) => x.id === id);
+  if (!t) return SOLVAY_PALETTE;
+  const light = t.kind === "light";
+  return {
+    navy: t.swatch,
+    surface: light ? mixHex(t.swatch, t.fg, 0.06) : mixHex(t.swatch, t.fg, 0.12),
+    elevated: light ? mixHex(t.swatch, t.fg, 0.12) : mixHex(t.swatch, t.fg, 0.22),
+    orange: t.gold,
+    royal: t.fg,
+    white: t.fg,
+    gold: t.gold,
+    title: t.fg,
+    muted: mixHex(t.fg, t.swatch, light ? 0.42 : 0.45),
+    chip: t.fg,
+  };
+}
+
+function mixHex(a: string, b: string, t: number): string {
+  const pa = parseHex(a);
+  const pb = parseHex(b);
+  if (!pa || !pb) return a;
+  const m = (x: number, y: number) => Math.round(x + (y - x) * t);
+  return `#${[m(pa[0], pb[0]), m(pa[1], pb[1]), m(pa[2], pb[2])].map((n) => n.toString(16).padStart(2, "0")).join("")}`;
+}
+
+function parseHex(hex: string): [number, number, number] | null {
+  const m = hex.trim().match(/^#([0-9a-f]{6})$/i);
+  if (!m) return null;
+  const n = Number.parseInt(m[1], 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
 
 export function storedTheme(): ThemeId {
   try {
@@ -87,11 +128,11 @@ export function paintTheme(id: ThemeId) {
     return;
   }
   const row = THEMES.find((t) => t.id === id);
-  document.documentElement.dataset.theme = id;
+  document.documentElement.dataset.theme = cssThemeId(id);
   document.documentElement.dataset.kind = row?.kind ?? "dark";
   document.documentElement.removeAttribute("data-vibe");
   paintContrast(storedContrast());
-  paintPalette(storedPalette());
+  paintPalette(null);
   paintFont(storedFont());
   paintLook(storedLook() ?? SOLVAY_LOOK);
   paintLang(storedLang());
@@ -129,15 +170,15 @@ export function savedThemes(): SavedTheme[] {
   }
 }
 
-export function saveCustomTheme(label: string): SavedTheme {
-  const name = label.trim() || `Look ${savedThemes().length + 1}`;
-  const palette = storedPalette() ?? SOLVAY_PALETTE;
-  const look = storedLook() ?? SOLVAY_LOOK;
-  const font = storedFont();
+export function saveCustomTheme(label: string, parts?: { palette: Palette; look: Look; font: FontId; kind?: "dark" | "light" }): SavedTheme {
+  const name = label.trim() || `Theme ${savedThemes().length + 1}`;
+  const palette = parts?.palette ?? SOLVAY_PALETTE;
+  const look = parts?.look ?? storedLook() ?? SOLVAY_LOOK;
+  const font = parts?.font ?? storedFont();
   const row: SavedTheme = {
     id: `custom:${Date.now().toString(36)}`,
     label: name.slice(0, 24),
-    kind: document.documentElement.dataset.kind === "light" ? "light" : "dark",
+    kind: parts?.kind ?? (document.documentElement.dataset.kind === "light" ? "light" : "dark"),
     palette,
     look,
     font,

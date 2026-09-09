@@ -1,7 +1,8 @@
 import type { EconomyFile } from "@/lib/economy";
 import { bellFor, isLiveStudent } from "@/lib/economy";
 import { cycleNow, cycleRange, daySlot, todayIso } from "@/lib/calendar";
-import { skillForGoal, skillTrackOf, skillsOf, SKILL_TRACK } from "@/lib/skills";
+import { skillForGoal, skillTrackOf, skillsOf } from "@/lib/skills";
+import type { StemLetter } from "@/lib/stems";
 import { cloneFile } from "@/lib/clone";
 
 export const PHASES = [
@@ -20,11 +21,21 @@ export const PHASES = [
 
 export type DaySlot = "D1" | "D2" | "D3" | "D4";
 
+export const PROJECT_KINDS = [
+  { id: "build", label: "Build" },
+  { id: "individual", label: "Each student" },
+  { id: "crew", label: "Crew" },
+  { id: "contest", label: "Contest" },
+  { id: "challenge", label: "Challenge" },
+] as const;
+export type ProjectKind = (typeof PROJECT_KINDS)[number]["id"];
+
 export type ProjectActivity = {
   id: string;
   name: string;
   skillId: string;
   goal: string;
+  expect?: 1 | 2 | 3 | 4;
 };
 
 export type ProjectStage = {
@@ -38,6 +49,7 @@ export type ProjectStage = {
 export type ShopProject = {
   id: string;
   title: string;
+  kind?: ProjectKind;
   grades: number[];
   skills: string[];
   stages: ProjectStage[];
@@ -48,6 +60,10 @@ export type ShopProject = {
   cycleStart?: number;
   cycleLen?: number;
   pathVer?: number;
+  /** Driving question for the STEM unit. */
+  prompt?: string;
+  /** Science / Technology / Engineering / Math tags. */
+  stem?: StemLetter[];
 };
 
 export const XP_TAX_PER_LAG = 2;
@@ -80,12 +96,12 @@ export function wiseAt(i: number, cycleLen: 1 | 2 = 2): { goal: string; skillId:
 }
 
 export const DEFAULT_ACTIVITIES: ProjectActivity[] = [
-  { id: "act-brain", name: "Brainstorming", skillId: "draw", goal: "IDEA STAGE" },
-  { id: "act-draw", name: "Technical Drawing", skillId: "draw", goal: "DESIGN STAGE" },
-  { id: "act-model", name: "Modeling", skillId: "model", goal: "MODELING STAGE" },
-  { id: "act-finish", name: "Finishing", skillId: "finish", goal: "FINISHING STAGE" },
-  { id: "act-present", name: "Presentation", skillId: "present", goal: "PRESENTATION PREP" },
-  { id: "act-reflect", name: "Reflection", skillId: "present", goal: "CRITIQUE DAY" },
+  { id: "act-brain", name: "Brainstorming", skillId: "draw", goal: "IDEA STAGE", expect: 2 },
+  { id: "act-draw", name: "Technical Drawing", skillId: "draw", goal: "DESIGN STAGE", expect: 3 },
+  { id: "act-model", name: "Modeling", skillId: "model", goal: "MODELING STAGE", expect: 3 },
+  { id: "act-finish", name: "Finishing", skillId: "finish", goal: "FINISHING STAGE", expect: 3 },
+  { id: "act-present", name: "Presentation", skillId: "present", goal: "PRESENTATION PREP", expect: 3 },
+  { id: "act-reflect", name: "Reflection", skillId: "present", goal: "CRITIQUE DAY", expect: 3 },
 ];
 
 const WISE_ACT = ["act-brain", "act-draw", "act-model", "act-model", "act-finish", "act-finish", "act-present", "act-reflect"];
@@ -142,7 +158,10 @@ export function activityLabel(p: ShopProject, stage?: ProjectStage): string {
 export function ensureActivities(p: ShopProject): ShopProject {
   const start = p.cycleStart ?? 1;
   const len = (p.cycleLen === 1 ? 1 : 2) as 1 | 2;
-  const activities = activitiesOf(p);
+  const activities = activitiesOf(p).map((a) => {
+    const seed = DEFAULT_ACTIVITIES.find((d) => d.id === a.id);
+    return { ...a, expect: (a.expect ?? seed?.expect ?? 3) as 1 | 2 | 3 | 4 };
+  });
   const base = p.stages?.length ? p.stages : wiseStages(start, len);
   let i = 0;
   const stages = base.map((s) => {
@@ -156,7 +175,17 @@ export function ensureActivities(p: ShopProject): ShopProject {
       skillId: s.skillId || act?.skillId || "draw",
     };
   });
-  return { ...p, activities, stages, pathVer: Math.max(p.pathVer ?? 0, 3) };
+  const kind = PROJECT_KINDS.some((k) => k.id === p.kind) ? (p.kind as ProjectKind) : p.kind ? "build" : undefined;
+  const seed = UNIT_SEED[p.id];
+  return {
+    ...p,
+    kind,
+    activities,
+    stages,
+    pathVer: Math.max(p.pathVer ?? 0, 4),
+    prompt: p.prompt || seed?.prompt,
+    stem: p.stem?.length ? p.stem : seed?.stem,
+  };
 }
 
 export const DEFAULT_PROJECTS: ShopProject[] = [
@@ -172,7 +201,9 @@ export const DEFAULT_PROJECTS: ShopProject[] = [
     constraints: ["One tool at a time", "Goggles on"],
     cycleStart: 1,
     cycleLen: 2,
-    pathVer: 3,
+    pathVer: 4,
+    prompt: "How can a small force move a bigger load?",
+    stem: ["S", "T", "E", "M"],
   },
   {
     id: "prj7",
@@ -186,7 +217,9 @@ export const DEFAULT_PROJECTS: ShopProject[] = [
     constraints: ["No extra mass after weigh-in"],
     cycleStart: 1,
     cycleLen: 2,
-    pathVer: 3,
+    pathVer: 4,
+    prompt: "How does shape change speed?",
+    stem: ["S", "T", "E", "M"],
   },
   {
     id: "prj8",
@@ -200,7 +233,9 @@ export const DEFAULT_PROJECTS: ShopProject[] = [
     constraints: ["Prototype must stand on its own"],
     cycleStart: 1,
     cycleLen: 2,
-    pathVer: 3,
+    pathVer: 4,
+    prompt: "Who is this for, and how do we know it works?",
+    stem: ["T", "E", "M"],
   },
   {
     id: "prj-figure",
@@ -214,8 +249,91 @@ export const DEFAULT_PROJECTS: ShopProject[] = [
     constraints: ["Parts stay on the figure"],
     cycleStart: 1,
     cycleLen: 2,
-    pathVer: 3,
+    pathVer: 4,
+    prompt: "How do parts become a character that can stand?",
+    stem: ["T", "E"],
   },
+];
+
+function idea(p: Omit<ShopProject, "stages" | "activities" | "pathVer"> & { cycleLen?: 1 | 2 }): ShopProject {
+  const len = (p.cycleLen === 1 ? 1 : 2) as 1 | 2;
+  return ensureActivities({
+    ...p,
+    stages: wiseStages(p.cycleStart ?? 1, len),
+    activities: DEFAULT_ACTIVITIES,
+    pathVer: 4,
+  });
+}
+
+const UNIT_SEED: Record<string, { prompt: string; stem: StemLetter[] }> = {
+  prj6: { prompt: "How can a small force move a bigger load?", stem: ["S", "T", "E", "M"] },
+  prj7: { prompt: "How does shape change speed?", stem: ["S", "T", "E", "M"] },
+  prj8: { prompt: "Who is this for, and how do we know it works?", stem: ["T", "E", "M"] },
+  "prj-figure": { prompt: "How do parts become a character that can stand?", stem: ["T", "E"] },
+  "prj-logo": { prompt: "What one mark says who I am?", stem: ["T", "E"] },
+  "prj-crewlogo": { prompt: "What one mark says who we are?", stem: ["T", "E"] },
+  "prj-minecraft": { prompt: "How do we build a world others can read?", stem: ["T", "E"] },
+  "prj-sand": { prompt: "How does grit order change the surface?", stem: ["S", "T"] },
+};
+
+/** Library seeds. Empty grades = unfiled until you drop them on a grade. */
+export const IDEA_PROJECTS: ShopProject[] = [
+  idea({
+    id: "prj-logo",
+    title: "Logo design",
+    kind: "individual",
+    grades: [],
+    skills: ["draw", "digital", "present"],
+    start: "2026-09-08",
+    end: "2026-10-09",
+    constraints: ["One mark per student", "Must be their own drawing"],
+    cycleStart: 1,
+    cycleLen: 1,
+    prompt: "What one mark says who I am?",
+    stem: ["T", "E"],
+  }),
+  idea({
+    id: "prj-crewlogo",
+    title: "Crew logo",
+    kind: "crew",
+    grades: [],
+    skills: ["draw", "team", "present"],
+    start: "2026-09-08",
+    end: "2026-10-09",
+    constraints: ["One mark for the crew", "Everyone signs the back"],
+    cycleStart: 1,
+    cycleLen: 1,
+    prompt: "What one mark says who we are?",
+    stem: ["T", "E"],
+  }),
+  idea({
+    id: "prj-minecraft",
+    title: "Minecraft contest",
+    kind: "contest",
+    grades: [],
+    skills: ["digital", "draw", "team"],
+    start: "2026-09-08",
+    end: "2026-11-13",
+    constraints: ["School-appropriate build", "Screenshot is the turn-in"],
+    cycleStart: 1,
+    cycleLen: 2,
+    prompt: "How do we build a world others can read?",
+    stem: ["T", "E"],
+  }),
+  idea({
+    id: "prj-sand",
+    title: "Sanding challenge",
+    kind: "challenge",
+    grades: [],
+    skills: ["finish", "safety", "care"],
+    start: "2026-09-08",
+    end: "2026-10-09",
+    constraints: ["Grit order", "No skipping to paint"],
+    cycleStart: 1,
+    cycleLen: 1,
+    prompt: "How does grit order change the surface?",
+    stem: ["S", "T"],
+  }),
 ];
 
 export function ensureProjects(file: EconomyFile): EconomyFile {
@@ -223,14 +341,20 @@ export function ensureProjects(file: EconomyFile): EconomyFile {
   const raw = next.meta.config?.projects?.length ? next.meta.config.projects : DEFAULT_PROJECTS;
   const list = raw
     .filter((p) => p.id !== "prjsh" && !p.grades.includes(5))
-    .map((p) => ensureActivities(p.pathVer === 2 || p.pathVer === 3 ? p : { ...p, stages: wiseStages(p.cycleStart ?? 1, p.cycleLen === 1 ? 1 : 2), pathVer: 3 }));
+    .map((p) =>
+      ensureActivities(
+        ((p.pathVer ?? 0) >= 2 ? p : { ...p, stages: wiseStages(p.cycleStart ?? 1, p.cycleLen === 1 ? 1 : 2), pathVer: 3 }) as ShopProject,
+      ),
+    );
   const haveFigure = list.some((p) => p.id === "prj-figure");
   const withFigure = haveFigure ? list : [...list, ensureActivities(DEFAULT_PROJECTS.find((p) => p.id === "prj-figure")!)];
+  const extras = IDEA_PROJECTS.filter((p) => !withFigure.some((x) => x.id === p.id)).map((p) => ensureActivities(p));
+  const full = [...withFigure, ...extras];
   const by = { ...(next.meta.config?.projectByGrade ?? {}) };
   delete by["5"];
   next.meta.config = {
     ...(next.meta.config ?? {}),
-    projects: withFigure.length ? withFigure : DEFAULT_PROJECTS,
+    projects: full.length ? full : DEFAULT_PROJECTS,
     projectByGrade: { "6": "prj6", "7": "prj7", "8": "prj8", ...by },
   };
   return next;
@@ -238,9 +362,11 @@ export function ensureProjects(file: EconomyFile): EconomyFile {
 
 export function projectsOf(file: EconomyFile): ShopProject[] {
   const raw = file.meta.config?.projects?.length ? file.meta.config.projects : DEFAULT_PROJECTS;
-  return raw
+  const list = raw
     .filter((p) => p.id !== "prjsh" && !p.grades.includes(5))
-    .map((p) => ensureActivities(p));
+    .map((p) => ensureActivities(p as ShopProject));
+  const extras = IDEA_PROJECTS.filter((p) => !list.some((x) => x.id === p.id)).map((p) => ensureActivities(p));
+  return [...list, ...extras];
 }
 
 export function projectForGrade(file: EconomyFile, grade: number): ShopProject {
@@ -362,6 +488,20 @@ export function setActiveProject(file: EconomyFile, grade: number, projectId: st
   return next;
 }
 
+export function placeProject(file: EconomyFile, projectId: string, grade: number | null): EconomyFile {
+  const p = projectsOf(file).find((x) => x.id === projectId);
+  if (!p) return file;
+  if (grade == null) return upsertProject(file, { ...p, grades: [] });
+  if (p.grades.includes(grade)) return file;
+  return upsertProject(file, { ...p, grades: [...p.grades, grade] });
+}
+
+export function unfileProject(file: EconomyFile, projectId: string, grade: number): EconomyFile {
+  const p = projectsOf(file).find((x) => x.id === projectId);
+  if (!p) return file;
+  return upsertProject(file, { ...p, grades: p.grades.filter((g) => g !== grade) });
+}
+
 export function upsertProject(file: EconomyFile, project: ShopProject): EconomyFile {
   const next = cloneFile(file);
   const list = [...projectsOf(next)];
@@ -388,7 +528,9 @@ export function addProject(file: EconomyFile, title: string, grades: number[]): 
     constraints: [],
     cycleStart,
     cycleLen: 2,
-    pathVer: 2,
+    pathVer: 4,
+    prompt: "",
+    stem: ["T", "E"],
   });
 }
 
@@ -441,7 +583,7 @@ export function addActivity(file: EconomyFile, projectId: string, name: string, 
     const id = `act_${Date.now().toString(36)}`;
     return ensureActivities({
       ...p,
-      activities: [...acts, { id, name: name.trim() || "Activity", skillId, goal: "IDEA STAGE" }].slice(0, 8),
+      activities: [...acts, { id, name: name.trim() || "Activity", skillId, goal: "IDEA STAGE", expect: 3 as const }].slice(0, 8),
     });
   });
   const next = cloneFile(file);

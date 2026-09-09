@@ -1,7 +1,10 @@
 import type { EconomyFile, RawStudent } from "@/lib/economy";
 import { roleHistoryOf } from "@/lib/roles";
 import { cloneFile } from "@/lib/clone";
+import { stemOf } from "@/lib/stems";
 import type { MstSkillId } from "@/lib/mst";
+import { todayIso } from "@/lib/calendar";
+import { SOLVAY_YEAR } from "../data/solvay-2026-27";
 
 export const SKILL_MAX = 4;
 
@@ -112,12 +115,30 @@ export const SKILL_WHY: Record<string, string> = {
 };
 
 export const SKILL_TRACK: SkillDef[] = [
-  { id: "safety", name: "Safety", family: "shop", does: "Goggles, stance, ask before a tool.", why: SKILL_WHY.safety, bench: "Works without a safety reminder.", pog: "citizen", mst: ["S2", "S6"], subs: [] },
-  { id: "measure", name: "Measure", family: "shop", does: "Rule, square, mark once.", why: SKILL_WHY.measure, bench: "Mark is true within a blade width.", pog: "prepared", mst: ["S2"], subs: [] },
-  { id: "draw", name: "Draw", family: "shop", does: "Sketch the part before a cut.", why: SKILL_WHY.draw, bench: "A drawing someone else can follow.", pog: "innovator", mst: ["S1"], subs: [] },
-  { id: "model", name: "Model", family: "shop", does: "Build the idea to size.", why: SKILL_WHY.model, bench: "Prototype stands and matches the plan.", pog: "thinker", mst: ["S1", "S4"], subs: [] },
+  { id: "safety", name: "Safety", family: "shop", does: "Goggles, stance, ask before a tool.", why: SKILL_WHY.safety, bench: "Works without a safety reminder.", pog: "citizen", mst: ["S2", "S6"], subs: [
+    { id: "ppe", name: "PPE", does: "Glasses on before the tool." },
+    { id: "ask", name: "Ask", does: "Wait for the nod." },
+    { id: "zone", name: "Zone", does: "Offcut and swing path clear." },
+  ] },
+  { id: "measure", name: "Measure", family: "shop", does: "Rule, square, mark once.", why: SKILL_WHY.measure, bench: "Mark is true within a blade width.", pog: "prepared", mst: ["S2"], subs: [
+    { id: "rule", name: "Rule", does: "Hook, read, mark once." },
+    { id: "square", name: "Square", does: "True the end first." },
+    { id: "layout", name: "Layout", does: "Keep vs waste is marked." },
+  ] },
+  { id: "draw", name: "Draw", family: "shop", does: "Sketch the part before a cut.", why: SKILL_WHY.draw, bench: "A drawing someone else can follow.", pog: "innovator", mst: ["S1"], subs: [
+    { id: "sketch", name: "Sketch", does: "Shape someone else can read." },
+    { id: "dimension", name: "Sizes", does: "Key sizes on the page." },
+  ] },
+  { id: "model", name: "Model", family: "shop", does: "Build the idea to size.", why: SKILL_WHY.model, bench: "Prototype stands and matches the plan.", pog: "thinker", mst: ["S1", "S4"], subs: [
+    { id: "fit", name: "Fit", does: "Joints close." },
+    { id: "test", name: "Test", does: "Try the move the design promised." },
+  ] },
   { id: "material", name: "Material", family: "shop", does: "Pick stock, grain, waste.", why: SKILL_WHY.material, bench: "Chooses stock without extra offcuts.", pog: "thinker", mst: ["S4", "S6"], subs: [] },
-  { id: "tools", name: "Tools", family: "shop", does: "The right tool, set, used, put back.", why: SKILL_WHY.tools, bench: "Sets a tool and names the risk.", pog: "prepared", mst: ["S2"], subs: [] },
+  { id: "tools", name: "Tools", family: "shop", does: "The right tool, set, used, put back.", why: SKILL_WHY.tools, bench: "Sets a tool and names the risk.", pog: "prepared", mst: ["S2"], subs: [
+    { id: "hand", name: "Hand", does: "Grip and waste-side cut." },
+    { id: "power", name: "Power", does: "Licensed, stance, offcut clear." },
+    { id: "return", name: "Return", does: "Tool and bit go home." },
+  ] },
   {
     id: "finish",
     name: "Finish",
@@ -134,7 +155,9 @@ export const SKILL_TRACK: SkillDef[] = [
     ],
   },
   { id: "present", name: "Present", family: "shop", does: "Say what they built and why.", why: SKILL_WHY.present, bench: "A 30-second crew share.", pog: "communicator", mst: ["S7"], subs: [] },
-  { id: "digital", name: "Digital", family: "shop", does: "CAD / photo plan the crew can follow.", why: SKILL_WHY.digital, bench: "A file that matches the part.", pog: "innovator", mst: ["S3"], subs: [] },
+  { id: "digital", name: "Digital", family: "shop", does: "CAD / photo plan the crew can follow.", why: SKILL_WHY.digital, bench: "A file that matches the part.", pog: "innovator", mst: ["S3"], subs: [
+    { id: "cad", name: "CAD", does: "A file the crew can follow." },
+  ] },
   { id: "team", name: "Team", family: "shop", does: "Jobs split, no one idle.", why: SKILL_WHY.team, bench: "Crew finishes a step together.", pog: "citizen", mst: ["S7"], subs: [] },
 ];
 
@@ -215,6 +238,58 @@ function xpTable(file: EconomyFile): Map<string, number> {
   return table;
 }
 
+export function schoolYearOf(_file?: EconomyFile): string {
+  return SOLVAY_YEAR;
+}
+
+export type SkillStamp = NonNullable<RawStudent["skillLog"]>[number];
+export type SkillMarkCtx = { source?: string; crewKey?: string; projectId?: string };
+
+export function skillLogOf(s: RawStudent): SkillStamp[] {
+  return [...(s.skillLog ?? [])];
+}
+
+/** Stored stem if we have one; otherwise the live sentence for that mark. */
+export function lastStemOf(s: RawStudent, skillId?: string): string {
+  const rows = skillLogOf(s).filter((x) => x.n > 0 && (!skillId || x.skillId === skillId));
+  const row = rows.at(-1);
+  if (!row) {
+    if (!skillId) return "";
+    const n = skillScore(s, skillId);
+    return n ? stemOf(skillId, n) : "";
+  }
+  return row.stem || stemOf(row.skillId, row.n);
+}
+
+export function stemForScore(s: RawStudent, skillId: string): string {
+  const n = skillScore(s, skillId);
+  if (!n) return "";
+  const row = skillLogOf(s)
+    .filter((x) => x.skillId === skillId && x.n === n)
+    .at(-1);
+  return row?.stem || stemOf(skillId, n);
+}
+
+export function skillBest(s: RawStudent, skillId: string): number {
+  const now = skillScore(s, skillId);
+  const hist = skillLogOf(s)
+    .filter((x) => x.skillId === skillId)
+    .reduce((m, x) => Math.max(m, x.n), 0);
+  return Math.max(now, hist);
+}
+
+export function skillInYear(s: RawStudent, skillId: string, year: string): number {
+  const rows = skillLogOf(s).filter((x) => x.skillId === skillId && x.year === year);
+  if (!rows.length) return year === schoolYearOf() ? skillScore(s, skillId) : 0;
+  return rows.reduce((m, x) => Math.max(m, x.n), 0);
+}
+
+export function skillYearsOf(s: RawStudent, extra?: string): string[] {
+  const years = new Set<string>(skillLogOf(s).map((x) => x.year));
+  if (extra) years.add(extra);
+  return [...years].sort();
+}
+
 export function skillXp(file: EconomyFile, id: string): number {
   return xpTable(file).get(id) ?? 0;
 }
@@ -230,15 +305,18 @@ export function xpIntoLevel(file: EconomyFile, id: string) {
   return { xp, level, into, need: XP_PER_LEVEL };
 }
 
-export function setSkillScore(file: EconomyFile, studentId: string, skillId: string, n: number): EconomyFile {
+export function setSkillScore(file: EconomyFile, studentId: string, skillId: string, n: number, ctx?: SkillMarkCtx): EconomyFile {
   const v = n <= 0 ? 0 : Math.min(SKILL_MAX, Math.round(n));
   let hit = false;
   const parent = skillId.includes(":") ? skillId.split(":")[0] : null;
   const next = cloneFile(file);
+  const year = schoolYearOf(file);
+  const date = todayIso();
   next.students = next.students.map((s) => {
     if (s.id !== studentId) return s;
     hit = true;
     const skills = { ...(s.skills ?? {}) };
+    const prev = Number(skills[skillId] || 0);
     if (!v) delete skills[skillId];
     else skills[skillId] = v;
     if (parent) {
@@ -246,7 +324,21 @@ export function setSkillScore(file: EconomyFile, studentId: string, skillId: str
       const marks = subs.map((sub) => Number(skills[`${parent}:${sub.id}`] || 0)).filter((x) => x > 0);
       if (marks.length) skills[parent] = Math.max(Number(skills[parent] || 0), Math.round(marks.reduce((a, b) => a + b, 0) / marks.length));
     }
-    return { ...s, skills };
+    let skillLog = [...(s.skillLog ?? [])];
+    if (v !== prev) {
+      skillLog.push({
+        date,
+        skillId,
+        n: v,
+        year,
+        source: ctx?.source,
+        crewKey: ctx?.crewKey,
+        projectId: ctx?.projectId,
+        stem: v ? stemOf(skillId, v) : undefined,
+      });
+      if (skillLog.length > 160) skillLog = skillLog.slice(-160);
+    }
+    return { ...s, skills, skillLog: skillLog.length ? skillLog : undefined };
   });
   return hit ? next : file;
 }

@@ -7,10 +7,14 @@ export type HelpArticle = {
   title: string;
   tags: string[];
   body: string;
+  wall?: boolean;
 };
 
 export const HELP_CATEGORIES = [
+  "Welcome",
+  "Wall",
   "Start",
+  "Roles",
   "Dashboard",
   "Admin",
   "Crew",
@@ -29,10 +33,190 @@ export const HELP_CATEGORIES = [
 
 export const HELP_ARTICLES: HelpArticle[] = [
   {
+    id: "welcome-what",
+    category: "Welcome",
+    title: "What is TechWorks?",
+    tags: ["welcome", "intro", "what", "techworks", "class", "kids", "family"],
+    wall: true,
+    body: "TechWorks is Mr. Kulibert’s technology class, turned into a workshop you can see. You work in a small crew. You practice real skills (measure, cut, finish, share). You earn gold XP for getting better at the work — that is the point. Class cash is a perk game for showing up and doing the job. It is not your grade. The board on the wall uses shop aliases, not legal names, so it is safe to look at together.",
+  },
+  {
+    id: "welcome-day",
+    category: "Welcome",
+    title: "A class period in four beats",
+    tags: ["welcome", "enter", "listen", "work", "cleanup", "berty"],
+    wall: true,
+    body: "1) Enter and sit with your crew. 2) Listen to the day’s goal — ask a real question. 3) Crew work time: build, draw, sand, plan. 4) Cleanup: tools, scraps, seats. When the board turns coral, that last step is now. Berty points at the jobs. Caught helping extra can earn a perk — not XP.",
+  },
+  {
+    id: "welcome-numbers",
+    category: "Welcome",
+    title: "What the numbers mean",
+    tags: ["welcome", "xp", "gold", "cash", "grade", "3", "2", "1"],
+    wall: true,
+    body: "Gold = skill XP. Getting better at the craft. $ = class perks, a game you can spend in the store or on prints. Crew leads tap 3 (on the job), 2 (needs a nudge), or 1 (not with the crew). Your family report is the project grade in plain words. Wallet and Lucky Bench never go on that sheet.",
+  },
+  {
+    id: "welcome-people",
+    category: "Welcome",
+    title: "Who does what",
+    tags: ["welcome", "crew", "teacher", "family"],
+    wall: true,
+    body: "You: build, clean, help a crewmate. Crew lead: scores the team 3 / 2 / 1 for this period only. Teacher: the real grades, the skills, the store. Family: open a name → Family for the report card. Nobody’s legal name belongs on the projector.",
+  },
+  {
+    id: "wall-read",
+    category: "Wall",
+    title: "How to read this board",
+    tags: ["wall", "projector", "xp", "alias", "cleanup"],
+    wall: true,
+    body: "This is the class wall. Names here are shop aliases, not legal names. Gold numbers are skill XP. $ is classroom perks, a game. The ring is minutes left in this period. Coral means cleanup — tools away, seats, floor.",
+  },
+  {
+    id: "wall-teach",
+    category: "Wall",
+    title: "Dashboard vs Teach",
+    tags: ["teach", "dashboard", "tools", "timer", "projector"],
+    wall: true,
+    body: "Dashboard stays up all day: goals, schedule, school board. Teach is only when you are in front of the group — giant DO THIS NOW and lesson slots. Same Tools on both (timer, draw a worker, draw a crew). Unlock Teach to show or hide Slots, Tools, Packs, Objective.",
+  },
+  {
+    id: "wall-menu",
+    category: "Wall",
+    title: "New menu (Dash · Teach · Learn · Other)",
+    tags: ["menu", "nav", "tabs", "classic"],
+    wall: true,
+    body: "New menu is on by default. Top row is the section. Second row is only that section. Teach has Now (the wall), Plans (reusable lessons you can apply next quarter), and Score. Learn is Book / Projects / Skills. Other is Club and Study Hall. Classic menu is Dashboard / Desk / Learn / Admin — toggle in the header or Admin → Look.",
+  },
+  {
+    id: "wall-polls",
+    category: "Wall",
+    title: "Live polls",
+    tags: ["poll", "vote", "exit ticket", "crew"],
+    wall: true,
+    body: "Teacher opens a poll (Yes/No, A–D, 1–4, emoji, or custom). The wall shows bars only — no names. Crew pad is where each worker taps. Close & save keeps a history. Polls never change grades, XP, or cash.",
+  },
+  {
+    id: "wall-xp",
+    category: "Wall",
+    title: "XP vs perks vs stock",
+    tags: ["xp", "perks", "stock", "grade"],
+    wall: true,
+    body: "XP comes from workshop skills (Beginning → Distinguished). Perks $ come from showing up and doing the job, minus the store. Stock is optional invest — a separate game. The family report card is the project grade, not your wallet.",
+  },
+  {
+    id: "wall-effort",
+    category: "Wall",
+    title: "3, 2, 1 — what crew leads tap",
+    tags: ["3", "2", "1", "crew", "effort"],
+    wall: true,
+    body: "3 = working the job. 2 = needs a nudge. 1 = not with the crew. Absent / Excused / Personal are for not being here — they are not a skill grade. A 4 (Distinguished) is a teacher mark, not a crew-lead tap.",
+  },
+  {
+    id: "wall-skills",
+    category: "Wall",
+    title: "Skill words",
+    tags: ["beginning", "developing", "proficient", "distinguished"],
+    wall: true,
+    body: "1 Beginning — needs a demo. 2 Developing — can do it with a check-in. 3 Proficient — independent, meets the standard. 4 Distinguished — can teach a crewmate.",
+  },
+  {
+    id: "wall-family",
+    category: "Wall",
+    title: "Family report",
+    tags: ["parent", "family", "report", "grade"],
+    wall: true,
+    body: "Open a worker (tap a name) → Family. One project mark. Skills in plain words. Time in class is listed but not averaged into the grade. Perks and stock stay off that sheet.",
+  },
+  {
+    id: "wall-berty",
+    category: "Wall",
+    title: "BertyBot",
+    tags: ["berty", "pose", "cleanup", "teach"],
+    wall: true,
+    body: "Berty is the workshop mascot. He waves at ENTER, thinks at LISTEN, stands for CREW WORK, points at CLEAN UP and between classes, and celebrates SHARE / class reward. Cleanup and passing always show him, even if the Berty module is off. Teach mode uses the same poses.",
+  },
+  {
+    id: "dash-teach",
+    category: "Dashboard",
+    title: "Teach mode",
+    tags: ["teach", "lesson", "now", "slots", "objective", "demo"],
+    wall: true,
+    body: "Dashboard → Teach. Big “Do this now” follows the bell: Enter, Listen, Crew work, Cleanup (or Demo / Critique / Training / Short / Sub packs). Slots stretch to the period, including delay and half-day. Unlock to pin a slot, rewrite the objective, or add a one-line job. Cleanup always wins. No names on this wall.",
+  },
+  {
+    id: "admin-crews",
+    category: "Admin",
+    title: "Crew manager",
+    tags: ["crew", "group", "principal", "enemies", "do not pair", "history"],
+    body: "Admin → Crews (desk PIN). Tap a worker, tap a crew. 3–4 people, up to 5 crews. Each move is dated so yesterday’s group still scores as yesterday. Principal “do not pair” blocks a seat; Override today logs an exception. Never on the wall. Legal last names show here only so you can match the office list.",
+  },
+  {
+    id: "roles-teacher",
+    category: "Roles",
+    title: "Teacher path",
+    tags: ["teacher", "workflow", "pin", "export"],
+    body: "Wall on. SchoolTool by 8:15. Goal from the project. Unlock 1111. Verify each crew after the lead scores. Nurse stamps time. Cleanup coral. Store / prints / lucky need PIN. Export once a period. Writes: marks, attend, passes, ledger, skills, grades, vault.",
+  },
+  {
+    id: "roles-crew",
+    category: "Roles",
+    title: "Crew lead path",
+    tags: ["crew", "kiosk", "2222", "3", "2", "1"],
+    wall: true,
+    body: "PIN 2222, this period only. Hi, Team Leader {name}. Tap 3 / 2 / 1 or Absent / Excused / Personal. Optional INVEST? after a 3/2/1. Next crew auto-advances. Our crew: name, mark, and motto — not seats. You cannot touch wallet, bonus, or grades.",
+  },
+  {
+    id: "roles-worker",
+    category: "Roles",
+    title: "Worker path",
+    tags: ["student", "wall", "xp"],
+    wall: true,
+    body: "Read the wall: gold is XP, $ is perks. Tap your alias for the family sheet (project mark). Coral = cleanup. You don't type money.",
+  },
+  {
+    id: "roles-hall",
+    category: "Roles",
+    title: "Study hall path",
+    tags: ["hall", "nurse", "line leader"],
+    body: "HERE or NURSE / LIBRARY / TEACHER (clocked). Line leader is weekly. Productive or peaceful. Hall store is separate. Not Tech effort.",
+  },
+  {
+    id: "roles-club",
+    category: "Roles",
+    title: "Tech Club path",
+    tags: ["club", "check-in"],
+    body: "IN once a day = +$10 and +2 XP. Activities on the club board. Never mixes into class effort grades.",
+  },
+  {
+    id: "roles-family",
+    category: "Roles",
+    title: "Family path",
+    tags: ["parent", "family"],
+    wall: true,
+    body: "Profile → Family. One project grade. Skills in words. No wallet, stock, or Lucky Bench.",
+  },
+  {
+    id: "roles-sub",
+    category: "Roles",
+    title: "Sub day",
+    tags: ["sub", "cycle"],
+    body: "A sub never opens this app. You tap SUB. That date is void. The cycle does not rewind. Next class day is the next cycle day.",
+  },
+  {
+    id: "wall-cleanup",
+    category: "Wall",
+    title: "Cleanup",
+    tags: ["cleanup", "coral", "tools", "berty"],
+    wall: true,
+    body: "Last five minutes: coral screen. Berty points at jobs. Workshop: tools, scraps, stations. Classroom: seats and aisles. Caught helping extra can earn a perk — not XP. Between classes Berty points at ENTER → LISTEN → CREW WORK → CLEAN UP.",
+  },
+  {
     id: "copyright",
     category: "Start",
     title: "Copyright",
     tags: ["copyright", "license", "kulibert"],
+    wall: true,
     body: COPYRIGHT_LONG,
   },
   {
@@ -69,6 +253,15 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Projector / Google Site",
     tags: ["embed", "google site", "iframe", "overview", "cleanup"],
     body: "Settings → Show embed copies an iframe with ?embed=1. That load is Dashboard only: aliases and XP or perks. Coral CLEANUP TIME in the last 5 minutes of a live period. No Crew, no Desk, no last names, no IEP.",
+    wall: true,
+  },
+  {
+    id: "dash-tools",
+    category: "Dashboard",
+    title: "Tools on the wall",
+    tags: ["timer", "dice", "random", "picker", "ambient"],
+    wall: true,
+    body: "Unlock → Tools (next to Arrange). Timer, draw a worker (alias), draw a crew for this period. Ambient Chaos link only if that module is on. Toggle off to hide. Names are aliases.",
   },
   {
     id: "crew-pad",
@@ -102,8 +295,8 @@ export const HELP_ARTICLES: HelpArticle[] = [
     id: "watch",
     category: "Skills",
     title: "Watch one skill",
-    tags: ["watch", "emerging", "practicing", "applying", "e", "p", "a"],
-    body: "Watch one skill that matches today’s daily goal. Same crew order as Desk. E needs a demo. P works with a check-in. A can help a classmate. Blank is not a zero. Other skill is one extra tap. Conference (PIN) is the full skill grid. Standard 5 is a separate grid (S1–S7, scores 1–4) and is not pay.",
+    tags: ["watch", "stem", "beginning", "developing", "proficient", "distinguished", "1-4"],
+    body: "Watch one skill that matches today’s daily goal. The four sentences under the title are evidence stems — what you can see. 1 Beginning, 2 Developing, 3 Proficient, 4 Distinguished. Gold ring is the expected mark for today’s activity. A tap stores the stem on the worker (Profile → Skills). Blank is not a zero. Crew and project are notes, not the owner. PIN for Sit-down.",
   },
   {
     id: "mst",
@@ -116,8 +309,8 @@ export const HELP_ARTICLES: HelpArticle[] = [
     id: "projects",
     category: "Skills",
     title: "Projects",
-    tags: ["project", "agenda", "activity", "plan book", "cycle", "gradebook"],
-    body: "Learn → Projects. Each project has Activities (Brainstorming, Technical Drawing, Modeling, Finishing, Presentation, Reflection). The plan book maps Cycle × Day 1–4 to one activity — a 4-day cycle can be four different days. Dashboard shows today’s activity. Gradebook columns are those activities. Skills stay 1–4 XP. PIN to edit.",
+    tags: ["project", "agenda", "activity", "plan book", "cycle", "gradebook", "stem", "driving question", "unit"],
+    body: "Learn → Projects. Each title is a STEM unit: a driving question plus S/T/E/M chips. Left column is the library. Drag a title into Grade 6 / 7 / 8. Activities average into one project grade; the 1–4 next to an activity is the expected Watch mark (gold ring). Assign G6/G7/G8 makes it live. Not a second MST score — Standard 5 stays on NY Tech. PIN to edit.",
   },
   {
     id: "studyhall",
@@ -131,7 +324,15 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Club",
     title: "Technology Club",
     tags: ["club", "late bus", "minecraft", "robotics", "workshop", "computer", "3:00", "minutes"],
-    body: "Admin → Club. Calendar (top): tap Mon–Fri for the usual meeting day (Tuesday on). This week: CLUB / SKIP / OFF per day, overlay 1–8, a note for snow / party / logo deadline. Half days stay off unless you turn that date on. Sign in (first name + last initial), pick Minecraft / Robotics / Workshop / Computer Time, mark late bus / pickup / walker. Cleanup is 3:00, door 3:05. Dashboard shows Tech Club Today / now / Next club — tap it to open the pad. Club does not touch class XP or rankings. Wall is the projector view.",
+    body: "Admin → Club. Calendar (top): tap Mon–Fri for the usual meeting day (Tuesday on). Sign in (first name + last initial), pick Minecraft / Robotics / Workshop / Computer Time, mark late bus / pickup / walker. IN that matches a class alias pays $10 perks + 2 XP once that day (wallet/XP only — not effort, not the project grade). No match = no pay. Cleanup 3:00, door 3:05. Wall is the projector view.",
+  },
+  {
+    id: "glossary",
+    category: "Skills",
+    title: "Shop words",
+    tags: ["glossary", "vocabulary", "kerf", "grit", "proficient", "words"],
+    wall: true,
+    body: "Learn → Words. Search or tap a letter. Categories: Safety, Measure, Tools, Materials, Process, Design, Crew, Grades, Class. Kid definition plus an in-the-shop sentence. STEM, driving question, and evidence stem live here. Project the card. Not a grade.",
   },
   {
     id: "version",
@@ -145,14 +346,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Grades",
     title: "Parent-facing grades",
     tags: ["grades", "report card", "classroom", "export", "participation"],
-    body: "More → Grades (PIN). Up to 10 columns: Class participation (from 3/2/1 that cycle) and Skill (from E/P/A). 100 = full, 85 = steady, 70 = starting. Blank = not enough evidence, not a zero. Wallet, stock, store, and personal days are not in the mark. Numbers are calculated; type only to override, then Revert. Assignment names + Classroom CSV. Full report card is on the worker profile.",
+    body: "More → Grades (PIN). Up to 10 columns: Class participation (from 3/2/1 that cycle) and Skill (from 1–4). Hover a cell for the evidence stem. 100 = full, 85 = steady, 70 = starting. Blank = not enough evidence, not a zero. Wallet, stock, store, and personal days are not in the mark. Numbers are calculated; type only to override, then Revert. Assignment names + Classroom CSV. Full report card is on the worker profile.",
   },
   {
     id: "xp",
     category: "Skills",
     title: "XP",
     tags: ["xp", "level", "6"],
-    body: "E=1 P=2 A=3 XP. Every 6 XP is the next internal level (max 8). The Dashboard Skills board shows the XP number, not a level name, until you turn on Level labels in Settings. XP never changes wallet, stock, store, or effort.",
+    body: "1–4 on a skill is that many XP. Every 6 XP is the next internal level (max 8). The Dashboard Skills board shows the XP number, not a level name, until you turn on Level labels in Settings. XP never changes wallet, stock, store, or effort.",
   },
   {
     id: "stocks",
@@ -162,6 +363,13 @@ export const HELP_ARTICLES: HelpArticle[] = [
     body: "Crew taps INVEST? after a 3/2/1. You approve on Score (PIN). That day's pay leaves the wallet and becomes principal. Pick 3 of 12 names. DJIA weekly average moves the basket. Rankings on the wall ignore stock on purpose.",
   },
   {
+    id: "lucky-bench",
+    category: "Money",
+    title: "Lucky Bench",
+    tags: ["lucky", "die", "raffle", "pot", "gamble", "wallet"],
+    body: "Admin → Lucky. PIN. Stake $5 / $10 / $15, roll a d6. 1 bust, 2–3 half back, 4 push, 5 ×1.5, 6 double. About 8% house edge so saving usually beats rolling. 3 rolls a day. Friday pot: $5 ticket, 2/day, you draw. Class cash only — never XP or grades. Off in Modules if you don't want it.",
+  },
+  {
     id: "store-buy",
     category: "Money",
     title: "Store and can't afford",
@@ -169,11 +377,26 @@ export const HELP_ARTICLES: HelpArticle[] = [
     body: "Perks = wallet. ⋯ More → Store is the catalog. Buy needs PIN. Profile chips also deduct. If the price is bigger than the wallet, the chip is struck. Teacher deducts can still go negative (penalty, not a purchase). The store never changes effort or grades.",
   },
   {
+    id: "prints",
+    category: "Money",
+    title: "3D print collections",
+    tags: ["print", "gallery", "rare", "shiny", "trade", "small", "large"],
+    wall: true,
+    body: "Dashboard → Prints is the fidget gallery: photo, size, rarity (common / shiny / rare / wild), variant, and counts — released, in the wild, in the bin. No legal names. Cash buys from the bin (PIN). Trade: 2 rare smalls or 3 shiny smalls → one large. Wild cards do not trade. Bin: add pieces on the fly, +Var for a color/finish, print-run +N (counts as made), photos. Custom Teacher Gift is a grant. Wallet only — not XP or grades.",
+  },
+  {
     id: "schedule",
     category: "Schedule",
     title: "Bells, delay, A/B, SUB, lunch",
     tags: ["bell", "delay", "a day", "b day", "sub", "lunch", "snow"],
-    body: "Desk → Schedule: Regular / 1-hour / 2-hour / half. A/B chip is the live letter; next school day infers the other. Snow · reset A/B (PIN). SUB voids that date and does not rewind the cycle.",
+    body: "Desk → Schedule: Regular / 1-hour / 2-hour / half / Assembly. A/B chip is the live letter; next school day infers the other. Snow · reset A/B (PIN). SUB voids that date and does not rewind the cycle. Specials: Admin Today → add Grade 6/7/8/All assemblies even if they are not during Tech. The wall shows every period and gold-rings the assembly window.",
+  },
+  {
+    id: "nurse-pass",
+    category: "Schedule",
+    title: "Nurse and out-of-room",
+    tags: ["nurse", "pass", "attendance", "excused", "time"],
+    body: "Desk: Nurse on the worker card stamps the clock and sets attendance to nurse. If they had no 3/2/1 yet, effort becomes Excused (E). A score already given stays. Tap Back when they return (in-time is saved). Hall NURSE / LIBRARY / TEACHER does the same clock. Admin Today lists who is out. SchoolTool is still the official AM attendance.",
   },
   {
     id: "cleanup",
@@ -187,7 +410,37 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Profiles",
     title: "Worker profile",
     tags: ["profile", "alias", "iep", "504"],
-    body: "Open from Dashboard, Data, Skills, or Find worker. Public handle + alias. Arrow reveals legal name, course, IEP/504 (read-only from roster). Store and money steps need PIN.",
+    body: "Open from Dashboard, Data, Skills, or Find worker. Public handle + alias. Arrow reveals legal name, course, IEP/504 (from roster). Store and money steps need PIN. The locked worker id never changes; alias can.",
+  },
+  {
+    id: "google-book",
+    category: "Admin",
+    title: "Google book",
+    tags: ["google", "sheets", "drive", "export", "year", "vault", "lock", "class", "club"],
+    body: "Admin → Records → Google book (also Data). One 2026–27 workbook: YEAR dashboard, a tab per class (P1, P2, P3, P8, P9, P10), study hall, club, STEM stems, skill log, full-year C1D1–C8D4, LOG, MASTER, VAULT. Gold headers (tw_ keys) are locked for the desk — do not rename them. extra_1 through extra_8 are yours; add more columns only after extra_8 and keep a copy before you re-export. VAULT is legal names — do not share or project that tab. Download, then open in Drive as a Google Sheet. Data → Protect gold columns. No Apps Script. This device is still the gradebook.",
+  },
+  {
+    id: "deck",
+    category: "Wall",
+    title: "Default deck",
+    tags: ["deck", "slides", "projector", "theme", "navy", "violet", "powerpoint"],
+    wall: true,
+    body: "Dash → Deck. Navy and violet 16:9 slides for the projector: how this class works, four beats, effort 3/2/1, skills 1–4, STEM letters, safety, Do this now, cleanup, plus a blank master. Arrows or tap to advance. Present fills the screen. PowerPoint and PDF download the same deck. Aliases only — no legal names on these slides.",
+  },
+  {
+    id: "roster-ids",
+    category: "Admin",
+    title: "Roster ids and aliases",
+    tags: ["roster", "id", "alias", "add", "save", "ferpa"],
+    body: "Admin → Records → Roster. Type legal Last, First, then Add — or Import / CSV (Last, First, Period, IEP, 504). TechWorks mints a locked unique id first, then a wall alias from that id — never from the legal name. Clear workers snapshots first. Edit alias, crew, and (Show legal) names/IEP/504 in the table. Scores, XP, and $ stay on the id. Auto-save on this device; tap the Save chip to write now. Backups is the other Records chip: snapshot, download full, restore.",
+  },
+  {
+    id: "profile-house",
+    category: "Profiles",
+    title: "Berty and Mr. K",
+    tags: ["berty", "mr k", "kulibert", "mascot", "teacher"],
+    wall: true,
+    body: "BertyBot is the workshop mascot — cleanup, enter/listen/work, never a grade or a wallet. Mr. K is the teacher card (Richard Kulibert). Open from the version chip (tap Berty or the v number), Find (type berty or kulibert), Teach (tap Berty), or Admin → About. These are house profiles, not students.",
   },
   {
     id: "portal",
@@ -201,14 +454,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Privacy",
     title: "FERPA / what gets published",
     tags: ["ferpa", "alias", "names", "iep", "export"],
-    body: "Live export is encoded and has no last names. Names vault is a separate private download (alias, last, period, IEP/504). IEP is a blue deco dot and 504 orange, only inside Show full info, mixed with fake dots. Google Site embed never gets the vault.",
+    body: "Live export is encoded and has no last names. Names vault is a separate private download (alias, last, period, IEP/504). Every worker has a locked unique id; the wall alias is generated after that id exists. IEP is a blue deco dot and 504 orange, only inside Show full info, mixed with fake dots. Google Site embed never gets the vault.",
   },
   {
     id: "export",
     category: "Export",
     title: "Save, live export, Friday",
     tags: ["save", "export", "friday", "vault"],
-    body: "Save stores the desk on this device. Export downloads techworks-LIVE.enc.txt (codes, not names). Names vault is Settings → Export names vault. Export at least once each live period — a banner sits on the desk until you do. Friday still asks if you have not exported today.",
+    body: "Roster and scoring auto-save on this device (Save chip shows last write). Tap Save to flush now. Admin → Records → Backups: snapshot, daily autos, download full backup (names inside — keep private), restore from file, download all snapshots. Import class list is on the same Records page. Export live wall is aliases only. Names vault is separate. Drive / Cloudflare copies come after the live pipe.",
   },
   {
     id: "year",
@@ -257,10 +510,11 @@ export function helpMarkdown(): string {
   return `# TechWorks Help · v${APP_VERSION}\n\n${COPYRIGHT_LONG}\n\nSearch in the app Help panel. Categories below.\n\n${groups}\n`;
 }
 
-export function searchHelp(q: string): HelpArticle[] {
+export function searchHelp(q: string, wallOnly = false): HelpArticle[] {
+  const pool = wallOnly ? HELP_ARTICLES.filter((a) => a.wall) : HELP_ARTICLES;
   const n = q.trim().toLowerCase();
-  if (!n) return HELP_ARTICLES;
-  return HELP_ARTICLES.filter((a) => {
+  if (!n) return pool;
+  return pool.filter((a) => {
     const blob = `${a.category} ${a.title} ${a.body} ${a.tags.join(" ")}`.toLowerCase();
     return n.split(/\s+/).every((w) => blob.includes(w));
   });

@@ -2,15 +2,23 @@ import { memo, useMemo } from "react";
 import type { EconomyFile, ScoredStudent } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
 import { formatBell, leftClock, periodClock, periodNext, periodNow } from "@/lib/bells";
-import { abOn } from "@/lib/store";
-import { cycleDayLabel, daySlot, quarterNow, todayIso } from "@/lib/calendar";
+import { abOn, deskBellId } from "@/lib/store";
+import { FeatureCards } from "@/components/feature-cards";
+import { PollWall } from "@/components/polls";
+import { SpecialBanner } from "@/components/special-banner";
+import { cycleDayLabel, daySlot, isSchoolDay, quarterNow, todayIso } from "@/lib/calendar";
 import { currentCycleOf } from "@/lib/roles";
 import { crewsOf } from "@/lib/crews";
 import { applySort, byCombo } from "@/lib/rank";
 import { agendaFor, prettyStage, skillName } from "@/lib/projects";
 import { useShopClock } from "@/lib/use-clock";
 import { cn } from "@/lib/utils";
+import { ProcedureCue } from "@/components/procedure-cue";
 import { ProgressRing } from "@/components/progress-ring";
+import { BertyPeek } from "@/components/berty";
+import { showBerty, bertyPose } from "@/lib/berty";
+import { featureOn } from "@/lib/features";
+import { procedureStep } from "@/lib/procedure";
 
 const CREW_EDGE = [
   "var(--color-period-1)",
@@ -32,6 +40,9 @@ export const PhoneFeed = memo(function PhoneFeed({
   onOpenId,
   onPeriod,
   unlocked,
+  onHelp,
+  onPrints,
+  onOpenMod,
 }: {
   file: EconomyFile;
   list: ScoredStudent[];
@@ -40,23 +51,27 @@ export const PhoneFeed = memo(function PhoneFeed({
   onOpenId: (id: string) => void;
   onPeriod: (period: number) => void;
   unlocked: boolean;
+  onHelp?: () => void;
+  onPrints?: () => void;
+  onOpenMod?: (id: string) => void;
 }) {
-  const now = useShopClock(file.meta.config?.schedule, "beat");
+  const bellsId = deskBellId(file);
+  const now = useShopClock(bellsId, "beat");
   const today = todayIso();
   const cycle = currentCycleOf(file);
   const slot = daySlot(today);
   const q = quarterNow(today);
   const letter = abOn(file, today);
   const shop = useMemo(() => shopBells(file).map((b) => b.period), [file]);
-  const live = periodNow(file.meta.config?.schedule, now);
-  const nxt = periodNext(file.meta.config?.schedule, now);
+  const live = periodNow(bellsId, now);
+  const nxt = periodNext(bellsId, now);
   const shown =
     live != null && shop.includes(live)
       ? live
       : nxt && shop.includes(nxt.period)
         ? nxt.period
         : (shop[0] ?? 1);
-  const clock = live != null ? periodClock(live, file.meta.config?.schedule, now) : null;
+  const clock = live != null ? periodClock(live, bellsId, now) : null;
   const agenda = agendaFor(file, shown);
   const crews = crewsOf(file, shown, today);
   const ranked = useMemo(
@@ -69,13 +84,21 @@ export const PhoneFeed = memo(function PhoneFeed({
   const project = agenda.title || "Class project";
   const left = clock?.live ? leftClock(clock.left).label : null;
   const pct = clock?.live ? clock.pct : 0;
+  const passing = isSchoolDay(today) && !clock?.live && Boolean(nxt);
+  const step = procedureStep({ live: Boolean(clock?.live), cleanup: Boolean(clock?.cleanup), passing, pct });
+  const bertyOn = showBerty(featureOn(file, "berty"), { cleanup: Boolean(clock?.cleanup), passing });
+  const showProc = bertyOn && !clock?.cleanup && (passing || step === "enter" || step === "listen");
 
   return (
-    <div className="phone-feed flex min-h-0 flex-1 flex-col gap-2.5 overflow-auto pb-3">
+    <div className="phone-feed flex min-h-[12rem] flex-1 flex-col gap-2.5 overflow-auto pb-3">
+      <SpecialBanner file={file} date={today} now={now} compact />
+      <FeatureCards file={file} unlocked={unlocked} period={shown} onOpen={onOpenMod} compact />
+      <PollWall file={file} period={shown} />
       <section
         className={cn(
-          "rounded-xl px-3 py-3",
-          clock?.cleanup ? "bg-cleanup text-accent-fg" : "bg-elevated text-white",
+          "tw-gadget tw-hud px-3 py-3",
+          clock?.cleanup ? "bg-cleanup text-accent-fg" : "text-fg",
+          clock?.live && !clock.cleanup ? "tw-live" : "",
         )}
       >
         <div className="flex items-center gap-3">
@@ -85,6 +108,7 @@ export const PhoneFeed = memo(function PhoneFeed({
               label={clock.cleanup ? "NOW" : `${Math.max(0, Math.ceil(clock.left))}m`}
               tone={clock.cleanup ? "warn" : "accent"}
               size="md"
+              live
             />
           ) : null}
           <div className="min-w-0 flex-1">
@@ -95,15 +119,26 @@ export const PhoneFeed = memo(function PhoneFeed({
               {clock?.cleanup ? "Cleanup" : left ?? (nxt ? formatBell(nxt.start) : "—")}
             </p>
           </div>
+          {bertyOn ? <BertyPeek pose={bertyPose({ live: Boolean(clock?.live), cleanup: Boolean(clock?.cleanup), passing })} /> : null}
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-1.5">
-          <span className="rounded-full bg-black/20 px-2.5 py-1 text-xs font-bold uppercase tracking-wide">
+          <span className="rounded-full bg-elevated px-2.5 py-1 text-xs font-bold uppercase tracking-wide">
             {letter} day
           </span>
-          <span className="rounded-full bg-black/20 px-2.5 py-1 text-xs font-bold uppercase tracking-wide">
+          <span className="rounded-full bg-elevated px-2.5 py-1 text-xs font-bold uppercase tracking-wide">
             {cycleDayLabel(slot.label, cycle) || `Cycle ${cycle}`}
           </span>
-          <span className="rounded-full bg-black/20 px-2.5 py-1 text-xs font-bold uppercase tracking-wide">{q.label}</span>
+          <span className="rounded-full bg-elevated px-2.5 py-1 text-xs font-bold uppercase tracking-wide">{q.label}</span>
+          {onHelp ? (
+            <button type="button" onClick={onHelp} className="tw-tap rounded-full bg-elevated px-2.5 py-1 text-xs font-bold uppercase tracking-wide">
+              Help
+            </button>
+          ) : null}
+          {onPrints ? (
+            <button type="button" onClick={onPrints} className="tw-tap rounded-full bg-elevated px-2.5 py-1 text-xs font-bold uppercase tracking-wide">
+              Prints
+            </button>
+          ) : null}
           <button
             type="button"
             onClick={() => onRankBoard(rankBoard === "skill" ? "perk" : "skill")}
@@ -114,7 +149,8 @@ export const PhoneFeed = memo(function PhoneFeed({
         </div>
       </section>
 
-      <section className="phone-goal rounded-xl px-3 py-3">
+      {showProc ? <ProcedureCue step={step} passing={passing} compact /> : null}
+      <section className="phone-goal tw-gadget tw-hud rounded-xl px-3 py-3">
         <p className="text-xs font-bold uppercase tracking-wide text-accent">Today · P{shown}</p>
         <p className="mt-1 font-display text-2xl font-bold leading-snug tracking-tight text-fg">{goalLine}</p>
         <p className="mt-0.5 text-base font-medium text-muted">{project}</p>

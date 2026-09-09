@@ -1,4 +1,5 @@
 import { isSchoolDay, reason, todayIso } from "@/lib/calendar";
+import type { EconomyFile } from "@/lib/economy";
 
 export const CLUB_KEY = "techworks-club-v1";
 
@@ -50,6 +51,43 @@ export type ClubMember = {
   name: string;
   station: ClubStation;
   dismiss: ClubDismiss;
+  studentId?: string;
+};
+
+export const CLUB_CASH = 10;
+export const CLUB_XP = 2;
+
+export const CLUB_CLEAN_JOBS = [
+  "Tools and kits away",
+  "Minecraft / Chromebooks logged off",
+  "Floor and tables clear",
+  "Late-bus line at the door",
+  "Pickup names stay seated",
+];
+
+export const CLUB_WALL_CARDS = [
+  { id: "activity", label: "Activity timer" },
+  { id: "comps", label: "Competitions" },
+  { id: "events", label: "Upcoming" },
+  { id: "stations", label: "Stations" },
+  { id: "bus", label: "Late bus" },
+  { id: "overlay", label: "Workshop" },
+] as const;
+
+export type ClubWallCard = (typeof CLUB_WALL_CARDS)[number]["id"];
+
+export type ClubEvent = {
+  id: string;
+  kind: "comp" | "event";
+  title: string;
+  date: string;
+  note?: string;
+};
+
+export type ClubActivity = {
+  title: string;
+  mins: number;
+  startedAt?: number;
 };
 
 export type ClubFile = {
@@ -62,18 +100,36 @@ export type ClubFile = {
   weekOverlay: Record<string, number>;
   weekNote: Record<string, string>;
   members: ClubMember[];
+  events: ClubEvent[];
+  activity: ClubActivity;
+  wallOn: ClubWallCard[];
 };
 
 const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
 export const CLUB_DOW = [1, 2, 3, 4, 5].map((d) => ({ id: d, label: DOW[d] }));
 
 function empty(): ClubFile {
-  return { v: 1, meetings: {}, weekdays: [2], skip: [], extra: [], weekOverlay: {}, weekNote: {}, members: [] };
+  return {
+    v: 1,
+    meetings: {},
+    weekdays: [2],
+    skip: [],
+    extra: [],
+    weekOverlay: {},
+    weekNote: {},
+    members: [],
+    events: [],
+    activity: { title: "Choice stations", mins: 15 },
+    wallOn: ["activity", "comps", "events", "stations", "bus"],
+  };
 }
 
 function migrate(p: Partial<ClubFile> | null): ClubFile {
   const base = empty();
   if (!p || p.v !== 1) return base;
+  const wallOn = Array.isArray(p.wallOn) && p.wallOn.length
+    ? (p.wallOn.filter((id) => CLUB_WALL_CARDS.some((c) => c.id === id)) as ClubWallCard[])
+    : base.wallOn;
   return {
     ...base,
     meetings: p.meetings ?? {},
@@ -83,6 +139,9 @@ function migrate(p: Partial<ClubFile> | null): ClubFile {
     weekOverlay: p.weekOverlay ?? {},
     weekNote: p.weekNote ?? {},
     members: Array.isArray(p.members) ? p.members : [],
+    events: Array.isArray(p.events) ? p.events : [],
+    activity: p.activity && typeof p.activity.title === "string" ? { title: p.activity.title, mins: Math.max(1, Number(p.activity.mins) || 15), startedAt: p.activity.startedAt } : base.activity,
+    wallOn: wallOn.length ? wallOn : base.wallOn,
   };
 }
 
@@ -276,15 +335,24 @@ export function newRow(name: string, station: ClubStation, dismiss: ClubDismiss,
   };
 }
 
-export function addMember(file: ClubFile, name: string, station: ClubStation, dismiss: ClubDismiss): ClubFile {
+export function addMember(file: ClubFile, name: string, station: ClubStation, dismiss: ClubDismiss, studentId?: string): ClubFile {
   const n = wallName(name);
   if (!n) return file;
   const hit = file.members.find((m) => m.name.toLowerCase() === n.toLowerCase());
-  if (hit) return { ...file, members: file.members.map((m) => (m.id === hit.id ? { ...m, station, dismiss } : m)) };
+  if (hit) return { ...file, members: file.members.map((m) => (m.id === hit.id ? { ...m, station, dismiss, studentId: studentId ?? m.studentId } : m)) };
   return {
     ...file,
-    members: [...file.members, { id: `m-${Date.now().toString(36)}`, name: n, station, dismiss }],
+    members: [...file.members, { id: `m-${Date.now().toString(36)}`, name: n, station, dismiss, studentId }],
   };
+}
+
+/** Match a club alias to a class worker. Unique first name, or an explicit id. */
+export function clubStudentId(desk: EconomyFile, name: string, studentId?: string): string | undefined {
+  if (studentId && desk.students.some((s) => s.id === studentId)) return studentId;
+  const first = name.trim().split(/\s+/)[0]?.toLowerCase();
+  if (!first) return undefined;
+  const hits = desk.students.filter((s) => s.first.toLowerCase() === first);
+  return hits.length === 1 ? hits[0].id : undefined;
 }
 
 export function dropMember(file: ClubFile, id: string): ClubFile {
@@ -330,7 +398,7 @@ export function clubClock(now = new Date()) {
   const s = Math.floor((left - m) * 60);
   return {
     phase,
-    cleanup: phase === "warn" || phase === "clean",
+    cleanup: phase === "clean",
     leftMin: m,
     label: `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`,
     headline:
@@ -350,6 +418,51 @@ export function clubClock(now = new Date()) {
                     ? "Meeting ended · late bus names"
                     : "Club closed",
   };
+}
+
+export function wallCardOn(file: ClubFile, id: ClubWallCard) {
+  return file.wallOn.includes(id);
+}
+
+export function toggleWallCard(file: ClubFile, id: ClubWallCard): ClubFile {
+  const on = file.wallOn.includes(id);
+  return { ...file, wallOn: on ? file.wallOn.filter((x) => x !== id) : [...file.wallOn, id] };
+}
+
+export function addClubEvent(file: ClubFile, kind: ClubEvent["kind"], title: string, date: string, note?: string): ClubFile {
+  const t = title.trim();
+  if (!t) return file;
+  return {
+    ...file,
+    events: [...file.events, { id: `e-${Date.now().toString(36)}`, kind, title: t, date, note: note?.trim() || undefined }],
+  };
+}
+
+export function dropClubEvent(file: ClubFile, id: string): ClubFile {
+  return { ...file, events: file.events.filter((e) => e.id !== id) };
+}
+
+export function setActivity(file: ClubFile, patch: Partial<ClubActivity>): ClubFile {
+  return { ...file, activity: { ...file.activity, ...patch } };
+}
+
+export function startActivity(file: ClubFile, now = Date.now()): ClubFile {
+  return { ...file, activity: { ...file.activity, startedAt: now } };
+}
+
+export function stopActivity(file: ClubFile): ClubFile {
+  return { ...file, activity: { title: file.activity.title, mins: file.activity.mins } };
+}
+
+export function activityLeft(act: ClubActivity, now = Date.now()): number {
+  if (!act.startedAt) return Math.max(0, act.mins) * 60;
+  return Math.max(0, (act.startedAt + Math.max(1, act.mins) * 60_000 - now) / 1000);
+}
+
+export function upcomingEvents(file: ClubFile, kind: ClubEvent["kind"], from = todayIso()) {
+  return [...file.events]
+    .filter((e) => e.kind === kind && e.date >= from)
+    .sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title));
 }
 
 export function minutesText(meet: ClubMeeting) {

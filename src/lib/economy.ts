@@ -17,6 +17,8 @@ export type RawStudent = {
   crewKey: string;
   /** Cycle → crew key if they switch crews mid-session. */
   crewByCycle?: Record<string, string>;
+  /** Date → crew key. Sparse history; last date ≤ today wins. */
+  crewDays?: Record<string, string>;
   section?: number;
   course?: string;
   sem?: string;
@@ -42,20 +44,30 @@ export type RawStudent = {
   };
   quietNotes?: string;
   purchases?: { ts: string; item: string; category: string; price: number }[];
+  /** 3D print collection: piece id → count. */
+  prints?: Record<string, number>;
   abDay?: "A" | "B" | "BOTH";
   attend?: Record<string, string>;
+  /** Timed out-of-room log (nurse, library…). */
+  passes?: { date: string; where: string; out: string; in?: string; period: number }[];
   affect?: Record<string, string>;
   notes?: Record<string, string>;
   readyDays?: Record<string, string>;
   trackDays?: Record<string, string>;
   cleanupDays?: Record<string, "done" | "miss">;
   assistDays?: Record<string, boolean>;
+  clubDays?: Record<string, boolean>;
   cleanupCatchDays?: Record<string, number>;
   skills?: Record<string, number>;
+  /** Marks over years. Crew and source do not own the skill. */
+  skillLog?: { date: string; skillId: string; n: number; year: string; source?: string; crewKey?: string; projectId?: string; stem?: string }[];
+  /** Year groups outside the live quarter class. Club skills stay on this id. */
+  groups?: { club?: boolean; hall?: boolean };
   bonusXp?: number;
   picks?: string[];
   icon?: string;
   gradeOverrides?: Record<string, number>;
+  lucky?: { ts: string; date: string; face: number; stake: number; payout: number }[];
 };
 
 export function legalLastOf(s: Pick<RawStudent, "legalLast" | "last">): string {
@@ -84,6 +96,7 @@ export type EconomyFile = {
     schoolYear?: string;
     schema?: number;
     savedAt?: string;
+    clearedAt?: string;
     codes: Record<string, number>;
     bell?: Bell[];
     market?: Market;
@@ -97,7 +110,8 @@ export type EconomyFile = {
       seed?: string;
       cycleGoals?: Record<string, string>;
       bellTimes?: { period: number; start: string; end: string; attendBy: string }[];
-      schedule?: "regular" | "delay1" | "delay2" | "half";
+      schedule?: string;
+      bellPacks?: { id: string; label: string; times: { period: number; start: string; end: string; attendBy: string }[] }[];
       cleanupMins?: number;
       cleanupSound?: string;
       cleanupFee?: number;
@@ -131,6 +145,11 @@ export type EconomyFile = {
       housePicks?: string[];
       boardCards?: { title: string; body: string }[];
       meetings?: { title: string; date?: string; dow?: number; time?: string }[];
+      crewBans?: { a: string; b: string; note?: string; by?: string; since?: string }[];
+      crewExceptions?: { a: string; b: string; date: string; note: string }[];
+      teachPack?: string;
+      teachDays?: Record<string, Record<string, { pack?: string; objective?: string; pin?: string; notes?: string }>>;
+      lessons?: { id: string; title: string; cat: string; grade?: number; pack?: string; objective?: string; notes?: string; used?: { date: string; period: number; q?: string }[] }[];
       studyHall?: {
         showNotes?: boolean;
         showOwes?: boolean;
@@ -145,6 +164,7 @@ export type EconomyFile = {
       projects?: {
         id: string;
         title: string;
+        kind?: string;
         grades: number[];
         skills: string[];
         stages: { cycle: number; slot: "D1" | "D2" | "D3" | "D4"; goal: string; skillId: string; activityId?: string }[];
@@ -157,6 +177,28 @@ export type EconomyFile = {
         pathVer?: number;
       }[];
       modules?: Record<string, boolean>;
+      lucky?: {
+        pot?: number;
+        tickets?: { id: string; n: number }[];
+        lastDraw?: { date: string; alias: string; pot: number };
+      };
+      prints?: {
+        pieces: {
+          id: string;
+          name: string;
+          size: "S" | "M" | "L";
+          rarity: "common" | "shiny" | "rare" | "wild";
+          price: number;
+          stock: number;
+          photo?: string;
+          series?: string;
+          variant?: string;
+          note?: string;
+          made?: number;
+          released?: number;
+        }[];
+        log: { ts: string; kind: string; pieceId: string; qty: number; studentId?: string; note?: string }[];
+      };
     };
     mst?: {
       standard?: string;
@@ -187,6 +229,31 @@ export type EconomyFile = {
     };
     abAnchor?: { date: string; letter: "A" | "B" };
     ledger?: { ts: string; id: string; type: string; amount: number; date: string; note: string }[];
+    polls?: {
+      live?: {
+        id: string;
+        prompt: string;
+        kind: "yesno" | "abcd" | "scale" | "emoji" | "custom";
+        options: { id: string; label: string }[];
+        period: number;
+        date: string;
+        open: boolean;
+        votes: Record<string, string>;
+        closedAt?: string;
+      } | null;
+      archive?: {
+        id: string;
+        prompt: string;
+        kind: "yesno" | "abcd" | "scale" | "emoji" | "custom";
+        options: { id: string; label: string }[];
+        period: number;
+        date: string;
+        open: boolean;
+        votes: Record<string, string>;
+        closedAt?: string;
+      }[];
+      bank?: { id: string; prompt: string; kind: "yesno" | "abcd" | "scale" | "emoji" | "custom"; options?: string[] }[];
+    };
     dayLog?: Record<
       string,
       {
@@ -204,10 +271,13 @@ export type EconomyFile = {
         visits?: Record<string, string>;
         crewPhase?: Record<string, string>;
         goalPhase?: Record<string, string>;
+        bell?: string;
+        special?: { title: string; who?: string; place?: string; start?: string; end?: string; period?: number };
+        specials?: { title: string; who?: string; place?: string; start?: string; end?: string; period?: number }[];
       }
     >;
   };
-  crews: { period: number; key: string; name: string }[];
+  crews: { period: number; key: string; name: string; motto?: string; icon?: string; color?: string; logo?: string }[];
   students: RawStudent[];
 };
 

@@ -2,10 +2,15 @@ import type { EconomyFile, RawStudent } from "@/lib/economy";
 import { isLiveStudent, shopBells } from "@/lib/economy";
 import { abOn, isSubDay, markOn, onAbRoster } from "@/lib/store";
 import { isSchoolDay, todayIso, weekOn } from "@/lib/calendar";
+import { BENCH, crewAt } from "@/lib/crew-desk";
 
 export type CrewRow = {
   key: string;
   name: string;
+  motto?: string;
+  icon?: string;
+  color?: string;
+  logo?: string;
   kids: RawStudent[];
 };
 
@@ -16,13 +21,22 @@ export function crewsOf(file: EconomyFile, period: number, date: string): CrewRo
   const kids = file.students.filter(
     (s) => s.period === period && isLiveStudent(s, file.meta.quarterName) && onAbRoster(s, letter),
   );
-  const keys = [...new Set(kids.map((s) => s.crewKey))];
+  const keys = [...new Set(kids.map((s) => crewAt(s, date)).filter((k) => k && k !== BENCH))];
+  const named = file.crews.filter((c) => c.period === period).map((c) => c.key);
+  for (const k of named) if (!keys.includes(k)) keys.push(k);
   keys.sort();
-  return keys.map((key) => ({
-    key,
-    name: file.crews.find((c) => c.period === period && c.key === key)?.name ?? key,
-    kids: kids.filter((s) => s.crewKey === key),
-  }));
+  return keys.map((key) => {
+    const rec = file.crews.find((c) => c.period === period && c.key === key);
+    return {
+      key,
+      name: rec?.name ?? key,
+      motto: rec?.motto,
+      icon: rec?.icon,
+      color: rec?.color,
+      logo: rec?.logo,
+      kids: kids.filter((s) => crewAt(s, date) === key),
+    };
+  });
 }
 
 export function crewDone(kids: RawStudent[], date: string) {
