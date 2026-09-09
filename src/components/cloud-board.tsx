@@ -178,9 +178,8 @@ export function CloudChip({ onOpen }: { onOpen?: () => void }) {
     return () => window.removeEventListener("techworks-cloud", sync);
   }, []);
   const label =
-    st === "saved" ? "Cloud" : st === "saving" ? "Saving…" : st === "this-pc" ? "This PC" : st === "need-key" ? "Room key" : st === "error" ? "Cloud miss" : "Cloud";
-  const short =
-    st === "saved" ? "Cloud" : st === "saving" ? "…" : st === "this-pc" ? "PC" : st === "need-key" ? "Key" : st === "error" ? "Miss" : "Cloud";
+    st === "saving" ? "Saving…" : st === "this-pc" ? "This PC" : st === "need-key" ? "Key" : "Cloud";
+  const short = st === "this-pc" ? "PC" : st === "need-key" ? "Key" : st === "saving" ? "…" : "Cloud";
   return (
     <button
       type="button"

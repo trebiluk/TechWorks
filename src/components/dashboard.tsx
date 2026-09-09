@@ -185,7 +185,7 @@ export const Dashboard = memo(function Dashboard({
   }
 
   const nowCard = (
-    <article className={cn("tw-gadget tw-hud p-3 text-fg lg:col-span-3", clock?.cleanup ? "bg-cleanup text-accent-fg" : "", clock?.live && !clock.cleanup ? "tw-live" : "")}>
+    <article className={cn("tw-gadget tw-hud flex min-h-[10rem] flex-col p-3 text-fg", clock?.live ? "justify-center" : "", clock?.cleanup ? "bg-cleanup text-accent-fg" : "", clock?.live && !clock.cleanup ? "tw-live" : "")}>
       <div className="flex items-center gap-3">
         {clock?.live ? (
           <ProgressRing
@@ -216,7 +216,7 @@ export const Dashboard = memo(function Dashboard({
         </div>
       </div>
       {!clock?.live ? (
-        <div className="mt-2">
+        <div className="mt-auto pt-2">
           <ProgressTrio cycle={cyc} quarter={qtr} year={yr} />
         </div>
       ) : null}
@@ -225,7 +225,7 @@ export const Dashboard = memo(function Dashboard({
   );
 
   const classCard = (
-    <article className="tw-gadget tw-hud p-3 lg:col-span-9">
+    <article className="tw-gadget tw-hud flex min-h-[10rem] flex-col p-3">
       {viewMine ? (
         <GoalsCard
           file={file}
@@ -279,8 +279,8 @@ export const Dashboard = memo(function Dashboard({
   );
 
   const kpisCard = (
-    <section className="grid gap-1.5 lg:grid-cols-5">
-      <article className="tw-gadget tw-hud p-3 lg:col-span-3">
+    <section data-kpis>
+      <article className="tw-gadget tw-hud p-3">
         <div className="mb-1 flex items-center gap-2">
           <p className="font-display text-sm font-semibold">{ranked.some((s) => s.xp > 0 || s.quarter > 0) ? `School · top ${layout.schoolN}` : "In the shop"}</p>
           <button type="button" onClick={() => onRankBoard(rankBoard === "skill" ? "perk" : "skill")} className="tw-btn-2 ml-auto min-h-8 rounded-full px-3 text-[11px] font-semibold">
@@ -288,6 +288,9 @@ export const Dashboard = memo(function Dashboard({
           </button>
         </div>
         <ol className="grid grid-cols-1 gap-0.5 sm:grid-cols-2">
+          {!ranked.some((s) => s.xp > 0 || s.quarter > 0) ? (
+            <li className="px-2 py-2 text-sm text-muted sm:col-span-2">Aliases score here.</li>
+          ) : null}
           {ranked.slice(0, layout.schoolN).map((s, i) => (
             <li key={s.id}>
               <button type="button" onClick={() => onOpenId(s.id)} className={cn("flex w-full min-h-9 items-center gap-2 rounded-md px-2 text-left hover:bg-elevated", i === 0 && "tw-podium")}>
@@ -303,7 +306,7 @@ export const Dashboard = memo(function Dashboard({
           ))}
         </ol>
       </article>
-      <article className="tw-gadget tw-hud p-3 lg:col-span-2">
+      <article className="tw-gadget tw-hud p-3">
         <p className="text-[11px] font-semibold uppercase tracking-wider text-subtle">Year</p>
         {onHelp ? (
           <button type="button" onClick={onHelp} className="tw-tap text-left text-xs font-semibold uppercase tracking-wider text-accent">
@@ -332,24 +335,32 @@ export const Dashboard = memo(function Dashboard({
   return (
     <div className="tw-web-wall relative flex min-h-0 w-full flex-1 flex-col gap-1.5 overflow-hidden">
       {unlocked ? <LayoutBar dash={dash} rankBoard={rankBoard} onRankBoard={onRankBoard} /> : null}
-      {stOpen ? (
-        <button
-          type="button"
-          onClick={() => {
-            if (unlocked && onChange) onChange(setSchooltoolDone(file, today, 1, true));
-            else window.open(SCHOOLTOOL_URL, "_blank", "noreferrer");
-          }}
-          className={cn(
-            "flex shrink-0 items-center gap-2 self-start rounded-full px-3 py-1.5 text-xs font-semibold",
-            stLate ? "bg-cleanup text-accent-fg" : "bg-elevated text-muted",
-          )}
-        >
-          <ClipboardList className="size-3.5" />
-          {stLate ? "SchoolTool · P1 by 8:15" : "SchoolTool"}
-          {unlocked ? <span className="opacity-80">tap = in</span> : null}
-        </button>
+      {stOpen || featureOn(file, "club") ? (
+        <div className="flex min-w-0 shrink-0 flex-wrap items-center gap-1.5">
+          {stOpen ? (
+            <button
+              type="button"
+              onClick={() => {
+                if (unlocked && onChange) onChange(setSchooltoolDone(file, today, 1, true));
+                else window.open(SCHOOLTOOL_URL, "_blank", "noreferrer");
+              }}
+              className={cn(
+                "flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold",
+                stLate ? "bg-cleanup text-accent-fg" : "bg-elevated text-muted",
+              )}
+            >
+              <ClipboardList className="size-3.5" />
+              {stLate ? "SchoolTool · P1 by 8:15" : "SchoolTool"}
+              {unlocked ? <span className="opacity-80">tap = in</span> : null}
+            </button>
+          ) : null}
+          {featureOn(file, "club") ? (
+            <div className="min-w-0 flex-1">
+              <ClubPulse onOpen={onClub} now={now} />
+            </div>
+          ) : null}
+        </div>
       ) : null}
-      {featureOn(file, "club") ? <ClubPulse onOpen={onClub} now={now} /> : null}
       <SpecialBanner file={file} date={today} now={now} />
       {showProc ? <ProcedureCue step={step} passing={passing} /> : null}
       <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-auto">
@@ -365,7 +376,7 @@ export const Dashboard = memo(function Dashboard({
           return (
             <WallSlot key={pair ? "now-class" : id} id={id}>
               {pair ? (
-                <section className={cn("grid gap-1.5 lg:grid-cols-12 lg:items-start", clock?.cleanup ? "rounded-xl ring-2 ring-cleanup" : "")}>
+                <section data-dash-pair className={cn(clock?.cleanup ? "rounded-xl ring-2 ring-cleanup" : "")}>
                   {nowCard}
                   {classCard}
                 </section>
@@ -518,7 +529,7 @@ function GoalsCard({
   const lanes = [...pace.rows].sort((a, b) => phaseIndex(b.current) - phaseIndex(a.current));
   const sameStage = lanes.length > 0 && lanes.every((c) => prettyStage(c.current) === prettyStage(lanes[0].current));
   return (
-    <div className="relative grid items-start gap-2 lg:grid-cols-[minmax(0,1fr)_15rem]">
+    <div data-goals className="relative">
       {cleanup ? <Berty pose="point" size="sm" alert className="absolute -top-1 right-0 z-10" /> : null}
       {berty ? <BertyPeek pose={bertyPose({ live: true, slot: slot?.kind ?? "work" })} className="absolute -top-1 right-0 z-10" /> : null}
       <div className="min-w-0">
@@ -568,7 +579,7 @@ function GoalsCard({
                 const pct = Math.min(100, Math.round(((idx + 1) / (goalIdx + 1)) * 100));
                 return (
                   <li key={c.key} className="flex flex-col items-center text-center">
-                    <ProgressRing pct={Math.max(8, pct)} label={`${pct}`} sub={c.name} tone={i === 0 ? "gold" : c.lag > 0 ? "warn" : "gain"} size="md" />
+                    <ProgressRing pct={Math.max(8, pct)} label={`${pct}`} sub={c.name} tone={i === 0 ? "gold" : c.lag > 0 ? "warn" : "gain"} size="sm" />
                     <span className="mt-0.5 text-[10px] text-muted">{prettyStage(c.current) || "—"}</span>
                   </li>
                 );
@@ -587,7 +598,7 @@ function GoalsCard({
         <div className="rounded-lg bg-elevated px-2.5 py-2">
           <p className="text-xs font-semibold uppercase tracking-wider text-subtle">Top 3</p>
           <ol className="mt-1 space-y-1">
-            {viewKids.slice(0, 3).map((s, i) => (
+            {viewKids.length ? viewKids.slice(0, 3).map((s, i) => (
               <li key={s.id}>
                 <button type="button" disabled={!unlocked} onClick={() => onOpenId(s.id)} className="flex w-full min-h-9 items-center gap-1.5 text-left disabled:cursor-default">
                   <span className="w-3 font-mono text-xs text-subtle">{i + 1}</span>
@@ -596,7 +607,9 @@ function GoalsCard({
                   {s.quarter ? <PerkBit n={s.quarter} hot /> : null}
                 </button>
               </li>
-            ))}
+            )) : (
+              <li className="text-sm text-muted">No aliases yet.</li>
+            )}
           </ol>
         </div>
       </div>

@@ -56,11 +56,11 @@ export const FeatureCards = memo(function FeatureCards({
   if (!list.length) return null;
 
   return (
-    <section className={cn("grid shrink-0 gap-1", compact ? "grid-cols-2" : "grid-cols-3 lg:grid-cols-6")}>
+    <section data-mod-grid data-compact={compact ? "on" : undefined} className="shrink-0">
       {list.map((f) => {
         const on = featureOn(file, f.id);
         return (
-          <div key={f.id} className={cn("tw-gadget flex flex-col rounded-xl px-2.5 py-2", on ? "bg-elevated" : "bg-elevated/50 opacity-60")}>
+          <div key={f.id} className={cn("tw-gadget flex min-h-[4.25rem] flex-col justify-center px-2.5 py-2", on ? "" : "opacity-55")}>
             <button
               type="button"
               onClick={() => {
@@ -83,7 +83,7 @@ export const FeatureCards = memo(function FeatureCards({
               <button
                 type="button"
                 onClick={() => onToggle(f.id, !on)}
-                className={cn("mt-1 self-start text-[10px] font-bold uppercase tracking-wider", on ? "text-gold" : "text-muted")}
+                className={cn("mt-1 self-start rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider", on ? "bg-accent/15 text-accent" : "bg-elevated text-muted")}
               >
                 {on ? "On" : "Off"}
               </button>

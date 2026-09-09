@@ -88,7 +88,7 @@ export function TeachBoard({
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-y-contain p-1">
+    <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden p-1">
       <header className="flex shrink-0 flex-wrap items-center gap-2">
         {shop.map((p) => (
           <button
@@ -147,7 +147,7 @@ export function TeachBoard({
         </section>
       ) : null}
 
-      <section className="tw-gadget grid shrink-0 gap-3 p-4 lg:grid-cols-[1fr_auto] lg:items-center">
+      <section data-teach-hero className="tw-gadget shrink-0 p-3">
         <div className="min-w-0">
           {cleanup ? (
             <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-cleanup">
@@ -159,7 +159,7 @@ export function TeachBoard({
               <span className="ml-2 text-muted">P{period}</span>
             </p>
           )}
-          <h1 className="font-display text-4xl font-semibold leading-[0.95] tracking-tight lg:text-5xl">{title}</h1>
+          <h1 className="font-display text-3xl font-semibold leading-[0.95] tracking-tight lg:text-4xl">{title}</h1>
           <p className="mt-2 max-w-3xl text-lg text-muted lg:text-xl">{line}</p>
           {!cleanup ? (
             <label className="mt-3 flex flex-wrap items-center gap-2 text-base font-semibold">
@@ -193,7 +193,7 @@ export function TeachBoard({
       {!slots.length ? (
         <p className="tw-gadget p-4 text-sm text-muted">No bell for P{period} on this schedule. Admin → Day → pick Regular / Delay / Half.</p>
       ) : look.slots ? (
-      <ol className="grid min-h-0 flex-1 grid-cols-2 gap-1 overflow-auto lg:grid-cols-4">
+      <ol data-teach-slots>
         {slots.map((s) => {
           const on = cur?.id === s.id;
           return (
@@ -202,7 +202,7 @@ export function TeachBoard({
                 type="button"
                 onClick={() => edit(setTeachPin(file, today, period, day.pin === s.id ? undefined : s.id))}
                 className={cn(
-                  "tw-tap flex h-full min-h-24 w-full flex-col justify-center rounded-xl px-3 py-3 text-left",
+                  "tw-tap flex h-full min-h-24 w-full flex-col justify-center rounded-xl px-3 py-4 text-left",
                   on ? (s.clean ? "bg-cleanup text-accent-fg" : "bg-accent text-accent-fg") : "bg-elevated",
                 )}
               >

@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.90.4. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.90.5. -->
 
 # TechWorks changelog
 
-App version **1.90.3**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.90.5**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.90.5 — 2026-09-09
+
+- Polish: Now matches the class card on the wall. Columns start at 900px. Module On/Off is a chip. Teach slots fill the remaining board. SchoolTool and club share one strip. Cloud chip stays quiet.
 
 ## 1.90.4 — 2026-09-09
 

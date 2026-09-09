@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.90.5 — 2026-09-09
+
+- Polish: Now matches the class card on the wall. Columns start at 900px. Module On/Off is a chip. Teach slots fill the remaining board. SchoolTool and club share one strip. Cloud chip stays quiet.
+
 ## 1.90.4 — 2026-09-09
 
 - Modules are back on the wall (Weather, Teach, Club…). Unlock: each card has On / Off. Admin → Modules is its own chip again (not buried under Class).

@@ -20,7 +20,7 @@ export function DayStrip({
   const live = periodNow(schedule, now);
   const times = bellTimes(schedule);
   return (
-    <ol className="grid grid-cols-5 gap-1 lg:grid-cols-10">
+    <ol data-day-strip>
       {times.map((b) => {
         const hall = b.period === 6;
         const mine = shop.includes(b.period);

@@ -452,8 +452,8 @@ export function Board() {
           { id: "year", label: "YTD", on: view === "year", onClick: () => go("year") },
           { id: "polls", label: "Polls", on: view === "polls", onClick: () => go("polls"), hidden: !featureOn(file, "polls") },
           { id: "data", label: "Data", on: view === "data", onClick: () => go("data") },
-          { id: "clubwall", label: "Club wall", on: view === "clubwall", onClick: () => go("clubwall"), hidden: !featureOn(file, "club") },
-          { id: "hallwall", label: "Hall wall", on: view === "hallwall", onClick: () => go("hallwall"), hidden: !featureOn(file, "studyhall") },
+          { id: "clubwall", label: "Club", on: view === "clubwall", onClick: () => go("clubwall"), hidden: !featureOn(file, "club") },
+          { id: "hallwall", label: "Hall", on: view === "hallwall", onClick: () => go("hallwall"), hidden: !featureOn(file, "studyhall") },
         ]
       : section === "learn"
         ? [
