@@ -109,9 +109,14 @@ export function TeachBoard({
             </span>
           ) : null}
           {unlocked ? (
-            <button type="button" onClick={() => setLookFlag("pad", !look.pad)} className={cn("tw-tap min-h-8 rounded-full px-3 text-[12px] font-medium", look.pad ? "bg-fg text-bg" : "tw-btn-2")}>
-              {look.pad ? "Cards on" : "Cards"}
-            </button>
+            <>
+              <button type="button" onClick={() => setLookFlag("pad", !look.pad)} className={cn("tw-tap min-h-8 rounded-full px-3 text-[12px] font-medium", look.pad ? "bg-fg text-bg" : "tw-btn-2")}>
+                {look.pad ? "Cards on" : "Cards"}
+              </button>
+              <button type="button" onClick={() => setLookFlag("slots", !look.slots)} className={cn("tw-tap min-h-8 rounded-full px-3 text-[12px] font-medium", look.slots ? "bg-fg text-bg" : "tw-btn-2")}>
+                {look.slots ? "Slots on" : "Slots"}
+              </button>
+            </>
           ) : null}
           <ToolsToggle on={look.tools} onClick={() => setLookFlag("tools", !look.tools)} />
           {onPolls ? (
@@ -149,12 +154,15 @@ export function TeachBoard({
               Cleanup {Math.max(0, Math.ceil(left))}m · tools, scraps, seats
             </p>
           ) : (
-            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold">Today</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold">
+              {between ? "Next" : "Today"}
+              <span className="ml-2 text-muted">P{period}</span>
+            </p>
           )}
-          <h1 className="font-display text-5xl font-semibold leading-[0.95] tracking-tight sm:text-6xl">{title}</h1>
-          <p className="mt-2 max-w-3xl text-xl text-muted">{line}</p>
+          <h1 className="font-display text-4xl font-semibold leading-[0.95] tracking-tight lg:text-5xl">{title}</h1>
+          <p className="mt-2 max-w-3xl text-lg text-muted lg:text-xl">{line}</p>
           {!cleanup ? (
-            <label className="mt-3 block text-base font-semibold">
+            <label className="mt-3 flex flex-wrap items-center gap-2 text-base font-semibold">
               Objective
               <input
                 key={`obj-${today}-${period}`}
@@ -162,7 +170,7 @@ export function TeachBoard({
                 placeholder={obj}
                 onBlur={(e) => edit(setTeachObjective(file, today, period, e.target.value))}
                 disabled={!unlocked}
-                className="edit-field ml-2 min-h-9 min-w-[12rem] max-w-xl rounded-md bg-transparent px-2 text-base font-normal text-muted outline-none ring-0 disabled:opacity-80"
+                className="edit-field min-h-10 min-w-[12rem] flex-1 rounded-md bg-elevated px-3 text-base font-normal text-fg outline-none ring-0 disabled:opacity-80"
                 aria-label="Today's objective"
               />
             </label>
@@ -185,23 +193,23 @@ export function TeachBoard({
       {!slots.length ? (
         <p className="tw-gadget p-4 text-sm text-muted">No bell for P{period} on this schedule. Admin → Day → pick Regular / Delay / Half.</p>
       ) : look.slots ? (
-      <ol className="grid min-h-0 flex-1 gap-1 overflow-auto sm:grid-cols-2 lg:grid-cols-4">
+      <ol className="grid min-h-0 flex-1 grid-cols-2 gap-1 overflow-auto lg:grid-cols-4">
         {slots.map((s) => {
           const on = cur?.id === s.id;
           return (
-            <li key={s.id}>
+            <li key={s.id} className="min-h-0">
               <button
                 type="button"
                 onClick={() => edit(setTeachPin(file, today, period, day.pin === s.id ? undefined : s.id))}
                 className={cn(
-                  "tw-tap w-full rounded-xl px-3 py-3 text-left",
+                  "tw-tap flex h-full min-h-24 w-full flex-col justify-center rounded-xl px-3 py-3 text-left",
                   on ? (s.clean ? "bg-cleanup text-accent-fg" : "bg-accent text-accent-fg") : "bg-elevated",
                 )}
               >
                 <p className="text-[10px] font-bold uppercase tracking-wider opacity-80">
                   {minClock(s.startMin)} · {s.mins}m
                 </p>
-                <p className="font-display text-xl font-semibold">{s.title}</p>
+                <p className="font-display text-xl font-semibold lg:text-2xl">{s.title}</p>
                 <p className="text-sm opacity-80">{s.line}</p>
               </button>
             </li>

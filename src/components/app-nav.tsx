@@ -32,7 +32,7 @@ export function AppNav({
             title={s.label}
             onClick={() => onSection(s.id)}
             className={cn(
-              "tw-tap min-h-11 min-w-0 flex-[1_1_30%] rounded-lg px-2 text-[11px] font-bold uppercase tracking-[0.12em] sm:min-h-10 sm:flex-none sm:px-4 sm:text-xs",
+              "tw-tap min-h-10 min-w-0 shrink-0 rounded-lg px-3 text-[11px] font-bold uppercase tracking-[0.12em] sm:min-h-9 sm:px-4 sm:text-xs",
               section === s.id ? "bg-accent text-accent-fg" : "text-muted hover:bg-elevated hover:text-fg",
             )}
           >
@@ -50,7 +50,7 @@ export function AppNav({
               title={t.label}
               onClick={t.onClick}
               className={cn(
-                "inline-flex min-h-11 min-w-0 flex-[1_1_30%] items-center justify-center rounded-lg px-2 text-sm font-semibold sm:min-h-8 sm:flex-none sm:px-3 sm:text-xs",
+                "inline-flex min-h-10 shrink-0 items-center justify-center rounded-lg px-2.5 text-sm font-semibold sm:min-h-8 sm:px-3 sm:text-xs",
                 t.on ? "bg-accent text-accent-fg" : "bg-elevated text-muted hover:text-fg",
               )}
             >

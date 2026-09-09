@@ -1,10 +1,17 @@
-const KEY = "techworks-dash-layout-v6";
-const LEGACY = ["techworks-dash-layout-v5", "techworks-dash-layout-v4", "techworks-dash-layout-v3", "techworks-dash-layout-v1", "techworks-dash-order-v1"];
+const KEY = "techworks-dash-layout-v7";
+const LEGACY = [
+  "techworks-dash-layout-v6",
+  "techworks-dash-layout-v5",
+  "techworks-dash-layout-v4",
+  "techworks-dash-layout-v3",
+  "techworks-dash-layout-v1",
+  "techworks-dash-order-v1",
+];
 
 export const DASH_ROWS = [
   { id: "now", label: "Now" },
-  { id: "strip", label: "Schedule" },
   { id: "class", label: "Goals" },
+  { id: "strip", label: "Schedule" },
   { id: "mods", label: "Modules" },
   { id: "tools", label: "Tools" },
   { id: "notes", label: "Announce" },
@@ -30,7 +37,7 @@ const IDS = DASH_ROWS.map((r) => r.id);
 
 export const DEFAULT_LAYOUT: DashLayout = {
   order: [...IDS],
-  hidden: ["tools", "mods"],
+  hidden: ["tools"],
   schoolN: 10,
   liveProc: false,
   nowGoal: true,
@@ -79,6 +86,11 @@ function normalize(raw: Partial<DashLayout> | null, flagsFromSave: boolean): Das
   };
 }
 
+/** v6 hid the module row by default. Bring it back once. */
+function restoreMods(n: DashLayout): DashLayout {
+  return { ...n, hidden: n.hidden.filter((id) => id !== "mods") };
+}
+
 export function loadDashLayout(): DashLayout {
   if (typeof window === "undefined") return DEFAULT_LAYOUT;
   try {
@@ -88,8 +100,8 @@ export function loadDashLayout(): DashLayout {
       const raw = window.localStorage.getItem(k);
       if (!raw) continue;
       const parsed = JSON.parse(raw) as Partial<DashLayout> | DashRowId[];
-      if (Array.isArray(parsed)) return normalize({ order: parsed }, false);
-      return normalize(parsed, false);
+      const n = Array.isArray(parsed) ? normalize({ order: parsed }, false) : normalize(parsed, false);
+      return restoreMods(n);
     }
   } catch {
     /* */

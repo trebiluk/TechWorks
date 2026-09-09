@@ -391,7 +391,7 @@ export function SettingsBody({
             {tab === "modules" ? (
               <section>
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Modules</h2>
-                <p className="mt-1 text-sm text-muted">Tap a card to turn it on or off. Open jumps to that desk.</p>
+                <p className="mt-1 text-sm text-muted">Tap a card to turn it on or off. Same toggles live on Dash when the desk is unlocked. Open jumps to that desk.</p>
                 {FEATURE_GROUPS.map((g) => (
                   <div key={g} className="mt-4">
                     <p className="text-xs font-semibold uppercase tracking-wider text-subtle">{g}</p>

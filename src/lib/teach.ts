@@ -159,7 +159,7 @@ export function laySlots(file: EconomyFile, date: string, period: number): LaidS
   return out;
 }
 
-/** Live shop period, else the next one, else last. */
+/** Live shop period, else the next shop class, else first period tomorrow. */
 export function teachFocusPeriod(file: EconomyFile, date: string, now = new Date(), pick?: number | null): number {
   const shop = shopBells(file).map((b) => b.period);
   if (pick && shop.includes(pick)) return pick;
@@ -168,6 +168,10 @@ export function teachFocusPeriod(file: EconomyFile, date: string, now = new Date
   if (live != null && shop.includes(live)) return live;
   const nxt = periodNext(bellsId, now);
   if (nxt && shop.includes(nxt.period)) return nxt.period;
+  if (live != null) {
+    const after = shop.find((p) => p > live);
+    if (after) return after;
+  }
   if (nxt) {
     const after = shop.find((p) => {
       const b = bellForPeriod(p, bellsId);
@@ -175,7 +179,7 @@ export function teachFocusPeriod(file: EconomyFile, date: string, now = new Date
     });
     if (after) return after;
   }
-  return shop.at(-1) ?? shop[0] ?? 1;
+  return shop[0] ?? 1;
 }
 
 export function slotNow(file: EconomyFile, date: string, period: number, now = new Date()): LaidSlot | null {

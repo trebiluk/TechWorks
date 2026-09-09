@@ -6,6 +6,11 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.90.4 — 2026-09-09
+
+- Modules are back on the wall (Weather, Teach, Club…). Unlock: each card has On / Off. Admin → Modules is its own chip again (not buried under Class).
+- Dash: Now sits beside the clock; module row + schedule fit on a widescreen. Teach: next class if this bell isn’t shop; slots fill the grid.
+
 ## 1.90.3 — 2026-09-09
 
 - One desk. Bottom dock (Dash · Learn · Crew · Admin) on every screen. Widescreen is columns; portrait wraps the same cards. Web/Mobile switch is gone.

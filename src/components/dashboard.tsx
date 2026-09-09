@@ -20,7 +20,7 @@ import { cycleProgress, formatSchoolDate, isSchoolDay, nextOpenDay, quarterProgr
 import { tapeMark } from "@/lib/tape";
 import { cn } from "@/lib/utils";
 import { ClubPulse } from "@/components/club-pulse";
-import { featureOn } from "@/lib/features";
+import { featureOn, setFeature, type FeatureId } from "@/lib/features";
 import { bertyPose, showBerty } from "@/lib/berty";
 import { procedureStep } from "@/lib/procedure";
 import { hideDashRow, loadDashLayout, moveDashRow, patchDash, rowOn, saveDashLayout, DASH_ROWS, DEFAULT_LAYOUT, type DashLayout } from "@/lib/dash-layout";
@@ -186,25 +186,8 @@ export const Dashboard = memo(function Dashboard({
 
   const nowCard = (
     <article className={cn("tw-gadget tw-hud p-3 text-fg lg:col-span-3", clock?.cleanup ? "bg-cleanup text-accent-fg" : "", clock?.live && !clock.cleanup ? "tw-live" : "")}>
-      <div className="flex items-start justify-between gap-2">
-        <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-muted">
-          <span className={cn("tw-dot", clock?.live ? "tw-dot-on" : "", clock?.cleanup ? "tw-dot-warn" : "")} />
-          {clock?.live ? (clock.cleanup ? "Cleanup" : "Now") : nxt ? "Next" : "Workshop"}
-        </p>
-        <VisitChip state={visitOn(file, today, live ?? nxt?.period ?? shown)} />
-      </div>
-      <p className="mt-1 font-display text-2xl font-semibold leading-none tracking-tight">
-        {clock?.live ? `P${live}` : nxt ? `P${nxt.period}` : "Done"}
-      </p>
-      <p className="mt-1 truncate text-sm text-muted">
-        {clock?.live
-          ? `${periodTitle(live!, bells)} · ${formatBell(clock.start)}–${formatBell(clock.end)}`
-          : nxt
-            ? `${periodTitle(nxt.period, bells)} · ${formatBell(nxt.start)}`
-            : `Opens ${formatSchoolDate(openDay)} P1`}
-      </p>
-      {clock?.live ? (
-        <div className="mt-2">
+      <div className="flex items-center gap-3">
+        {clock?.live ? (
           <ProgressRing
             pct={clock.pct}
             label={clock.cleanup ? "NOW" : `${Math.max(0, Math.ceil(clock.left))}m`}
@@ -213,12 +196,30 @@ export const Dashboard = memo(function Dashboard({
             size="md"
             live={Boolean(clock.live)}
           />
+        ) : null}
+        <div className="min-w-0 flex-1">
+          <p className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-muted">
+            <span className={cn("tw-dot", clock?.live ? "tw-dot-on" : "", clock?.cleanup ? "tw-dot-warn" : "")} />
+            {clock?.live ? (clock.cleanup ? "Cleanup" : "Now") : nxt ? "Next" : "Workshop"}
+            <VisitChip state={visitOn(file, today, live ?? nxt?.period ?? shown)} />
+          </p>
+          <p className="mt-0.5 font-display text-2xl font-semibold leading-none tracking-tight">
+            {clock?.live ? `P${live}` : nxt ? `P${nxt.period}` : "Done"}
+          </p>
+          <p className="mt-1 truncate text-sm text-muted">
+            {clock?.live
+              ? `${periodTitle(live!, bells)} · ${formatBell(clock.start)}–${formatBell(clock.end)}`
+              : nxt
+                ? `${periodTitle(nxt.period, bells)} · ${formatBell(nxt.start)}`
+                : `Opens ${formatSchoolDate(openDay)} P1`}
+          </p>
         </div>
-      ) : (
-        <div className="mt-3">
+      </div>
+      {!clock?.live ? (
+        <div className="mt-2">
           <ProgressTrio cycle={cyc} quarter={qtr} year={yr} />
         </div>
-      )}
+      ) : null}
       {layout.nowWeather && live == null ? <div className="mt-2"><WeatherChip /></div> : null}
     </article>
   );
@@ -375,7 +376,17 @@ export const Dashboard = memo(function Dashboard({
               ) : id === "strip" ? (
                 stripCard
               ) : id === "mods" ? (
-                <FeatureCards file={file} unlocked={unlocked} period={shown} onOpen={onOpenMod} />
+                <FeatureCards
+                  file={file}
+                  unlocked={unlocked}
+                  period={shown}
+                  onOpen={onOpenMod}
+                  onToggle={
+                    unlocked && onChange
+                      ? (id: FeatureId, on: boolean) => onChange(setFeature(file, id, on))
+                      : undefined
+                  }
+                />
               ) : id === "tools" ? (
                 <DashTools file={file} period={shown} />
               ) : id === "kpis" ? (
@@ -519,7 +530,7 @@ function GoalsCard({
               {slot ? <span className="text-subtle"> · {Math.max(1, slot.mins)}m</span> : null}
             </p>
             <button type="button" onClick={onTeach} className="block w-full text-left" disabled={!onTeach}>
-              <p className="font-display text-3xl font-semibold leading-none tracking-tight">{project}</p>
+              <p className="font-display text-2xl font-semibold leading-none tracking-tight lg:text-3xl">{project}</p>
             </button>
             {agenda.project?.prompt ? <p className="mt-1 text-sm text-gold">{agenda.project.prompt}</p> : null}
             {agenda.project?.stem?.length ? (

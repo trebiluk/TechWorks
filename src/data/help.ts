@@ -482,7 +482,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "One desk",
     tags: ["web", "mobile", "ipad", "projector", "layout", "dock"],
-    body: "One layout. Bottom dock is Dash · Learn · Crew · Admin on the wall and on a phone. Widescreen lays the same cards in columns; portrait wraps them. No Web/Mobile switch. Google Site embed still hides the dock so the projector stays a wall.",
+    body: "One layout. Bottom dock is Dash · Learn · Crew · Admin on the wall and on a phone. Widescreen lays the same cards in columns; portrait wraps them. No Web/Mobile switch. Google Site embed still hides the dock so the projector stays a wall. Module cards sit on Dash. Unlock a card’s On/Off, or Admin → Modules for the full board.",
   },
   {
     id: "themes",

@@ -1,8 +1,13 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.90.3. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.90.4. -->
 
 # TechWorks changelog
 
 App version **1.90.3**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.90.4 — 2026-09-09
+
+- Modules are back on the wall (Weather, Teach, Club…). Unlock: each card has On / Off. Admin → Modules is its own chip again (not buried under Class).
+- Dash: Now sits beside the clock; module row + schedule fit on a widescreen. Teach: next class if this bell isn’t shop; slots fill the grid.
 
 ## 1.90.3 — 2026-09-09
 
