@@ -37,8 +37,8 @@ export function PhoneDock({
     ];
     const on = sec;
     return (
-      <nav className="phone-dock shrink-0 border-t border-border bg-surface" aria-label="Phone">
-        <ul className="grid grid-cols-4">
+      <nav className="phone-dock shrink-0 border-t border-border bg-surface" aria-label="Place">
+        <ul className="mx-auto grid w-full max-w-md grid-cols-4">
           {items.map((it) => (
             <li key={it.id}>
               <button

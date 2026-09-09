@@ -27,7 +27,6 @@ import { NowDock } from "@/components/now-dock";
 import { NextJobChip } from "@/components/next-job";
 import { installLayoutWatch, surfaceOf, useLayout } from "@/lib/layout";
 import { PhoneDock } from "@/components/phone-dock";
-import { LayoutToggle } from "@/components/layout-toggle";
 import { applyTheme, applyVibe, paintContrast, storedContrast, storedTheme, storedVibe } from "@/lib/theme";
 import { bootLang } from "@/lib/i18n";
 import { VersionChip } from "@/components/version-chip";
@@ -35,9 +34,9 @@ import { ErrorGate } from "@/components/error-gate";
 import { AdminHub } from "@/components/admin-hub";
 import type { LearnStart } from "@/components/learning-center";
 import type { AdminPane } from "@/components/settings";
-import { ModeBar, modeOf, type Mode, type ModeSub } from "@/components/mode-nav";
+import { modeOf } from "@/components/mode-nav";
 import { AppNav } from "@/components/app-nav";
-import { sectionOf, useNavV2, type AppSection, type NavTab } from "@/lib/app-nav";
+import { sectionOf, type AppSection, type NavTab } from "@/lib/app-nav";
 import { ADMIN_GROUPS, defaultPane, paneInGroup } from "@/lib/admin-nav";
 import { cn } from "@/lib/utils";
 import { HOUSE_BERTY, HOUSE_MRK, houseHits } from "@/lib/house";
@@ -85,7 +84,6 @@ export function Board() {
   const [view, setView] = useState<View>("overview");
   const [learnStart, setLearnStart] = useState<LearnStart>("grades");
   const [teachStart, setTeachStart] = useState<"now" | "plans">("now");
-  const [navV2] = useNavV2();
   const [deskPanel] = useState<DeskPanel>("score");
   const [pendingView, setPendingView] = useState<View | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
@@ -327,7 +325,6 @@ export function Board() {
       void import("@/components/learning-center");
       void import("@/components/admin-hub");
     };
-    if (document.documentElement.dataset.layout === "mobile") return;
     const ric = (window as Window & { requestIdleCallback?: (fn: () => void, opts?: { timeout: number }) => number }).requestIdleCallback;
     if (ric) {
       const id = ric(run, { timeout: 4000 });
@@ -406,7 +403,6 @@ export function Board() {
   const liveP = periodNow(deskBellId(file));
   const mode = modeOf(view);
   const layout = useLayout();
-  const phone = layout === "mobile";
   const surface = surfaceOf(layout, { unlocked, embed, portal: portalMode });
   const workstation = surface === "workstation";
 
@@ -421,60 +417,6 @@ export function Board() {
     };
   }, [unlocked, surface, crewOn]);
 
-  function goMode(next: Mode) {
-    if (crewOn) return;
-    if (next === "board") go("overview");
-    else if (next === "desk") {
-      setDeskPad("effort");
-      goDesk("score");
-    } else if (next === "learn") {
-      setLearnStart("grades");
-      go("skills");
-    } else if (unlocked) go("admin");
-    else {
-      setPendingView("admin");
-      setPinOpen(true);
-    }
-  }
-
-  const wallModes: Mode[] = ["board", "desk", "learn", "admin"];
-
-  const subs: ModeSub[] =
-    mode === "board"
-      ? [
-          { id: "overview", label: "Overview", on: view === "overview", onClick: () => go("overview") },
-          { id: "teach", label: "Teach", on: view === "teach", onClick: () => go("teach"), hidden: !featureOn(file, "teach") },
-          { id: "deck", label: "Deck", on: view === "deck", onClick: () => go("deck") },
-          { id: "polls", label: "Polls", on: view === "polls", onClick: () => go("polls"), hidden: !featureOn(file, "polls") },
-          { id: "week", label: "Week", on: view === "week", onClick: () => go("week") },
-          { id: "year", label: "YTD", on: view === "year", onClick: () => go("year") },
-          { id: "prints", label: "Prints", on: view === "prints", onClick: () => go("prints"), hidden: !featureOn(file, "prints") },
-        ]
-      : mode === "desk"
-        ? [
-            { id: "effort", label: "Daily scoring", on: view === "score", onClick: () => { setDeskPad("effort"); goDesk("score"); } },
-          ]
-        : mode === "learn"
-          ? [
-              { id: "book", label: "Book", on: learnStart === "grades" || learnStart === "book", onClick: () => { setLearnStart("grades"); go("skills"); } },
-              { id: "projects", label: "Projects", on: learnStart === "projects", onClick: () => { setLearnStart("projects"); go("skills"); } },
-              { id: "skills", label: "Skills", on: learnStart === "skills", onClick: () => { setLearnStart("skills"); setView("skills"); } },
-              { id: "words", label: "Words", on: learnStart === "words", onClick: () => { setLearnStart("words"); go("skills"); } },
-              { id: "guide", label: "Guide", on: learnStart === "guide" || learnStart === "bench", onClick: () => { setLearnStart("guide"); go("skills"); } },
-            ]
-          : [
-              ...ADMIN_GROUPS.map((g) => ({
-                id: g.id,
-                label: g.label,
-                on: view === "admin" && paneInGroup(adminPane, g.id),
-                onClick: () => {
-                  if (!paneInGroup(adminPane, g.id)) setAdminPane(defaultPane(g.id));
-                  go("admin");
-                },
-              })),
-            ];
-
-  const wallBoard = subs.filter((s) => ["overview", "teach", "deck", "polls", "week", "year"].includes(s.id));
   const section = sectionOf(view);
 
   function goSection(next: AppSection) {
@@ -508,10 +450,10 @@ export function Board() {
           { id: "deck", label: "Deck", on: view === "deck", onClick: () => go("deck") },
           { id: "week", label: "Week", on: view === "week", onClick: () => go("week") },
           { id: "year", label: "YTD", on: view === "year", onClick: () => go("year") },
-          { id: "polls", label: "Polls", on: view === "polls", onClick: () => go("polls"), hidden: phone || !featureOn(file, "polls") },
-          { id: "data", label: "Data", on: view === "data", onClick: () => go("data"), hidden: phone },
-          { id: "clubwall", label: "Club wall", on: view === "clubwall", onClick: () => go("clubwall"), hidden: phone || !featureOn(file, "club") },
-          { id: "hallwall", label: "Hall wall", on: view === "hallwall", onClick: () => go("hallwall"), hidden: phone || !featureOn(file, "studyhall") },
+          { id: "polls", label: "Polls", on: view === "polls", onClick: () => go("polls"), hidden: !featureOn(file, "polls") },
+          { id: "data", label: "Data", on: view === "data", onClick: () => go("data") },
+          { id: "clubwall", label: "Club wall", on: view === "clubwall", onClick: () => go("clubwall"), hidden: !featureOn(file, "club") },
+          { id: "hallwall", label: "Hall wall", on: view === "hallwall", onClick: () => go("hallwall"), hidden: !featureOn(file, "studyhall") },
         ]
       : section === "learn"
         ? [
@@ -533,38 +475,21 @@ export function Board() {
                   go("admin");
                 },
               })),
-              { id: "club", label: "Club", on: view === "club", onClick: () => go("club"), hidden: phone || !featureOn(file, "club") },
-              { id: "hall", label: "Hall", on: view === "studyhall", onClick: () => go("studyhall"), hidden: phone || !featureOn(file, "studyhall") },
-              { id: "prints", label: "Prints", on: view === "prints", onClick: () => go("prints"), hidden: phone || !featureOn(file, "prints") },
-              { id: "stocks", label: "Stocks", on: view === "wallet", onClick: () => go("wallet"), hidden: phone || !featureOn(file, "stocks") },
-              { id: "lucky", label: "Lucky", on: view === "lucky", onClick: () => go("lucky"), hidden: phone || !featureOn(file, "lucky") },
-              { id: "store", label: "Store", on: view === "store", onClick: () => go("store"), hidden: phone || !featureOn(file, "store") },
+              { id: "club", label: "Club", on: view === "club", onClick: () => go("club"), hidden: !featureOn(file, "club") },
+              { id: "hall", label: "Hall", on: view === "studyhall", onClick: () => go("studyhall"), hidden: !featureOn(file, "studyhall") },
+              { id: "prints", label: "Prints", on: view === "prints", onClick: () => go("prints"), hidden: !featureOn(file, "prints") },
+              { id: "stocks", label: "Stocks", on: view === "wallet", onClick: () => go("wallet"), hidden: !featureOn(file, "stocks") },
+              { id: "lucky", label: "Lucky", on: view === "lucky", onClick: () => go("lucky"), hidden: !featureOn(file, "lucky") },
+              { id: "store", label: "Store", on: view === "store", onClick: () => go("store"), hidden: !featureOn(file, "store") },
             ];
 
-  const navBar = navV2 ? null : workstation ? (
-    <ModeBar
-      mode={mode}
-      onMode={goMode}
-      subs={mode === "admin" ? [] : unlocked ? subs : mode === "board" ? wallBoard : []}
-      allow={wallModes}
-      onWarm={(m) => {
-        if (m === "desk") void import("@/components/score");
-        if (m === "learn") void import("@/components/learning-center");
-      }}
-      className="desk-modes"
-    />
-  ) : !phone ? (
-    <ModeBar mode={mode} onMode={goMode} subs={mode === "board" ? wallBoard : []} allow={wallModes} className="desk-modes" />
-  ) : null;
-
-  const appStrip =
-    navV2 && !crewOn ? <AppNav section={section} onSection={goSection} tabs={v2Tabs} unlocked={unlocked} hideSections={phone} /> : null;
+  const appStrip = !crewOn ? <AppNav section={section} onSection={goSection} tabs={v2Tabs} unlocked={unlocked} hideSections /> : null;
 
   return (
     <TipsProvider on={describeOn}>
     <div className={cn(
       "board-root flex h-svh min-h-svh min-w-0 flex-col overflow-x-hidden overflow-y-hidden px-2 py-2 sm:px-3 sm:py-3 bg-bg",
-      phone && (view === "score" || view === "crew" || view === "skills" || view === "grades" || view === "projects") ? "board-score" : "",
+      view === "score" || view === "crew" || view === "skills" || view === "grades" || view === "projects" ? "board-score" : "",
       crewOn ? "p-0" : "",
     )} data-surface={surface} data-crew={crewOn ? "on" : "off"}>
       {embed || portalMode ? (
@@ -575,97 +500,13 @@ export function Board() {
       ) : crewOn && view === "crew" ? null : (
         <>
         <header className="desk-chrome tw-gadget tw-hud mb-1 min-w-0">
-          {phone ? (
-            <>
-              <div className="flex min-w-0 items-center gap-2">
-                <button type="button" onClick={() => go("overview")} title="FERPA wall · aliases only" className="min-w-0 shrink">
-                  <TwWordmark />
-                </button>
-                <LockBar
-                  unlocked={unlocked || crewOn}
-                  onAsk={() => setPinOpen(true)}
-                  onLock={() => {
-                    setUnlocked(false);
-                    setCrewOn(false);
-                    setView("overview");
-                  }}
-                />
-                {unlocked && dueN ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAdminPane("today");
-                      go("admin");
-                    }}
-                    className="tw-tap min-h-11 rounded-full bg-loss px-3 text-sm font-bold text-accent-fg"
-                  >
-                    {dueN}
-                  </button>
-                ) : null}
-                <button type="button" title="How this class works" aria-label="Help" onClick={() => setHelpOpen(true)} className="tw-tap relative z-30 ml-auto inline-flex size-11 shrink-0 items-center justify-center rounded-md text-fg hover:bg-elevated">
-                  <CircleHelp className="size-6" />
-                </button>
-              </div>
-              <div className="mt-1.5 min-w-0">
-                {navV2 ? (
-                  appStrip
-                ) : (
-                  <div className="flex flex-wrap items-center gap-2">
-                {featureOn(file, "teach") ? (
-                  <button
-                    type="button"
-                    onClick={() => go("teach")}
-                    className={cn("tw-tap min-h-11 rounded-full px-4 text-base font-semibold", view === "teach" ? "bg-fg text-bg" : "bg-elevated")}
-                  >
-                    Teach
-                  </button>
-                ) : null}
-                {featureOn(file, "polls") ? (
-                  <button
-                    type="button"
-                    onClick={() => go("polls")}
-                    className={cn("tw-tap min-h-11 rounded-full px-4 text-base font-semibold", view === "polls" ? "bg-fg text-bg" : "bg-elevated")}
-                  >
-                    Polls
-                  </button>
-                ) : null}
-                {featureOn(file, "studyhall") ? (
-                  <button
-                    type="button"
-                    onClick={() => go("studyhall")}
-                    className="tw-tap min-h-11 rounded-full bg-elevated px-4 text-base font-semibold"
-                  >
-                    Hall
-                  </button>
-                ) : null}
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (unlocked) {
-                      setAdminPane("today");
-                      go("admin");
-                    } else {
-                      setPendingView("admin");
-                      setPinOpen(true);
-                    }
-                  }}
-                  className="tw-tap min-h-11 rounded-full bg-elevated px-4 text-base font-semibold"
-                >
-                  Admin
-                </button>
-                  </div>
-                )}
-              </div>
-            </>
-          ) : (
             <div className="flex min-w-0 flex-col gap-1">
             <div className="nav-cluster flex min-w-0 items-center gap-1 sm:flex-nowrap sm:gap-2">
               <button type="button" onClick={() => go("overview")} title="FERPA wall · aliases only" className="shrink-0">
                 <TwWordmark />
               </button>
-              {navBar}
-              <div className="relative z-20 ml-auto flex shrink-0 items-center gap-1">
-                {unlocked && workstation ? (
+              <div className="relative z-20 ml-auto flex min-w-0 flex-wrap items-center justify-end gap-1">
+                {unlocked ? (
                   <div className="relative hidden md:block">
                     <Search className="pointer-events-none absolute left-2 top-2.5 size-3.5 text-subtle" />
                     <input
@@ -705,14 +546,11 @@ export function Board() {
                   </div>
                 ) : null}
                 {unlocked ? <NextJobChip file={file} onGo={runJob} /> : null}
-                {workstation ? (
-                  <NowDock
-                    schedule={deskBellId(file)}
-                    lunch={lunchOn(file, todayIso())}
-                    onClick={() => runJob({ id: "now", label: "Now", hint: "", tone: "ok", go: "overview" })}
-                  />
-                ) : null}
-                <LayoutToggle compact />
+                <NowDock
+                  schedule={deskBellId(file)}
+                  lunch={lunchOn(file, todayIso())}
+                  onClick={() => runJob({ id: "now", label: "Now", hint: "", tone: "ok", go: "overview" })}
+                />
                 <LockBar
                   unlocked={unlocked || crewOn}
                   onAsk={() => setPinOpen(true)}
@@ -722,15 +560,15 @@ export function Board() {
                     setView("overview");
                   }}
                 />
+                <button type="button" title="How this class works" aria-label="Help" onClick={() => setHelpOpen(true)} className="tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-md text-fg hover:bg-elevated">
+                  <CircleHelp className="size-5" />
+                </button>
                 <CloudChip
                   onOpen={() => {
                     setAdminPane("cloud");
                     go("admin");
                   }}
                 />
-                <button type="button" title="How this class works" aria-label="Help" onClick={() => setHelpOpen(true)} className="tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-md text-fg hover:bg-elevated">
-                  <CircleHelp className="size-5" />
-                </button>
                 {verChip}
                 {unlocked && dueN && mode !== "board" ? (
                   <button
@@ -746,9 +584,8 @@ export function Board() {
                 ) : null}
               </div>
             </div>
-            {navV2 ? appStrip : null}
+            {appStrip}
             </div>
-          )}
         </header>
         </>
       )}
@@ -1010,7 +847,7 @@ export function Board() {
         <PhoneDock
           view={view === "skills" && learnStart === "projects" ? "projects" : view}
           pad={deskPad}
-          navV2={navV2}
+          navV2
           onBoard={() => go("overview")}
           onCrew={() => goSection("crew")}
           onTeach={() => {

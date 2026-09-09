@@ -7,7 +7,7 @@ import type { EconomyFile } from "@/lib/economy";
 import { periodTitle } from "@/lib/economy";
 import { CLASS_JOBS, CLEANUP_CATCH_MAX, CLEANUP_CASH, HALL_JOBS, WORKSHOP_JOBS, cleanupCatchOn, grantCleanupCatch, liveCleanupCrew } from "@/lib/cleanup";
 import { Berty } from "@/components/berty";
-import { isPhone, useLayout } from "@/lib/layout";
+import { isPhone } from "@/lib/layout";
 import { cn } from "@/lib/utils";
 import { agendaFor, prettyStage } from "@/lib/projects";
 import { packOf, teachObjective } from "@/lib/teach";
@@ -60,8 +60,7 @@ function CleanupWall({
   const bellsId = deskBellId(file);
   const now = useShopClock(bellsId, "fine");
   const today = todayIso();
-  const layout = useLayout();
-  const phone = layout === "mobile" || isPhone();
+  const phone = isPhone();
   const clock = periodClock(live, bellsId, now);
   if (!clock) return null;
   const tick = leftClock(clock.left);

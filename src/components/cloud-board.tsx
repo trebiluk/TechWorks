@@ -179,16 +179,20 @@ export function CloudChip({ onOpen }: { onOpen?: () => void }) {
   }, []);
   const label =
     st === "saved" ? "Cloud" : st === "saving" ? "Saving…" : st === "this-pc" ? "This PC" : st === "need-key" ? "Room key" : st === "error" ? "Cloud miss" : "Cloud";
+  const short =
+    st === "saved" ? "Cloud" : st === "saving" ? "…" : st === "this-pc" ? "PC" : st === "need-key" ? "Key" : st === "error" ? "Miss" : "Cloud";
   return (
     <button
       type="button"
       onClick={onOpen}
+      title={LINE[st]}
       className={cn(
-        "tw-tap inline-flex min-h-10 items-center rounded-full px-3 font-mono text-[11px] font-bold uppercase tracking-wide",
+        "tw-tap inline-flex min-h-10 items-center rounded-full px-2 font-mono text-[11px] font-bold uppercase tracking-wide sm:px-3",
         st === "saved" || st === "saving" ? "bg-accent/20 text-accent" : "bg-elevated text-muted",
       )}
     >
-      {label}
+      <span className="sm:hidden">{short}</span>
+      <span className="hidden sm:inline">{label}</span>
     </button>
   );
 }

@@ -7,9 +7,6 @@ import { YearRoster } from "@/components/year-roster";
 import { VersionChip } from "@/components/version-chip";
 import { todayIso } from "@/lib/calendar";
 import { CLEANUP_SOUNDS, clampCleanupMins, cleanupMinsNow, cleanupSoundOf, previewCleanupSound, SCHEDULES, scheduleOf } from "@/lib/bells";
-import { LayoutToggle } from "@/components/layout-toggle";
-import { NavToggle } from "@/components/app-nav";
-import { useNavV2 } from "@/lib/app-nav";
 import { ThemePicker } from "@/components/theme-picker";
 import { LunchPanel } from "@/components/lunch-panel";
 import { commitContrast, storedContrast } from "@/lib/theme";
@@ -83,7 +80,6 @@ export function SettingsBody({
   embed?: boolean;
 }) {
   const cycle = file.meta.config?.currentCycle ?? file.meta.currentWeek ?? 1;
-  const [navV2, setNavV2] = useNavV2();
   const [, setContrast] = useState(() => storedContrast());
   const [portalPin, setPortalPin] = useState(() => storedPortalPin());
   const [leadXp, setLeadXp] = useState(() => storedLeadXp());
@@ -109,14 +105,7 @@ export function SettingsBody({
             {tab === "room" ? (
               <section>
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Theme</h2>
-                <p className="mt-1 text-sm text-muted">Hover a chip to paint the whole desk (logo stays). Click to keep it.</p>
-                <p className="mt-4 text-sm font-medium uppercase tracking-wider text-subtle">Screen</p>
-                <LayoutToggle className="mt-2 w-full" />
-                <p className="mt-6 text-sm font-medium uppercase tracking-wider text-subtle">Menu</p>
-                <p className="mt-1 text-sm text-muted">New: Dashboard · Teach · Learn · Other. Club and Study Hall live under Other. Classic: Dashboard · Desk · Learn · Admin.</p>
-                <div className="mt-2">
-                  <NavToggle on={navV2} onChange={setNavV2} />
-                </div>
+                <p className="mt-1 text-sm text-muted">One desk. Bottom dock is Dash · Learn · Crew · Admin. Widescreen adds columns; portrait wraps the same cards. Hover a chip to paint the whole desk (logo stays). Click to keep it.</p>
                 <div className="mt-6">
                   <ThemePicker />
                 </div>

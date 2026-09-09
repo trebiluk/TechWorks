@@ -25,8 +25,6 @@ import { bertyPose, showBerty } from "@/lib/berty";
 import { procedureStep } from "@/lib/procedure";
 import { hideDashRow, loadDashLayout, moveDashRow, patchDash, rowOn, saveDashLayout, DASH_ROWS, DEFAULT_LAYOUT, type DashLayout } from "@/lib/dash-layout";
 import { useShopClock } from "@/lib/use-clock";
-import { useLayout } from "@/lib/layout";
-import { PhoneFeed } from "@/components/phone-feed";
 import { ProcedureCue } from "@/components/procedure-cue";
 import { DashTools, ToolsToggle } from "@/components/dash-tools";
 import { ProgressRing, ProgressTrio } from "@/components/progress-ring";
@@ -107,7 +105,6 @@ export const Dashboard = memo(function Dashboard({
 }) {
   const fold = useDashFold();
   const dash = useDashLayout();
-  const phone = useLayout() === "mobile";
   const { layout } = dash;
   const bellsId = deskBellId(file);
   const now = useShopClock(bellsId, "beat");
@@ -164,23 +161,6 @@ export const Dashboard = memo(function Dashboard({
   const st = schooltoolDone(file, today, 1);
   const stLate = isSchoolDay(today) && !st && !isSubDay(file, today);
   const stOpen = stLate || (unlocked && isSchoolDay(today) && !st && !isSubDay(file, today));
-
-  if (phone) {
-    return (
-      <PhoneFeed
-        file={file}
-        list={list}
-        rankBoard={rankBoard}
-        onRankBoard={onRankBoard}
-        onOpenId={onOpenId}
-        onPeriod={onPeriod}
-        unlocked={unlocked}
-        onHelp={onHelp}
-        onPrints={onPrints}
-        onOpenMod={onOpenMod}
-      />
-    );
-  }
 
   if (isSubDay(file, today)) {
     return (

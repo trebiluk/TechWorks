@@ -480,9 +480,9 @@ export const HELP_ARTICLES: HelpArticle[] = [
   {
     id: "layout",
     category: "Start",
-    title: "Web vs Mobile",
-    tags: ["web", "mobile", "ipad", "projector", "layout"],
-    body: "Settings → Screen, or the monitor / phone buttons in the top bar. Web = projector wall (wide period grid). Mobile = iPad desk (one column, bigger taps). First visit guesses from screen size. Add ?layout=mobile or ?layout=web to a Google Site URL to force it.",
+    title: "One desk",
+    tags: ["web", "mobile", "ipad", "projector", "layout", "dock"],
+    body: "One layout. Bottom dock is Dash · Learn · Crew · Admin on the wall and on a phone. Widescreen lays the same cards in columns; portrait wraps them. No Web/Mobile switch. Google Site embed still hides the dock so the projector stays a wall.",
   },
   {
     id: "themes",

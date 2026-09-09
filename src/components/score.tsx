@@ -606,10 +606,7 @@ export function ScoreDesk({
       {deskMode === "score" ? (
       <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
         <div data-periods className="flex shrink-0 flex-wrap gap-1">
-          {(typeof document !== "undefined" && document.documentElement.dataset.layout === "mobile" && livePeriod && !crewOverride
-            ? bells.filter((b) => b.period === livePeriod || b.period === period)
-            : bells
-          ).map((b) => {
+          {bells.map((b) => {
             const crews = crewsOf(file, b.period, date);
             const done = crews.filter((c) => crewDone(c.kids, date)).length;
             const late = crews.filter((c) => crewPulse(c.kids, date, today, date, sub) === "late").length;

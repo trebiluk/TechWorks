@@ -1,10 +1,15 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.90.2. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.90.3. -->
 
 # TechWorks changelog
 
-App version **1.90.2**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.90.3**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.90.3 — 2026-09-09
+
+- One desk. Bottom dock (Dash · Learn · Crew · Admin) on every screen. Widescreen is columns; portrait wraps the same cards. Web/Mobile switch is gone.
 
 ## 1.90.2 — 2026-09-09
+
 
 - Cloud desk: every local save also writes to the internet. New room: Admin → Records → Cloud, paste the desk key, Pull. Names are locked with that key. This PC still saves if the pipe misses.
 
