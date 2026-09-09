@@ -3,7 +3,7 @@ import type { AdminPane } from "@/components/settings";
 /** Top Admin chips. Records is the gradebook (backups + roster). */
 export const ADMIN_GROUPS = [
   { id: "today", label: "Today", panes: ["today"] as const },
-  { id: "records", label: "Records", panes: ["vault", "roster"] as const },
+  { id: "records", label: "Records", panes: ["vault", "roster", "cloud"] as const },
   { id: "people", label: "Crews", panes: ["crews"] as const },
   { id: "day", label: "Day", panes: ["day"] as const },
   { id: "class", label: "Class", panes: ["economy", "modules"] as const },
@@ -17,6 +17,7 @@ export const PANE_LABEL: Record<string, string> = {
   today: "Today",
   vault: "Backups",
   roster: "Roster",
+  cloud: "Cloud",
   crews: "Crews",
   day: "Day",
   room: "Theme",

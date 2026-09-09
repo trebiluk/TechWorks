@@ -13,3 +13,4 @@ artifacts/imagine_images/
 *.pdf
 .DS_Store
 *.log
+.data/

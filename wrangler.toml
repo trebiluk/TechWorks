@@ -3,3 +3,6 @@ name = "kulibert-desk"
 compatibility_date = "2026-09-08"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".output/public"
+
+# Rooms share one desk: Cloudflare → this project → Settings → Bindings
+# → KV namespace → Add → variable name TW_DESK → create "techworks-desk".

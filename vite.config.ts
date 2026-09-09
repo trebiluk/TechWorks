@@ -139,6 +139,102 @@ function weatherPlugin(): Plugin {
   };
 }
 
+function deskCloudPlugin(): Plugin {
+  const dest = () => join(process.cwd(), ".data", "desk-cloud.json");
+  type Row = { keyHash: string; saved: string; app: string; n: number; salt: string; iv: string; data: string };
+  function readRow(): Row | null {
+    try {
+      return JSON.parse(readFileSync(dest(), "utf8")) as Row;
+    } catch {
+      return null;
+    }
+  }
+  return {
+    name: "techworks-desk-cloud",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const pathOnly = (req.url ?? "").split("?", 1)[0] ?? "";
+        if (pathOnly !== "/api/desk") {
+          next();
+          return;
+        }
+        const method = (req.method ?? "GET").toUpperCase();
+        const q = new URL(req.url ?? "/", "http://tw.local");
+        const auth = String(req.headers.authorization ?? "");
+        const token = (
+          (auth.toLowerCase().startsWith("bearer ") ? auth.slice(7) : "") ||
+          String(req.headers["x-tw-desk"] ?? "") ||
+          q.searchParams.get("k") ||
+          ""
+        ).trim();
+        const json = (code: number, body: unknown) => {
+          res.statusCode = code;
+          res.setHeader("content-type", "application/json; charset=utf-8");
+          res.setHeader("cache-control", "no-store");
+          res.end(JSON.stringify(body));
+        };
+        if (method === "GET") {
+          if (!token) {
+            json(401, { error: "desk key" });
+            return;
+          }
+          const row = readRow();
+          if (!row) {
+            json(200, { empty: true, store: "file" });
+            return;
+          }
+          if (row.keyHash !== token) {
+            json(401, { error: "desk key" });
+            return;
+          }
+          json(200, { saved: row.saved, app: row.app, n: row.n, salt: row.salt, iv: row.iv, data: row.data, store: "file" });
+          return;
+        }
+        if (method !== "PUT") {
+          next();
+          return;
+        }
+        const chunks: Buffer[] = [];
+        req.on("data", (c) => chunks.push(c as Buffer));
+        req.on("end", () => {
+          try {
+            const body = JSON.parse(Buffer.concat(chunks).toString("utf8")) as Partial<Row> & { keyHash?: string };
+            const putToken = (token || String(body.keyHash ?? "")).trim();
+            if (putToken.length < 16) {
+              json(401, { error: "desk key" });
+              return;
+            }
+            if (!body.salt || !body.iv || !body.data || !body.saved) {
+              json(400, { error: "bad desk" });
+              return;
+            }
+            const prev = readRow();
+            if (prev && prev.keyHash !== putToken) {
+              json(401, { error: "desk key" });
+              return;
+            }
+            const row: Row = {
+              keyHash: putToken,
+              saved: String(body.saved).slice(0, 40),
+              app: String(body.app ?? "").slice(0, 16),
+              n: Math.max(0, Number(body.n) || 0),
+              salt: String(body.salt).slice(0, 80),
+              iv: String(body.iv).slice(0, 80),
+              data: String(body.data).slice(0, 4_000_000),
+            };
+            mkdirSync(join(process.cwd(), ".data"), { recursive: true });
+            writeFileSync(dest(), JSON.stringify(row));
+            json(200, { ok: true, saved: row.saved, store: "file", n: row.n });
+          } catch (err) {
+            console.error("[desk-cloud]", err);
+            json(500, { error: "fail" });
+          }
+        });
+      });
+    },
+  };
+}
+
 function livePlugin(): Plugin {
   return {
     name: "techworks-live-export",
@@ -333,6 +429,7 @@ export default defineConfig(({ command, isPreview }) => {
     djiaPlugin(),
     weatherPlugin(),
     livePlugin(),
+    deskCloudPlugin(),
     // Before tanstackStart so /auth/popup never falls through to the SPA.
     authPopupPlugin(),
     // Dev-only /__app-env, read by scripts/check-auth-invariant.mjs.

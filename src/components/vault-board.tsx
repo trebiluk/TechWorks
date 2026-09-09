@@ -96,7 +96,7 @@ export function VaultBoard({
       <header>
         <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Records · this device</h2>
         <p className="mt-1 text-sm text-muted">
-          This computer is the gradebook. Google book is the year archive — one tab per class and club, full-year marks, extra columns you own. VAULT has legal names; everything else is aliases. Live pipe is still later.
+          This computer is the gradebook. Cloud (Records → Cloud) copies it to the internet for the other room. Google book is the year archive. VAULT has legal names; everything else is aliases.
         </p>
       </header>
 

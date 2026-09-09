@@ -8,6 +8,7 @@ import { writeTape } from "@/lib/tape";
 import type { DjiaQuote } from "@/lib/djia";
 import { afterAffectMaybeConfirm, afterCrewLeaderChange, roleHistoryOf } from "@/lib/roles";
 import { persistPack, readLocal, writePack, packDesk, migrateDesk } from "@/lib/vault";
+import { scheduleCloudPush } from "@/lib/desk-cloud";
 import { builtinPacks, type BellPack, type ScheduleId } from "@/lib/bells";
 
 const FOCUS_KEY = "techworks-focus";
@@ -99,13 +100,19 @@ function flushDesk(file: EconomyFile) {
         persistHandle = 0;
         const p = persistPackObj;
         const body = persistJson;
-        if (p) void persistPack(p, body);
+        if (p) {
+          void persistPack(p, body);
+          scheduleCloudPush(p.file);
+        }
       }, { timeout: 2500 })
     : window.setTimeout(() => {
         persistHandle = 0;
         const p = persistPackObj;
         const body = persistJson;
-        if (p) void persistPack(p, body);
+        if (p) {
+          void persistPack(p, body);
+          scheduleCloudPush(p.file);
+        }
       }, 400);
 }
 

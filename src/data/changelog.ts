@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.90.2 — 2026-09-09
+
+- Cloud desk: every local save also writes to the internet. New room: Admin → Records → Cloud, paste the desk key, Pull. Names are locked with that key. This PC still saves if the pipe misses.
+
 ## 1.90.1 — 2026-09-09
 
 - Deck: teacher Edit types on the slide. Save keeps it on this desk. Duplicate / add slide. Present still has no PIN. Factory deck restores the original. JSON download is your copy. PowerPoint is still the branded original.

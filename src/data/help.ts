@@ -461,7 +461,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Export",
     title: "Save, live export, Friday",
     tags: ["save", "export", "friday", "vault"],
-    body: "Roster and scoring auto-save on this device (Save chip shows last write). Tap Save to flush now. Admin → Records → Backups: snapshot, daily autos, download full backup (names inside — keep private), restore from file, download all snapshots. Import class list is on the same Records page. Export live wall is aliases only. Names vault is separate. Drive / Cloudflare copies come after the live pipe.",
+    body: "Roster and scoring auto-save on this device, and also to the internet when Cloud is on (chip in the top bar). Admin → Records → Cloud: copy the desk key, paste it once on the other room’s PC, Pull. Names travel locked. This PC still keeps a copy if the pipe misses. Snapshots and full backup stay on Records → Backups.",
   },
   {
     id: "year",

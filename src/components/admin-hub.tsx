@@ -11,6 +11,7 @@ import { periodClock, periodNow, periodNext, SCHOOLTOOL_URL } from "@/lib/bells"
 import { useShopClock } from "@/lib/use-clock";
 import { abOn, deskBellId, deskPacks, exportedThisPeriod, isSubDay, lunchOn, meetingsOn, outNow, schooltoolDone, setDayBell, setSpecials, specialsOn, setTodayMeeting } from "@/lib/store";
 import type { EconomyFile } from "@/lib/economy";
+import { CloudBoard } from "@/components/cloud-board";
 import { CrewDesk } from "@/components/crew-desk";
 import { cn } from "@/lib/utils";
 import { useNavV2 } from "@/lib/app-nav";
@@ -42,6 +43,8 @@ export function AdminHub({
   onOpenId,
   onTeach,
   onPolls,
+  unlocked = false,
+  onNeedPin,
 }: {
   file: EconomyFile;
   onChange: (next: EconomyFile) => void;
@@ -66,6 +69,8 @@ export function AdminHub({
   onOpenId?: (id: string) => void;
   onTeach?: () => void;
   onPolls?: () => void;
+  unlocked?: boolean;
+  onNeedPin?: () => void;
 }) {
   const [pane, setPane] = useState<AdminPane>(start);
   const [navV2] = useNavV2();
@@ -149,6 +154,8 @@ export function AdminHub({
         ) : null}
         {pane === "crews" ? (
           <CrewDesk file={file} onChange={onChange} startPeriod={shown} />
+        ) : pane === "cloud" ? (
+          <CloudBoard file={file} unlocked={unlocked} onNeedPin={() => onNeedPin?.()} onLoad={onChange} />
         ) : pane !== "today" && pane !== "day" ? (
           <SettingsBody
             file={file}

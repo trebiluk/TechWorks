@@ -8,6 +8,8 @@ import type { EconomyFile } from "@/lib/economy";
 import { bellFor, isLiveStudent, score } from "@/lib/economy";
 import { loadDesk, saveDesk, saveDeskNow, applyDjia, stampLiveExport, isSubDay, exportedThisPeriod, lunchOn, deskBellId, deskSavePending } from "@/lib/store";
 import { hydrateVault } from "@/lib/vault";
+import { applyCloudPack, localIsNewer, pullCloud, pushCloud } from "@/lib/desk-cloud";
+import { CloudChip } from "@/components/cloud-board";
 import { LockBar, PinPad } from "@/components/pin-pad";
 import { DescribeBar } from "@/components/describe-bar";
 import { storedDescribe } from "@/lib/describe";
@@ -240,7 +242,8 @@ export function Board() {
 
   function saveNow() {
     saveDeskNow(file);
-    flashMsg("Saved on this device");
+    void pushCloud(file);
+    flashMsg("Saved");
   }
 
   async function exportLive() {
@@ -286,7 +289,19 @@ export function Board() {
       const desk = loadDesk(seed);
       setFile(desk);
       void hydrateVault(desk)
-        .then((next) => setFile(next))
+        .then(async (next) => {
+          setFile(next);
+          const pack = await pullCloud();
+          if (!pack) return;
+          if (localIsNewer(next, pack.saved)) {
+            void pushCloud(next);
+            return;
+          }
+          if (pack.saved && pack.saved !== (next.meta.savedAt ?? "")) {
+            const cloudFile = await applyCloudPack(pack);
+            if (cloudFile) setFile(cloudFile);
+          }
+        })
         .catch(() => {});
     } catch (err) {
       console.error("[TechWorks] loadDesk", err);
@@ -707,6 +722,12 @@ export function Board() {
                     setView("overview");
                   }}
                 />
+                <CloudChip
+                  onOpen={() => {
+                    setAdminPane("cloud");
+                    go("admin");
+                  }}
+                />
                 <button type="button" title="How this class works" aria-label="Help" onClick={() => setHelpOpen(true)} className="tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-md text-fg hover:bg-elevated">
                   <CircleHelp className="size-5" />
                 </button>
@@ -804,6 +825,8 @@ export function Board() {
           onTeach={() => go("teach")}
           onPolls={() => go("polls")}
           onOpenId={(id) => setOpenId(id)}
+          unlocked={unlocked}
+          onNeedPin={() => setPinOpen(true)}
           onExport={() => void exportLive()}
           onSave={saveNow}
           onHelp={() => setHelpOpen(true)}
