@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PALETTE_FIELDS, TEXT_FIELDS, paletteStyle, type Palette } from "@/lib/palette";
 import { FONT_PACKS, type FontId } from "@/lib/fonts";
 import { FINISHES, LOOK_FIELDS, lookStyle, type CapsMode, type FinishId, type Look } from "@/lib/look";
-import { commitLang, LANGS, storedLang, type LangId } from "@/lib/i18n";
+import { CLASS_LANGS, commitLang, LANGS, storedLang, type LangId } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n-hook";
 import { cn } from "@/lib/utils";
 
@@ -35,10 +35,11 @@ export function ThemeStudio({
   onRevert: () => void;
   onSave: (name: string) => void;
 }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [tab, setTab] = useState<ToolTab>("color");
   const [langId, setLangId] = useState<LangId>(() => storedLang());
   const [saveName, setSaveName] = useState("");
+  useEffect(() => setLangId(lang), [lang]);
   const pack = FONT_PACKS.find((f) => f.id === font) ?? FONT_PACKS[0];
   const shown = hovering ? preview : draft;
   const style = useMemo(
@@ -120,7 +121,7 @@ export function ThemeStudio({
 
           {tab === "size" ? (
             <div className="mt-3 grid gap-2">
-              <p className="text-xs text-muted">Scale is the whole desk. Fill makes Now, Goals, and Teach eat empty plate so the back row can read it. Pad and corners ride the plates.</p>
+              <p className="text-xs text-muted">Scale is the whole desk. Fill makes Now, Goals, Do this now, and Teach eat empty plate so the back row can read it. Pad and corners ride the plates.</p>
               {LOOK_FIELDS.map((f) => (
                 <label key={f.key} className="rounded-md bg-elevated px-3 py-2">
                   <span className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider">
@@ -218,24 +219,47 @@ export function ThemeStudio({
           ) : null}
 
           {tab === "lang" ? (
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              {LANGS.map((l) => (
-                <button
-                  key={l.id}
-                  type="button"
-                  onClick={() => {
-                    setLangId(l.id);
-                    commitLang(l.id);
-                    if (l.id === "ar" || l.id === "fa") onFont("naskh");
-                    if (l.id === "uk" || l.id === "ru") onFont("noto");
-                  }}
-                  className={cn("min-h-14 rounded-md px-3 py-2 text-left", langId === l.id ? "bg-gold text-bg" : "bg-elevated")}
-                  dir={l.dir}
-                >
-                  <span className="block text-sm font-semibold">{l.native}</span>
-                  <span className="text-xs opacity-70">{l.label}</span>
-                </button>
-              ))}
+            <div className="mt-3 space-y-3">
+              <p className="text-xs leading-snug text-muted">{t("This quarter: English, Ukrainian, Russian.")}</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">{t("This quarter")}</p>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                {CLASS_LANGS.map((l) => (
+                  <button
+                    key={l.id}
+                    type="button"
+                    onClick={() => {
+                      setLangId(l.id);
+                      commitLang(l.id);
+                      if (l.id === "uk" || l.id === "ru") onFont("noto");
+                    }}
+                    className={cn("min-h-14 rounded-md px-3 py-2 text-left", langId === l.id ? "bg-gold text-bg" : "bg-elevated")}
+                    dir={l.dir}
+                  >
+                    <span className="block text-sm font-semibold">{l.native}</span>
+                    <span className="text-xs opacity-70">{l.short} · {t(l.label)}</span>
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs leading-snug text-muted">{t("Shop words stay English. Help and Words change.")}</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">{t("More languages")}</p>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {LANGS.filter((l) => !l.classLang).map((l) => (
+                  <button
+                    key={l.id}
+                    type="button"
+                    onClick={() => {
+                      setLangId(l.id);
+                      commitLang(l.id);
+                      if (l.id === "ar" || l.id === "fa") onFont("naskh");
+                    }}
+                    className={cn("min-h-14 rounded-md px-3 py-2 text-left", langId === l.id ? "bg-gold text-bg" : "bg-elevated")}
+                    dir={l.dir}
+                  >
+                    <span className="block text-sm font-semibold">{l.native}</span>
+                    <span className="text-xs opacity-70">{l.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           ) : null}
 
@@ -295,27 +319,48 @@ function ToggleRow({ on, label, onClick }: { on: boolean; label: string; onClick
 
 function DashPreview() {
   return (
-    <article className="tw-gadget tw-hud tw-fill flex h-56 flex-col justify-center p-3">
-      <p className="tw-fill-label font-semibold uppercase tracking-widest text-subtle">Dash</p>
-      <div className="mt-2 flex items-end justify-between gap-2">
-        <p className="tw-fill-hero font-display font-semibold tracking-tight">P8</p>
-        <span className="rounded-md bg-cleanup px-2 py-1 font-mono text-xs font-semibold text-accent-fg">CLEANUP</span>
-      </div>
-      <p className="tw-fill-line mt-1 text-muted">CO2 DRAGSTER</p>
-      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-elevated">
-        <div className="h-full w-4/5 rounded-full bg-accent" />
-      </div>
-      <ol className="mt-3 space-y-1">
-        {["Wren · P1", "Arlo · P8", "Kai · P3"].map((n, i) => (
-          <li key={n} className="flex items-center justify-between rounded-md bg-elevated px-2 py-1 text-xs">
-            <span>
-              {i + 1} {n}
-            </span>
-            <span className="text-gold">XP {90 - i * 8}</span>
-          </li>
-        ))}
-      </ol>
-    </article>
+    <>
+      <article className="tw-gadget tw-hud tw-fill flex h-56 flex-col justify-center p-3">
+        <p className="tw-fill-label font-semibold uppercase tracking-widest text-subtle">Dash</p>
+        <div className="mt-2 flex items-end justify-between gap-2">
+          <p className="tw-fill-hero font-display font-semibold tracking-tight">P8</p>
+          <span className="rounded-md bg-cleanup px-2 py-1 font-mono text-xs font-semibold text-accent-fg">CLEANUP</span>
+        </div>
+        <p className="tw-fill-line mt-1 text-muted">CO2 DRAGSTER</p>
+        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-elevated">
+          <div className="h-full w-4/5 rounded-full bg-accent" />
+        </div>
+        <ol className="mt-3 space-y-1">
+          {["Wren · P1", "Arlo · P8", "Kai · P3"].map((n, i) => (
+            <li key={n} className="flex items-center justify-between rounded-md bg-elevated px-2 py-1 text-xs">
+              <span>
+                {i + 1} {n}
+              </span>
+              <span className="text-gold">XP {90 - i * 8}</span>
+            </li>
+          ))}
+        </ol>
+      </article>
+      <article data-proc-cue className="tw-gadget tw-hud tw-fill-wide p-3">
+        <p className="tw-fill-label font-semibold uppercase tracking-wider text-accent">Do this now</p>
+        <ol data-proc-steps="4" className="mt-2">
+          {[
+            { n: 1, title: "ENTER", on: true, line: "Sit with your crew." },
+            { n: 2, title: "LISTEN", on: false },
+            { n: 3, title: "CREW WORK", on: false },
+            { n: 4, title: "CLEAN UP", on: false },
+          ].map((s) => (
+            <li key={s.n} className={cn("flex min-h-8 items-baseline gap-2", s.on ? "tw-proc-on font-semibold text-fg" : "text-muted")}>
+              <span className={cn("tw-proc-n font-mono", s.on ? "text-accent" : "")}>{s.n}</span>
+              <span className="min-w-0">
+                <span className={s.on ? "tw-proc-title" : "tw-proc-name"}>{s.title}</span>
+                {s.line ? <span className="tw-proc-line mt-0.5 block font-normal text-muted">{s.line}</span> : null}
+              </span>
+            </li>
+          ))}
+        </ol>
+      </article>
+    </>
   );
 }
 

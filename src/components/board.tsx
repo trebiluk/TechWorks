@@ -29,6 +29,8 @@ import { installLayoutWatch, surfaceOf, useLayout } from "@/lib/layout";
 import { PhoneDock } from "@/components/phone-dock";
 import { applyTheme, applyVibe, paintContrast, storedContrast, storedTheme, storedVibe } from "@/lib/theme";
 import { bootLang } from "@/lib/i18n";
+import { useLang } from "@/lib/i18n-hook";
+import { LangChip } from "@/components/lang-chip";
 import { VersionChip } from "@/components/version-chip";
 import { ErrorGate } from "@/components/error-gate";
 import { AdminHub } from "@/components/admin-hub";
@@ -42,6 +44,7 @@ import { cn } from "@/lib/utils";
 import { HOUSE_BERTY, HOUSE_MRK, houseHits } from "@/lib/house";
 import type { NextJob } from "@/lib/workflow";
 
+const RosterWall = lazy(() => import("@/components/roster-wall").then((m) => ({ default: m.RosterWall })));
 const ScoreDesk = lazy(() => import("@/components/score").then((m) => ({ default: m.ScoreDesk })));
 const CrewLead = lazy(() => import("@/components/crew-lead").then((m) => ({ default: m.CrewLead })));
 const SkillsBoard = lazy(() => import("@/components/learning-center").then((m) => ({ default: m.LearningCenter })));
@@ -65,11 +68,12 @@ const DeckBoard = lazy(() => import("@/components/deck-board").then((m) => ({ de
 
 const RANK_KEY = "techworks-rank-board";
 
-type View = "crew" | "score" | "overview" | "week" | "year" | "data" | "wallet" | "lucky" | "skills" | "store" | "prints" | "portal" | "grades" | "studyhall" | "hallwall" | "club" | "clubwall" | "projects" | "admin" | "teach" | "polls" | "deck";
+type View = "crew" | "score" | "overview" | "week" | "year" | "data" | "wallet" | "lucky" | "skills" | "store" | "prints" | "portal" | "grades" | "studyhall" | "hallwall" | "club" | "clubwall" | "projects" | "admin" | "teach" | "polls" | "deck" | "roster";
 type DeskPanel = "score" | "schedule" | "config";
 
 export function Board() {
   const seed = snapshot as unknown as EconomyFile;
+  const { t } = useLang();
   const [embed, setEmbed] = useState(false);
   const [portalMode, setPortalMode] = useState(false);
   const [file, setFile] = useState<EconomyFile>(seed);
@@ -132,10 +136,15 @@ export function Board() {
       setView("overview");
       return;
     }
-    const teacher = ["admin", "score", "grades", "projects", "skills", "store", "studyhall", "crew", "lucky"].includes(next);
+    const teacher = ["admin", "score", "grades", "projects", "store", "studyhall", "crew", "lucky", "roster"].includes(next);
     if (teacher && !unlocked && !(next === "crew" && crewOn)) {
       setPendingView(next);
       setPinOpen(true);
+      return;
+    }
+    if (next === "skills" && !unlocked) {
+      setLearnStart("words");
+      startTransition(() => setView("skills"));
       return;
     }
     if (crewOn && next !== "crew") {
@@ -394,7 +403,7 @@ export function Board() {
 
   useEffect(() => {
     if (!unlocked) {
-      const ok = ["overview", "week", "year", "portal", "prints", "teach", "polls", "deck"];
+      const ok = ["overview", "week", "year", "portal", "prints", "teach", "polls", "deck", "skills"];
       if (crewOn) ok.push("crew");
       if (!ok.includes(view)) setView("overview");
     }
@@ -423,7 +432,7 @@ export function Board() {
     if (crewOn) return;
     if (next === "dash") go("overview");
     else if (next === "learn") {
-      setLearnStart("grades");
+      setLearnStart(unlocked ? "grades" : "words");
       go("skills");
     } else if (next === "crew") {
       if (unlocked) {
@@ -433,6 +442,12 @@ export function Board() {
       }
       setPendingView("crew");
       setPinOpen(true);
+    } else if (next === "roster") {
+      if (unlocked) go("roster");
+      else {
+        setPendingView("roster");
+        setPinOpen(true);
+      }
     } else if (unlocked) {
       setAdminPane("today");
       go("admin");
@@ -445,42 +460,44 @@ export function Board() {
   const v2Tabs: NavTab[] =
     section === "dash"
       ? [
-          { id: "wall", label: "Wall", on: view === "overview", onClick: () => go("overview") },
-          { id: "teach", label: "Teach", on: view === "teach", onClick: () => go("teach"), hidden: !featureOn(file, "teach") },
-          { id: "deck", label: "Deck", on: view === "deck", onClick: () => go("deck") },
-          { id: "week", label: "Week", on: view === "week", onClick: () => go("week") },
-          { id: "year", label: "YTD", on: view === "year", onClick: () => go("year") },
-          { id: "polls", label: "Polls", on: view === "polls", onClick: () => go("polls"), hidden: !featureOn(file, "polls") },
-          { id: "data", label: "Data", on: view === "data", onClick: () => go("data") },
-          { id: "clubwall", label: "Club", on: view === "clubwall", onClick: () => go("clubwall"), hidden: !featureOn(file, "club") },
-          { id: "hallwall", label: "Hall", on: view === "hallwall", onClick: () => go("hallwall"), hidden: !featureOn(file, "studyhall") },
+          { id: "wall", label: t("Wall"), on: view === "overview", onClick: () => go("overview") },
+          { id: "teach", label: t("Teach"), on: view === "teach", onClick: () => go("teach"), hidden: !featureOn(file, "teach") },
+          { id: "deck", label: t("Deck"), on: view === "deck", onClick: () => go("deck") },
+          { id: "week", label: t("Week"), on: view === "week", onClick: () => go("week") },
+          { id: "year", label: t("YTD"), on: view === "year", onClick: () => go("year") },
+          { id: "polls", label: t("Polls"), on: view === "polls", onClick: () => go("polls"), hidden: !featureOn(file, "polls") },
+          { id: "data", label: t("Data"), on: view === "data", onClick: () => go("data") },
+          { id: "clubwall", label: t("Club"), on: view === "clubwall", onClick: () => go("clubwall"), hidden: !featureOn(file, "club") },
+          { id: "hallwall", label: t("Hall"), on: view === "hallwall", onClick: () => go("hallwall"), hidden: !featureOn(file, "studyhall") },
         ]
       : section === "learn"
         ? [
-            { id: "book", label: "Book", on: learnStart === "grades" || learnStart === "book", onClick: () => { setLearnStart("grades"); go("skills"); } },
-            { id: "projects", label: "Projects", on: learnStart === "projects", onClick: () => { setLearnStart("projects"); go("skills"); } },
-            { id: "skills", label: "Skills", on: learnStart === "skills", onClick: () => { setLearnStart("skills"); go("skills"); } },
-            { id: "words", label: "Words", on: learnStart === "words", onClick: () => { setLearnStart("words"); go("skills"); } },
-            { id: "guide", label: "Guide", on: learnStart === "guide" || learnStart === "bench", onClick: () => { setLearnStart("guide"); go("skills"); } },
+            { id: "book", label: t("Book"), on: learnStart === "grades" || learnStart === "book", onClick: () => { setLearnStart("grades"); go("skills"); }, hidden: !unlocked },
+            { id: "projects", label: t("Projects"), on: learnStart === "projects", onClick: () => { setLearnStart("projects"); go("skills"); }, hidden: !unlocked },
+            { id: "skills", label: t("Skills"), on: learnStart === "skills", onClick: () => { setLearnStart("skills"); go("skills"); }, hidden: !unlocked },
+            { id: "words", label: t("Words"), on: learnStart === "words", onClick: () => { setLearnStart("words"); go("skills"); } },
+            { id: "guide", label: t("Guide"), on: learnStart === "guide" || learnStart === "bench", onClick: () => { setLearnStart("guide"); go("skills"); } },
           ]
         : section === "crew"
           ? []
-          : [
+          : section === "roster"
+            ? []
+            : [
               ...ADMIN_GROUPS.map((g) => ({
                 id: g.id,
-                label: g.label,
+                label: t(g.label),
                 on: view === "admin" && paneInGroup(adminPane, g.id),
                 onClick: () => {
                   if (!paneInGroup(adminPane, g.id)) setAdminPane(defaultPane(g.id));
                   go("admin");
                 },
               })),
-              { id: "club", label: "Club", on: view === "club", onClick: () => go("club"), hidden: !featureOn(file, "club") },
-              { id: "hall", label: "Hall", on: view === "studyhall", onClick: () => go("studyhall"), hidden: !featureOn(file, "studyhall") },
-              { id: "prints", label: "Prints", on: view === "prints", onClick: () => go("prints"), hidden: !featureOn(file, "prints") },
-              { id: "stocks", label: "Stocks", on: view === "wallet", onClick: () => go("wallet"), hidden: !featureOn(file, "stocks") },
-              { id: "lucky", label: "Lucky", on: view === "lucky", onClick: () => go("lucky"), hidden: !featureOn(file, "lucky") },
-              { id: "store", label: "Store", on: view === "store", onClick: () => go("store"), hidden: !featureOn(file, "store") },
+              { id: "club", label: t("Club"), on: view === "club", onClick: () => go("club"), hidden: !featureOn(file, "club") },
+              { id: "hall", label: t("Hall"), on: view === "studyhall", onClick: () => go("studyhall"), hidden: !featureOn(file, "studyhall") },
+              { id: "prints", label: t("Prints"), on: view === "prints", onClick: () => go("prints"), hidden: !featureOn(file, "prints") },
+              { id: "stocks", label: t("Stocks"), on: view === "wallet", onClick: () => go("wallet"), hidden: !featureOn(file, "stocks") },
+              { id: "lucky", label: t("Lucky"), on: view === "lucky", onClick: () => go("lucky"), hidden: !featureOn(file, "lucky") },
+              { id: "store", label: t("Store"), on: view === "store", onClick: () => go("store"), hidden: !featureOn(file, "store") },
             ];
 
   const appStrip = !crewOn ? <AppNav section={section} onSection={goSection} tabs={v2Tabs} unlocked={unlocked} hideSections /> : null;
@@ -560,9 +577,10 @@ export function Board() {
                     setView("overview");
                   }}
                 />
-                <button type="button" title="How this class works" aria-label="Help" onClick={() => setHelpOpen(true)} className="tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-md text-fg hover:bg-elevated">
+                <button type="button" title={t("How this class works")} aria-label={t("Help")} onClick={() => setHelpOpen(true)} className="tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-md text-fg hover:bg-elevated">
                   <CircleHelp className="size-5" />
                 </button>
+                <LangChip />
                 <CloudChip
                   onOpen={() => {
                     setAdminPane("cloud");
@@ -627,8 +645,49 @@ export function Board() {
       ) : null}
       <div className="board-main flex min-h-0 flex-1 flex-col overflow-hidden">
       <CleanupStage file={file} unlocked={unlocked} onChange={setFile} off={view !== "overview"}>
-      <Suspense fallback={<p className="px-3 py-8 text-center text-sm text-gold">Loading wall…</p>}>
-      {view === "admin" && unlocked ? (
+      <Suspense fallback={<p className="px-3 py-8 text-center text-sm text-gold">{t("Loading wall…")}</p>}>
+      {view === "admin" && unlocked && adminPane === "wall" ? (
+        <Dashboard
+          list={list}
+          bells={bells}
+          file={file}
+          unlocked={unlocked}
+          arrange
+          rankBoard={rankBoard}
+          onRankBoard={toggleRank}
+          onPeriod={(p) => {
+            if (p === 6) {
+              go(unlocked ? "studyhall" : "hallwall");
+              return;
+            }
+            setJumpPeriod(p);
+            goDesk("score");
+          }}
+          onOpenId={(id) => setOpenId(id)}
+          onChange={setFile}
+          onClub={() => go("club")}
+          onHelp={() => setHelpOpen(true)}
+          onPrints={featureOn(file, "prints") ? () => go("prints") : undefined}
+          onOpenMod={(id) => {
+            if (id === "teach") go("teach");
+            else if (id === "polls") go("polls");
+            else if (id === "prints") go("prints");
+            else if (id === "lucky") go("lucky");
+            else if (id === "store") go("store");
+          }}
+        />
+      ) : view === "roster" && unlocked ? (
+        <RosterWall
+          file={file}
+          list={list}
+          unlocked={unlocked}
+          onOpenId={(id) => setOpenId(id)}
+          onRecords={() => {
+            setAdminPane("roster");
+            go("admin");
+          }}
+        />
+      ) : view === "admin" && unlocked ? (
         <AdminHub
           file={file}
           onChange={setFile}
@@ -855,8 +914,9 @@ export function Board() {
             go("teach");
           }}
           onOther={() => goSection("admin")}
+          onRoster={() => goSection("roster")}
           onSkills={() => {
-            setLearnStart("grades");
+            setLearnStart(unlocked ? "grades" : "words");
             go("skills");
           }}
           onProjects={() => {

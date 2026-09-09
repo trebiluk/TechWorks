@@ -52,7 +52,7 @@ export const SOLVAY_LOOK: Look = {
 export const LOOK_FIELDS: { key: Exclude<keyof Look, "caps" | "finish">; label: string; min: number; max: number; step: number; hint: string }[] = [
   { key: "scale", label: "Scale", min: 13, max: 22, step: 1, hint: "Whole desk" },
   { key: "titles", label: "Titles", min: 80, max: 160, step: 5, hint: "% display" },
-  { key: "fill", label: "Fill", min: 0, max: 100, step: 5, hint: "plates eat empty space" },
+  { key: "fill", label: "Fill", min: 0, max: 100, step: 5, hint: "Now, Goals, Do this now, Teach" },
   { key: "chips", label: "Chips", min: 36, max: 56, step: 2, hint: "px tap" },
   { key: "corners", label: "Corners", min: 0, max: 28, step: 1, hint: "px" },
   { key: "stroke", label: "Stroke", min: 0, max: 4, step: 1, hint: "px line" },

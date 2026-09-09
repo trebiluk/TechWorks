@@ -1,4 +1,5 @@
 import { APP_SECTIONS, type AppSection, type NavTab } from "@/lib/app-nav";
+import { useLang } from "@/lib/i18n-hook";
 import { cn } from "@/lib/utils";
 
 const ROW =
@@ -19,30 +20,31 @@ export function AppNav({
   className?: string;
   hideSections?: boolean;
 }) {
+  const { t } = useLang();
   const shown = APP_SECTIONS.filter((s) => !s.lock || unlocked);
   const row = tabs.filter((t) => !t.hidden);
   return (
     <div className={cn("flex w-full min-w-0 flex-col gap-0.5", className)}>
       {hideSections ? null : (
-      <nav className={cn(ROW, "tw-gadget p-1")} aria-label="Section">
+      <nav className={cn(ROW, "tw-gadget p-1")} aria-label={t("Place")}>
         {shown.map((s) => (
           <button
             key={s.id}
             type="button"
-            title={s.label}
+            title={t(s.label)}
             onClick={() => onSection(s.id)}
             className={cn(
               "tw-tap min-h-10 min-w-0 shrink-0 rounded-lg px-3 text-[11px] font-bold uppercase tracking-[0.12em] sm:min-h-9 sm:px-4 sm:text-xs",
               section === s.id ? "bg-accent text-accent-fg" : "text-muted hover:bg-elevated hover:text-fg",
             )}
           >
-            {s.label}
+            {t(s.label)}
           </button>
         ))}
       </nav>
       )}
       {row.length ? (
-        <nav className={ROW} aria-label="In this section">
+        <nav className={ROW} aria-label={t("In this section")}>
           {row.map((t) => (
             <button
               key={t.id}

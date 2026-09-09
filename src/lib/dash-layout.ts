@@ -1,6 +1,8 @@
 import { moveId } from "./sort.ts";
 
-const KEY = "techworks-dash-layout-v8";
+const KEY = "techworks-dash-layout-v10";
+const V9 = "techworks-dash-layout-v9";
+const V8 = "techworks-dash-layout-v8";
 const V7 = "techworks-dash-layout-v7";
 const LEGACY = [
   "techworks-dash-layout-v6",
@@ -14,14 +16,21 @@ const LEGACY = [
 export const DASH_ROWS = [
   { id: "now", label: "Now" },
   { id: "class", label: "Goals" },
+  { id: "proc", label: "Do this now" },
   { id: "strip", label: "Schedule" },
+  { id: "club", label: "Club" },
+  { id: "specials", label: "Specials" },
   { id: "mods", label: "Modules" },
   { id: "tools", label: "Tools" },
   { id: "notes", label: "Announce" },
   { id: "kpis", label: "School" },
+  { id: "poll", label: "Poll" },
 ] as const;
 
 export type DashRowId = (typeof DASH_ROWS)[number]["id"];
+
+/** Hide when empty unless Wall arrange is open. */
+export const SOFT_ROWS: DashRowId[] = ["club", "specials", "notes", "poll"];
 
 export type DashLayout = {
   order: DashRowId[];
@@ -40,7 +49,7 @@ const IDS = DASH_ROWS.map((r) => r.id);
 
 export const DEFAULT_LAYOUT: DashLayout = {
   order: [...IDS],
-  hidden: ["tools"],
+  hidden: ["tools", "proc"],
   schoolN: 10,
   liveProc: false,
   nowGoal: true,
@@ -61,19 +70,51 @@ function flag(v: unknown, fallback: boolean): boolean {
   return fallback;
 }
 
+/** Drop unknown ids, then park new plates next to their default neighbors. */
+export function graftDashOrder(saved: DashRowId[]): DashRowId[] {
+  const next = saved.filter((id, i) => saved.indexOf(id) === i);
+  for (const id of IDS) {
+    if (next.includes(id)) continue;
+    const defIdx = IDS.indexOf(id);
+    let placed = false;
+    for (let i = defIdx - 1; i >= 0; i--) {
+      const at = next.indexOf(IDS[i]);
+      if (at >= 0) {
+        next.splice(at + 1, 0, id);
+        placed = true;
+        break;
+      }
+    }
+    if (!placed) {
+      for (let i = defIdx + 1; i < IDS.length; i++) {
+        const at = next.indexOf(IDS[i]);
+        if (at >= 0) {
+          next.splice(at, 0, id);
+          placed = true;
+          break;
+        }
+      }
+    }
+    if (!placed) next.push(id);
+  }
+  return next;
+}
+
 function normalize(raw: Partial<DashLayout> | null, flagsFromSave: boolean): DashLayout {
   const seen = new Set<DashRowId>();
-  const order: DashRowId[] = [];
-  for (const id of [...(raw?.order ?? []), ...IDS]) {
+  const saved: DashRowId[] = [];
+  for (const id of raw?.order ?? []) {
     const ok = asId(id);
     if (ok && !seen.has(ok)) {
       seen.add(ok);
-      order.push(ok);
+      saved.push(ok);
     }
   }
+  const order = graftDashOrder(saved);
   const hidden = [...new Set((raw?.hidden ?? []).map(asId).filter((x): x is DashRowId => Boolean(x)))];
   const savedOrder = Array.isArray(raw?.order) ? raw!.order : [];
   if (!savedOrder.includes("tools") && !hidden.includes("tools")) hidden.push("tools");
+  if (!savedOrder.includes("proc") && !hidden.includes("proc")) hidden.push("proc");
   const schoolN = raw?.schoolN === 5 ? 5 : 10;
   return {
     order,
@@ -94,11 +135,22 @@ function restoreMods(n: DashLayout): DashLayout {
   return { ...n, hidden: n.hidden.filter((id) => id !== "mods") };
 }
 
+export function hydrateDashLayout(raw: Partial<DashLayout> | null, flagsFromSave = true): DashLayout {
+  return normalize(raw, flagsFromSave);
+}
+
 export function loadDashLayout(): DashLayout {
   if (typeof window === "undefined") return DEFAULT_LAYOUT;
   try {
     const cur = window.localStorage.getItem(KEY);
     if (cur) return normalize(JSON.parse(cur) as Partial<DashLayout>, true);
+    const v9 = window.localStorage.getItem(V9);
+    if (v9) {
+      const n = normalize(JSON.parse(v9) as Partial<DashLayout>, true);
+      return n.hidden.includes("proc") ? n : { ...n, hidden: [...n.hidden, "proc"] };
+    }
+    const v8 = window.localStorage.getItem(V8);
+    if (v8) return normalize(JSON.parse(v8) as Partial<DashLayout>, true);
     const v7 = window.localStorage.getItem(V7);
     if (v7) return normalize(JSON.parse(v7) as Partial<DashLayout>, true);
     for (const k of LEGACY) {
@@ -145,8 +197,8 @@ export function moveDashTo(layout: DashLayout, id: string, onto: string): DashLa
 /** Adjacent Now + Goals share one widescreen row. Either order. */
 export function pairMate(layout: DashLayout, id: string): "first" | "second" | null {
   const row = asId(id);
-  if (!row || row === "notes" || layout.hidden.includes(row)) return null;
-  const vis = layout.order.filter((x) => x !== "notes" && !layout.hidden.includes(x));
+  if (!row || layout.hidden.includes(row)) return null;
+  const vis = layout.order.filter((x) => !layout.hidden.includes(x));
   const i = vis.indexOf(row);
   if (i < 0) return null;
   const prev = vis[i - 1];
@@ -168,6 +220,10 @@ export function hideDashRow(layout: DashLayout, id: string, on: boolean): DashLa
 
 export function rowOn(layout: DashLayout, id: string): boolean {
   return !layout.hidden.includes(id as DashRowId);
+}
+
+export function isSoftRow(id: string): boolean {
+  return (SOFT_ROWS as string[]).includes(id);
 }
 
 export function patchDash(layout: DashLayout, patch: Partial<DashLayout>): DashLayout {

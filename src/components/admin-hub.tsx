@@ -156,6 +156,8 @@ export function AdminHub({
           <CrewDesk file={file} onChange={onChange} startPeriod={shown} />
         ) : pane === "cloud" ? (
           <CloudBoard file={file} unlocked={unlocked} onNeedPin={() => onNeedPin?.()} onLoad={onChange} />
+        ) : pane === "wall" ? (
+          <p className="p-3 text-sm text-muted">Wall arrange is the projector layout. Use Admin → Wall.</p>
         ) : pane !== "today" && pane !== "day" ? (
           <SettingsBody
             file={file}

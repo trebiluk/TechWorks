@@ -113,6 +113,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     body: "3 = working the job. 2 = needs a nudge. 1 = not with the crew. Absent / Excused / Personal are for not being here — they are not a skill grade. A 4 (Distinguished) is a teacher mark, not a crew-lead tap.",
   },
   {
+    id: "wall-week",
+    category: "Wall",
+    title: "Week race",
+    tags: ["week", "race", "crew", "class", "yesterday", "project", "activity"],
+    wall: true,
+    body: "Dash → Week. Classes and crews race on earned vs possible as of yesterday — today is still being scored, so it stays off the board. A 3 is a full share. A/E do not count against you. The gold class is shop lead; the gold crew is first in the shop. Hold it. Chase rows say how far back you are. Today’s strip is project, activity, and the Classroom assignment (project · cycle), plus what to look for (usually a 3). Classes and Roster still list every alias.",
+  },
+  {
     id: "wall-skills",
     category: "Wall",
     title: "Skill words",
@@ -148,8 +156,8 @@ export const HELP_ARTICLES: HelpArticle[] = [
     id: "admin-crews",
     category: "Admin",
     title: "Crew manager",
-    tags: ["crew", "group", "principal", "enemies", "do not pair", "history"],
-    body: "Admin → Crews (desk PIN). Tap a worker, tap a crew. 3–4 people, up to 5 crews. Each move is dated so yesterday’s group still scores as yesterday. Principal “do not pair” blocks a seat; Override today logs an exception. Never on the wall. Legal last names show here only so you can match the office list.",
+    tags: ["crew", "group", "separate", "roster", "history"],
+    body: "Admin → Crews (desk PIN). Tap a worker, tap a crew. 3–4 people, up to 5 crews. Each move is dated so yesterday’s group still scores as yesterday. Separate rules live on Admin → Records → Roster: pick two existing names, the desk will not seat them together. Override today logs an exception. Never on the wall.",
   },
   {
     id: "roles-teacher",
@@ -210,6 +218,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     tags: ["cleanup", "coral", "tools", "berty"],
     wall: true,
     body: "Last five minutes: coral screen. Berty points at jobs. Workshop: tools, scraps, stations. Classroom: seats and aisles. Caught helping extra can earn a perk — not XP. Between classes Berty points at ENTER → LISTEN → CREW WORK → CLEAN UP.",
+  },
+  {
+    id: "wall-lang",
+    category: "Wall",
+    title: "English, Ukrainian, Russian",
+    tags: ["language", "translate", "ukrainian", "russian", "english", "globe", "words", "help"],
+    wall: true,
+    body: "Globe next to Help. This quarter the class languages are English, Ukrainian, and Russian. Pick one. Help and Words switch to grade-6 reading. Shop words (kerf, grit, XP) stay English so you can learn them. Admin → Theme → Language still has Cubano, Arabic, and Farsi if you need them.",
   },
   {
     id: "copyright",
@@ -431,8 +447,8 @@ export const HELP_ARTICLES: HelpArticle[] = [
     id: "roster-ids",
     category: "Admin",
     title: "Roster ids and aliases",
-    tags: ["roster", "id", "alias", "add", "save", "ferpa"],
-    body: "Admin → Records → Roster. Type legal Last, First, then Add — or Import / CSV (Last, First, Period, IEP, 504). TechWorks mints a locked unique id first, then a wall alias from that id — never from the legal name. Clear workers snapshots first. Edit alias, crew, and (Show legal) names/IEP/504 in the table. Scores, XP, and $ stay on the id. Auto-save on this device; tap the Save chip to write now. Backups is the other Records chip: snapshot, download full, restore.",
+    tags: ["roster", "id", "alias", "add", "save", "ferpa", "separate"],
+    body: "Admin → Records → Roster. Type legal Last, First, then Add — or Import / CSV (Last, First, Period, IEP, 504). TechWorks mints a locked unique id first, then a wall alias from that id — never from the legal name. Separate: pick two names already on the list; they will not sit in the same crew. Clear workers snapshots first. Edit alias, crew, and (Show legal) names/IEP/504 in the table. Scores, XP, and $ stay on the id. Auto-save on this device; tap the Save chip to write now. Backups is the other Records chip: snapshot, download full, restore.",
   },
   {
     id: "profile-house",
@@ -482,14 +498,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "One desk",
     tags: ["web", "mobile", "ipad", "projector", "layout", "dock"],
-    body: "One layout. Bottom dock is Dash · Learn · Crew · Admin on the wall and on a phone. Widescreen lays the same cards in columns; portrait wraps them. Now and Goals grow into leftover wall; type scales to the plate so the back row can read it. Unlock → Wall: drag a plate by the grip, or use ↑↓. Now and Goals sit side by side when they are neighbors. No Web/Mobile switch. Google Site embed still hides the dock so the projector stays a wall. Module cards sit on Dash. Unlock a card’s On/Off, or Admin → Modules for the full board.",
+    body: "One layout. Bottom dock is Dash · Learn · Crew · Rosters · Admin. Widescreen lays the same cards in columns; portrait wraps them. Now and Goals grow type so the back row can read it. Do this now stays off the live Dash (it was eating phones) — Teach still has the beats, or turn the plate on in Admin → Wall. Arrange the wall in Admin → Wall (PIN). Rosters is the class yearbook (aliases, gold if you lead). Legal names stay in Admin → Records. No Web/Mobile switch. Google Site embed still hides the dock so the projector stays a wall.",
   },
   {
     id: "themes",
     category: "Start",
     title: "Stylesheets",
     tags: ["theme", "bearcat", "night", "holiday", "contrast"],
-    body: "Admin → Theme (PIN). Size: Scale is the whole desk. Fill makes Now, Goals, and Teach eat empty plate. Titles, pad, and corners ride those plates. Default is THEME-PURPLE-BLUE: cyan #22D3EE CTA, royal #3B82F6, indigo, violet. Paw orange is Bearcat only. Paper and Projector stay options. Cleanup coral. Due red.",
+    body: "Admin → Theme (PIN). Size: Scale is the whole desk. Fill makes Now, Goals, Do this now, and Teach eat empty plate. Titles, pad, and corners ride those plates. Default is THEME-PURPLE-BLUE: cyan #22D3EE CTA, royal #3B82F6, indigo, violet. Paw orange is Bearcat only. Paper and Projector stay options. Cleanup coral. Due red.",
   },
   {
     id: "legal",

@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import type { EconomyFile, RawStudent } from "@/lib/economy";
 import { isLiveStudent, shopBells } from "@/lib/economy";
+import { xpIntoLevel } from "@/lib/skills";
 import { crewsOf } from "@/lib/crews";
 import {
-  addCrewBan,
   addCrewException,
   addPeriodCrew,
   bansOf,
@@ -26,6 +26,8 @@ import {
 import { formatSchoolDate, todayIso } from "@/lib/calendar";
 import { abOn, onAbRoster } from "@/lib/store";
 import { AVATARS } from "@/lib/avatars";
+import { CrewBanner, WorkerCard } from "@/components/shop-cards";
+import { titleOf } from "@/lib/flair";
 import { cn } from "@/lib/utils";
 
 export function CrewDesk({
@@ -42,9 +44,6 @@ export function CrewDesk({
   const [date, setDate] = useState(todayIso());
   const [pick, setPick] = useState<string | null>(null);
   const [hist, setHist] = useState<string | null>(null);
-  const [banA, setBanA] = useState("");
-  const [banB, setBanB] = useState("");
-  const [banNote, setBanNote] = useState("");
   const [err, setErr] = useState("");
   const [want, setWant] = useState<string | null>(null);
   const letter = abOn(file, date);
@@ -83,7 +82,7 @@ export function CrewDesk({
         <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Crew manager</p>
         <p className="font-display text-2xl font-semibold tracking-tight">Who sits with whom</p>
         <p className="mt-1 text-sm text-muted">
-          {CREW_MIN}–{CREW_MAX} per crew · up to {CREWS_MAX} crews · principal “do not pair” stays off the wall
+          {CREW_MIN}–{CREW_MAX} per crew · up to {CREWS_MAX} crews · Separate rules live on Roster
         </p>
         <div className="mt-2 flex flex-wrap gap-1">
           <input type="date" value={date} onChange={(e) => setDate(e.target.value || date)} className="min-h-10 rounded-md bg-elevated px-2 text-sm" />
@@ -97,11 +96,11 @@ export function CrewDesk({
 
       {hits.length ? (
         <div className="rounded-xl bg-loss px-3 py-2 text-accent-fg">
-          <p className="text-[11px] font-bold uppercase">Do not pair · on this date</p>
+          <p className="text-[11px] font-bold uppercase">Separate · on this date</p>
           {hits.map((h) => (
             <p key={`${h.a.id}-${h.b.id}`} className="text-sm font-semibold">
               {h.a.first} + {h.b.first} in {h.crew}
-              {h.ban.note ? ` · ${h.ban.note}` : " · principal"}
+              {h.ban.note ? ` · ${h.ban.note}` : " · roster"}
             </p>
           ))}
         </div>
@@ -123,8 +122,9 @@ export function CrewDesk({
           const n = c.kids.length;
           const size = n < CREW_MIN ? "short" : n > CREW_MAX ? "over" : "ok";
           return (
-            <article key={c.key} className="tw-gadget p-3">
-              <div className="flex items-center gap-2">
+            <article key={c.key} className="tw-gadget overflow-hidden p-3">
+              <CrewBanner name={c.name} motto={c.motto} icon={c.icon} color={c.color} logo={c.logo} period={period} n={n} />
+              <div className="mt-2 flex items-center gap-2">
                 <input
                   value={c.name}
                   onChange={(e) => onChange(renameCrew(file, period, c.key, e.target.value))}
@@ -184,9 +184,9 @@ export function CrewDesk({
                   </button>
                 </div>
               ) : null}
-              <ul className="mt-2 grid grid-cols-2 gap-1">
+              <ul className="mt-2 grid grid-cols-2 gap-1.5">
                 {c.kids.map((s) => (
-                  <Kid key={s.id} s={s} on={pick === s.id} onPick={() => { setPick(s.id); setHist(s.id); setErr(""); }} onHist={() => setHist(s.id)} />
+                  <Kid key={s.id} s={s} file={file} xp={xpIntoLevel(file, s.id).xp} on={pick === s.id} onPick={() => { setPick(s.id); setHist(s.id); setErr(""); }} />
                 ))}
               </ul>
             </article>
@@ -201,7 +201,7 @@ export function CrewDesk({
           </div>
           <ul className="mt-2 grid grid-cols-2 gap-1">
             {bench.map((s) => (
-              <Kid key={s.id} s={s} on={pick === s.id} onPick={() => { setPick(s.id); setHist(s.id); setErr(""); }} onHist={() => setHist(s.id)} />
+              <Kid key={s.id} s={s} file={file} xp={xpIntoLevel(file, s.id).xp} on={pick === s.id} onPick={() => { setPick(s.id); setHist(s.id); setErr(""); }} />
             ))}
           </ul>
           {crews.length < CREWS_MAX ? (
@@ -213,49 +213,18 @@ export function CrewDesk({
       </div>
 
       <section className="tw-gadget p-3">
-        <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Principal · do not pair</p>
-        <form
-          className="mt-2 flex flex-wrap gap-1"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!banA || !banB || banA === banB) return;
-            onChange(addCrewBan(file, banA, banB, banNote, "principal"));
-            setBanA("");
-            setBanB("");
-            setBanNote("");
-          }}
-        >
-          <select value={banA} onChange={(e) => setBanA(e.target.value)} className="min-h-10 rounded-md bg-elevated px-2 text-sm">
-            <option value="">Worker A</option>
-            {kids.map((s) => (
-              <option key={s.id} value={s.id}>
-                {whoOf(s, true)}
-              </option>
-            ))}
-          </select>
-          <select value={banB} onChange={(e) => setBanB(e.target.value)} className="min-h-10 rounded-md bg-elevated px-2 text-sm">
-            <option value="">Worker B</option>
-            {kids.map((s) => (
-              <option key={s.id} value={s.id}>
-                {whoOf(s, true)}
-              </option>
-            ))}
-          </select>
-          <input value={banNote} onChange={(e) => setBanNote(e.target.value)} placeholder="Why (office note)" className="min-h-10 min-w-40 flex-1 rounded-md bg-elevated px-2 text-sm" />
-          <button type="submit" className="min-h-10 rounded-md bg-loss px-3 text-xs font-semibold text-accent-fg">
-            Lock pair
-          </button>
-        </form>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Separate</p>
+        <p className="mt-1 text-sm text-muted">Add or lift a pair on Admin → Records → Roster. This board only seats and warns.</p>
         <ul className="mt-2 space-y-1">
           {bans.map((b) => {
-            const a = kids.find((s) => s.id === b.a);
+            const left = kids.find((s) => s.id === b.a);
             const c = kids.find((s) => s.id === b.b);
-            if (!a || !c) return null;
+            if (!left || !c) return null;
             return (
               <li key={`${b.a}|${b.b}`} className="flex items-center justify-between gap-2 rounded-md bg-elevated px-2 py-1 text-sm">
                 <span>
-                  <span className="font-semibold">{a.first}</span> + <span className="font-semibold">{c.first}</span>
-                  <span className="ml-2 text-muted">{b.note || "principal"}</span>
+                  <span className="font-semibold">{left.first}</span> + <span className="font-semibold">{c.first}</span>
+                  <span className="ml-2 text-muted">{b.note || "roster"}</span>
                 </span>
                 <button type="button" className="text-xs text-muted" onClick={() => onChange(dropCrewBan(file, b.a, b.b))}>
                   Lift
@@ -264,7 +233,7 @@ export function CrewDesk({
             );
           })}
         </ul>
-        {err.startsWith("Principal") && picked && want ? (
+        {err.startsWith("Separate") && picked && want ? (
           <button type="button" className="mt-2 min-h-9 rounded-md bg-elevated px-3 text-xs font-semibold" onClick={() => place(want, true)}>
             Override today (logged)
           </button>
@@ -276,13 +245,18 @@ export function CrewDesk({
   );
 }
 
-function Kid({ s, on, onPick, onHist }: { s: RawStudent; on: boolean; onPick: () => void; onHist: () => void }) {
+function Kid({ s, file, xp, on, onPick }: { s: RawStudent; file: EconomyFile; xp: number; on: boolean; onPick: () => void }) {
   return (
-    <li>
-      <button type="button" onClick={onPick} onDoubleClick={onHist} className={cn("tw-tap min-h-11 w-full rounded-lg px-2 text-left text-sm font-semibold", on ? "bg-accent text-accent-fg" : "bg-elevated")}>
-        {s.first}
-        {s.legalLast ? <span className="ml-1 text-[10px] font-medium opacity-70">{s.legalLast}</span> : null}
-      </button>
+    <li className={on ? "rounded-xl ring-2 ring-accent" : ""}>
+      <WorkerCard
+        id={s.id}
+        name={s.first}
+        icon={s.icon}
+        title={titleOf(xp)}
+        xp={xp}
+        legal={s.legalLast}
+        onClick={onPick}
+      />
     </li>
   );
 }

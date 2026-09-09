@@ -37,12 +37,13 @@ export function useNavV2(): [boolean, (on: boolean) => void] {
   return [on, commitNavV2];
 }
 
-export type AppSection = "dash" | "learn" | "crew" | "admin";
+export type AppSection = "dash" | "learn" | "crew" | "roster" | "admin";
 
 export const APP_SECTIONS: { id: AppSection; label: string; lock?: boolean }[] = [
   { id: "dash", label: "Dash" },
   { id: "learn", label: "Learn" },
   { id: "crew", label: "Crew", lock: true },
+  { id: "roster", label: "Rosters", lock: true },
   { id: "admin", label: "Admin", lock: true },
 ];
 
@@ -61,6 +62,7 @@ export function sectionOf(view: string): AppSection {
     return "dash";
   if (view === "skills" || view === "grades" || view === "projects") return "learn";
   if (view === "score" || view === "crew") return "crew";
+  if (view === "roster") return "roster";
   return "admin";
 }
 

@@ -1,7 +1,8 @@
-import { AVATARS, avatarOf } from "@/lib/avatars";
+import { AVATARS } from "@/lib/avatars";
 import { setCrewProfile } from "@/lib/crew-desk";
 import type { EconomyFile, RawStudent } from "@/lib/economy";
 import { cn } from "@/lib/utils";
+import { CrewBanner, WorkerCard } from "@/components/shop-cards";
 
 export function CrewProfilePad({
   file,
@@ -22,6 +23,8 @@ export function CrewProfilePad({
   const name = rec?.name ?? crewKey;
   const motto = rec?.motto ?? "";
   const icon = rec?.icon ?? "";
+  const color = rec?.color ?? "";
+  const logo = rec?.logo ?? "";
 
   function patch(next: { name?: string; motto?: string; icon?: string }) {
     onChange(setCrewProfile(file, period, crewKey, next));
@@ -29,8 +32,7 @@ export function CrewProfilePad({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto rounded-2xl bg-crew-card p-3">
-      <p className="text-[11px] font-bold uppercase tracking-wider text-muted">Our crew</p>
-      <p className="font-display text-2xl font-semibold tracking-tight">Name, mark, motto</p>
+      <CrewBanner name={name} motto={motto} icon={icon} color={color} logo={logo} period={period} n={kids.length} />
       <p className="text-sm text-muted">You can change this. Seats stay with your teacher. Aliases only.</p>
 
       <div className="flex flex-wrap gap-1.5">
@@ -74,11 +76,8 @@ export function CrewProfilePad({
 
       <ul className="grid grid-cols-2 gap-1.5">
         {kids.map((s) => (
-          <li key={s.id} className="flex items-center gap-2 rounded-xl bg-crew px-2 py-2">
-            <span className="text-xl" aria-hidden>
-              {avatarOf(s.icon, s.id)}
-            </span>
-            <span className="truncate font-display text-lg font-semibold">{s.first}</span>
+          <li key={s.id}>
+            <WorkerCard id={s.id} name={s.first} icon={s.icon} />
           </li>
         ))}
       </ul>

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { moveId } from "./sort.ts";
-import { DEFAULT_LAYOUT, moveDashTo, pairMate } from "./dash-layout.ts";
+import { DEFAULT_LAYOUT, hydrateDashLayout, moveDashTo, pairMate, type DashRowId } from "./dash-layout.ts";
 
 describe("moveId", () => {
   it("moves the first item onto the last", () => {
@@ -29,20 +29,54 @@ describe("moveDashTo", () => {
     assert.equal(next.order[0], "kpis");
     assert.deepEqual(next.hidden, DEFAULT_LAYOUT.hidden);
   });
+
+  it("moves Do this now onto Now", () => {
+    const next = moveDashTo(DEFAULT_LAYOUT, "proc", "now");
+    assert.equal(next.order[0], "proc");
+    assert.ok(next.order.includes("now"));
+  });
 });
 
 describe("pairMate", () => {
   it("pairs Now and Goals when they sit next to each other in either order", () => {
-    const a = { ...DEFAULT_LAYOUT, order: ["class", "now", "strip", "mods", "tools", "notes", "kpis"] as typeof DEFAULT_LAYOUT.order };
-    assert.equal(pairMate(a, "class"), "first");
-    assert.equal(pairMate(a, "now"), "second");
+    const rest = DEFAULT_LAYOUT.order.filter((id) => id !== "class" && id !== "now");
+    const flipped = { ...DEFAULT_LAYOUT, order: ["class", "now", ...rest] as DashRowId[] };
+    assert.equal(pairMate(flipped, "class"), "first");
+    assert.equal(pairMate(flipped, "now"), "second");
     assert.equal(pairMate(DEFAULT_LAYOUT, "now"), "first");
     assert.equal(pairMate(DEFAULT_LAYOUT, "class"), "second");
   });
 
   it("does not pair when a plate sits between them", () => {
-    const a = { ...DEFAULT_LAYOUT, order: ["now", "strip", "class", "mods", "tools", "notes", "kpis"] as typeof DEFAULT_LAYOUT.order };
-    assert.equal(pairMate(a, "now"), null);
-    assert.equal(pairMate(a, "class"), null);
+    const rest = DEFAULT_LAYOUT.order.filter((id) => id !== "now" && id !== "class" && id !== "proc");
+    const split = { ...DEFAULT_LAYOUT, hidden: ["tools"] as typeof DEFAULT_LAYOUT.hidden, order: ["now", "proc", "class", ...rest] as DashRowId[] };
+    assert.equal(pairMate(split, "now"), null);
+    assert.equal(pairMate(split, "class"), null);
+  });
+});
+
+describe("hydrateDashLayout", () => {
+  it("parks Do this now after Goals on an old wall", () => {
+    const old = hydrateDashLayout({
+      order: ["now", "class", "strip", "mods", "tools", "notes", "kpis"],
+      hidden: ["tools"],
+    });
+    assert.deepEqual(old.order.slice(0, 4), ["now", "class", "proc", "strip"]);
+    const clubAt = old.order.indexOf("club");
+    assert.ok(clubAt > old.order.indexOf("strip"));
+    assert.ok(old.order.includes("specials"));
+    assert.equal(old.order.at(-1), "poll");
+    assert.ok(old.hidden.includes("tools"));
+    assert.ok(old.hidden.includes("proc"));
+  });
+
+  it("does not reshuffle a v9 wall that already has the new plates", () => {
+    const saved = hydrateDashLayout({
+      order: ["proc", "now", "class", "poll", "strip", "club", "specials", "mods", "tools", "notes", "kpis"],
+      hidden: ["tools", "poll"],
+    });
+    assert.equal(saved.order[0], "proc");
+    assert.equal(saved.order[3], "poll");
+    assert.deepEqual(saved.hidden, ["tools", "poll"]);
   });
 });

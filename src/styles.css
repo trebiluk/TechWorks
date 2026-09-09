@@ -1080,6 +1080,61 @@ html[data-contrast="high"] {
 [data-mod-grid] .font-display {
   font-size: clamp(0.8rem, 6.2cqi, 1.35rem);
 }
+
+/* Do this now: four beats fill the strip so the back row can read it. */
+[data-proc-cue] {
+  min-height: 5.5rem;
+}
+[data-proc-steps] {
+  display: grid;
+  gap: 0.35rem 1.15rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+[data-proc-steps="2"] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.tw-proc-n {
+  font-size: clamp(0.7rem, 2.2cqi, 1rem);
+}
+.tw-proc-name {
+  font-size: clamp(0.9rem, 3.2cqi, 1.45rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.tw-proc-title {
+  font-size: calc(
+    (1.05rem * (1 - var(--ui-fill, 1)) + clamp(1.05rem, 4.6cqi, 2.15rem) * var(--ui-fill, 1))
+    * var(--ui-title, 1)
+  );
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+.tw-proc-line {
+  font-size: calc(
+    0.85rem * (1 - var(--ui-fill, 1)) + clamp(0.85rem, 2.8cqi, 1.25rem) * var(--ui-fill, 1)
+  );
+  line-height: 1.25;
+}
+.tw-proc-bot {
+  width: clamp(3.25rem, 10cqi, 5.75rem);
+  height: auto;
+}
+@container plate (min-width: 36rem) {
+  [data-proc-steps="4"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+@media (min-width: 900px) {
+  [data-proc-steps="4"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: start;
+  }
+  [data-proc-cue].tw-fill-wide {
+    min-height: 7.5rem;
+  }
+}
 html[data-look] [data-dash-pair] > .tw-gadget,
 html[data-look] [data-teach-hero] {
   padding: var(--ui-pad, 0.75rem);
@@ -1127,6 +1182,18 @@ html[data-look] [data-teach-hero] {
   outline-offset: 1px;
   border-radius: var(--ui-radius, 16px);
   user-select: none;
+  min-height: 3rem;
+}
+[data-wall-edit="on"] .tw-sort-item > .tw-gadget,
+[data-wall-edit="on"] .tw-sort-item > [data-proc-cue],
+[data-wall-edit="on"] .tw-sort-item > [data-kpis] {
+  padding-left: 3.15rem;
+}
+[data-wall-edit="on"] .tw-sort-item button:not(.tw-sort-grip),
+[data-wall-edit="on"] .tw-sort-item a,
+[data-wall-edit="on"] .tw-sort-item input,
+[data-wall-edit="on"] .tw-sort-item select {
+  pointer-events: none;
 }
 @media (min-width: 900px) {
   [data-wall-edit="on"] .tw-fill-row {
@@ -1514,4 +1581,35 @@ html[dir="rtl"] .board-root { direction: rtl; }
   .parent-sheet::before {
     display: none !important;
   }
+}
+
+.tw-card-kid {
+  background: var(--color-elevated);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 10%, transparent);
+}
+.tw-card-face {
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-border) 70%, transparent);
+}
+.tw-frame-plain .tw-card-face,
+.tw-frame-plain.tw-card-face {
+  box-shadow: inset 0 0 0 2px var(--color-border);
+}
+.tw-frame-gain .tw-card-face,
+.tw-frame-gain.tw-card-face {
+  box-shadow: 0 0 0 3px var(--color-gain);
+}
+.tw-frame-accent .tw-card-face,
+.tw-frame-accent.tw-card-face {
+  box-shadow: 0 0 0 3px var(--color-accent);
+}
+.tw-frame-gold {
+  background: color-mix(in oklab, var(--color-gold) 16%, var(--color-elevated));
+}
+.tw-frame-gold .tw-card-face,
+.tw-frame-gold.tw-card-face {
+  box-shadow: 0 0 0 3px var(--color-gold);
+}
+.tw-crew-banner {
+  background: var(--color-elevated);
 }

@@ -17,6 +17,8 @@ import { ReportCard } from "@/components/report-card";
 import { SkillScaffold } from "@/components/skill-scaffold";
 import { featureOn } from "@/lib/features";
 import { cn } from "@/lib/utils";
+import { frameOf, titleOf } from "@/lib/flair";
+import { crewAt } from "@/lib/crew-desk";
 import { HouseCard } from "@/components/house-card";
 import { isHouseId } from "@/lib/house";
 
@@ -76,6 +78,9 @@ export function Dossier({
   const achievements = achievementsFor(file, id);
   const rankLabel = levelBandsOf(file).filter((b) => band.xp >= b.minXp).at(-1)?.label || "";
   const posted = gradeOf(file, id);
+  const title = titleOf(band.xp, card.rankPeriod);
+  const frame = card.rankPeriod === 1 ? "gold" : frameOf(band.xp);
+  const crewRec = file.crews.find((c) => c.period === raw.period && c.key === (raw.crewKey || crewAt(raw, todayIso())));
   const project = currentProject(file);
   const stamps = [...card.stamps].reverse();
   const earn = row.stock - row.principal;
@@ -115,7 +120,7 @@ export function Dossier({
                 if (!needDesk()) return;
                 setPickIcon((v) => !v);
               }}
-              className="tw-tap flex size-14 shrink-0 items-center justify-center rounded-full bg-elevated text-3xl ring-1 ring-border sm:size-16"
+              className={cn("tw-tap tw-card-face flex size-16 shrink-0 items-center justify-center rounded-full text-4xl sm:size-20", `tw-frame-${frame}`)}
             >
               {avatarOf(raw.icon, raw.id)}
             </button>
@@ -125,6 +130,7 @@ export function Dossier({
                   <span key={i} className={cn("size-1.5 rounded-full", c)} />
                 ))}
               </div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">{title}</p>
               {unlocked ? (
                 <input
                   value={alias}
@@ -137,9 +143,20 @@ export function Dossier({
               )}
               <p className="mt-0.5 truncate font-mono text-xs tracking-wider text-muted">
                 {publicHandle(raw.id)} · P{raw.period}
-                {raw.crewKey ? ` · ${raw.crewKey}` : ""}
                 {rankLabel ? ` · ${rankLabel}` : ""}
               </p>
+              {crewRec ? (
+                <p
+                  className={cn(
+                    "mt-1 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-bold uppercase tracking-wide",
+                    crewRec.color ? "" : "bg-elevated text-muted",
+                  )}
+                  style={crewRec.color ? { background: crewRec.color, color: "var(--color-bg)" } : undefined}
+                >
+                  <span>{crewRec.icon || "★"}</span>
+                  {crewRec.name}
+                </p>
+              ) : null}
               <button
                 type="button"
                 className="mt-1 inline-flex items-center gap-1 text-xs text-subtle"

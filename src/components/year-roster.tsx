@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { EconomyFile, RawStudent } from "@/lib/economy";
 import { legalFirstOf, legalLastOf, money, periodTitle, score, shopBells } from "@/lib/economy";
 import { SCHOOLTOOL_SECTIONS } from "@/data/schooltool-sections";
@@ -21,10 +21,12 @@ import {
 import { gradeSlots, letterOf, postedFor, sessionMark } from "@/lib/grades";
 import { skillXp } from "@/lib/skills";
 import { currentCycleOf } from "@/lib/roles";
-import { addTypedStudent, deskSavePending, patchStudent, saveDeskNow, setAlias, setGradeOverride, setLegalNames, setStudentFlags } from "@/lib/store";
+import { addTypedStudent, deskSavePending, saveDeskNow, setAlias, setGradeOverride, setLegalNames, setStudentFlags } from "@/lib/store";
 import { auditStudentIds } from "@/lib/ids";
 import { emptyRoster, snapshotNow } from "@/lib/vault";
 import { publicHandle } from "@/lib/live";
+import { todayIso } from "@/lib/calendar";
+import { bansOf, dropCrewBan, placeBlock, rosterLabel, separatePair, setStudentCrew, whoOf } from "@/lib/crew-desk";
 import { cn } from "@/lib/utils";
 
 type Filter = "all" | "live" | "q1" | "q2" | "q3" | "q4" | "club" | "hall" | "hold";
@@ -47,6 +49,7 @@ export function YearRoster({
   const [st, setSt] = useState(false);
   const [showLegal, setShowLegal] = useState(false);
   const [pending, setPending] = useState(false);
+  const [notice, setNotice] = useState("");
   const counts = useMemo(() => yearCounts(file, club), [file, club]);
   const ids = useMemo(() => auditStudentIds(file.students), [file.students]);
   const cohort = YEAR_CLASSES.concat(YEAR_GROUPS).find((c) => c.id === pick) ?? null;
@@ -153,6 +156,13 @@ export function YearRoster({
       ) : null}
 
       <AddKid file={file} cohort={cohort} onChange={onChange} />
+
+      <SeparateRules
+        file={file}
+        notice={notice}
+        onNotice={setNotice}
+        onChange={onChange}
+      />
 
       <div className="flex flex-wrap gap-1">
         {(
@@ -263,7 +273,7 @@ export function YearRoster({
             {cohort ? `${cohort.course} · Sec ${cohort.section} · ${cohort.quarter === "YEAR" ? "year" : cohort.quarter} · Rm ${cohort.room}` : "Every kid this year"} · {rows.length}
           </p>
           {cohort && cohort.kind !== "club" ? (
-            <ClassBook file={file} cohort={cohort} showLegal={showLegal} onChange={onChange} onOpenId={onOpenId} onPlace={place} />
+            <ClassBook file={file} cohort={cohort} showLegal={showLegal} onChange={onChange} onOpenId={onOpenId} onPlace={place} onNotice={setNotice} />
           ) : (
             <table className="w-full text-left text-sm">
             <thead className="text-[11px] uppercase tracking-wider text-subtle">
@@ -572,6 +582,7 @@ function ClassBook({
   onChange,
   onOpenId,
   onPlace,
+  onNotice,
 }: {
   file: EconomyFile;
   cohort: YearCohort;
@@ -579,6 +590,7 @@ function ClassBook({
   onChange: (next: EconomyFile) => void;
   onOpenId?: (id: string) => void;
   onPlace: (id: string, c: YearCohort) => void;
+  onNotice?: (msg: string) => void;
 }) {
   const club = loadClub();
   const kids = studentsInCohort(file, cohort, club);
@@ -634,7 +646,16 @@ function ClassBook({
                 {crews.length ? (
                   <select
                     value={s.crewKey}
-                    onChange={(e) => onChange(patchStudent(file, s.id, { crewKey: e.target.value }))}
+                    onChange={(e) => {
+                      const dest = e.target.value;
+                      const date = todayIso();
+                      const block = placeBlock(file, s, dest, date);
+                      if (block) {
+                        onNotice?.(block);
+                        return;
+                      }
+                      onChange(setStudentCrew(file, s.id, dest, date));
+                    }}
                     className="h-9 max-w-[9rem] rounded-md bg-elevated px-1 text-sm"
                   >
                     {crews.map((c) => (
@@ -713,3 +734,187 @@ function ClassBook({
     </table>
   );
 }
+
+function SeparateRules({
+  file,
+  notice,
+  onNotice,
+  onChange,
+}: {
+  file: EconomyFile;
+  notice: string;
+  onNotice: (msg: string) => void;
+  onChange: (next: EconomyFile) => void;
+}) {
+  const [a, setA] = useState("");
+  const [b, setB] = useState("");
+  const [why, setWhy] = useState("");
+  const kids = useMemo(
+    () =>
+      [...file.students].sort(
+        (x, y) => x.period - y.period || legalLastOf(x).localeCompare(legalLastOf(y)) || x.first.localeCompare(y.first),
+      ),
+    [file.students],
+  );
+  const rules = bansOf(file);
+  const pickA = kids.find((s) => s.id === a);
+  const pickB = kids.find((s) => s.id === b);
+  const ready = Boolean(a && b && a !== b);
+
+  function lock() {
+    if (!ready || !pickA || !pickB) return;
+    const out = separatePair(file, a, b, why);
+    onChange(out.file);
+    const names = `${pickA.first} + ${pickB.first}`;
+    if (out.moved) {
+      const who = out.moved.id === pickB.id ? pickB.first : pickA.first;
+      onNotice(`${names} will not sit together. ${who} moved to ${out.moved.to}.`);
+    } else if (pickA.period !== pickB.period) {
+      onNotice(`${names} will not sit together if they share a crew later.`);
+    } else {
+      onNotice(`${names} will not sit together.`);
+    }
+    setA("");
+    setB("");
+    setWhy("");
+  }
+
+  return (
+    <section className="tw-gadget p-3">
+      <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Separate</p>
+      <p className="mt-1 text-sm text-muted">
+        Pick two names already on this roster. They will not sit in the same crew — Crew manager, this table, and a class move all honor it. Never on the wall.
+      </p>
+      <form
+        className="mt-2 flex flex-wrap items-end gap-1"
+        onSubmit={(e) => {
+          e.preventDefault();
+          lock();
+        }}
+      >
+        <RosterPick students={kids} value={a} onChange={setA} hide={b} placeholder="Name" />
+        <RosterPick students={kids} value={b} onChange={setB} hide={a} placeholder="Name" />
+        <input
+          value={why}
+          onChange={(e) => setWhy(e.target.value)}
+          placeholder="Why (office note)"
+          className="min-h-11 min-w-40 flex-1 rounded-md bg-elevated px-2 text-sm outline-none"
+        />
+        <button
+          type="submit"
+          disabled={!ready}
+          className={cn("tw-tap min-h-11 rounded-md px-4 text-sm font-semibold", ready ? "bg-loss text-accent-fg" : "bg-elevated text-muted")}
+        >
+          Separate
+        </button>
+      </form>
+      {notice ? <p className="mt-2 text-sm font-semibold text-gold">{notice}</p> : null}
+      {rules.length ? (
+        <ul className="mt-2 space-y-1">
+          {rules.map((rule) => {
+            const left = kids.find((s) => s.id === rule.a);
+            const right = kids.find((s) => s.id === rule.b);
+            if (!left || !right) return null;
+            return (
+              <li key={`${rule.a}|${rule.b}`} className="flex flex-wrap items-center justify-between gap-2 rounded-md bg-elevated px-2 py-1.5 text-sm">
+                <span>
+                  <span className="font-semibold">{whoOf(left, true)}</span>
+                  <span className="text-muted"> + </span>
+                  <span className="font-semibold">{whoOf(right, true)}</span>
+                  <span className="ml-2 text-xs text-muted">
+                    {left.period === right.period ? `P${left.period}` : `P${left.period} · P${right.period}`}
+                    {rule.note ? ` · ${rule.note}` : ""}
+                  </span>
+                </span>
+                <button type="button" className="tw-tap min-h-9 rounded-md px-3 text-xs font-semibold text-muted" onClick={() => onChange(dropCrewBan(file, rule.a, rule.b))}>
+                  Lift
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p className="mt-2 text-xs text-subtle">{kids.length ? "No separate rules yet." : "Add students first, then pick two names."}</p>
+      )}
+    </section>
+  );
+}
+
+function RosterPick({
+  students,
+  value,
+  onChange,
+  hide,
+  placeholder,
+}: {
+  students: RawStudent[];
+  value: string;
+  onChange: (id: string) => void;
+  hide?: string;
+  placeholder: string;
+}) {
+  const [q, setQ] = useState("");
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  const picked = students.find((s) => s.id === value);
+  const needle = q.trim().toLowerCase();
+  const list = students.filter((s) => {
+    if (hide && s.id === hide) return false;
+    if (!needle) return true;
+    const blob = `${s.first} ${legalLastOf(s)} ${legalFirstOf(s)} ${s.id} p${s.period}`.toLowerCase();
+    return blob.includes(needle);
+  }).slice(0, 48);
+
+  useEffect(() => {
+    function down(e: MouseEvent) {
+      if (!root.current?.contains(e.target as Node)) {
+        setOpen(false);
+        setQ("");
+      }
+    }
+    document.addEventListener("mousedown", down);
+    return () => document.removeEventListener("mousedown", down);
+  }, []);
+
+  return (
+    <div ref={root} className="relative min-w-[12rem] flex-1">
+      <input
+        value={open ? q : picked ? rosterLabel(picked, true) : q}
+        onChange={(e) => {
+          setQ(e.target.value);
+          setOpen(true);
+          if (value) onChange("");
+        }}
+        onFocus={() => {
+          setOpen(true);
+          setQ("");
+        }}
+        placeholder={placeholder}
+        autoComplete="off"
+        className="min-h-11 w-full rounded-md bg-elevated px-2 text-sm outline-none"
+      />
+      {open ? (
+        <ul className="absolute z-20 mt-1 max-h-56 w-full overflow-auto rounded-md bg-elevated py-1 shadow-lg ring-1 ring-border">
+          {list.map((s) => (
+            <li key={s.id}>
+              <button
+                type="button"
+                className={cn("flex min-h-11 w-full items-center px-2 text-left text-sm", s.id === value ? "bg-surface font-semibold" : "hover:bg-surface")}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  onChange(s.id);
+                  setQ("");
+                  setOpen(false);
+                }}
+              >
+                {rosterLabel(s, true)}
+              </button>
+            </li>
+          ))}
+          {!list.length ? <li className="px-2 py-2 text-sm text-muted">No match on this roster</li> : null}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+

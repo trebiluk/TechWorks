@@ -1,7 +1,7 @@
-import type { EconomyFile, RawStudent } from "@/lib/economy";
-import { isLiveStudent } from "@/lib/economy";
-import { cloneFile } from "@/lib/clone";
-import { todayIso } from "@/lib/calendar";
+import type { EconomyFile, RawStudent } from "./economy";
+import { isLiveStudent, legalFirstOf, legalLastOf } from "./economy";
+import { cloneFile } from "./clone";
+import { todayIso } from "./calendar";
 
 export const CREW_MIN = 3;
 export const CREW_MAX = 4;
@@ -22,6 +22,11 @@ export type CrewException = {
   b: string;
   date: string;
   note: string;
+};
+
+export type SeparateResult = {
+  file: EconomyFile;
+  moved?: { id: string; from: string; to: string };
 };
 
 function pairKey(a: string, b: string) {
@@ -98,11 +103,28 @@ export function placeBlock(
       const ban = banBetween(file, student.id, other.id);
       if (ban && !excepted(file, student.id, other.id, date)) {
         const who = other.first;
-        return `Principal: not with ${who}${ban.note ? ` · ${ban.note}` : ""}`;
+        return `Separate: not with ${who}${ban.note ? ` · ${ban.note}` : ""}`;
       }
     }
   }
   return null;
+}
+
+/** First crew in this period that is not full and does not hold a Separate pair. Bench if none. */
+export function openCrewFor(file: EconomyFile, student: RawStudent, date: string): string {
+  if (student.period === 6) return "Hall";
+  if (student.period === 0) return "CLUB";
+  const named = file.crews.filter((c) => c.period === student.period).map((c) => c.key);
+  const seated = file.students
+    .filter((s) => s.period === student.period && s.id !== student.id && isLiveStudent(s, file.meta.quarterName))
+    .map((s) => crewAt(s, date))
+    .filter((k) => k && k !== BENCH);
+  const pool = named.length ? named : [...new Set(seated)];
+  const keys = pool.length ? pool : ["Crew A", "Crew B", "Crew C"];
+  for (const key of keys) {
+    if (!placeBlock(file, student, key, date)) return key;
+  }
+  return BENCH;
 }
 
 export function setStudentCrew(file: EconomyFile, id: string, crewKey: string, date = todayIso()): EconomyFile {
@@ -119,7 +141,7 @@ export function setStudentCrew(file: EconomyFile, id: string, crewKey: string, d
   return next;
 }
 
-export function addCrewBan(file: EconomyFile, a: string, b: string, note?: string, by = "principal"): EconomyFile {
+export function addCrewBan(file: EconomyFile, a: string, b: string, note?: string, by = "roster"): EconomyFile {
   if (!a || !b || a === b) return file;
   if (banBetween(file, a, b)) return file;
   const next = cloneFile(file);
@@ -138,6 +160,34 @@ export function dropCrewBan(file: EconomyFile, a: string, b: string): EconomyFil
     crewBans: bansOf(next).filter((x) => pairKey(x.a, x.b) !== k),
   };
   return next;
+}
+
+/** If two names share a crew today, move the second to an open crew (or the bench). */
+export function splitTogether(file: EconomyFile, aId: string, bId: string, date = todayIso()): SeparateResult {
+  const a = file.students.find((s) => s.id === aId);
+  const b = file.students.find((s) => s.id === bId);
+  if (!a || !b || a.period !== b.period) return { file };
+  const from = crewAt(a, date);
+  const other = crewAt(b, date);
+  if (!from || from === BENCH || from !== other) return { file };
+  let next = file;
+  let to = openCrewFor(next, b, date);
+  if (to === from || to === BENCH) {
+    const grown = addPeriodCrew(next, b.period);
+    if (grown !== next) {
+      next = grown;
+      to = openCrewFor(next, b, date);
+    }
+  }
+  const dest = to === from ? BENCH : to;
+  return { file: setStudentCrew(next, b.id, dest, date), moved: { id: b.id, from, to: dest } };
+}
+
+/** Roster rule: two existing ids will not sit in the same crew. Splits them if they already do. */
+export function separatePair(file: EconomyFile, a: string, b: string, note?: string, date = todayIso()): SeparateResult {
+  if (!a || !b || a === b) return { file };
+  const next = addCrewBan(file, a, b, note, "roster");
+  return splitTogether(next, a, b, date);
 }
 
 export function addCrewException(file: EconomyFile, a: string, b: string, date: string, note: string): EconomyFile {
@@ -198,6 +248,18 @@ export function whoOf(s: RawStudent, legal: boolean) {
     return `${s.first} · ${(s.legalFirst ?? s.first) + " " + (s.legalLast ?? "")}`.trim();
   }
   return s.first;
+}
+
+/** Roster pick line: legal last, first · alias · period. */
+export function rosterLabel(s: RawStudent, legal: boolean) {
+  const last = legalLastOf(s);
+  const first = legalFirstOf(s);
+  const p = s.period ? `P${s.period}` : "—";
+  if (legal && (last || first)) {
+    const name = [last, first].filter(Boolean).join(", ");
+    return `${name} · ${s.first} · ${p}`;
+  }
+  return `${s.first} · ${p}`;
 }
 
 export function readCrewLogo(list: FileList | null, done: (dataUrl: string) => void) {

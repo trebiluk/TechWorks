@@ -1,6 +1,7 @@
-import { BookOpen, LayoutDashboard, MoreHorizontal, Presentation, Users, Wrench } from "lucide-react";
+import { BookOpen, ClipboardList, LayoutDashboard, MoreHorizontal, Presentation, Users, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { sectionOf, type AppSection } from "@/lib/app-nav";
+import { useLang } from "@/lib/i18n-hook";
 
 type DockId = "board" | "crew" | "skills" | "projects" | "desk";
 
@@ -15,6 +16,7 @@ export function PhoneDock({
   navV2,
   onTeach: _onTeach,
   onOther,
+  onRoster,
 }: {
   view: string;
   pad?: "effort" | "skill";
@@ -26,19 +28,22 @@ export function PhoneDock({
   navV2?: boolean;
   onTeach?: () => void;
   onOther?: () => void;
+  onRoster?: () => void;
 }) {
+  const { t } = useLang();
   if (navV2) {
     const sec = sectionOf(view);
     const items: { id: AppSection; label: string; Icon: typeof LayoutDashboard; go: () => void }[] = [
-      { id: "dash", label: "Dash", Icon: LayoutDashboard, go: onBoard },
-      { id: "learn", label: "Learn", Icon: BookOpen, go: onSkills },
-      { id: "crew", label: "Crew", Icon: Users, go: onCrew },
-      { id: "admin", label: "Admin", Icon: MoreHorizontal, go: onOther ?? onDesk },
+      { id: "dash", label: t("Dash"), Icon: LayoutDashboard, go: onBoard },
+      { id: "learn", label: t("Learn"), Icon: BookOpen, go: onSkills },
+      { id: "crew", label: t("Crew"), Icon: Users, go: onCrew },
+      { id: "roster", label: t("Rosters"), Icon: ClipboardList, go: onRoster ?? onOther ?? onDesk },
+      { id: "admin", label: t("Admin"), Icon: MoreHorizontal, go: onOther ?? onDesk },
     ];
     const on = sec;
     return (
-      <nav className="phone-dock shrink-0 border-t border-border bg-surface" aria-label="Place">
-        <ul className="mx-auto grid w-full max-w-md grid-cols-4">
+      <nav className="phone-dock shrink-0 border-t border-border bg-surface" aria-label={t("Place")}>
+        <ul className="mx-auto grid w-full max-w-lg grid-cols-5">
           {items.map((it) => (
             <li key={it.id}>
               <button
@@ -73,11 +78,11 @@ export function PhoneDock({
               ? "desk"
               : "board";
   const items: { id: DockId; label: string; Icon: typeof LayoutDashboard; go: () => void }[] = [
-    { id: "board", label: "Board", Icon: LayoutDashboard, go: onBoard },
-    { id: "crew", label: "Crew", Icon: Users, go: onCrew },
-    { id: "desk", label: "Desk", Icon: Wrench, go: onDesk },
-    { id: "skills", label: "Learn", Icon: BookOpen, go: onSkills },
-    { id: "projects", label: "Projects", Icon: Presentation, go: onProjects },
+    { id: "board", label: t("Board"), Icon: LayoutDashboard, go: onBoard },
+    { id: "crew", label: t("Crew"), Icon: Users, go: onCrew },
+    { id: "desk", label: t("Desk"), Icon: Wrench, go: onDesk },
+    { id: "skills", label: t("Learn"), Icon: BookOpen, go: onSkills },
+    { id: "projects", label: t("Projects"), Icon: Presentation, go: onProjects },
   ];
   return (
     <nav className="phone-dock shrink-0 border-t border-border bg-surface" aria-label="Phone">

@@ -6,6 +6,35 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.90.14 — 2026-09-09
+
+- Do this now is off the live Dash. It was eating the phone and you could not scroll or hide it. Teach still has the beats. Turn the plate on in Admin → Wall if the projector needs it.
+- Rosters sits on the bottom dock (PIN): class yearbook of crew banners and worker cards (gold if you lead). Legal names stay in Admin → Records. Wall arrange stays Admin only.
+
+## 1.90.13 — 2026-09-09
+
+- Wall arrange is Admin only (Admin → Wall). The live Dash no longer opens an editor, so the projector can scroll. Do this now is a real plate with a grip. Rosters sits on the bottom dock (PIN). Profiles and crews are trading cards: gold frame if you lead the shop, crew color banner, titles from Cub → Legend.
+
+## 1.90.12 — 2026-09-09
+
+- Unlock → Wall: Do this now, Club, Specials, Announce, and the live poll are plates — drag them with Now, Goals, Schedule, Modules, School, and Tools. Empty ones hide until they have something (they stay visible while you arrange). Grab the grip or empty space. The four beats fill the Do this now strip so the back row can read ENTER / LISTEN / CREW WORK / CLEAN UP. Theme → Size Fill preview includes that strip. SchoolTool stays the P1 chip.
+
+## 1.90.11 — 2026-09-09
+
+- Globe next to Help: English, Ukrainian, Russian at grade-6 reading. Help and Words switch. Shop words (kerf, grit, XP) stay English. Locked Learn opens Words (no PIN). Theme → Language still has Cubano, Arabic, and Farsi.
+
+## 1.90.10 — 2026-09-09
+
+- Week race feels like a shop championship. Gold shop lead and first crew (Berty celebrates). Everyone else sees how far back they are. Today’s strip is project, activity, and the Classroom assignment. Standings still lock as of yesterday. Empty board is a starting grid — score today, crown tomorrow.
+
+## 1.90.9 — 2026-09-09
+
+- Week race: classes and crews ranked on earned vs possible as of yesterday (today stays off the board on purpose). Today’s project, activity, and “look for a 3” sit on the strip. Shop lead and first crew get the gold — hold it. Classes / Roster tables are still there.
+
+## 1.90.8 — 2026-09-09
+
+- Separate is a roster rule: pick two names already on Admin → Records → Roster. They will not sit in the same crew. If they already do, the second name moves. Crew manager, the roster crew column, and a class move all honor it. Never on the wall.
+
 ## 1.90.7 — 2026-09-09
 
 - Unlock → Wall: drag plates by the grip (Now, Goals, Schedule, Modules, School, Tools). Now and Goals stay two cards; they sit side by side when they are neighbors. SchoolTool, club, specials, and the live poll stay pinned. ↑↓ still works. Admin → Theme → Size Fill is from 1.90.6.

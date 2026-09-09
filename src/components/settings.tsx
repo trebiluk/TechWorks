@@ -36,7 +36,7 @@ export const SETTINGS_TABS = [
 ] as const;
 
 export type SettingsTab = (typeof SETTINGS_TABS)[number]["id"] | "lunch" | "skills" | "privacy";
-export type AdminPane = "today" | "crews" | "cloud" | SettingsTab;
+export type AdminPane = "today" | "crews" | "cloud" | "wall" | SettingsTab;
 
 const OPEN_MOD: Record<string, string> = {
   club: "club",

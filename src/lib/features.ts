@@ -8,7 +8,7 @@ export const FEATURES = [
   { id: "reward", label: "Class reward", group: "Wall", hint: "XP · grade · effort bar" },
   { id: "tips", label: "Screen guide", group: "Wall", hint: "Describe under the header" },
   { id: "contrast", label: "High contrast", group: "Wall", hint: "Harder edges for the wall" },
-  { id: "crews", label: "Crew manager", group: "Crew", hint: "Seating, bans, color, logo — teacher only" },
+  { id: "crews", label: "Crew manager", group: "Crew", hint: "Seating, color, logo — Separate is on Roster" },
   { id: "grades", label: "Grades export", group: "Learn", hint: "Classroom CSV" },
   { id: "nytech", label: "NY Tech", group: "Learn", hint: "Standard 5 project 1–4" },
   { id: "projects", label: "Projects", group: "Learn", hint: "Build drives agenda, XP, grades" },

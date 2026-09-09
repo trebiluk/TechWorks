@@ -7,6 +7,7 @@ import { AVATARS, avatarOf } from "@/lib/avatars";
 import { abOn, attendOn, deskBellId, onAbRoster, setAffect, setAvatar, setStudentAttend, setStudentNote } from "@/lib/store";
 import { todayIso } from "@/lib/calendar";
 import { periodNow } from "@/lib/bells";
+import { CrewBanner, WorkerCard } from "@/components/shop-cards";
 import { ScoreDesk } from "@/components/score";
 import { cn } from "@/lib/utils";
 
@@ -149,14 +150,8 @@ function CrewEdit({
 
   return (
     <div className="flex flex-col gap-3">
-      <article className="rounded-2xl p-3" style={color ? { background: color, color: "#06122B" } : undefined}>
-        <div className="flex items-center gap-3">
-          {logo ? <img src={logo} alt="" className="size-16 rounded-xl object-cover" /> : <span className="grid size-16 place-items-center rounded-xl bg-black/10 text-3xl">{icon || "★"}</span>}
-          <div className="min-w-0">
-            <p className="font-display text-2xl font-bold leading-none">{name}</p>
-            {motto ? <p className="mt-1 text-sm opacity-80">{motto}</p> : null}
-          </div>
-        </div>
+      <article className="rounded-2xl p-0">
+        <CrewBanner name={name} motto={motto} icon={icon} color={color} logo={logo} period={period} n={kids.length} />
       </article>
 
       <label className="block">
@@ -203,8 +198,7 @@ function CrewEdit({
           return (
             <li key={s.id} className="rounded-2xl bg-crew-card p-3">
               <div className="flex items-center gap-2">
-                <span className="text-2xl">{avatarOf(s.icon, s.id)}</span>
-                <p className="min-w-0 flex-1 font-display text-xl font-semibold">{s.first}</p>
+                <WorkerCard id={s.id} name={s.first} icon={s.icon} />
               </div>
               <div className="mt-2 flex flex-wrap gap-1">
                 {AVATARS.slice(0, 12).map((a) => (

@@ -13,12 +13,10 @@ import { applySort, byCombo } from "@/lib/rank";
 import { agendaFor, prettyStage, skillName } from "@/lib/projects";
 import { useShopClock } from "@/lib/use-clock";
 import { cn } from "@/lib/utils";
-import { ProcedureCue } from "@/components/procedure-cue";
 import { ProgressRing } from "@/components/progress-ring";
 import { BertyPeek } from "@/components/berty";
 import { showBerty, bertyPose } from "@/lib/berty";
 import { featureOn } from "@/lib/features";
-import { procedureStep } from "@/lib/procedure";
 
 const CREW_EDGE = [
   "var(--color-period-1)",
@@ -85,9 +83,7 @@ export const PhoneFeed = memo(function PhoneFeed({
   const left = clock?.live ? leftClock(clock.left).label : null;
   const pct = clock?.live ? clock.pct : 0;
   const passing = isSchoolDay(today) && !clock?.live && Boolean(nxt);
-  const step = procedureStep({ live: Boolean(clock?.live), cleanup: Boolean(clock?.cleanup), passing, pct });
   const bertyOn = showBerty(featureOn(file, "berty"), { cleanup: Boolean(clock?.cleanup), passing });
-  const showProc = bertyOn && !clock?.cleanup && (passing || step === "enter" || step === "listen");
 
   return (
     <div className="phone-feed flex min-h-[12rem] flex-1 flex-col gap-2.5 overflow-auto pb-3">
@@ -149,7 +145,6 @@ export const PhoneFeed = memo(function PhoneFeed({
         </div>
       </section>
 
-      {showProc ? <ProcedureCue step={step} passing={passing} compact /> : null}
       <section className="phone-goal tw-gadget tw-hud rounded-xl px-3 py-3">
         <p className="text-xs font-bold uppercase tracking-wide text-accent">Today · P{shown}</p>
         <p className="mt-1 font-display text-2xl font-bold leading-snug tracking-tight text-fg">{goalLine}</p>

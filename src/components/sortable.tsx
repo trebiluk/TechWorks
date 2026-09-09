@@ -4,13 +4,15 @@ import { cn } from "@/lib/utils";
 
 const SLOP = 8;
 
+type Ptr = PointerEvent<HTMLElement>;
+
 type SortCtx = {
   enabled: boolean;
   grab: string | null;
   over: string | null;
-  arm: (id: string, e: PointerEvent<HTMLButtonElement>) => void;
-  move: (e: PointerEvent<HTMLButtonElement>) => void;
-  end: (e: PointerEvent<HTMLButtonElement>) => void;
+  arm: (id: string, e: Ptr) => void;
+  move: (e: Ptr) => void;
+  end: (e: Ptr) => void;
 };
 
 const Ctx = createContext<SortCtx | null>(null);
@@ -25,6 +27,16 @@ function hitId(x: number, y: number, root: HTMLElement, grab: string): string | 
     if (id && id !== grab) return id;
   }
   return null;
+}
+
+function isGrip(el: EventTarget | null): boolean {
+  return el instanceof Element && Boolean(el.closest(".tw-sort-grip"));
+}
+
+function isControl(el: EventTarget | null): boolean {
+  if (!(el instanceof Element)) return false;
+  if (isGrip(el)) return false;
+  return Boolean(el.closest("button, a, input, select, textarea, label, [role='button']"));
 }
 
 export function SortableList({
@@ -44,13 +56,13 @@ export function SortableList({
   const [grab, setGrab] = useState<string | null>(null);
   const [over, setOver] = useState<string | null>(null);
 
-  function arm(id: string, e: PointerEvent<HTMLButtonElement>) {
+  function arm(id: string, e: Ptr) {
     if (!enabled || e.button !== 0) return;
     e.stopPropagation();
     drag.current = { id, pointer: e.pointerId, x: e.clientX, y: e.clientY, armed: false };
   }
 
-  function move(e: PointerEvent<HTMLButtonElement>) {
+  function move(e: Ptr) {
     const d = drag.current;
     if (!d || d.pointer !== e.pointerId) return;
     const dx = e.clientX - d.x;
@@ -71,7 +83,7 @@ export function SortableList({
     setOver(onto);
   }
 
-  function end(e: PointerEvent<HTMLButtonElement>) {
+  function end(e: Ptr) {
     const d = drag.current;
     drag.current = null;
     const onto = overRef.current;
@@ -115,6 +127,13 @@ export function SortableItem({
   const enabled = Boolean(ctx?.enabled);
   const grabbing = ctx?.grab === id;
   const hovering = Boolean(ctx?.over === id && ctx.grab && ctx.grab !== id);
+
+  function plateDown(e: PointerEvent<HTMLDivElement>) {
+    if (!ctx?.enabled) return;
+    if (isGrip(e.target) || isControl(e.target)) return;
+    ctx.arm(id, e);
+  }
+
   return (
     <div
       data-sort-id={id}
@@ -124,6 +143,10 @@ export function SortableItem({
         hovering && "tw-sort-over",
         className,
       )}
+      onPointerDown={enabled ? plateDown : undefined}
+      onPointerMove={enabled ? (e) => ctx?.move(e) : undefined}
+      onPointerUp={enabled ? (e) => ctx?.end(e) : undefined}
+      onPointerCancel={enabled ? (e) => ctx?.end(e) : undefined}
     >
       {enabled ? (
         <button

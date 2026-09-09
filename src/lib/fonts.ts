@@ -63,6 +63,10 @@ const FONT_HREF: Partial<Record<FontId, string>> = {
   naskh: "https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@500;700&family=Noto+Sans+Arabic:wght@400;600;700&display=swap",
 };
 
+export function ensureLangFont(id: FontId) {
+  ensureFontLink(id);
+}
+
 function ensureFontLink(id: FontId) {
   const href = FONT_HREF[id];
   if (!href || typeof document === "undefined") return;
@@ -74,6 +78,7 @@ function ensureFontLink(id: FontId) {
   l.href = href;
   document.head.appendChild(l);
 }
+
 
 export function paintFont(id: FontId | null) {
   if (typeof document === "undefined") return;

@@ -6,9 +6,10 @@ import { calcProjectGrade } from "@/lib/grades";
 import { gradeOfPeriod, projectForCycle, projectForGrade } from "@/lib/projects";
 import { clubStudentId, patchMember, saveClub, type ClubFile, type ClubMember } from "@/lib/club";
 import { currentCycleOf } from "@/lib/roles";
-import { sessions } from "@/lib/calendar";
+import { sessions, todayIso } from "@/lib/calendar";
 import { eachTapeMark, tapeMark } from "@/lib/tape";
 import { YEAR_CLASSES, YEAR_GROUPS, YEAR_COHORTS, sessionOfStudent, type YearCohort } from "@/lib/sections";
+import { crewAt, openCrewFor, placeBlock, setStudentCrew } from "@/lib/crew-desk";
 import { addTypedStudent } from "@/lib/store";
 
 export { YEAR_CLASSES, YEAR_GROUPS, YEAR_COHORTS, sessionOfStudent };
@@ -189,10 +190,16 @@ export function placeStudent(file: EconomyFile, id: string, c: YearCohort): Econ
       course: c.course,
       section: c.section,
       sem: c.quarter,
-      crewKey: s.crewKey === "CLUB" || !s.crewKey ? "A" : s.crewKey,
+      crewKey: s.crewKey === "CLUB" || !s.crewKey ? "Crew A" : s.crewKey,
       groups: { ...s.groups, club: s.groups?.club, hall: s.period === 6 ? true : s.groups?.hall },
     };
   });
+  const kid = next.students.find((s) => s.id === id);
+  if (!kid || c.kind === "club" || c.kind === "hall") return next;
+  const date = todayIso();
+  const dest = crewAt(kid, date);
+  const blocked = dest && dest !== "Bench" ? placeBlock(next, kid, dest, date) : "empty";
+  if (blocked) return setStudentCrew(next, id, openCrewFor(next, kid, date), date);
   return next;
 }
 

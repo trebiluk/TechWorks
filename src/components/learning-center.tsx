@@ -13,6 +13,7 @@ import { Chip } from "@/components/ui";
 import { BookOpen, GraduationCap, Landmark, Hammer, Heart, FolderKanban } from "lucide-react";
 import { Word } from "@/lib/tips";
 import { LEARN_CARDS, learnCardOn, loadLearnLook, saveLearnLook, toggleLearnCard, type LearnLook } from "@/lib/learn-look";
+import { useLang } from "@/lib/i18n-hook";
 import { cn } from "@/lib/utils";
 
 const GradeBoard = lazy(() => import("@/components/grade-board").then((m) => ({ default: m.GradeBoard })));
@@ -53,6 +54,7 @@ export function LearningCenter({
   onOpenSettings?: () => void;
   onRankUp?: (alias: string, band: string) => void;
 }) {
+  const { t } = useLang();
   const first = splitStart(start);
   const [pane, setPane] = useState<LearnPane>(first.pane);
   const [family, setFamily] = useState<"shop" | "soft">(first.family);
@@ -62,6 +64,9 @@ export function LearningCenter({
     setPane(next.pane);
     setFamily(next.family);
   }, [start]);
+  useEffect(() => {
+    if (!unlocked && (pane === "book" || pane === "projects" || pane === "skills")) setPane("words");
+  }, [unlocked, pane]);
   function flipCard(id: (typeof LEARN_CARDS)[number]["id"]) {
     const next = toggleLearnCard(look, id);
     setLook(next);
@@ -69,16 +74,16 @@ export function LearningCenter({
     if (!learnCardOn(next, pane) && next.wallOn[0]) setPane(next.wallOn[0] as LearnPane);
   }
   const nav = [
-    { id: "book", label: "Book", Icon: GraduationCap, on: pane === "book", go: () => setPane("book") },
-    { id: "projects", label: "Projects", Icon: FolderKanban, on: pane === "projects", go: () => setPane("projects") },
-    { id: "skills", label: "Skills", Icon: Hammer, on: pane === "skills", go: () => setPane("skills") },
-    { id: "words", label: "Words", Icon: BookOpen, on: pane === "words", go: () => setPane("words") },
-    { id: "guide", label: "Guide", Icon: Landmark, on: pane === "guide", go: () => setPane("guide") },
-  ].filter((t) => learnCardOn(look, t.id as LearnPane));
+    { id: "book", label: t("Book"), Icon: GraduationCap, on: pane === "book", go: () => setPane("book"), lock: true },
+    { id: "projects", label: t("Projects"), Icon: FolderKanban, on: pane === "projects", go: () => setPane("projects"), lock: true },
+    { id: "skills", label: t("Skills"), Icon: Hammer, on: pane === "skills", go: () => setPane("skills"), lock: true },
+    { id: "words", label: t("Words"), Icon: BookOpen, on: pane === "words", go: () => setPane("words") },
+    { id: "guide", label: t("Guide"), Icon: Landmark, on: pane === "guide", go: () => setPane("guide") },
+  ].filter((tab) => learnCardOn(look, tab.id as LearnPane) && (unlocked || !tab.lock));
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <header className="mb-1 hidden shrink-0 sm:mb-2 md:block">
-        <p className="hidden px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-subtle sm:block">Learn · grades and skills, not daily pay</p>
+        <p className="hidden px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-subtle sm:block">{t("Learn · grades and skills, not daily pay")}</p>
         {unlocked ? (
           <div className="mb-1 flex flex-wrap gap-1">
             {LEARN_CARDS.map((c) => (
@@ -88,25 +93,25 @@ export function LearningCenter({
                 onClick={() => flipCard(c.id)}
                 className={cn("tw-tap min-h-8 rounded-full px-3 text-[11px] font-semibold", learnCardOn(look, c.id) ? "bg-fg text-bg" : "bg-elevated text-muted line-through")}
               >
-                {c.label}
+                {t(c.label)}
               </button>
             ))}
           </div>
         ) : null}
         <nav className="flex flex-wrap gap-1" aria-label="Learning">
-          {nav.map((t) => (
+          {nav.map((tab) => (
             <button
-              key={t.id}
+              key={tab.id}
               type="button"
-              title={t.label}
-              onClick={t.go}
+              title={tab.label}
+              onClick={tab.go}
               className={cn(
                 "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-md px-2.5 text-sm font-semibold sm:px-3",
-                t.on ? "bg-accent text-accent-fg" : "bg-surface text-muted hover:bg-elevated hover:text-fg",
+                tab.on ? "bg-accent text-accent-fg" : "bg-surface text-muted hover:bg-elevated hover:text-fg",
               )}
             >
-              <t.Icon className="size-4" strokeWidth={2} aria-hidden />
-              <span className="hidden sm:inline"><Word>{t.label}</Word></span>
+              <tab.Icon className="size-4" strokeWidth={2} aria-hidden />
+              <span className="hidden sm:inline"><Word>{tab.label}</Word></span>
             </button>
           ))}
         </nav>
