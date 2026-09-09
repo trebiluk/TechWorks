@@ -482,14 +482,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "One desk",
     tags: ["web", "mobile", "ipad", "projector", "layout", "dock"],
-    body: "One layout. Bottom dock is Dash · Learn · Crew · Admin on the wall and on a phone. Widescreen lays the same cards in columns; portrait wraps them. No Web/Mobile switch. Google Site embed still hides the dock so the projector stays a wall. Module cards sit on Dash. Unlock a card’s On/Off, or Admin → Modules for the full board.",
+    body: "One layout. Bottom dock is Dash · Learn · Crew · Admin on the wall and on a phone. Widescreen lays the same cards in columns; portrait wraps them. Now and Goals grow into leftover wall; type scales to the plate so the back row can read it. Unlock → Wall: drag a plate by the grip, or use ↑↓. Now and Goals sit side by side when they are neighbors. No Web/Mobile switch. Google Site embed still hides the dock so the projector stays a wall. Module cards sit on Dash. Unlock a card’s On/Off, or Admin → Modules for the full board.",
   },
   {
     id: "themes",
     category: "Start",
     title: "Stylesheets",
     tags: ["theme", "bearcat", "night", "holiday", "contrast"],
-    body: "Admin → Look (PIN). Default is THEME-PURPLE-BLUE: cyan #22D3EE CTA, royal #3B82F6, indigo, violet. Paw orange is Bearcat only. Paper and Projector stay options. Cleanup coral. Due red.",
+    body: "Admin → Theme (PIN). Size: Scale is the whole desk. Fill makes Now, Goals, and Teach eat empty plate. Titles, pad, and corners ride those plates. Default is THEME-PURPLE-BLUE: cyan #22D3EE CTA, royal #3B82F6, indigo, violet. Paw orange is Bearcat only. Paper and Projector stay options. Cleanup coral. Due red.",
   },
   {
     id: "legal",

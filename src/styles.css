@@ -64,7 +64,7 @@ html[data-edit="on"] .edit-field {
 /* Instrument plates — Cash-App contrast, one glow, hard bezel. */
 .tw-gadget {
   position: relative;
-  border-radius: 16px;
+  border-radius: var(--ui-radius, 16px);
   background:
     linear-gradient(180deg, color-mix(in oklab, #fff 8%, transparent), transparent 32%),
     var(--color-surface);
@@ -77,8 +77,8 @@ html[data-edit="on"] .edit-field {
   content: "";
   pointer-events: none;
   position: absolute;
-  inset: 7px;
-  border-radius: 10px;
+  inset: max(4px, calc(var(--ui-pad, 12px) * 0.45));
+  border-radius: var(--radius-sm, 10px);
   opacity: 0.55;
   background:
     linear-gradient(var(--color-accent), var(--color-accent)) top left / 11px 1.5px no-repeat,
@@ -1001,6 +1001,145 @@ html[data-contrast="high"] {
   }
 }
 
+/* Plates eat leftover wall on a widescreen. Portrait stays stacked + compact. */
+.tw-fill-row {
+  flex: 0 0 auto;
+}
+@media (min-width: 900px) {
+  .tw-fill-row {
+    flex: 1 1 0;
+    min-height: 10rem;
+  }
+  .tw-fill-row > [data-dash-pair],
+  .tw-fill-row > .tw-fill,
+  .tw-fill-row > .tw-fill-wide {
+    height: 100%;
+  }
+}
+
+/* Type scales to the plate. Size containers (Now, Teach slots) use height.
+   Wide plates (Goals, Teach hero) use width so content cannot loop-grow. */
+.tw-fill {
+  container-type: size;
+  container-name: plate;
+}
+.tw-fill-wide {
+  container-type: inline-size;
+  container-name: plate;
+}
+.tw-fill-hero {
+  font-size: calc(clamp(1.5rem, 9cqi, 3.75rem) * var(--ui-title, 1));
+  line-height: 0.95;
+}
+.tw-fill-line {
+  font-size: clamp(1rem, 4cqi, 1.85rem);
+  line-height: 1.25;
+}
+.tw-fill-label {
+  font-size: clamp(0.7rem, 2.4cqi, 1.05rem);
+}
+@container plate (min-height: 9rem) {
+  .tw-fill-hero {
+    font-size: calc(
+      (1.5rem * (1 - var(--ui-fill, 1)) + clamp(1.5rem, 13cqh, 4.5rem) * var(--ui-fill, 1))
+      * var(--ui-title, 1)
+    );
+  }
+  .tw-fill-line {
+    font-size: calc(
+      1rem * (1 - var(--ui-fill, 1)) + clamp(1rem, 5.5cqh, 2rem) * var(--ui-fill, 1)
+    );
+  }
+  .tw-fill-label {
+    font-size: calc(
+      0.7rem * (1 - var(--ui-fill, 1)) + clamp(0.7rem, 3cqh, 1.05rem) * var(--ui-fill, 1)
+    );
+  }
+  .tw-fill .tw-ring {
+    width: clamp(3.2rem, 18cqh, 6.25rem);
+    height: clamp(3.2rem, 18cqh, 6.25rem);
+  }
+  .tw-fill .tw-ring > i {
+    width: 70%;
+    height: 70%;
+  }
+  .tw-fill .tw-ring-md {
+    width: clamp(4.2rem, 24cqh, 8rem);
+    height: clamp(4.2rem, 24cqh, 8rem);
+  }
+  .tw-fill .tw-readout {
+    font-size: clamp(0.7rem, 4.5cqh, 1.35rem);
+  }
+}
+[data-teach-slots] .tw-fill {
+  overflow: hidden;
+}
+[data-mod-grid] > .tw-gadget {
+  container-type: inline-size;
+}
+[data-mod-grid] .font-display {
+  font-size: clamp(0.8rem, 6.2cqi, 1.35rem);
+}
+html[data-look] [data-dash-pair] > .tw-gadget,
+html[data-look] [data-teach-hero] {
+  padding: var(--ui-pad, 0.75rem);
+}
+
+/* Wall arrange: grip on plates, pointer only (no HTML5 drag). */
+.tw-sort-item {
+  position: relative;
+}
+.tw-sort-grip {
+  position: absolute;
+  top: 0.35rem;
+  left: 0.35rem;
+  z-index: 4;
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--color-muted);
+  background: color-mix(in oklab, var(--color-elevated) 88%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 14%, transparent);
+  touch-action: none;
+  cursor: grab;
+}
+.tw-sort-grip:active {
+  cursor: grabbing;
+}
+.tw-sort-grip svg {
+  pointer-events: none;
+}
+.tw-sort-grab {
+  opacity: 0.55;
+  pointer-events: none;
+}
+.tw-sort-grab .tw-sort-grip {
+  pointer-events: auto;
+}
+.tw-sort-over {
+  box-shadow: 0 0 0 2px var(--color-accent);
+  border-radius: var(--ui-radius, 16px);
+}
+[data-wall-edit="on"] .tw-sort-item {
+  outline: 1px dashed color-mix(in oklab, var(--color-accent) 40%, transparent);
+  outline-offset: 1px;
+  border-radius: var(--ui-radius, 16px);
+  user-select: none;
+}
+@media (min-width: 900px) {
+  [data-wall-edit="on"] .tw-fill-row {
+    flex: 0 0 auto;
+    min-height: 0;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tw-sort-item {
+    transition: opacity 160ms ease, box-shadow 160ms ease;
+  }
+}
+
 [data-teach-hero] {
   display: grid;
   gap: 0.75rem;
@@ -1207,6 +1346,7 @@ html[data-look] .bg-surface {
     0 calc(22px * var(--ui-shadow, 0.7)) calc(44px * var(--ui-shadow, 0.7)) calc(-28px * var(--ui-shadow, 0.7)) rgb(0 0 0 / calc(0.7 * var(--ui-shadow, 0.7)));
 }
 html[data-look] .min-h-11 { min-height: var(--ui-chip, 2.75rem); }
+html[data-look] .tw-gadget { border-radius: var(--ui-radius, 16px); }
 html[data-look] .font-display.text-6xl { font-size: calc(3.75rem * var(--ui-title, 1)); }
 html[data-look] .font-display.text-5xl { font-size: calc(3rem * var(--ui-title, 1)); }
 html[data-look] .font-display.text-4xl { font-size: calc(2.25rem * var(--ui-title, 1)); }

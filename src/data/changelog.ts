@@ -6,6 +6,14 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.90.7 — 2026-09-09
+
+- Unlock → Wall: drag plates by the grip (Now, Goals, Schedule, Modules, School, Tools). Now and Goals stay two cards; they sit side by side when they are neighbors. SchoolTool, club, specials, and the live poll stay pinned. ↑↓ still works. Admin → Theme → Size Fill is from 1.90.6.
+
+## 1.90.6 — 2026-09-09
+
+- Wall plates fill: Now / Goals grow into leftover widescreen. Type and rings scale to the plate so the back row can read it. Teach slots do the same. Admin → Theme → Size: new Fill slider. Scale / Titles / Pad / Corners now actually drive the plates.
+
 ## 1.90.5 — 2026-09-09
 
 - Polish: Now matches the class card on the wall. Columns start at 900px. Module On/Off is a chip. Teach slots fill the remaining board. SchoolTool and club share one strip. Cloud chip stays quiet.

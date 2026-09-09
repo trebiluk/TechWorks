@@ -1,4 +1,7 @@
-const KEY = "techworks-dash-layout-v7";
+import { moveId } from "./sort.ts";
+
+const KEY = "techworks-dash-layout-v8";
+const V7 = "techworks-dash-layout-v7";
 const LEGACY = [
   "techworks-dash-layout-v6",
   "techworks-dash-layout-v5",
@@ -96,6 +99,8 @@ export function loadDashLayout(): DashLayout {
   try {
     const cur = window.localStorage.getItem(KEY);
     if (cur) return normalize(JSON.parse(cur) as Partial<DashLayout>, true);
+    const v7 = window.localStorage.getItem(V7);
+    if (v7) return normalize(JSON.parse(v7) as Partial<DashLayout>, true);
     for (const k of LEGACY) {
       const raw = window.localStorage.getItem(k);
       if (!raw) continue;
@@ -126,6 +131,31 @@ export function moveDashRow(layout: DashLayout, id: string, dir: -1 | 1): DashLa
   const [row] = order.splice(i, 1);
   order.splice(j, 0, row);
   return { ...layout, order };
+}
+
+export function moveDashTo(layout: DashLayout, id: string, onto: string): DashLayout {
+  const grab = asId(id);
+  const dest = asId(onto);
+  if (!grab || !dest) return layout;
+  const order = moveId(layout.order, grab, dest);
+  if (order === layout.order) return layout;
+  return { ...layout, order };
+}
+
+/** Adjacent Now + Goals share one widescreen row. Either order. */
+export function pairMate(layout: DashLayout, id: string): "first" | "second" | null {
+  const row = asId(id);
+  if (!row || row === "notes" || layout.hidden.includes(row)) return null;
+  const vis = layout.order.filter((x) => x !== "notes" && !layout.hidden.includes(x));
+  const i = vis.indexOf(row);
+  if (i < 0) return null;
+  const prev = vis[i - 1];
+  const next = vis[i + 1];
+  const duo = (a?: DashRowId, b?: DashRowId) =>
+    Boolean(a && b && ((a === "now" && b === "class") || (a === "class" && b === "now")));
+  if (duo(row, next)) return "first";
+  if (duo(prev, row)) return "second";
+  return null;
 }
 
 export function hideDashRow(layout: DashLayout, id: string, on: boolean): DashLayout {

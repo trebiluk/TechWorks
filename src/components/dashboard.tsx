@@ -1,4 +1,4 @@
-import { memo, startTransition, useMemo, useState, type ReactNode } from "react";
+import { memo, startTransition, useMemo, useState } from "react";
 import { ClipboardList } from "lucide-react";
 import type { Bell, EconomyFile, ScoredStudent } from "@/lib/economy";
 import { isLiveStudent, periodTitle, shopBells } from "@/lib/economy";
@@ -23,7 +23,8 @@ import { ClubPulse } from "@/components/club-pulse";
 import { featureOn, setFeature, type FeatureId } from "@/lib/features";
 import { bertyPose, showBerty } from "@/lib/berty";
 import { procedureStep } from "@/lib/procedure";
-import { hideDashRow, loadDashLayout, moveDashRow, patchDash, rowOn, saveDashLayout, DASH_ROWS, DEFAULT_LAYOUT, type DashLayout } from "@/lib/dash-layout";
+import { hideDashRow, loadDashLayout, moveDashRow, moveDashTo, pairMate, patchDash, rowOn, saveDashLayout, DASH_ROWS, DEFAULT_LAYOUT, type DashLayout } from "@/lib/dash-layout";
+import { SortableItem, SortableList } from "@/components/sortable";
 import { useShopClock } from "@/lib/use-clock";
 import { ProcedureCue } from "@/components/procedure-cue";
 import { DashTools, ToolsToggle } from "@/components/dash-tools";
@@ -44,6 +45,7 @@ function useDashLayout() {
   return {
     layout,
     move: (id: string, dir: -1 | 1) => commit(moveDashRow(layout, id, dir)),
+    moveTo: (id: string, onto: string) => commit(moveDashTo(layout, id, onto)),
     setOn: (id: string, on: boolean) => commit(hideDashRow(layout, id, on)),
     setSchoolN: (n: 5 | 10) => commit(patchDash(layout, { schoolN: n })),
     setFlag: (key: keyof DashLayout, value: boolean | 5 | 10) => commit(patchDash(layout, { [key]: value } as Partial<DashLayout>)),
@@ -185,7 +187,7 @@ export const Dashboard = memo(function Dashboard({
   }
 
   const nowCard = (
-    <article className={cn("tw-gadget tw-hud flex min-h-[10rem] flex-col p-3 text-fg", clock?.live ? "justify-center" : "", clock?.cleanup ? "bg-cleanup text-accent-fg" : "", clock?.live && !clock.cleanup ? "tw-live" : "")}>
+    <article className={cn("tw-gadget tw-hud tw-fill flex min-h-[10rem] flex-col p-3 text-fg", clock?.live ? "justify-center" : "", clock?.cleanup ? "bg-cleanup text-accent-fg" : "", clock?.live && !clock.cleanup ? "tw-live" : "")}>
       <div className="flex items-center gap-3">
         {clock?.live ? (
           <ProgressRing
@@ -198,15 +200,15 @@ export const Dashboard = memo(function Dashboard({
           />
         ) : null}
         <div className="min-w-0 flex-1">
-          <p className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-muted">
+          <p className="tw-fill-label flex flex-wrap items-center gap-2 font-semibold uppercase tracking-wider text-muted">
             <span className={cn("tw-dot", clock?.live ? "tw-dot-on" : "", clock?.cleanup ? "tw-dot-warn" : "")} />
             {clock?.live ? (clock.cleanup ? "Cleanup" : "Now") : nxt ? "Next" : "Workshop"}
             <VisitChip state={visitOn(file, today, live ?? nxt?.period ?? shown)} />
           </p>
-          <p className="mt-0.5 font-display text-2xl font-semibold leading-none tracking-tight">
+          <p className="tw-fill-hero mt-0.5 font-display font-semibold tracking-tight">
             {clock?.live ? `P${live}` : nxt ? `P${nxt.period}` : "Done"}
           </p>
-          <p className="mt-1 truncate text-sm text-muted">
+          <p className="tw-fill-line mt-1 truncate text-muted">
             {clock?.live
               ? `${periodTitle(live!, bells)} · ${formatBell(clock.start)}–${formatBell(clock.end)}`
               : nxt
@@ -225,7 +227,7 @@ export const Dashboard = memo(function Dashboard({
   );
 
   const classCard = (
-    <article className="tw-gadget tw-hud flex min-h-[10rem] flex-col p-3">
+    <article className="tw-gadget tw-hud tw-fill-wide flex min-h-[10rem] flex-col p-3">
       {viewMine ? (
         <GoalsCard
           file={file}
@@ -364,57 +366,60 @@ export const Dashboard = memo(function Dashboard({
       <SpecialBanner file={file} date={today} now={now} />
       {showProc ? <ProcedureCue step={step} passing={passing} /> : null}
       <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-auto">
-        {layout.order.map((id, i) => {
-          if (id === "notes") return null;
-          if (!dash.on(id)) return null;
-          const nextId = layout.order[i + 1];
-          const pair =
-            (id === "now" && nextId === "class" && dash.on("class")) ||
-            (id === "class" && nextId === "now" && dash.on("now"));
-          if (pair && nextId && layout.order[i - 1] !== id && i > 0 && layout.order[i - 1] === (id === "now" ? "class" : "now")) return null;
-          if (pair && id === "class") return null;
-          return (
-            <WallSlot key={pair ? "now-class" : id} id={id}>
-              {pair ? (
-                <section data-dash-pair className={cn(clock?.cleanup ? "rounded-xl ring-2 ring-cleanup" : "")}>
-                  {nowCard}
-                  {classCard}
-                </section>
-              ) : id === "now" ? (
-                nowCard
-              ) : id === "class" ? (
-                classCard
-              ) : id === "strip" ? (
-                stripCard
-              ) : id === "mods" ? (
-                <FeatureCards
-                  file={file}
-                  unlocked={unlocked}
-                  period={shown}
-                  onOpen={onOpenMod}
-                  onToggle={
-                    unlocked && onChange
-                      ? (id: FeatureId, on: boolean) => onChange(setFeature(file, id, on))
-                      : undefined
-                  }
-                />
-              ) : id === "tools" ? (
-                <DashTools file={file} period={shown} />
-              ) : id === "kpis" ? (
-                kpisCard
-              ) : null}
-            </WallSlot>
-          );
-        })}
+        <SortableList
+          enabled={unlocked && layout.layoutOpen}
+          className="flex min-h-0 flex-1 flex-col gap-1.5"
+          onMove={(grab, onto) => dash.moveTo(grab, onto)}
+        >
+          {layout.order.map((id) => {
+            if (id === "notes") return null;
+            if (!dash.on(id)) return null;
+            const sortOn = unlocked && layout.layoutOpen;
+            const mate = sortOn ? null : pairMate(layout, id);
+            if (mate === "second") return null;
+            const paired = mate === "first";
+            const fill = paired || id === "now" || id === "class";
+            const body = paired ? (
+              <section data-dash-pair className={cn(clock?.cleanup ? "rounded-xl ring-2 ring-cleanup" : "")}>
+                {nowCard}
+                {classCard}
+              </section>
+            ) : id === "now" ? (
+              nowCard
+            ) : id === "class" ? (
+              classCard
+            ) : id === "strip" ? (
+              stripCard
+            ) : id === "mods" ? (
+              <FeatureCards
+                file={file}
+                unlocked={unlocked}
+                period={shown}
+                onOpen={onOpenMod}
+                onToggle={
+                  unlocked && onChange
+                    ? (fid: FeatureId, on: boolean) => onChange(setFeature(file, fid, on))
+                    : undefined
+                }
+              />
+            ) : id === "tools" ? (
+              <DashTools file={file} period={shown} />
+            ) : id === "kpis" ? (
+              kpisCard
+            ) : null;
+            const row = DASH_ROWS.find((r) => r.id === id);
+            return (
+              <SortableItem key={paired ? "now-class" : id} id={id} label={row?.label} className={fill ? "tw-fill-row" : "shrink-0"}>
+                {body}
+              </SortableItem>
+            );
+          })}
+        </SortableList>
         <PollWall file={file} period={shown} />
       </div>
     </div>
   );
 });
-
-function WallSlot({ children }: { id: string; children: ReactNode }) {
-  return <section className="shrink-0">{children}</section>;
-}
 
 function LayoutBar({
   dash,
@@ -442,8 +447,9 @@ function LayoutBar({
           Rank {rankBoard === "skill" ? "XP" : "$"}
         </button>
       </div>
+      {open ? <p className="mt-1 text-xs text-muted">Drag a plate by the grip. Now and Goals sit side by side when they are neighbors.</p> : null}
       {open ? (
-        <ul className="mt-1 grid gap-1 rounded-xl bg-elevated p-2 sm:grid-cols-2">
+        <ul className="mt-1 grid max-h-32 gap-1 overflow-y-auto rounded-xl bg-elevated p-2 sm:grid-cols-2">
           {DASH_ROWS.map((row) => {
             const on = dash.on(row.id);
             const i = layout.order.indexOf(row.id);
@@ -535,13 +541,13 @@ function GoalsCard({
       <div className="min-w-0">
         <div className="flex items-start gap-2">
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gold">
+            <p className="tw-fill-label font-bold uppercase tracking-[0.18em] text-gold">
               P{shown}
               {stage ? <span className="text-muted"> · {stage}</span> : null}
               {slot ? <span className="text-subtle"> · {Math.max(1, slot.mins)}m</span> : null}
             </p>
             <button type="button" onClick={onTeach} className="block w-full text-left" disabled={!onTeach}>
-              <p className="font-display text-2xl font-semibold leading-none tracking-tight lg:text-3xl">{project}</p>
+              <p className="tw-fill-hero font-display font-semibold tracking-tight">{project}</p>
             </button>
             {agenda.project?.prompt ? <p className="mt-1 text-sm text-gold">{agenda.project.prompt}</p> : null}
             {agenda.project?.stem?.length ? (
@@ -549,7 +555,7 @@ function GoalsCard({
                 {agenda.project.stem.map((L) => STEM_LABEL[L]).join(" · ")}
               </p>
             ) : null}
-            <p className="mt-2 text-lg">{nowLine}</p>
+            <p className="tw-fill-line mt-2">{nowLine}</p>
             {day.notes && day.notes !== nowLine && day.notes !== obj ? (
               <p className="mt-0.5 text-sm text-muted">{day.notes}</p>
             ) : null}

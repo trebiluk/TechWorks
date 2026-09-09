@@ -6,6 +6,7 @@ export type FinishId = "plate" | "steel" | "cast" | "paper" | "felt";
 export type Look = {
   scale: number;
   titles: number;
+  fill: number;
   chips: number;
   corners: number;
   stroke: number;
@@ -37,6 +38,7 @@ export const FINISHES: {
 export const SOLVAY_LOOK: Look = {
   scale: 16,
   titles: 100,
+  fill: 100,
   chips: 44,
   corners: 12,
   stroke: 1,
@@ -48,8 +50,9 @@ export const SOLVAY_LOOK: Look = {
 };
 
 export const LOOK_FIELDS: { key: Exclude<keyof Look, "caps" | "finish">; label: string; min: number; max: number; step: number; hint: string }[] = [
-  { key: "scale", label: "Scale", min: 13, max: 20, step: 1, hint: "Whole wall" },
-  { key: "titles", label: "Titles", min: 80, max: 140, step: 5, hint: "% display" },
+  { key: "scale", label: "Scale", min: 13, max: 22, step: 1, hint: "Whole desk" },
+  { key: "titles", label: "Titles", min: 80, max: 160, step: 5, hint: "% display" },
+  { key: "fill", label: "Fill", min: 0, max: 100, step: 5, hint: "plates eat empty space" },
   { key: "chips", label: "Chips", min: 36, max: 56, step: 2, hint: "px tap" },
   { key: "corners", label: "Corners", min: 0, max: 28, step: 1, hint: "px" },
   { key: "stroke", label: "Stroke", min: 0, max: 4, step: 1, hint: "px line" },
@@ -73,9 +76,11 @@ export function lookVars(look: Look): Record<string, string> {
   const r = look.corners;
   const lift = look.lift / 100;
   const glow = look.wallpaper / 100;
+  const fill = Math.max(0, Math.min(100, look.fill ?? 100)) / 100;
   return {
     "--ui-base": `${look.scale}px`,
     "--ui-title": String(look.titles / 100),
+    "--ui-fill": String(fill),
     "--ui-chip": `${look.chips}px`,
     "--ui-radius": `${r}px`,
     "--ui-line": `${look.stroke}px`,
@@ -96,6 +101,7 @@ export function paintLook(look: Look | null) {
   const keys = [
     "--ui-base",
     "--ui-title",
+    "--ui-fill",
     "--ui-chip",
     "--ui-radius",
     "--ui-line",
@@ -118,7 +124,7 @@ export function paintLook(look: Look | null) {
   root.setAttribute("data-look", "on");
   root.setAttribute("data-caps", look.caps || "off");
   root.setAttribute("data-finish", look.finish || "plate");
-  const vars = lookVars(look);
+  const vars = lookVars({ ...SOLVAY_LOOK, ...look });
   for (const [k, v] of Object.entries(vars)) root.style.setProperty(k, v);
 }
 
@@ -126,9 +132,9 @@ export function commitLook(look: Look | null) {
   paintLook(look);
   if (typeof window === "undefined") return;
   if (!look) window.localStorage.removeItem(LOOK_KEY);
-  else window.localStorage.setItem(LOOK_KEY, JSON.stringify(look));
+  else window.localStorage.setItem(LOOK_KEY, JSON.stringify({ ...SOLVAY_LOOK, ...look }));
 }
 
 export function lookStyle(look: Look): CSSProperties {
-  return lookVars(look) as CSSProperties;
+  return lookVars({ ...SOLVAY_LOOK, ...look }) as CSSProperties;
 }

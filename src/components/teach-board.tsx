@@ -147,7 +147,7 @@ export function TeachBoard({
         </section>
       ) : null}
 
-      <section data-teach-hero className="tw-gadget shrink-0 p-3">
+      <section data-teach-hero className="tw-gadget tw-fill-wide shrink-0 p-3">
         <div className="min-w-0">
           {cleanup ? (
             <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-cleanup">
@@ -159,8 +159,8 @@ export function TeachBoard({
               <span className="ml-2 text-muted">P{period}</span>
             </p>
           )}
-          <h1 className="font-display text-3xl font-semibold leading-[0.95] tracking-tight lg:text-4xl">{title}</h1>
-          <p className="mt-2 max-w-3xl text-lg text-muted lg:text-xl">{line}</p>
+          <h1 className="tw-fill-hero font-display font-semibold tracking-tight">{title}</h1>
+          <p className="tw-fill-line mt-2 max-w-3xl text-muted">{line}</p>
           {!cleanup ? (
             <label className="mt-3 flex flex-wrap items-center gap-2 text-base font-semibold">
               Objective
@@ -202,15 +202,15 @@ export function TeachBoard({
                 type="button"
                 onClick={() => edit(setTeachPin(file, today, period, day.pin === s.id ? undefined : s.id))}
                 className={cn(
-                  "tw-tap flex h-full min-h-24 w-full flex-col justify-center rounded-xl px-3 py-4 text-left",
+                  "tw-fill tw-tap flex h-full min-h-24 w-full flex-col justify-center rounded-xl px-3 py-4 text-left",
                   on ? (s.clean ? "bg-cleanup text-accent-fg" : "bg-accent text-accent-fg") : "bg-elevated",
                 )}
               >
-                <p className="text-[10px] font-bold uppercase tracking-wider opacity-80">
+                <p className="tw-fill-label font-bold uppercase tracking-wider opacity-80">
                   {minClock(s.startMin)} · {s.mins}m
                 </p>
-                <p className="font-display text-xl font-semibold lg:text-2xl">{s.title}</p>
-                <p className="text-sm opacity-80">{s.line}</p>
+                <p className="tw-fill-hero font-display font-semibold">{s.title}</p>
+                <p className="tw-fill-line opacity-80">{s.line}</p>
               </button>
             </li>
           );

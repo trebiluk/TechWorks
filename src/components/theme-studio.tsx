@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { PALETTE_FIELDS, TEXT_FIELDS, paletteStyle, type Palette } from "@/lib/palette";
 import { FONT_PACKS, type FontId } from "@/lib/fonts";
 import { FINISHES, LOOK_FIELDS, lookStyle, type CapsMode, type FinishId, type Look } from "@/lib/look";
-import { TwWordmark } from "@/components/tw-mark";
 import { commitLang, LANGS, storedLang, type LangId } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n-hook";
 import { cn } from "@/lib/utils";
@@ -121,6 +120,7 @@ export function ThemeStudio({
 
           {tab === "size" ? (
             <div className="mt-3 grid gap-2">
+              <p className="text-xs text-muted">Scale is the whole desk. Fill makes Now, Goals, and Teach eat empty plate so the back row can read it. Pad and corners ride the plates.</p>
               {LOOK_FIELDS.map((f) => (
                 <label key={f.key} className="rounded-md bg-elevated px-3 py-2">
                   <span className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider">
@@ -295,12 +295,13 @@ function ToggleRow({ on, label, onClick }: { on: boolean; label: string; onClick
 
 function DashPreview() {
   return (
-    <article className="rounded-xl bg-surface p-3">
-      <p className="text-[10px] font-semibold uppercase tracking-widest text-subtle">Dash</p>
+    <article className="tw-gadget tw-hud tw-fill flex h-56 flex-col justify-center p-3">
+      <p className="tw-fill-label font-semibold uppercase tracking-widest text-subtle">Dash</p>
       <div className="mt-2 flex items-end justify-between gap-2">
-        <TwWordmark />
-        <span className="rounded-md bg-cleanup px-2 py-1 font-mono text-xs font-semibold text-accent-fg">CLEANUP 4:12</span>
+        <p className="tw-fill-hero font-display font-semibold tracking-tight">P8</p>
+        <span className="rounded-md bg-cleanup px-2 py-1 font-mono text-xs font-semibold text-accent-fg">CLEANUP</span>
       </div>
+      <p className="tw-fill-line mt-1 text-muted">CO2 DRAGSTER</p>
       <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-elevated">
         <div className="h-full w-4/5 rounded-full bg-accent" />
       </div>
