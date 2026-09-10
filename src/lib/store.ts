@@ -368,6 +368,28 @@ export function setSchooltoolDone(file: EconomyFile, date: string, period: numbe
   return next;
 }
 
+export function periodVerified(file: EconomyFile, date: string, period: number): boolean {
+  return Boolean(file.meta.dayLog?.[date]?.verify?.[String(period)]);
+}
+
+export function setPeriodVerified(file: EconomyFile, date: string, period: number, on: boolean): EconomyFile {
+  const next = clone(file);
+  ensureDay(next, date).verify![String(period)] = on;
+  return next;
+}
+
+export function dayCardsOn(file: EconomyFile, date: string): { title: string; body: string }[] {
+  const cards = file.meta.dayLog?.[date]?.cards;
+  if (cards?.some((c) => c.title.trim())) return [cards[0] ?? { title: "", body: "" }, cards[1] ?? { title: "", body: "" }];
+  return boardCardsOf(file);
+}
+
+export function setDayCards(file: EconomyFile, date: string, cards: { title: string; body: string }[]): EconomyFile {
+  const next = clone(file);
+  ensureDay(next, date).cards = cards.slice(0, 2).map((c) => ({ title: c.title.slice(0, 48), body: c.body.slice(0, 160) }));
+  return next;
+}
+
 export function attendOn(s: EconomyFile["students"][number], date: string): string {
   return s.attend?.[date] ?? "";
 }
@@ -572,6 +594,8 @@ function ensureDay(file: EconomyFile, date: string) {
     crewPhase: { ...(prev?.crewPhase ?? {}) },
     goalPhase: { ...(prev?.goalPhase ?? {}) },
     specials: [...(prev?.specials ?? [])],
+    cards: [...(prev?.cards ?? [])],
+    verify: { ...(prev?.verify ?? {}) },
   };
   file.meta.dayLog = { ...(file.meta.dayLog ?? {}), [date]: day };
   return day;

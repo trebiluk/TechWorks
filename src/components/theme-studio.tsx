@@ -321,44 +321,25 @@ function DashPreview() {
   return (
     <>
       <article className="tw-gadget tw-hud tw-fill flex h-56 flex-col justify-center p-3">
-        <p className="tw-fill-label font-semibold uppercase tracking-widest text-subtle">Dash</p>
+        <p className="tw-fill-label font-semibold uppercase tracking-widest text-subtle">Now</p>
         <div className="mt-2 flex items-end justify-between gap-2">
-          <p className="tw-fill-hero font-display font-semibold tracking-tight">P8</p>
-          <span className="rounded-md bg-cleanup px-2 py-1 font-mono text-xs font-semibold text-accent-fg">CLEANUP</span>
+          <p className="tw-fill-hero font-display font-semibold tracking-tight">P1</p>
+          <span className="rounded-md bg-accent px-2 py-1 font-mono text-xs font-semibold text-accent-fg">LIVE</span>
         </div>
-        <p className="tw-fill-line mt-1 text-muted">CO2 DRAGSTER</p>
-        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-elevated">
-          <div className="h-full w-4/5 rounded-full bg-accent" />
-        </div>
-        <ol className="mt-3 space-y-1">
-          {["Wren · P1", "Arlo · P8", "Kai · P3"].map((n, i) => (
-            <li key={n} className="flex items-center justify-between rounded-md bg-elevated px-2 py-1 text-xs">
-              <span>
-                {i + 1} {n}
-              </span>
-              <span className="text-gold">XP {90 - i * 8}</span>
-            </li>
-          ))}
-        </ol>
+        <p className="tw-fill-line mt-1 text-muted">Grade 6 · 7:55a</p>
       </article>
-      <article data-proc-cue className="tw-gadget tw-hud tw-fill-wide p-3">
-        <p className="tw-fill-label font-semibold uppercase tracking-wider text-accent">Do this now</p>
-        <ol data-proc-steps="4" className="mt-2">
-          {[
-            { n: 1, title: "ENTER", on: true, line: "Sit with your crew." },
-            { n: 2, title: "LISTEN", on: false },
-            { n: 3, title: "CREW WORK", on: false },
-            { n: 4, title: "CLEAN UP", on: false },
-          ].map((s) => (
-            <li key={s.n} className={cn("flex min-h-8 items-baseline gap-2", s.on ? "tw-proc-on font-semibold text-fg" : "text-muted")}>
-              <span className={cn("tw-proc-n font-mono", s.on ? "text-accent" : "")}>{s.n}</span>
-              <span className="min-w-0">
-                <span className={s.on ? "tw-proc-title" : "tw-proc-name"}>{s.title}</span>
-                {s.line ? <span className="tw-proc-line mt-0.5 block font-normal text-muted">{s.line}</span> : null}
-              </span>
-            </li>
-          ))}
-        </ol>
+      <article data-job-plate className="tw-gadget tw-hud tw-fill-wide flex h-56 flex-col p-3">
+        <p className="tw-fill-label font-bold uppercase tracking-[0.18em] text-gold">P1 · G6 · Modeling</p>
+        <p className="tw-fill-ask mt-1 font-display font-semibold tracking-tight text-gold">How can a small force move a bigger load?</p>
+        <p className="tw-fill-line mt-1 text-muted">Materials, force, speed, and what the test showed.</p>
+        <dl className="tw-job-rows">
+          <dt className="tw-job-k text-muted">Rules</dt>
+          <dd className="tw-job-v">One tool at a time. Goggles on.</dd>
+          <dt className="tw-job-k text-muted">Today</dt>
+          <dd className="tw-job-v">Build a model that lifts or moves a load.</dd>
+          <dt className="tw-job-k text-gold">Look-for</dt>
+          <dd className="tw-job-v font-semibold text-gold">3 = working the model, not the phone.</dd>
+        </dl>
       </article>
     </>
   );

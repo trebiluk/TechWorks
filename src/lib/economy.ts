@@ -168,13 +168,25 @@ export type EconomyFile = {
         grades: number[];
         skills: string[];
         stages: { cycle: number; slot: "D1" | "D2" | "D3" | "D4"; goal: string; skillId: string; activityId?: string }[];
-        activities?: { id: string; name: string; skillId: string; goal: string }[];
+        activities?: {
+          id: string;
+          name: string;
+          skillId: string;
+          goal: string;
+          expect?: 1 | 2 | 3 | 4;
+          today?: string;
+          done?: string;
+          lookFor?: string;
+        }[];
         start?: string;
         end?: string;
         constraints?: string[];
         cycleStart?: number;
         cycleLen?: number;
         pathVer?: number;
+        prompt?: string;
+        stem?: ("S" | "T" | "E" | "M")[];
+        stemLine?: string;
       }[];
       modules?: Record<string, boolean>;
       lucky?: {
@@ -271,9 +283,12 @@ export type EconomyFile = {
         visits?: Record<string, string>;
         crewPhase?: Record<string, string>;
         goalPhase?: Record<string, string>;
+        ppe?: Record<string, boolean>;
         bell?: string;
         special?: { title: string; who?: string; place?: string; start?: string; end?: string; period?: number };
         specials?: { title: string; who?: string; place?: string; start?: string; end?: string; period?: number }[];
+        cards?: { title: string; body: string }[];
+        verify?: Record<string, boolean>;
       }
     >;
   };

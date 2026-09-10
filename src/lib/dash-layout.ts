@@ -1,6 +1,7 @@
 import { moveId } from "./sort.ts";
 
-const KEY = "techworks-dash-layout-v10";
+const KEY = "techworks-dash-layout-v11";
+const V10 = "techworks-dash-layout-v10";
 const V9 = "techworks-dash-layout-v9";
 const V8 = "techworks-dash-layout-v8";
 const V7 = "techworks-dash-layout-v7";
@@ -49,7 +50,7 @@ const IDS = DASH_ROWS.map((r) => r.id);
 
 export const DEFAULT_LAYOUT: DashLayout = {
   order: [...IDS],
-  hidden: ["tools", "proc"],
+  hidden: ["tools", "proc", "mods"],
   schoolN: 10,
   liveProc: false,
   nowGoal: true,
@@ -144,6 +145,11 @@ export function loadDashLayout(): DashLayout {
   try {
     const cur = window.localStorage.getItem(KEY);
     if (cur) return normalize(JSON.parse(cur) as Partial<DashLayout>, true);
+    const v10 = window.localStorage.getItem(V10);
+    if (v10) {
+      const n = normalize(JSON.parse(v10) as Partial<DashLayout>, true);
+      return n.hidden.includes("mods") ? n : { ...n, hidden: [...n.hidden, "mods"] };
+    }
     const v9 = window.localStorage.getItem(V9);
     if (v9) {
       const n = normalize(JSON.parse(v9) as Partial<DashLayout>, true);

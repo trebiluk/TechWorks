@@ -16,6 +16,8 @@ import {
   type CloudStatus,
 } from "@/lib/desk-cloud";
 import type { EconomyFile } from "@/lib/economy";
+import { Cloud, Copy, Eye, EyeOff, KeyRound } from "lucide-react";
+import { CtrlHud } from "@/components/ctrl";
 import { cn } from "@/lib/utils";
 
 const LINE: Record<CloudStatus, string> = {
@@ -94,7 +96,8 @@ export function CloudBoard({
         <p className="mt-1 font-mono text-xl font-bold tracking-[0.2em]">{key ? (hide ? "••••-••••" : formatDeskKey(key)) : "—"}</p>
         <p className="mt-2 text-sm text-muted">Same key on every shop PC. Not a student PIN. Names in the cloud are locked with this key.</p>
         <div className="mt-3 flex flex-wrap gap-1">
-          <button type="button" onClick={() => setHide((v) => !v)} className="tw-tap min-h-11 rounded-md bg-bg px-3 text-sm font-semibold">
+          <button type="button" onClick={() => setHide((v) => !v)} className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-bg px-3 text-sm font-semibold">
+            {hide ? <Eye className="size-4" aria-hidden /> : <EyeOff className="size-4" aria-hidden />}
             {hide ? "Show" : "Hide"}
           </button>
           <button
@@ -104,8 +107,9 @@ export function CloudBoard({
               void navigator.clipboard?.writeText(formatDeskKey(key));
               setMsg("Key copied.");
             }}
-            className="tw-tap min-h-11 rounded-md bg-bg px-3 text-sm font-semibold"
+            className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-bg px-3 text-sm font-semibold"
           >
+            <Copy className="size-4" aria-hidden />
             Copy
           </button>
           <button
@@ -117,8 +121,9 @@ export function CloudBoard({
               setHide(false);
               setMsg("New key on this PC. Push to make it the room key.");
             }}
-            className="tw-tap min-h-11 rounded-md bg-bg px-3 text-sm font-semibold"
+            className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-bg px-3 text-sm font-semibold"
           >
+            <KeyRound className="size-4" aria-hidden />
             New key
           </button>
         </div>
@@ -179,19 +184,13 @@ export function CloudChip({ onOpen }: { onOpen?: () => void }) {
   }, []);
   const label =
     st === "saving" ? "Saving…" : st === "this-pc" ? "This PC" : st === "need-key" ? "Key" : "Cloud";
-  const short = st === "this-pc" ? "PC" : st === "need-key" ? "Key" : st === "saving" ? "…" : "Cloud";
   return (
-    <button
-      type="button"
+    <CtrlHud
+      mark={Cloud}
+      title={`${label} · ${LINE[st]}`}
+      on={st === "saved" || st === "saving"}
       onClick={onOpen}
-      title={LINE[st]}
-      className={cn(
-        "tw-tap inline-flex min-h-10 items-center rounded-full px-2 font-mono text-[11px] font-bold uppercase tracking-wide sm:px-3",
-        st === "saved" || st === "saving" ? "bg-accent/20 text-accent" : "bg-elevated text-muted",
-      )}
-    >
-      <span className="sm:hidden">{short}</span>
-      <span className="hidden sm:inline">{label}</span>
-    </button>
+      className={st === "need-key" || st === "error" ? "bg-cleanup text-accent-fg" : undefined}
+    />
   );
 }

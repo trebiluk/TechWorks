@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dices, Timer } from "lucide-react";
+import { Dices, Glasses, Timer } from "lucide-react";
 import { markOf } from "@/lib/nav-marks";
 import type { EconomyFile } from "@/lib/economy";
 import { isLiveStudent } from "@/lib/economy";
@@ -7,6 +7,8 @@ import { abOn, onAbRoster } from "@/lib/store";
 import { todayIso } from "@/lib/calendar";
 import { crewsOf } from "@/lib/crews";
 import { featureOn } from "@/lib/features";
+import { jobCardOf } from "@/lib/projects";
+import { toolsOpen } from "@/lib/ppe";
 import { TouchTimer } from "@/components/touch-timer";
 import { cn } from "@/lib/utils";
 
@@ -32,6 +34,19 @@ export function DashTools({ file, period }: { file: EconomyFile; period: number 
   const timerOn = featureOn(file, "timer");
   const pickOn = featureOn(file, "picker");
   if (!timerOn && !pickOn && !featureOn(file, "ambient")) return null;
+
+  const job = jobCardOf(file, period);
+  if (!toolsOpen(file, job.rules, period, today)) {
+    return (
+      <section className="tw-gadget tw-hud flex min-h-[5rem] items-center gap-3 p-3">
+        <Glasses className="size-8 text-cleanup" aria-hidden />
+        <div>
+          <p className="font-display text-xl font-semibold">Goggles first.</p>
+          <p className="text-sm text-muted">Then tools.</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="tw-gadget tw-hud grid min-h-0 gap-2 p-3 sm:grid-cols-3">

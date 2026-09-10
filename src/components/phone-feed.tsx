@@ -10,7 +10,8 @@ import { cycleDayLabel, daySlot, isSchoolDay, quarterNow, todayIso } from "@/lib
 import { currentCycleOf } from "@/lib/roles";
 import { crewsOf } from "@/lib/crews";
 import { applySort, byCombo } from "@/lib/rank";
-import { agendaFor, prettyStage, skillName } from "@/lib/projects";
+import { jobCardOf } from "@/lib/projects";
+import { JobCard } from "@/components/job-card";
 import { useShopClock } from "@/lib/use-clock";
 import { cn } from "@/lib/utils";
 import { ProgressRing } from "@/components/progress-ring";
@@ -70,16 +71,13 @@ export const PhoneFeed = memo(function PhoneFeed({
         ? nxt.period
         : (shop[0] ?? 1);
   const clock = live != null ? periodClock(live, bellsId, now) : null;
-  const agenda = agendaFor(file, shown);
   const crews = crewsOf(file, shown, today);
   const ranked = useMemo(
     () => applySort(byCombo(file, list.filter((s) => s.period !== 6)), rankBoard === "perk" ? "wallet" : "level"),
     [file, list, rankBoard],
   );
   const byId = useMemo(() => new Map(ranked.map((s) => [s.id, s])), [ranked]);
-  const watch = agenda.skillId ? skillName(agenda.skillId) : prettyStage(agenda.goal) || "Building";
-  const goalLine = agenda.activityName || prettyStage(agenda.goal) || "Crew work";
-  const project = agenda.title || "Class project";
+  const job = jobCardOf(file, shown);
   const left = clock?.live ? leftClock(clock.left).label : null;
   const pct = clock?.live ? clock.pct : 0;
   const passing = isSchoolDay(today) && !clock?.live && Boolean(nxt);
@@ -146,14 +144,10 @@ export const PhoneFeed = memo(function PhoneFeed({
       </section>
 
       <section className="phone-goal tw-gadget tw-hud rounded-xl px-3 py-3">
-        <p className="text-xs font-bold uppercase tracking-wide text-accent">Today · P{shown}</p>
-        <p className="mt-1 font-display text-2xl font-bold leading-snug tracking-tight text-fg">{goalLine}</p>
-        <p className="mt-0.5 text-base font-medium text-muted">{project}</p>
-        <p className="mt-2 inline-flex min-h-9 items-center rounded-full bg-elevated px-3 text-sm font-bold text-accent">
-          {watch}
-        </p>
+        <JobCard job={job} period={shown} compact />
       </section>
 
+      {crews.length ? (
       <section>
         <div className="mb-1.5 flex items-center justify-between px-0.5">
           <p className="text-xs font-bold uppercase tracking-wide text-muted">Crews</p>
@@ -209,7 +203,9 @@ export const PhoneFeed = memo(function PhoneFeed({
           })}
         </div>
       </section>
+      ) : null}
 
+      {ranked.some((s) => s.xp > 0 || s.quarter > 0) ? (
       <section className="rounded-xl bg-surface px-3 py-2.5">
         <p className="text-xs font-bold uppercase tracking-wide text-muted">School · {rankBoard === "skill" ? "XP" : "$"}</p>
         <ol className="mt-1">
@@ -231,6 +227,7 @@ export const PhoneFeed = memo(function PhoneFeed({
           ))}
         </ol>
       </section>
+      ) : null}
     </div>
   );
 });

@@ -54,12 +54,12 @@ export function PhoneDock({
                 onClick={it.go}
                 aria-current={on === it.id ? "page" : undefined}
                 className={cn(
-                  "tw-tap relative flex min-h-14 w-full flex-col items-center justify-center gap-0.5 text-xs font-bold tracking-wide",
+                  "tw-tap relative flex min-h-12 w-full flex-col items-center justify-center gap-0.5 text-[10px] font-bold uppercase tracking-wide",
                   on === it.id ? "text-accent" : "text-muted",
                 )}
               >
                 <span className={cn("dock-mark absolute top-1 h-0.5 w-6 rounded-full", on === it.id ? "bg-accent" : "bg-transparent")} aria-hidden />
-                <Icon className="size-6" strokeWidth={on === it.id ? 2.4 : 2} aria-hidden />
+                <Icon className="size-5 sm:size-6" strokeWidth={on === it.id ? 2.4 : 2} aria-hidden />
                 {it.label}
               </button>
             </li>
@@ -100,12 +100,12 @@ export function PhoneDock({
               onClick={it.go}
               aria-current={on === it.id ? "page" : undefined}
               className={cn(
-                "tw-tap relative flex min-h-14 w-full flex-col items-center justify-center gap-0.5 text-xs font-bold tracking-wide",
+                "tw-tap relative flex min-h-12 w-full flex-col items-center justify-center gap-0.5 text-[10px] font-bold uppercase tracking-wide",
                 on === it.id ? "text-accent" : "text-muted",
               )}
             >
               <span className={cn("dock-mark absolute top-1 h-0.5 w-6 rounded-full", on === it.id ? "bg-accent" : "bg-transparent")} aria-hidden />
-              <Icon className="size-6" strokeWidth={on === it.id ? 2.4 : 2} aria-hidden />
+              <Icon className="size-5 sm:size-6" strokeWidth={on === it.id ? 2.4 : 2} aria-hidden />
               {it.label}
             </button>
           </li>

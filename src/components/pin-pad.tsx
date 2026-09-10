@@ -218,7 +218,7 @@ export function LockBar({
         lock();
         onLock();
       }}
-      className="tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-md text-gain hover:bg-elevated"
+      className="tw-hud-btn tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-xl text-gain hover:bg-elevated"
     >
       <Unlock className="size-5" />
     </button>
@@ -231,7 +231,7 @@ export function LockBar({
         e.stopPropagation();
         onAsk();
       }}
-      className="tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-md text-fg hover:bg-elevated"
+      className="tw-hud-btn tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-xl text-fg hover:bg-elevated"
     >
       <Lock className="size-5" />
     </button>

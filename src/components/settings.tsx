@@ -24,8 +24,9 @@ import { commitDescribe } from "@/lib/describe";
 import { FEATURES, FEATURE_GROUPS, featureOn, setFeature, type FeatureId } from "@/lib/features";
 import { VisitPad } from "@/components/visit-chip";
 import { DEMO_SETS, commitDemo, storedDemo, type DemoId } from "@/lib/demo";
-import { TEACH_PACKS, setDefaultTeachPack } from "@/lib/teach";
+import { YearPlanBoard } from "@/components/year-plan-board";
 import { VaultBoard } from "@/components/vault-board";
+import { TEACH_PACKS, setDefaultTeachPack } from "@/lib/teach";
 
 export const SETTINGS_TABS = [
   { id: "vault", label: "Records" },
@@ -112,7 +113,8 @@ export function SettingsBody({
             {tab === "day" ? (
               <section>
                 {embed ? null : <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Day</h2>}
-                <p className={cn("text-sm text-muted", embed ? "mt-0" : "mt-1")}>Cycle, bells, A/B, sub. Sub voids scores and the projector.</p>
+                <YearPlanBoard file={file} onChange={onChange} />
+                <p className={cn("text-sm text-muted", embed ? "mt-4" : "mt-4")}>Cycle, bells, A/B, sub. Sub voids scores and the projector.</p>
                 <button
                   type="button"
                   onClick={() => onChange(setSubDay(file, todayIso(), !isSubDay(file, todayIso())))}

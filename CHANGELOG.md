@@ -1,8 +1,28 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.90.16. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.91.3. -->
 
 # TechWorks changelog
 
-App version **1.90.16**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.91.3**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.91.3 — 2026-09-10
+
+- Phone pass: the job plate is full-width again (it had borrowed the HUD chip’s max-width). Header is one swipe row, not a wrapped stack. Version number hides; paw stays. Period strip and Admin segments swipe. Goggles chip fills the plate. Dock sits on the home bar. Safe-area padding on the shell.
+
+## 1.91.2 — 2026-09-09
+
+- Job card from every seat: gold look-for 3, goggles on the rules. Tap goggles (PIN) to open tools — until then the timer and name-draw stay closed. Teacher cycle goal (Modeling) beats the calendar day if it is further along. Empty visitors do not see a school board of zeros. Modules stay off the live wall (turn them on in Admin → Wall). Lucky Bench starts off. Teach work slot uses today’s job line, not a second copy of the card.
+
+## 1.91.1 — 2026-09-09
+
+- The Goals plate is the job, not the filing cabinet. P1 shows the driving question, rules, today, done, and look-for a 3. One STEM sentence under the question — not SCIENCE · TECHNOLOGY · ENGINEERING · MATH. Lucky Bench $0, pizza 0%, empty polls, and Top 3 with nobody stay off until someone has a score. Empty browsers say this desk lives on the shop PC. Edit the five lines in Learn → Projects. Theme → Size Fill preview is the job card.
+
+## 1.91.0 — 2026-09-09
+
+- Year plan plus the desk beats. Admin → Day: set any school day through June (wall cards, lunch, sub, bells, period goals). Copy that day onto the next school day, the rest of the quarter, or through June. Copy Q1 → Q2 (or Q2 → Q3, Q3 → Q4) duplicates projects, planned days, and the Deck so you can edit the next quarter without losing this one. Job chip is two lines: SchoolTool then I'm in; Looks good after the last crew; Save names the cloud. Unlock during a Tech period opens Score; otherwise Admin → Today. Records inner bar is Backups / Names / Cloud.
+
+## 1.90.17 — 2026-09-09
+
+- Controls overhaul. HUD is icon-only (lock, help, language, cloud) plus one job chip. Admin is a 4-column tile pad, not a wrapping pill pile. Inner panes (Backups / Roster / Cloud) are one equal bar. Dash and Learn tabs are a single swipe row.
 
 ## 1.90.16 — 2026-09-09
 

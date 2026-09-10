@@ -1,9 +1,10 @@
-import type { EconomyFile } from "@/lib/economy";
-import { bellFor, isLiveStudent } from "@/lib/economy";
-import { cycleNow, cycleRange, daySlot, todayIso } from "@/lib/calendar";
-import { skillForGoal, skillTrackOf, skillsOf } from "@/lib/skills";
-import type { StemLetter } from "@/lib/stems";
-import { cloneFile } from "@/lib/clone";
+import type { EconomyFile } from "./economy.ts";
+import { bellFor, isLiveStudent } from "./economy.ts";
+import { cycleNow, cycleRange, daySlot, todayIso } from "./calendar.ts";
+import { skillForGoal, skillTrackOf, skillsOf } from "./skills.ts";
+import type { StemLetter } from "./stems.ts";
+import { stemLettersOf, stemOf, STEM_WHY } from "./stems.ts";
+import { cloneFile } from "./clone.ts";
 
 export const PHASES = [
   "IDEA STAGE",
@@ -36,6 +37,12 @@ export type ProjectActivity = {
   skillId: string;
   goal: string;
   expect?: 1 | 2 | 3 | 4;
+  /** Kid sentence: what to do today. */
+  today?: string;
+  /** How you know you are done. */
+  done?: string;
+  /** What a 3 looks like — no leading "3 =". */
+  lookFor?: string;
 };
 
 export type ProjectStage = {
@@ -64,6 +71,8 @@ export type ShopProject = {
   prompt?: string;
   /** Science / Technology / Engineering / Math tags. */
   stem?: StemLetter[];
+  /** One STEM sentence on the wall — not four capital words. */
+  stemLine?: string;
 };
 
 export const XP_TAX_PER_LAG = 2;
@@ -96,12 +105,66 @@ export function wiseAt(i: number, cycleLen: 1 | 2 = 2): { goal: string; skillId:
 }
 
 export const DEFAULT_ACTIVITIES: ProjectActivity[] = [
-  { id: "act-brain", name: "Brainstorming", skillId: "draw", goal: "IDEA STAGE", expect: 2 },
-  { id: "act-draw", name: "Technical Drawing", skillId: "draw", goal: "DESIGN STAGE", expect: 3 },
-  { id: "act-model", name: "Modeling", skillId: "model", goal: "MODELING STAGE", expect: 3 },
-  { id: "act-finish", name: "Finishing", skillId: "finish", goal: "FINISHING STAGE", expect: 3 },
-  { id: "act-present", name: "Presentation", skillId: "present", goal: "PRESENTATION PREP", expect: 3 },
-  { id: "act-reflect", name: "Reflection", skillId: "present", goal: "CRITIQUE DAY", expect: 3 },
+  {
+    id: "act-brain",
+    name: "Brainstorming",
+    skillId: "draw",
+    goal: "IDEA STAGE",
+    expect: 2,
+    today: "Name the job. Sketch one idea that could work.",
+    done: "Point to the load and the force on your sketch.",
+    lookFor: "a sketch someone else can follow, not a doodle.",
+  },
+  {
+    id: "act-draw",
+    name: "Technical Drawing",
+    skillId: "draw",
+    goal: "DESIGN STAGE",
+    expect: 3,
+    today: "Draw the idea. Mark the parts that do the work.",
+    done: "A drawing someone else can follow.",
+    lookFor: "labels on the drawing, not a blank page.",
+  },
+  {
+    id: "act-model",
+    name: "Modeling",
+    skillId: "model",
+    goal: "MODELING STAGE",
+    expect: 3,
+    today: "Build a model. Test the move it promised.",
+    done: "Show the test. Say if it worked.",
+    lookFor: "working the model, not the phone.",
+  },
+  {
+    id: "act-finish",
+    name: "Finishing",
+    skillId: "finish",
+    goal: "FINISHING STAGE",
+    expect: 3,
+    today: "Make the model hold together for a test.",
+    done: "The model still works after you let go.",
+    lookFor: "joints that stay, not tape over a break.",
+  },
+  {
+    id: "act-present",
+    name: "Presentation",
+    skillId: "present",
+    goal: "PRESENTATION PREP",
+    expect: 3,
+    today: "Tell the class how it works in 30 seconds.",
+    done: "A share: what you built and why.",
+    lookFor: "naming the job, not reading the phone.",
+  },
+  {
+    id: "act-reflect",
+    name: "Reflection",
+    skillId: "present",
+    goal: "CRITIQUE DAY",
+    expect: 3,
+    today: "Say what you would change after the test.",
+    done: "One change written or said out loud.",
+    lookFor: "a next change, not “it was fine.”",
+  },
 ];
 
 const WISE_ACT = ["act-brain", "act-draw", "act-model", "act-model", "act-finish", "act-finish", "act-present", "act-reflect"];
@@ -155,12 +218,28 @@ export function activityLabel(p: ShopProject, stage?: ProjectStage): string {
   return act?.name ?? prettyStage(stage?.goal ?? "IDEA STAGE");
 }
 
+function pickCopy(own: string | undefined, unit: string | undefined, generic: string | undefined): string | undefined {
+  const o = own?.trim();
+  const g = generic?.trim();
+  const u = unit?.trim();
+  if (o && o !== g) return o;
+  return u || o || g;
+}
+
 export function ensureActivities(p: ShopProject): ShopProject {
   const start = p.cycleStart ?? 1;
   const len = (p.cycleLen === 1 ? 1 : 2) as 1 | 2;
+  const seed = UNIT_SEED[p.id];
   const activities = activitiesOf(p).map((a) => {
-    const seed = DEFAULT_ACTIVITIES.find((d) => d.id === a.id);
-    return { ...a, expect: (a.expect ?? seed?.expect ?? 3) as 1 | 2 | 3 | 4 };
+    const seedAct = DEFAULT_ACTIVITIES.find((d) => d.id === a.id);
+    const job = seed?.jobs?.[a.id];
+    return {
+      ...a,
+      expect: (a.expect ?? seedAct?.expect ?? 3) as 1 | 2 | 3 | 4,
+      today: pickCopy(a.today, job?.today, seedAct?.today),
+      done: pickCopy(a.done, job?.done, seedAct?.done),
+      lookFor: pickCopy(a.lookFor, job?.lookFor, seedAct?.lookFor),
+    };
   });
   const base = p.stages?.length ? p.stages : wiseStages(start, len);
   let i = 0;
@@ -176,7 +255,6 @@ export function ensureActivities(p: ShopProject): ShopProject {
     };
   });
   const kind = PROJECT_KINDS.some((k) => k.id === p.kind) ? (p.kind as ProjectKind) : p.kind ? "build" : undefined;
-  const seed = UNIT_SEED[p.id];
   return {
     ...p,
     kind,
@@ -185,6 +263,8 @@ export function ensureActivities(p: ShopProject): ShopProject {
     pathVer: Math.max(p.pathVer ?? 0, 4),
     prompt: p.prompt || seed?.prompt,
     stem: p.stem?.length ? p.stem : seed?.stem,
+    stemLine: p.stemLine?.trim() ? p.stemLine : seed?.stemLine,
+    constraints: p.constraints?.length ? p.constraints : seed?.constraints ?? p.constraints,
   };
 }
 
@@ -204,6 +284,7 @@ export const DEFAULT_PROJECTS: ShopProject[] = [
     pathVer: 4,
     prompt: "How can a small force move a bigger load?",
     stem: ["S", "T", "E", "M"],
+    stemLine: "Materials, force, speed, and what the test showed.",
   },
   {
     id: "prj7",
@@ -214,12 +295,13 @@ export const DEFAULT_PROJECTS: ShopProject[] = [
     activities: DEFAULT_ACTIVITIES,
     start: "2026-09-08",
     end: "2026-11-13",
-    constraints: ["No extra mass after weigh-in"],
+    constraints: ["No extra mass after weigh-in", "Goggles on"],
     cycleStart: 1,
     cycleLen: 2,
     pathVer: 4,
     prompt: "How does shape change speed?",
     stem: ["S", "T", "E", "M"],
+    stemLine: "Measure, size, scale, and whether the numbers hold.",
   },
   {
     id: "prj8",
@@ -230,12 +312,13 @@ export const DEFAULT_PROJECTS: ShopProject[] = [
     activities: DEFAULT_ACTIVITIES,
     start: "2026-09-08",
     end: "2026-11-13",
-    constraints: ["Prototype must stand on its own"],
+    constraints: ["Prototype must stand on its own", "Goggles on"],
     cycleStart: 1,
     cycleLen: 2,
     pathVer: 4,
     prompt: "Who is this for, and how do we know it works?",
     stem: ["T", "E", "M"],
+    stemLine: "The design: constraints, ideas, and the next change.",
   },
   {
     id: "prj-figure",
@@ -246,12 +329,13 @@ export const DEFAULT_PROJECTS: ShopProject[] = [
     activities: DEFAULT_ACTIVITIES,
     start: "2026-09-08",
     end: "2026-11-13",
-    constraints: ["Parts stay on the figure"],
+    constraints: ["Parts stay on the figure", "Goggles on"],
     cycleStart: 1,
     cycleLen: 2,
     pathVer: 4,
     prompt: "How do parts become a character that can stand?",
     stem: ["T", "E"],
+    stemLine: "The design: constraints, ideas, and the next change.",
   },
 ];
 
@@ -265,11 +349,86 @@ function idea(p: Omit<ShopProject, "stages" | "activities" | "pathVer"> & { cycl
   });
 }
 
-const UNIT_SEED: Record<string, { prompt: string; stem: StemLetter[] }> = {
-  prj6: { prompt: "How can a small force move a bigger load?", stem: ["S", "T", "E", "M"] },
-  prj7: { prompt: "How does shape change speed?", stem: ["S", "T", "E", "M"] },
-  prj8: { prompt: "Who is this for, and how do we know it works?", stem: ["T", "E", "M"] },
-  "prj-figure": { prompt: "How do parts become a character that can stand?", stem: ["T", "E"] },
+type JobSeed = { today: string; done: string; lookFor: string };
+type UnitSeed = {
+  prompt: string;
+  stem: StemLetter[];
+  stemLine?: string;
+  constraints?: string[];
+  jobs?: Partial<Record<string, JobSeed>>;
+};
+
+const UNIT_SEED: Record<string, UnitSeed> = {
+  prj6: {
+    prompt: "How can a small force move a bigger load?",
+    stem: ["S", "T", "E", "M"],
+    stemLine: "Materials, force, speed, and what the test showed.",
+    constraints: ["One tool at a time", "Goggles on"],
+    jobs: {
+      "act-brain": {
+        today: "Name the load. Sketch one machine that could move it.",
+        done: "Point to the load and the force on your sketch.",
+        lookFor: "a sketch someone else can follow, not a doodle.",
+      },
+      "act-draw": {
+        today: "Draw the machine. Mark fulcrum, load, and effort.",
+        done: "A drawing with those three labels.",
+        lookFor: "labels on the drawing, not a blank page.",
+      },
+      "act-model": {
+        today: "Build a model that lifts or moves a load.",
+        done: "Show the load move. Say which simple machine it is.",
+        lookFor: "working the model, not the phone.",
+      },
+      "act-finish": {
+        today: "Make the model hold together for a test.",
+        done: "The model still works after you let go.",
+        lookFor: "joints that stay, not tape over a break.",
+      },
+      "act-present": {
+        today: "Tell the class how a small force moved a bigger load.",
+        done: "A 30-second share: what and why.",
+        lookFor: "naming the machine, not reading the phone.",
+      },
+      "act-reflect": {
+        today: "Say what you would change after the test.",
+        done: "One change written or said out loud.",
+        lookFor: "a next change, not “it was fine.”",
+      },
+    },
+  },
+  prj7: {
+    prompt: "How does shape change speed?",
+    stem: ["S", "T", "E", "M"],
+    stemLine: "Measure, size, scale, and whether the numbers hold.",
+    constraints: ["No extra mass after weigh-in", "Goggles on"],
+    jobs: {
+      "act-model": {
+        today: "Shape the body so air can pass. Keep mass off until weigh-in.",
+        done: "A body that can sit on the test track.",
+        lookFor: "cutting to the plan, not extra mass.",
+      },
+    },
+  },
+  prj8: {
+    prompt: "Who is this for, and how do we know it works?",
+    stem: ["T", "E", "M"],
+    stemLine: "The design: constraints, ideas, and the next change.",
+    constraints: ["Prototype must stand on its own", "Goggles on"],
+    jobs: {
+      "act-model": {
+        today: "Build a prototype that stands on its own.",
+        done: "Stand it up. Say who it is for.",
+        lookFor: "a standing model, not a pile of parts.",
+      },
+    },
+  },
+  "prj-figure": {
+    prompt: "How do parts become a character that can stand?",
+    stem: ["T", "E"],
+    stemLine: "The design: constraints, ideas, and the next change.",
+    constraints: ["Parts stay on the figure", "Goggles on"],
+  },
   "prj-logo": { prompt: "What one mark says who I am?", stem: ["T", "E"] },
   "prj-crewlogo": { prompt: "What one mark says who we are?", stem: ["T", "E"] },
   "prj-minecraft": { prompt: "How do we build a world others can read?", stem: ["T", "E"] },
@@ -463,6 +622,57 @@ export function agendaFor(file: EconomyFile, period: number, date = todayIso(), 
     skillId: activity?.skillId ?? stage?.skillId ?? "safety",
     title: project.title,
     activityName: activity?.name ?? prettyStage(stage?.goal ?? "IDEA STAGE"),
+  };
+}
+
+export type ShopJob = {
+  question: string;
+  stemLine: string;
+  rules: string[];
+  today: string;
+  done: string;
+  lookFor: string;
+  expect: 1 | 2 | 3 | 4;
+  stage: string;
+  title: string;
+  skillId: string;
+  grade: number;
+};
+
+function lookLine(expect: 1 | 2 | 3 | 4, text: string): string {
+  const clean = text.trim();
+  if (!clean) return `${expect} = ${stemOf("model", expect)}`;
+  if (/^\d\s*=/.test(clean)) return clean;
+  return `${expect} = ${clean}`;
+}
+
+/** Projector job: question, rules, today, done, look-for. One STEM sentence. */
+export function jobCardOf(file: EconomyFile, period: number, date = todayIso(), crewKey?: string): ShopJob {
+  const agenda = agendaFor(file, period, date, crewKey);
+  const p = ensureActivities(agenda.project);
+  const phase = goalPhaseOn(file, period, date);
+  const a =
+    activitiesOf(p).find((x) => x.goal === phase) ??
+    (agenda.activity ? activitiesOf(p).find((x) => x.id === agenda.activity?.id) ?? agenda.activity : agenda.activity);
+  const skillId = a?.skillId ?? agenda.skillId;
+  const expect = (a?.expect ?? 3) as 1 | 2 | 3 | 4;
+  const letters = p.stem?.length ? p.stem : stemLettersOf(skillId);
+  const stemLine = (p.stemLine || (letters[0] ? STEM_WHY[letters[0]] : "")).trim();
+  const today = (a?.today || a?.name || prettyStage(phase || agenda.goal)).trim();
+  const done = (a?.done || stemOf(skillId, expect)).trim();
+  const lookFor = lookLine(expect, a?.lookFor || stemOf(skillId, expect));
+  return {
+    question: (p.prompt || "").trim(),
+    stemLine,
+    rules: (p.constraints ?? []).map((r) => r.trim()).filter(Boolean),
+    today,
+    done,
+    lookFor,
+    expect,
+    stage: prettyStage(phase || agenda.goal),
+    title: agenda.title,
+    skillId,
+    grade: agenda.grade,
   };
 }
 
@@ -665,7 +875,13 @@ export function goalPhaseOn(file: EconomyFile, period: number, date = todayIso()
   const logged = file.meta.dayLog?.[date]?.goalPhase?.[String(period)];
   if (logged) return logged;
   const agenda = agendaFor(file, period, date);
-  return agenda.goal || expectedPhase(agenda.project, date);
+  const cal = agenda.goal || expectedPhase(agenda.project, date);
+  const grade = agenda.grade;
+  const cycle = file.meta.config?.currentCycle ?? 1;
+  const map = file.meta.config?.cycleGoals ?? {};
+  const cycleGoal = map[`${cycle}|${grade}`] || map[String(grade)] || "";
+  if (!cycleGoal) return cal;
+  return phaseIndex(cycleGoal) >= phaseIndex(cal) ? cycleGoal : cal;
 }
 
 export function setGoalPhase(file: EconomyFile, date: string, period: number, phase: string): EconomyFile {

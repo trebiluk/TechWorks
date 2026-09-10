@@ -1,10 +1,40 @@
 import type { EconomyFile } from "@/lib/economy";
 import { isLiveStudent, shopBells } from "@/lib/economy";
-import { attendOn, deskBellId, exportedThisPeriod, isSubDay, lineLeaderOn, outNow, schooltoolDone } from "@/lib/store";
+import { attendOn, deskBellId, exportedThisPeriod, isSubDay, lineLeaderOn, outNow, periodVerified, schooltoolDone } from "@/lib/store";
 import { crewDone, crewsOf, dueCrews, scoredToday } from "@/lib/crews";
 import { todayIso } from "@/lib/calendar";
 import { printLogOf } from "@/lib/prints";
 import { attendLate, formatBell, periodClock, periodNext, periodNow } from "@/lib/bells";
+import { cloudStatus } from "@/lib/desk-cloud";
+
+const ST_OPEN = "techworks-st-open";
+const JOB_EVT = "techworks-job";
+
+export function markSchooltoolOpened(date: string) {
+  try {
+    sessionStorage.setItem(ST_OPEN, date);
+  } catch {
+    /* */
+  }
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(JOB_EVT));
+}
+
+export function schooltoolOpened(date: string): boolean {
+  try {
+    return sessionStorage.getItem(ST_OPEN) === date;
+  } catch {
+    return false;
+  }
+}
+
+export function saveCloudHint(): string {
+  const st = cloudStatus();
+  if (st === "saved" || st === "saving") return "Saved on this PC · cloud ok";
+  if (st === "this-pc" || st === "off") return "Saved on this PC · cloud off";
+  if (st === "need-key") return "Saved on this PC · need desk key";
+  if (st === "error" || st === "behind") return "Saved on this PC · cloud missed";
+  return "Saved on this PC";
+}
 
 export type RoleId = "teacher" | "crew" | "worker" | "hall" | "club" | "family" | "sub";
 
@@ -167,7 +197,7 @@ export type NextJob = {
   label: string;
   hint: string;
   tone: "ok" | "due" | "warn" | "now";
-  go: "score" | "schooltool" | "export" | "overview" | "teach" | "admin" | "hall";
+  go: "score" | "schooltool" | "schooltool-in" | "export" | "overview" | "teach" | "admin" | "hall" | "verify";
   period?: number;
   crew?: string;
   date?: string;
@@ -187,11 +217,14 @@ export function nextJob(file: EconomyFile, now = new Date()): NextJob {
   const st = schooltoolDone(file, date, 1);
 
   if (!st && (live === 1 || (live == null && attendLate(1, bellsId, now)))) {
-    return { id: "st", label: "SchoolTool", hint: "by 8:15", tone: "due", go: "schooltool" };
+    if (schooltoolOpened(date)) {
+      return { id: "st-in", label: "I'm in", hint: "SchoolTool done", tone: "due", go: "schooltool-in" };
+    }
+    return { id: "st", label: "SchoolTool", hint: "open · then I'm in", tone: "due", go: "schooltool" };
   }
 
   if (clock?.cleanup && live && live !== 6) {
-    return { id: "clean", label: "Cleanup", hint: `${Math.max(0, Math.ceil(clock.left))}m`, tone: "warn", go: "overview" };
+    return { id: "clean", label: "Cleanup", hint: `P${live} · ${Math.max(0, Math.ceil(clock.left))}m`, tone: "warn", go: "score", period: live, date };
   }
 
   if (live && live !== 6) {
@@ -210,8 +243,21 @@ export function nextJob(file: EconomyFile, now = new Date()): NextJob {
         date,
       };
     }
+    if (!periodVerified(file, date, live)) {
+      const last = crews[crews.length - 1];
+      return {
+        id: "verify",
+        label: last ? `Check ${last.name}` : `Check P${live}`,
+        hint: "10s look · then save",
+        tone: "now",
+        go: "verify",
+        period: live,
+        crew: last?.key,
+        date,
+      };
+    }
     if (!exportedThisPeriod(file, date, live)) {
-      return { id: "export", label: `Save P${live}`, hint: "once this period", tone: "due", go: "export", period: live };
+      return { id: "export", label: `Save P${live}`, hint: saveCloudHint(), tone: "due", go: "export", period: live };
     }
   }
 

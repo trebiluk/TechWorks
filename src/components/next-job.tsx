@@ -1,8 +1,10 @@
-import { memo, useMemo } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
+import { ClipboardList } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
 import { deskBellId } from "@/lib/store";
 import { useShopClock } from "@/lib/use-clock";
 import { nextJob, type NextJob } from "@/lib/workflow";
+import { markOf } from "@/lib/nav-marks";
 import { cn } from "@/lib/utils";
 
 export const NextJobChip = memo(function NextJobChip({
@@ -13,7 +15,18 @@ export const NextJobChip = memo(function NextJobChip({
   onGo: (job: NextJob) => void;
 }) {
   const now = useShopClock(deskBellId(file), "beat");
-  const job = useMemo(() => nextJob(file, now), [file, now]);
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const sync = () => setTick((n) => n + 1);
+    window.addEventListener("techworks-job", sync);
+    window.addEventListener("techworks-cloud", sync);
+    return () => {
+      window.removeEventListener("techworks-job", sync);
+      window.removeEventListener("techworks-cloud", sync);
+    };
+  }, []);
+  const job = useMemo(() => nextJob(file, now), [file, now, tick]);
+  const Icon = markOf(job.id) ?? ClipboardList;
   const tone =
     job.tone === "now"
       ? "bg-accent text-accent-fg"
@@ -27,10 +40,13 @@ export const NextJobChip = memo(function NextJobChip({
       type="button"
       title={`${job.label} · ${job.hint}`}
       onClick={() => onGo(job)}
-      className={cn("tw-tap flex min-h-11 max-w-[14rem] shrink-0 items-center gap-1.5 rounded-md px-2.5 sm:min-h-9", tone)}
+      className={cn("tw-next-job tw-tap", tone)}
     >
-      <span className="truncate text-xs font-bold uppercase tracking-wide">{job.label}</span>
-      <span className="hidden truncate font-mono text-[10px] opacity-80 sm:inline">{job.hint}</span>
+      <Icon className="size-5 shrink-0" strokeWidth={2.3} aria-hidden />
+      <span className="min-w-0 text-left">
+        <span className="block truncate leading-tight">{job.label}</span>
+        <span className="hidden truncate font-mono text-[10px] font-medium normal-case tracking-normal opacity-80 sm:block">{job.hint}</span>
+      </span>
     </button>
   );
 });

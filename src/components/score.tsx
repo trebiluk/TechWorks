@@ -20,6 +20,8 @@ import {
   setAbDay,
   setCrewMark,
   setSchooltoolDone,
+  setPeriodVerified,
+  periodVerified,
   setStudentCleanup,
   setStudentMark,
   setSubDay,
@@ -250,6 +252,8 @@ export function ScoreDesk({
   const leadId = crew ? crewLeaderId(file, period, crew.key) : "";
   const lead = crew?.kids.find((s) => s.id === leadId);
   const stDone = schooltoolDone(file, date, period);
+  const allDone = periodCrews.length > 0 && periodCrews.every((c) => crewDone(c.kids, date));
+  const verified = periodVerified(file, date, period);
   const p1Alarm =
     school &&
     !sub &&
@@ -451,6 +455,15 @@ export function ScoreDesk({
               <button type="button" onClick={() => goNextCrew()} className="tw-tap min-h-12 flex-1 rounded-full bg-crew-hi text-sm font-semibold text-bg">
                 Next crew
               </button>
+              {allDone ? (
+                <button
+                  type="button"
+                  onClick={() => commit(setPeriodVerified(file, date, period, !verified))}
+                  className={cn("tw-tap min-h-12 flex-1 rounded-full text-sm font-semibold", verified ? "bg-gain text-bg" : "bg-gold text-bg")}
+                >
+                  {verified ? "Checked" : "Looks good"}
+                </button>
+              ) : null}
             </div>
           </>
         )}

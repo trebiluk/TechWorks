@@ -17,6 +17,8 @@ function Meter({ pct, gold }: { pct: number; gold?: boolean }) {
 export function PeriodRewardChip({ file, period, className }: { file: EconomyFile; period: number; className?: string }) {
   const p = rewardProgressFor(file, period);
   if (!p.on) return null;
+  if (p.head < 1) return null;
+  if (p.combined < 0.01 && p.xpNow < 1) return null;
   return (
     <div className={cn("min-w-0", className)} title={`${p.title} · ${Math.round(p.combined * 100)}%`}>
       <div className="flex items-baseline justify-between gap-2">
@@ -41,6 +43,7 @@ export function RewardBar({
   if (!base.on) return null;
   if (period != null) {
     const p = rewardProgressFor(file, period);
+    if (p.head < 1 || (p.combined < 0.01 && p.xpNow < 1)) return null;
     return (
       <div className="rounded-lg bg-surface px-3 py-1.5">
         <PeriodRewardChip file={file} period={period} />

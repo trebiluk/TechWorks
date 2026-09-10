@@ -1031,12 +1031,74 @@ html[data-contrast="high"] {
   font-size: calc(clamp(1.5rem, 9cqi, 3.75rem) * var(--ui-title, 1));
   line-height: 0.95;
 }
+.tw-fill-ask {
+  font-size: calc(clamp(1.15rem, 6.2cqi, 2.75rem) * var(--ui-title, 1));
+  line-height: 1.12;
+}
 .tw-fill-line {
   font-size: clamp(1rem, 4cqi, 1.85rem);
   line-height: 1.25;
 }
 .tw-fill-label {
   font-size: clamp(0.7rem, 2.4cqi, 1.05rem);
+}
+.tw-job {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+.tw-job-rows {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.4rem 0.85rem;
+  margin-top: 0.85rem;
+  align-items: start;
+}
+.tw-job-k {
+  font-size: clamp(0.65rem, 2.1cqi, 0.88rem);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding-top: 0.2em;
+  white-space: nowrap;
+}
+.tw-job-v {
+  font-size: clamp(0.95rem, 3.5cqi, 1.55rem);
+  line-height: 1.25;
+}
+.tw-job-compact .tw-fill-ask {
+  font-size: 1.35rem;
+}
+.tw-job-compact .tw-job-v {
+  font-size: 0.95rem;
+}
+.tw-job-compact .tw-fill-line {
+  font-size: 0.9rem;
+}
+.tw-job-n {
+  display: inline-grid;
+  width: 1.75em;
+  height: 1.75em;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--color-gold);
+  color: var(--color-bg);
+  font-family: ui-monospace, monospace;
+  font-size: 1.05em;
+  font-weight: 800;
+  line-height: 1;
+}
+.tw-ppe {
+  max-width: 100%;
+}
+@media (min-width: 900px) {
+  .tw-fill-row [data-job-plate] {
+    container-type: size;
+    container-name: plate;
+    height: 100%;
+  }
 }
 @container plate (min-height: 9rem) {
   .tw-fill-hero {
@@ -1053,6 +1115,22 @@ html[data-contrast="high"] {
   .tw-fill-label {
     font-size: calc(
       0.7rem * (1 - var(--ui-fill, 1)) + clamp(0.7rem, 3cqh, 1.05rem) * var(--ui-fill, 1)
+    );
+  }
+  .tw-fill-ask {
+    font-size: calc(
+      (1.15rem * (1 - var(--ui-fill, 1)) + clamp(1.15rem, 7.5cqh, 2.75rem) * var(--ui-fill, 1))
+      * var(--ui-title, 1)
+    );
+  }
+  .tw-job-v {
+    font-size: calc(
+      0.95rem * (1 - var(--ui-fill, 1)) + clamp(0.95rem, 4cqh, 1.6rem) * var(--ui-fill, 1)
+    );
+  }
+  .tw-job-k {
+    font-size: calc(
+      0.65rem * (1 - var(--ui-fill, 1)) + clamp(0.65rem, 2.3cqh, 0.88rem) * var(--ui-fill, 1)
     );
   }
   .tw-fill .tw-ring {
@@ -1230,12 +1308,13 @@ header.desk-chrome {
 }
 header.desk-chrome .nav-cluster {
   width: 100%;
-  flex-wrap: wrap;
-  overflow-x: hidden;
+  flex-wrap: nowrap;
+  overflow: hidden;
 }
 header.desk-chrome nav {
-  flex-wrap: wrap !important;
-  overflow-x: hidden;
+  flex-wrap: nowrap !important;
+  overflow-x: auto;
+  overflow-y: hidden;
   max-width: 100%;
 }
 
@@ -1491,6 +1570,85 @@ html[data-finish="felt"] .bg-surface,
   box-shadow: 0 0 0 2px var(--color-fg);
 }
 
+/* One control language: HUD icons, rails, tiles, segments. */
+.tw-hud-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.tw-hud-row::-webkit-scrollbar { display: none; }
+.tw-hud-btn {
+  flex: 0 0 auto;
+}
+.tw-rail {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.25rem;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+}
+.tw-rail::-webkit-scrollbar { display: none; }
+.tw-rail > * {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+.tw-pad {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.25rem;
+}
+.tw-tile {
+  min-height: 3.35rem;
+  padding: 0.35rem 0.2rem;
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+.tw-seg {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 0.75rem;
+  background: var(--color-elevated);
+}
+.tw-next-job {
+  display: inline-flex;
+  max-width: 7.5rem;
+  min-height: 2.75rem;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: 0.75rem;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+@media (min-width: 640px) {
+  .tw-next-job { max-width: 16.5rem; }
+  .tw-pad { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+
 /* Nested plates step radius down. No white hover fills. */
 .tw-gadget .tw-gadget {
   border-radius: 12px;
@@ -1550,13 +1708,83 @@ html[data-kind="light"] .tw-hud::before {
 
 html[data-caps="upper"] .font-display { text-transform: uppercase; letter-spacing: 0.06em; }
 html[data-caps="small"] .font-display { font-variant-caps: small-caps; letter-spacing: 0.04em; }
+/* Job sentences stay grade-6 readable even if the wall titles are all-caps. */
+html[data-caps] [data-job] .tw-fill-ask,
+html[data-caps] [data-job] .tw-fill-line,
+html[data-caps] [data-job] .tw-job-v,
+html[data-caps] [data-job] .tw-ppe {
+  text-transform: none;
+  font-variant-caps: normal;
+  letter-spacing: 0.01em;
+}
 html[data-edit="on"] .edit-field { box-shadow: inset 0 0 0 1.5px var(--color-loss); }
 
 html[dir="rtl"] .board-root { direction: rtl; }
 
-@media (max-width: 900px) {
+@media (max-width: 899px) {
   html { font-size: min(var(--ui-base, 16px), 15px); }
   html[data-look] .min-h-11 { min-height: 2.5rem; }
+  .board-root {
+    padding-left: max(0.5rem, env(safe-area-inset-left));
+    padding-right: max(0.5rem, env(safe-area-inset-right));
+    padding-top: max(0.35rem, env(safe-area-inset-top));
+    padding-bottom: 0;
+  }
+  .tw-lockup-img {
+    height: 28px !important;
+    max-width: 9.5rem;
+  }
+  .tw-job-rows {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.2rem;
+    margin-top: 0.5rem;
+  }
+  .tw-job-k {
+    padding-top: 0.35rem;
+  }
+  .tw-ppe {
+    width: 100%;
+  }
+  .tw-fill-ask {
+    font-size: clamp(1.15rem, 6.5vw, 1.75rem);
+    line-height: 1.15;
+  }
+  .tw-job-v {
+    font-size: 1rem;
+  }
+  .tw-fill-line {
+    font-size: 0.95rem;
+  }
+  [data-day-strip] {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+  }
+  [data-day-strip]::-webkit-scrollbar { display: none; }
+  [data-day-strip] > * {
+    flex: 0 0 auto;
+    min-width: 3.35rem;
+    scroll-snap-align: start;
+  }
+  .tw-seg {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tw-seg > * {
+    flex: 1 0 auto;
+    min-width: 4.25rem;
+  }
+  .phone-dock {
+    padding-bottom: max(0.35rem, env(safe-area-inset-bottom));
+  }
+  .phone-dock button {
+    min-height: 3.25rem;
+    font-size: 0.625rem;
+    letter-spacing: 0.04em;
+  }
 }
 
 @media print {

@@ -29,7 +29,7 @@ export const FEATURES = [
 export type FeatureId = (typeof FEATURES)[number]["id"];
 export type FeatureGroup = (typeof FEATURES)[number]["group"];
 
-const DEFAULT_OFF: FeatureId[] = ["contrast", "portal", "store", "stocks", "nytech", "ambient", "debug"];
+const DEFAULT_OFF: FeatureId[] = ["contrast", "portal", "store", "stocks", "nytech", "ambient", "debug", "lucky"];
 
 export function featureOn(file: EconomyFile, id: FeatureId): boolean {
   const v = file.meta.config?.modules?.[id];

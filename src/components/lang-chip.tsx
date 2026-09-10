@@ -35,7 +35,7 @@ export function LangChip() {
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-md hover:bg-elevated",
+          "tw-hud-btn tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-xl hover:bg-elevated",
           open || lang !== "en" ? "bg-elevated text-fg" : "text-fg",
         )}
       >
@@ -43,7 +43,7 @@ export function LangChip() {
         <span className="sr-only">{row.native}</span>
       </button>
       {open ? (
-        <div className="absolute right-0 top-12 z-50 w-64 overflow-hidden rounded-xl bg-surface p-2 ring-1 ring-border">
+        <div className="absolute right-0 top-12 z-50 w-[min(16rem,calc(100vw-1.5rem))] overflow-hidden rounded-xl bg-surface p-2 ring-1 ring-border">
           <p className="px-2 pt-1 text-sm font-semibold">{t("Read in your language")}</p>
           <p className="px-2 pb-2 text-xs leading-snug text-muted">{t("Shop words stay English. Help and Words change.")}</p>
           <ul className="grid gap-1">

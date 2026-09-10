@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { QuarterChip } from "@/components/quarter-chip";
-import { SettingsBody, type AdminPane } from "@/components/settings";
-import { ROLE_PATHS, traceToday } from "@/lib/workflow";
+import { SettingsBody, type AdminPane, type SettingsTab } from "@/components/settings";
+import { traceToday } from "@/lib/workflow";
 import { cycleDayLabel, daySlot, formatSchoolDate, todayIso } from "@/lib/calendar";
 import { currentCycleOf } from "@/lib/roles";
 import { periodTitle, shopBells } from "@/lib/economy";
@@ -9,15 +9,17 @@ import { dueCrews, scoredToday } from "@/lib/crews";
 import { agendaFor, skillName } from "@/lib/projects";
 import { periodClock, periodNow, periodNext, SCHOOLTOOL_URL } from "@/lib/bells";
 import { useShopClock } from "@/lib/use-clock";
-import { abOn, deskBellId, deskPacks, exportedThisPeriod, isSubDay, lunchOn, meetingsOn, outNow, schooltoolDone, setDayBell, setSpecials, specialsOn, setTodayMeeting } from "@/lib/store";
+import { abOn, deskBellId, deskPacks, exportedThisPeriod, isSubDay, lunchOn, meetingsOn, outNow, schooltoolDone, setDayBell, setSchooltoolDone, setSpecials, specialsOn, setTodayMeeting } from "@/lib/store";
 import type { EconomyFile } from "@/lib/economy";
 import { CloudBoard } from "@/components/cloud-board";
 import { CrewDesk } from "@/components/crew-desk";
-import { MarkChip } from "@/components/ui";
+import { CtrlPad, CtrlSeg, CtrlTile } from "@/components/ctrl";
 import { markOf } from "@/lib/nav-marks";
 import { cn } from "@/lib/utils";
-import { useNavV2 } from "@/lib/app-nav";
+import { featureOn } from "@/lib/features";
 import { ADMIN_GROUPS, PANE_LABEL, groupOfPane } from "@/lib/admin-nav";
+import { cloudStatus } from "@/lib/desk-cloud";
+import { markSchooltoolOpened } from "@/lib/workflow";
 
 type Jump = (period: number, crewKey?: string, date?: string) => void;
 
@@ -47,6 +49,7 @@ export function AdminHub({
   onPolls,
   unlocked = false,
   onNeedPin,
+  onPane,
 }: {
   file: EconomyFile;
   onChange: (next: EconomyFile) => void;
@@ -73,9 +76,10 @@ export function AdminHub({
   onPolls?: () => void;
   unlocked?: boolean;
   onNeedPin?: () => void;
+  onPane?: (pane: AdminPane) => void;
 }) {
+  const [more, setMore] = useState(false);
   const [pane, setPane] = useState<AdminPane>(start);
-  const [navV2] = useNavV2();
   const [meetDraft, setMeetDraft] = useState("");
   const [specDate, setSpecDate] = useState(() => todayIso());
   const [draftWho, setDraftWho] = useState("Grade 6");
@@ -86,6 +90,10 @@ export function AdminHub({
   useEffect(() => {
     setPane(start);
   }, [start]);
+  function pickPane(next: AdminPane) {
+    setPane(next);
+    onPane?.(next);
+  }
   const now = useShopClock(deskBellId(file), "beat");
   const today = todayIso();
   const sub = isSubDay(file, today);
@@ -115,51 +123,72 @@ export function AdminHub({
   const away = outNow(file, today);
   const group = groupOfPane(pane);
   const inner = group.panes.length > 1 ? [...group.panes] : [];
-  const nav = ADMIN_GROUPS.map((g) => ({
-    id: g.id,
-    label: g.label,
-    on: group.id === g.id,
-    go: () => setPane(g.panes[0] as AdminPane),
-  }));
+  const rooms: { id: string; label: string; on: boolean; go: () => void; show: boolean }[] = [
+    ...ADMIN_GROUPS.map((g) => ({
+      id: g.id,
+      label: g.label,
+      on: group.id === g.id,
+      go: () => pickPane(g.panes[0] as AdminPane),
+      show: true,
+    })),
+    { id: "club", label: "Club", on: false, go: () => onClub?.(), show: featureOn(file, "club") && Boolean(onClub) },
+    { id: "hall", label: "Hall", on: false, go: () => onStudyHall(), show: featureOn(file, "studyhall") },
+    { id: "prints", label: "Prints", on: false, go: () => onPrints?.(), show: featureOn(file, "prints") && Boolean(onPrints) },
+    { id: "lucky", label: "Lucky", on: false, go: () => onLucky?.(), show: featureOn(file, "lucky") && Boolean(onLucky) },
+    { id: "stocks", label: "Stocks", on: false, go: () => onStocks(), show: featureOn(file, "stocks") },
+    { id: "store", label: "Store", on: false, go: () => onStore(), show: featureOn(file, "store") },
+  ];
+
+  const dailyIds = new Set(["today", "day", "records", "people", "wall"]);
+  const dailyRooms = rooms.filter((r) => r.show && dailyIds.has(r.id));
+  const moreRooms = rooms.filter((r) => r.show && !dailyIds.has(r.id));
+  const cloud = cloudStatus();
+  const cloudDue = cloud === "this-pc" || cloud === "off" || cloud === "need-key" || cloud === "error";
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      {!navV2 ? (
-      <nav className="tw-gadget mb-2 flex flex-wrap gap-1 p-1" aria-label="Admin">
-        {nav.map((n) => (
-          <MarkChip key={n.id} mark={markOf(n.id)} on={n.on} onClick={n.go}>
-            {n.label}
-          </MarkChip>
-        ))}
-      </nav>
-      ) : null}
-
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-        {inner.length ? (
-          <div className="mb-2 flex flex-wrap gap-1 px-1">
-            {inner.map((id) => (
-              <MarkChip
-                key={id}
-                mark={markOf(id)}
-                on={pane === id}
-                onClick={() => setPane(id as AdminPane)}
-                className={pane === id ? "bg-fg text-bg" : undefined}
-              >
-                {PANE_LABEL[id] ?? id}
-              </MarkChip>
+      <div className="shrink-0 px-1 pb-2">
+        <CtrlPad>
+          {dailyRooms.map((r) => (
+            <CtrlTile key={r.id} id={r.id} label={r.label} on={r.on} onClick={r.go} mark={markOf(r.id)} />
+          ))}
+        </CtrlPad>
+        <button
+          type="button"
+          onClick={() => setMore((v) => !v)}
+          className={cn("tw-tap mt-1 min-h-10 w-full rounded-xl text-xs font-bold uppercase tracking-wide", more ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+        >
+          {more ? "Less" : "More · Class Theme Club"}
+        </button>
+        {more ? (
+          <CtrlPad className="mt-1">
+            {moreRooms.map((r) => (
+              <CtrlTile key={r.id} id={r.id} label={r.label} on={r.on} onClick={r.go} mark={markOf(r.id)} />
             ))}
+          </CtrlPad>
+        ) : null}
+        {inner.length ? (
+          <div className="mt-1">
+            <CtrlSeg
+              items={inner.map((id) => ({ id, label: PANE_LABEL[id] ?? id }))}
+              value={pane}
+              onChange={(id) => pickPane(id as AdminPane)}
+            />
           </div>
         ) : null}
+      </div>
+
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
         {pane === "crews" ? (
           <CrewDesk file={file} onChange={onChange} startPeriod={shown} />
         ) : pane === "cloud" ? (
           <CloudBoard file={file} unlocked={unlocked} onNeedPin={() => onNeedPin?.()} onLoad={onChange} />
         ) : pane === "wall" ? (
-          <p className="p-3 text-sm text-muted">Wall arrange is the projector layout. Use Admin → Wall.</p>
-        ) : pane !== "today" && pane !== "day" ? (
+          <p className="p-3 text-sm text-muted">Wall arrange is the projector layout.</p>
+        ) : pane !== "today" ? (
           <SettingsBody
             file={file}
-            tab={pane}
+            tab={pane as SettingsTab}
             onChange={onChange}
             onTab={undefined}
             onExportNames={onExportNames}
@@ -208,6 +237,22 @@ export function AdminHub({
             </div>
             <QuarterChip />
           </div>
+          <button
+            type="button"
+            onClick={() => pickPane("day")}
+            className="tw-tap mt-3 min-h-11 w-full rounded-xl bg-elevated px-3 text-left text-sm font-semibold"
+          >
+            Plan ahead · any day through June, or copy a quarter
+          </button>
+          {cloudDue ? (
+            <button
+              type="button"
+              onClick={() => pickPane("cloud")}
+              className="mt-3 w-full rounded-xl bg-cleanup px-3 py-2 text-left text-sm font-semibold text-accent-fg"
+            >
+              Cloud is not bound. Tap for the desk key so the other shop PC gets tonight's save.
+            </button>
+          ) : null}
           {meets.length ? (
             <div className="mt-3 rounded-lg bg-gold/15 px-3 py-2 ring-1 ring-gold">
               {meets.map((m, i) => (
@@ -225,10 +270,18 @@ export function AdminHub({
               href={SCHOOLTOOL_URL}
               target="_blank"
               rel="noreferrer"
-              className={cn("inline-flex min-h-11 items-center rounded-md px-3 text-sm font-semibold", !st ? "bg-loss text-accent-fg" : "bg-elevated text-muted")}
+              onClick={() => markSchooltoolOpened(today)}
+              className={cn("inline-flex min-h-11 items-center rounded-xl px-3 text-sm font-semibold", !st ? "bg-loss text-accent-fg" : "bg-elevated text-muted")}
             >
-              SchoolTool {st ? "in" : "by 8:15"}
+              SchoolTool {st ? "open" : "open · by 8:15"}
             </a>
+            <button
+              type="button"
+              onClick={() => onChange(setSchooltoolDone(file, today, 1, !st))}
+              className={cn("min-h-11 rounded-xl px-3 text-sm font-semibold", st ? "bg-gain text-bg" : "bg-gold text-bg")}
+            >
+              {st ? "Undo in" : "I'm in"}
+            </button>
             {classMine ? (
               <button type="button" onClick={() => onScoreCrew(shown)} className="min-h-11 rounded-md bg-accent px-3 text-sm font-semibold text-accent-fg">
                 Score P{shown}
@@ -298,18 +351,6 @@ export function AdminHub({
               </li>
             ))}
           </ol>
-          <details className="mt-2 text-xs text-muted">
-            <summary className="cursor-pointer font-semibold uppercase tracking-wide">Role paths</summary>
-            <div className="mt-2 grid gap-2 sm:grid-cols-2">
-              {ROLE_PATHS.map((r) => (
-                <p key={r.id}>
-                  <span className="font-semibold text-fg">{r.title}</span>
-                  <span> · {r.who}</span>
-                  <span className="block">{r.steps.join(" → ")}</span>
-                </p>
-              ))}
-            </div>
-          </details>
         </section>
       )}
 
@@ -350,7 +391,7 @@ export function AdminHub({
     <div className="flex flex-col gap-3">
       <section className="tw-gadget p-3">
         <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Schedule · announcements</p>
-        <p className="mt-1 text-sm text-muted">Bells, cycle, sub, lunch, wall cards. Same controls Day used to live on.</p>
+        <p className="mt-1 text-sm text-muted">Pin a meeting or special for today. Plan any later day on Day.</p>
         <form
           className="mt-3 flex flex-wrap gap-1"
           onSubmit={(e) => {
@@ -437,21 +478,13 @@ export function AdminHub({
             </div>
           </form>
         </details>
-        <div className="mt-3">
-          <SettingsBody
-            file={file}
-            tab="day"
-            embed
-            onChange={onChange}
-            onTab={undefined}
-            onExportNames={onExportNames}
-            onExport={onExport}
-            onSave={onSave}
-            onTips={onTips}
-            onDesk={onScore}
-            onOpenId={onOpenId}
-          />
-        </div>
+        <button
+          type="button"
+          onClick={() => pickPane("day")}
+          className="tw-tap mt-3 min-h-11 w-full rounded-xl bg-fg px-3 text-sm font-semibold text-bg"
+        >
+          Open year plan
+        </button>
       </section>
     </div>
     </div>

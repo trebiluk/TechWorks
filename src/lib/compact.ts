@@ -87,7 +87,7 @@ export function compactStudent(s: RawStudent): RawStudent {
   return next;
 }
 
-/** Keep this week + last 10 school days of dayLog in the hot file. */
+/** Keep this week, last 10 school days, and any day you already planned. */
 export function hotDayLog(file: EconomyFile): EconomyFile["meta"]["dayLog"] {
   const log = file.meta.dayLog ?? {};
   const keep = new Set<string>();
@@ -95,6 +95,15 @@ export function hotDayLog(file: EconomyFile): EconomyFile["meta"]["dayLog"] {
   for (const d of week) keep.add(d);
   const dates = Object.keys(log).sort();
   for (const d of dates.slice(-10)) keep.add(d);
+  const today = todayIso();
+  for (const d of dates) {
+    if (d >= today) keep.add(d);
+    const day = log[d];
+    if (!day) continue;
+    if (day.lunch || day.sub || day.bell || day.specials?.length || day.special) keep.add(d);
+    if (day.cards?.some((c) => c.title?.trim())) keep.add(d);
+    if (Object.values(day.periodGoals ?? {}).some(Boolean)) keep.add(d);
+  }
   const out: NonNullable<EconomyFile["meta"]["dayLog"]> = {};
   for (const d of keep) {
     if (log[d]) out[d] = log[d];

@@ -37,8 +37,9 @@ import {
   type ProjectKind,
   type ShopProject,
 } from "@/lib/projects";
-import { todayIso } from "@/lib/calendar";
+import { todayIso, quarterNow } from "@/lib/calendar";
 import { currentCycleOf } from "@/lib/roles";
+import { copyQuarterCurriculum } from "@/lib/year-plan";
 import { STEM_LABEL, STEM_LETTERS, STEM_WHY, stemOf } from "@/lib/stems";
 import { cn } from "@/lib/utils";
 
@@ -72,6 +73,7 @@ export function ProjectsBoard({
   const peda = pedagogySkills(file);
   const library = list.filter((p) => !p.grades.length);
   const gradeList = list.filter((p) => p.grades.includes(grade));
+  const qn = quarterNow(todayIso()).n;
 
   function gate(): boolean {
     if (unlocked) return true;
@@ -96,7 +98,7 @@ export function ProjectsBoard({
           P{period} · {today.title} · {today.activityName}
           {today.project.prompt ? <span className="text-gold"> · {today.project.prompt}</span> : null}
         </p>
-        <div className="ml-auto flex gap-1">
+        <div className="ml-auto flex flex-wrap gap-1">
           {bells.map((b) => (
             <button
               key={b.period}
@@ -107,6 +109,15 @@ export function ProjectsBoard({
               P{b.period}
             </button>
           ))}
+          {unlocked && qn < 4 ? (
+            <button
+              type="button"
+              onClick={() => onChange(copyQuarterCurriculum(file, qn, (qn + 1) as 2 | 3 | 4))}
+              className="min-h-9 rounded-md bg-gold px-3 text-xs font-semibold text-bg"
+            >
+              Copy Q{qn} → Q{qn + 1}
+            </button>
+          ) : null}
         </div>
       </header>
 
@@ -205,6 +216,34 @@ export function ProjectsBoard({
             ) : project.prompt ? (
               <p className="text-sm text-muted">{project.prompt}</p>
             ) : null}
+            {unlocked ? (
+              <input
+                value={project.stemLine ?? ""}
+                onChange={(e) => patch({ ...project, stemLine: e.target.value })}
+                placeholder="One STEM sentence on the wall — not four capital words"
+                className="w-full rounded-md bg-elevated px-3 py-2 text-sm outline-none"
+              />
+            ) : project.stemLine ? (
+              <p className="text-sm text-muted">{project.stemLine}</p>
+            ) : null}
+            {unlocked ? (
+              <input
+                value={(project.constraints ?? []).join(". ")}
+                onChange={(e) =>
+                  patch({
+                    ...project,
+                    constraints: e.target.value
+                      .split(/[.;]+/)
+                      .map((s) => s.trim())
+                      .filter(Boolean),
+                  })
+                }
+                placeholder="Rules — One tool at a time. Goggles on."
+                className="w-full rounded-md bg-elevated px-3 py-2 text-sm outline-none"
+              />
+            ) : project.constraints?.length ? (
+              <p className="text-sm text-muted">{project.constraints.join(". ")}</p>
+            ) : null}
             <div className="flex flex-wrap gap-1">
               {STEM_LETTERS.map((L) => {
                 const on = (project.stem ?? []).includes(L);
@@ -227,7 +266,7 @@ export function ProjectsBoard({
                 );
               })}
             </div>
-            <p className="text-xs text-subtle">STEM letters tag the unit. Skills stay 1–4. Not a second MST score.</p>
+            <p className="text-xs text-subtle">STEM letters tag the unit. The wall shows one sentence, not the four words. Skills stay 1–4.</p>
             <p className="text-sm text-muted">Save is automatic. Assign to a grade on the left, or to a crew below.</p>
 
             <div className="flex flex-wrap gap-1">
@@ -303,7 +342,8 @@ export function ProjectsBoard({
             <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Activities · average into one project grade · 1–4 is the expected Watch mark</p>
             <ol className="grid gap-1 sm:grid-cols-2">
               {activitiesOf(project).map((a, i) => (
-                <li key={a.id} className="flex items-center gap-1 rounded-md bg-elevated px-2">
+                <li key={a.id} className="rounded-md bg-elevated px-2 py-2">
+                  <div className="flex items-center gap-1">
                   <span className="tw-readout w-4 text-xs">{i + 1}</span>
                   {unlocked ? (
                     <input
@@ -345,6 +385,31 @@ export function ProjectsBoard({
                     <button type="button" onClick={() => onChange(dropActivity(file, project.id, a.id))} className="px-1 text-muted">
                       ×
                     </button>
+                  ) : null}
+                  </div>
+                  {unlocked ? (
+                    <div className="mt-1 grid gap-1">
+                      <input
+                        value={a.today ?? ""}
+                        onChange={(e) => onChange(patchActivity(file, project.id, a.id, { today: e.target.value }))}
+                        placeholder="Today — what to build"
+                        className="min-h-8 w-full rounded bg-surface px-2 text-xs outline-none"
+                      />
+                      <input
+                        value={a.done ?? ""}
+                        onChange={(e) => onChange(patchActivity(file, project.id, a.id, { done: e.target.value }))}
+                        placeholder="Done — how you know"
+                        className="min-h-8 w-full rounded bg-surface px-2 text-xs outline-none"
+                      />
+                      <input
+                        value={a.lookFor ?? ""}
+                        onChange={(e) => onChange(patchActivity(file, project.id, a.id, { lookFor: e.target.value }))}
+                        placeholder="Look-for — what a 3 looks like"
+                        className="min-h-8 w-full rounded bg-surface px-2 text-xs outline-none"
+                      />
+                    </div>
+                  ) : a.today ? (
+                    <p className="mt-1 text-xs text-muted">{a.today}</p>
                   ) : null}
                 </li>
               ))}

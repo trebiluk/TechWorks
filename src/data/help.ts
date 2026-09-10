@@ -73,12 +73,12 @@ export const HELP_ARTICLES: HelpArticle[] = [
     body: "This is the class wall. Names here are shop aliases, not legal names. Gold numbers are skill XP. $ is classroom perks, a game. The ring is minutes left in this period. Coral means cleanup — tools away, seats, floor.",
   },
   {
-    id: "wall-teach",
+    id: "wall-job",
     category: "Wall",
-    title: "Dashboard vs Teach",
-    tags: ["teach", "dashboard", "tools", "timer", "projector"],
+    title: "Job card on the wall",
+    tags: ["wall", "question", "rules", "today", "done", "look-for", "stem", "projector"],
     wall: true,
-    body: "Dashboard stays up all day: goals, schedule, school board. Teach is only when you are in front of the group — giant DO THIS NOW and lesson slots. Same Tools on both (timer, draw a worker, draw a crew). Unlock Teach to show or hide Slots, Tools, Packs, Objective.",
+    body: "The Goals plate is the job, not the filing system. Five lines: the driving question, the rules (One tool at a time. Goggles on.), today, done, and look-for a 3. Tap Goggles (PIN) before tools open. One STEM sentence sits under the question — not SCIENCE · TECHNOLOGY · ENGINEERING · MATH. Lucky Bench, pizza, polls, and Top 3 stay off until someone has a score. Edit the words in Learn → Projects. Empty browsers say this desk lives on the shop PC.",
   },
   {
     id: "wall-menu",
@@ -164,7 +164,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Roles",
     title: "Teacher path",
     tags: ["teacher", "workflow", "pin", "export"],
-    body: "Wall on. SchoolTool by 8:15. Goal from the project. Unlock 1111. Verify each crew after the lead scores. Nurse stamps time. Cleanup coral. Store / prints / lucky need PIN. Export once a period. Writes: marks, attend, passes, ledger, skills, grades, vault.",
+    body: "Wall on. SchoolTool by 8:15 — open the site, then tap I'm in. Goal from the project. Unlock 1111. After the last crew, Looks good (10s check) then Save, which names the cloud. Nurse stamps time. Cleanup coral. Store / prints / lucky need PIN. Writes: marks, attend, passes, ledger, skills, grades, vault.",
   },
   {
     id: "roles-crew",
@@ -240,7 +240,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Admin",
     title: "Unlock is Admin",
     tags: ["admin", "pin", "lock", "score", "unlock"],
-    body: "Lock stays top-right. Unlock (PIN) opens Admin — Today, Class, Games, System. Score is the clipboard. Settings is Look, Day, Roster, Money, Skills, Modules. Lock returns the projector to the wall. Kids never see Admin.",
+    body: "Lock stays top-right. Unlock (PIN 1111) during a Tech period opens Score; otherwise Admin → Today. Today is SchoolTool (open, then I'm in), scoring, cloud, and today's pin. Day is the year planner. Records is Backups / Names / Cloud. Crews, Wall arrange, Class, Theme sit on the pad. Kids never see Admin.",
+  },
+  {
+    id: "admin-year",
+    category: "Admin",
+    title: "Year plan and copy a quarter",
+    tags: ["year", "plan", "day", "copy", "quarter", "deck", "projects", "june"],
+    body: "Admin → Day. Pick any school day through June. Set the meeting pin, lunch, sub, bells, two wall cards, and each period's goal. Copy to the next school day, through this quarter, or through June. Copy Q1 → Q2 (also Q2 → Q3, Q3 → Q4) duplicates that quarter's grade projects onto the next cycles, copies planned days in order, and snapshots the Deck. Then edit Projects and Dash → Deck (Q1–Q4 chips) without losing this quarter. Compact save keeps those future days.",
   },
   {
     id: "pins",
@@ -326,7 +333,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Skills",
     title: "Projects",
     tags: ["project", "agenda", "activity", "plan book", "cycle", "gradebook", "stem", "driving question", "unit"],
-    body: "Learn → Projects. Each title is a STEM unit: a driving question plus S/T/E/M chips. Left column is the library. Drag a title into Grade 6 / 7 / 8. Activities average into one project grade; the 1–4 next to an activity is the expected Watch mark (gold ring). Assign G6/G7/G8 makes it live. Not a second MST score — Standard 5 stays on NY Tech. PIN to edit.",
+    body: "Learn → Projects. Each title is a STEM unit: a driving question, rules, and one STEM sentence on the wall. Left column is the library. Drag a title into Grade 6 / 7 / 8. Activities average into one project grade; the 1–4 next to an activity is the expected Watch mark (gold ring). Today / Done / Look-for on an activity are the projector lines. Assign G6/G7/G8 makes it live. Not a second MST score — Standard 5 stays on NY Tech. PIN to edit.",
   },
   {
     id: "studyhall",
@@ -498,7 +505,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "One desk",
     tags: ["web", "mobile", "ipad", "projector", "layout", "dock"],
-    body: "One layout. Bottom dock is Dash · Learn · Crew · Rosters · Admin — each with a pictogram and the word. Widescreen lays the same cards in columns; portrait wraps them. Now and Goals grow type so the back row can read it. Do this now stays off the live Dash (it was eating phones) — Teach still has the beats, or turn the plate on in Admin → Wall. Arrange the wall in Admin → Wall (PIN). Rosters is the class yearbook (aliases, gold if you lead). Legal names stay in Admin → Records. No Web/Mobile switch. Google Site embed still hides the dock so the projector stays a wall.",
+    body: "One layout. Bottom dock is Dash · Learn · Crew · Rosters · Admin — pictogram plus the word. Admin opens a tile pad (Today, Records, Crews, Wall…). Records splits Backups / Roster / Cloud on one bar. Dash tabs stay one swipe row. Widescreen lays the same cards in columns; portrait wraps them. Now and Goals grow type so the back row can read it. Do this now stays off the live Dash (it was eating phones) — Teach still has the beats, or turn the plate on in Admin → Wall. Arrange the wall in Admin → Wall (PIN). Rosters is the class yearbook (aliases, gold if you lead). Legal names stay in Admin → Records. No Web/Mobile switch. Google Site embed still hides the dock so the projector stays a wall.",
   },
   {
     id: "themes",

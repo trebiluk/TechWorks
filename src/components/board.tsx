@@ -5,8 +5,8 @@ import { CircleHelp, Search } from "lucide-react";
 import { TwWordmark } from "@/components/tw-mark";
 import snapshot from "@/data/economy.json";
 import type { EconomyFile } from "@/lib/economy";
-import { bellFor, isLiveStudent, score } from "@/lib/economy";
-import { loadDesk, saveDesk, saveDeskNow, applyDjia, stampLiveExport, isSubDay, exportedThisPeriod, lunchOn, deskBellId, deskSavePending } from "@/lib/store";
+import { bellFor, isLiveStudent, score, shopBells } from "@/lib/economy";
+import { loadDesk, saveDesk, saveDeskNow, applyDjia, stampLiveExport, isSubDay, exportedThisPeriod, lunchOn, deskBellId, deskSavePending, setSchooltoolDone } from "@/lib/store";
 import { hydrateVault } from "@/lib/vault";
 import { applyCloudPack, localIsNewer, pullCloud, pushCloud } from "@/lib/desk-cloud";
 import { CloudChip } from "@/components/cloud-board";
@@ -43,6 +43,7 @@ import { ADMIN_GROUPS, defaultPane, paneInGroup } from "@/lib/admin-nav";
 import { cn } from "@/lib/utils";
 import { HOUSE_BERTY, HOUSE_MRK, houseHits } from "@/lib/house";
 import type { NextJob } from "@/lib/workflow";
+import { markSchooltoolOpened, saveCloudHint } from "@/lib/workflow";
 
 const RosterWall = lazy(() => import("@/components/roster-wall").then((m) => ({ default: m.RosterWall })));
 const ScoreDesk = lazy(() => import("@/components/score").then((m) => ({ default: m.ScoreDesk })));
@@ -209,13 +210,19 @@ export function Board() {
   function runJob(job: NextJob) {
     if (job.go === "schooltool") {
       window.open(SCHOOLTOOL_URL, "_blank", "noreferrer");
+      markSchooltoolOpened(todayIso());
+      return;
+    }
+    if (job.go === "schooltool-in") {
+      setFile((cur) => setSchooltoolDone(cur, todayIso(), 1, true));
+      flashMsg("SchoolTool in", "ok");
       return;
     }
     if (job.go === "export") {
-      void exportLive();
+      saveNow(job.period);
       return;
     }
-    if (job.go === "score") {
+    if (job.go === "score" || job.go === "verify") {
       if (job.period) setJumpPeriod(job.period);
       if (job.crew) setJumpCrew(job.crew);
       if (job.date) setJumpDate(job.date);
@@ -247,10 +254,11 @@ export function Board() {
     flashMsg(`${alias} → ${band}`, "ok");
   }
 
-  function saveNow() {
+  function saveNow(period?: number) {
     saveDeskNow(file);
     void pushCloud(file);
-    flashMsg("Saved");
+    setFile((cur) => stampLiveExport(cur, todayIso(), period ?? liveP ?? undefined));
+    window.setTimeout(() => flashMsg(saveCloudHint(), "ok"), 80);
   }
 
   async function exportLive() {
@@ -500,7 +508,15 @@ export function Board() {
               { id: "store", label: t("Store"), on: view === "store", onClick: () => go("store"), hidden: !featureOn(file, "store") },
             ];
 
-  const appStrip = !crewOn ? <AppNav section={section} onSection={goSection} tabs={v2Tabs} unlocked={unlocked} hideSections /> : null;
+  const appStrip = !crewOn ? (
+    <AppNav
+      section={section}
+      onSection={goSection}
+      tabs={section === "admin" && view === "admin" && adminPane !== "wall" ? [] : v2Tabs}
+      unlocked={unlocked}
+      hideSections
+    />
+  ) : null;
 
   return (
     <TipsProvider on={describeOn}>
@@ -518,11 +534,11 @@ export function Board() {
         <>
         <header className="desk-chrome tw-gadget tw-hud mb-1 min-w-0">
             <div className="flex min-w-0 flex-col gap-1">
-            <div className="nav-cluster flex min-w-0 items-center gap-1 sm:flex-nowrap sm:gap-2">
+            <div className="nav-cluster flex min-w-0 items-center gap-1">
               <button type="button" onClick={() => go("overview")} title="FERPA wall · aliases only" className="shrink-0">
                 <TwWordmark />
               </button>
-              <div className="relative z-20 ml-auto flex min-w-0 flex-wrap items-center justify-end gap-1">
+              <div className="tw-hud-row relative z-20 ml-auto">
                 {unlocked ? (
                   <div className="relative hidden md:block">
                     <Search className="pointer-events-none absolute left-2 top-2.5 size-3.5 text-subtle" />
@@ -577,7 +593,7 @@ export function Board() {
                     setView("overview");
                   }}
                 />
-                <button type="button" title={t("How this class works")} aria-label={t("Help")} onClick={() => setHelpOpen(true)} className="tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-md text-fg hover:bg-elevated">
+                <button type="button" title={t("How this class works")} aria-label={t("Help")} onClick={() => setHelpOpen(true)} className="tw-hud-btn tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-xl text-fg hover:bg-elevated">
                   <CircleHelp className="size-5" />
                 </button>
                 <LangChip />
@@ -692,6 +708,7 @@ export function Board() {
           file={file}
           onChange={setFile}
           start={adminPane}
+          onPane={setAdminPane}
           onScore={() => goDesk("score")}
           onScoreCrew={(p, key, date) => {
             setJumpPeriod(p);
@@ -955,6 +972,17 @@ export function Board() {
               setLearnStart(next === "grades" ? "grades" : next === "projects" ? "projects" : "skills");
               setView("skills");
             } else if (next) setView(next);
+            else if (!embed && !portalMode) {
+              const live = periodNow(deskBellId(file));
+              const shop = shopBells(file).map((b) => b.period);
+              if (live != null && live !== 6 && shop.includes(live)) {
+                setJumpPeriod(live);
+                setView("score");
+              } else {
+                setAdminPane("today");
+                setView("admin");
+              }
+            }
             if (pendingId) {
               setOpenId(pendingId);
               setPendingId(null);

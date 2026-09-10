@@ -11,11 +11,10 @@ import { DayStrip } from "@/components/day-strip";
 import { WeatherChip } from "@/components/weather-chip";
 import { Berty, BertyPeek } from "@/components/berty";
 import { Fold } from "@/components/fold";
-import { agendaFor, periodPaceLine, phaseIndex, prettyStage } from "@/lib/projects";
-import { STEM_LABEL } from "@/lib/stems";
-import { packOf, slotNow, teachDay, teachObjective } from "@/lib/teach";
-import { lessonForPeriod } from "@/lib/lessons";
-import { boardCardsOf, deskBellId, isSubDay, onAbRoster, schooltoolDone, setSchooltoolDone, specialsOn, visitOn, abOn } from "@/lib/store";
+import { agendaFor, jobCardOf, periodPaceLine, phaseIndex, prettyStage } from "@/lib/projects";
+import { JobCard } from "@/components/job-card";
+import { ppeOn, setPpe } from "@/lib/ppe";
+import { dayCardsOn, deskBellId, isSubDay, onAbRoster, schooltoolDone, setSchooltoolDone, specialsOn, visitOn, abOn } from "@/lib/store";
 import { VisitChip } from "@/components/visit-chip";
 import { cycleProgress, formatSchoolDate, isSchoolDay, nextOpenDay, quarterProgress, todayIso, yearProgress } from "@/lib/calendar";
 import { tapeMark } from "@/lib/tape";
@@ -150,7 +149,7 @@ export const Dashboard = memo(function Dashboard({
   const bertyOn = showBerty(featureOn(file, "berty"), { cleanup: Boolean(clock?.cleanup), passing });
   const pulse = useMemo(() => (featureOn(file, "club") ? clubPulse(loadClub(), today, now) : null), [file, today, now]);
   const specials = specialsOn(file, today);
-  const notes = useMemo(() => boardCardsOf(file).filter((c) => c.title.trim()), [file]);
+  const notes = useMemo(() => dayCardsOn(file, today).filter((c) => c.title.trim()), [file, today]);
   const poll = pollForPeriod(file, shown);
   const combo = useMemo(() => byCombo(file, list.filter((s) => s.period !== 6)), [file, list]);
   const ranked = useMemo(() => applySort(combo, rankBoard === "perk" ? "wallet" : "level"), [combo, rankBoard]);
@@ -238,7 +237,7 @@ export const Dashboard = memo(function Dashboard({
   );
 
   const classCard = (
-    <article className="tw-gadget tw-hud tw-fill-wide flex min-h-[10rem] flex-col p-3">
+    <article data-job-plate className="tw-gadget tw-hud tw-fill-wide flex min-h-[10rem] flex-col p-3">
       {viewMine ? (
         <GoalsCard
           file={file}
@@ -258,6 +257,7 @@ export const Dashboard = memo(function Dashboard({
           onTeach={onOpenMod ? () => onOpenMod("teach") : undefined}
           cleanup={Boolean(clock?.cleanup)}
           berty={bertyOn && shopLive && !clock?.cleanup}
+          onChange={onChange}
         />
       ) : (
         <p className="text-sm text-muted">{t("Tap a Tech period on the strip.")}</p>
@@ -303,9 +303,16 @@ export const Dashboard = memo(function Dashboard({
         </div>
         <ol className="grid grid-cols-1 gap-0.5 sm:grid-cols-2">
           {!ranked.some((s) => s.xp > 0 || s.quarter > 0) ? (
-            <li className="px-2 py-2 text-sm text-muted sm:col-span-2">{t("Aliases score here.")}</li>
+            unlocked ? (
+              <li className="px-2 py-2 text-sm text-muted sm:col-span-2">{t("Aliases score here.")}</li>
+            ) : (
+              <li className="px-2 py-2 text-sm text-muted sm:col-span-2">
+                {t("This desk lives on the shop PC.")} {t("Open that computer to see the class.")}
+              </li>
+            )
           ) : null}
-          {ranked.slice(0, layout.schoolN).map((s, i) => (
+          {ranked.some((s) => s.xp > 0 || s.quarter > 0)
+            ? ranked.slice(0, layout.schoolN).map((s, i) => (
             <li key={s.id}>
               <button type="button" onClick={() => onOpenId(s.id)} className={cn("flex w-full min-h-9 items-center gap-2 rounded-md px-2 text-left hover:bg-elevated", i === 0 && "tw-podium")}>
                 <span className={cn("grid size-6 place-items-center rounded-full font-mono text-xs font-bold", i === 0 ? "bg-gold text-bg" : i < 3 ? "bg-accent text-accent-fg" : "tw-readout")}>{i + 1}</span>
@@ -317,7 +324,8 @@ export const Dashboard = memo(function Dashboard({
                 {rankBoard === "perk" || s.quarter ? <PerkBit n={s.quarter} hot /> : null}
               </button>
             </li>
-          ))}
+          ))
+            : null}
         </ol>
       </article>
       <article className="tw-gadget tw-hud p-3">
@@ -364,6 +372,7 @@ export const Dashboard = memo(function Dashboard({
           unlocked={unlocked}
           period={shown}
           onOpen={onOpenMod}
+          showOff={sortOn}
           onToggle={
             unlocked && onChange
               ? (fid: FeatureId, on: boolean) => onChange(setFeature(file, fid, on))
@@ -387,7 +396,10 @@ export const Dashboard = memo(function Dashboard({
         </article>
       );
     }
-    if (id === "kpis") return kpisCard;
+    if (id === "kpis") {
+      if (!file.students.length && !sortOn && !unlocked) return null;
+      return kpisCard;
+    }
     if (id === "poll") return poll ? <PollWall file={file} period={shown} /> : sortOn ? ghost(t("Poll")) : null;
     return null;
   }
@@ -409,7 +421,7 @@ export const Dashboard = memo(function Dashboard({
             )}
           >
             <ClipboardList className="size-3.5" />
-            {stLate ? "SchoolTool · P1 by 8:15" : "SchoolTool"}
+            SchoolTool{stLate ? <span className="hidden sm:inline"> · P1 by 8:15</span> : null}
             {unlocked ? <span className="opacity-80">tap = in</span> : null}
           </button>
         </div>
@@ -515,20 +527,18 @@ function LayoutBar({
 function GoalsCard({
   file,
   shown,
-  goal,
-  agenda,
   todayHit,
   viewKids,
   unlocked,
   peeking,
   live,
-  today,
   onPeriod,
   onOpenId,
   onNow,
   onTeach,
   cleanup,
   berty,
+  onChange,
 }: {
   file: EconomyFile;
   shown: number;
@@ -547,106 +557,86 @@ function GoalsCard({
   onTeach?: () => void;
   cleanup?: boolean;
   berty?: boolean;
+  onChange?: (next: EconomyFile) => void;
 }) {
   const { t } = useLang();
+  const job = jobCardOf(file, shown);
   const pace = periodPaceLine(file, shown);
-  const pack = packOf(file, today, shown);
-  const day = teachDay(file, today, shown);
-  const lesson = lessonForPeriod(file, today, shown, pack.id, day.objective);
-  const slot = live === shown ? slotNow(file, today, shown) : null;
-  const obj = (day.objective || teachObjective(file, today, shown) || "").trim();
-  const project = agenda.title || lesson?.title || "Today";
-  const stage = prettyStage(goal) || agenda.activityName || "";
-  const nowLine = slot?.line || obj || stage || t("Sit with your crew.");
-  const goalIdx = Math.max(1, phaseIndex(pace.goal || goal));
   const lanes = [...pace.rows].sort((a, b) => phaseIndex(b.current) - phaseIndex(a.current));
   const sameStage = lanes.length > 0 && lanes.every((c) => prettyStage(c.current) === prettyStage(lanes[0].current));
+  const hasRanks = viewKids.some((s) => s.xp > 0 || s.quarter > 0);
+  const gogglesOn = ppeOn(file, shown);
+  const actions = (
+    <>
+      {peeking && live != null ? (
+        <button type="button" onClick={onNow} className="min-h-11 shrink-0 rounded-md bg-accent px-3 text-sm font-semibold text-accent-fg">
+          P{live}
+        </button>
+      ) : null}
+      {unlocked ? (
+        <button type="button" title={t("Score")} onClick={() => onPeriod(shown)} className="min-h-11 shrink-0 rounded-md bg-fg px-3 text-sm font-semibold text-bg">
+          {t("Score")}
+        </button>
+      ) : null}
+    </>
+  );
   return (
-    <div data-goals className="relative">
+    <div data-goals className="relative flex min-h-0 flex-1 flex-col">
       {cleanup ? <Berty pose="point" size="sm" alert className="absolute -top-1 right-0 z-10" /> : null}
-      {berty ? <BertyPeek pose={bertyPose({ live: true, slot: slot?.kind ?? "work" })} className="absolute -top-1 right-0 z-10" /> : null}
-      <div className="min-w-0">
-        <div className="flex items-start gap-2">
-          <div className="min-w-0 flex-1">
-            <p className="tw-fill-label font-bold uppercase tracking-[0.18em] text-gold">
-              P{shown}
-              {stage ? <span className="text-muted"> · {stage}</span> : null}
-              {slot ? <span className="text-subtle"> · {Math.max(1, slot.mins)}m</span> : null}
-            </p>
-            <button type="button" onClick={onTeach} className="block w-full text-left" disabled={!onTeach}>
-              <p className="tw-fill-hero font-display font-semibold tracking-tight">{project}</p>
-            </button>
-            {agenda.project?.prompt ? <p className="mt-1 text-sm text-gold">{agenda.project.prompt}</p> : null}
-            {agenda.project?.stem?.length ? (
-              <p className="mt-0.5 font-mono text-[11px] uppercase tracking-wider text-subtle">
-                {agenda.project.stem.map((L) => STEM_LABEL[L]).join(" · ")}
-              </p>
-            ) : null}
-            <p className="tw-fill-line mt-2">{nowLine}</p>
-            {day.notes && day.notes !== nowLine && day.notes !== obj ? (
-              <p className="mt-0.5 text-sm text-muted">{day.notes}</p>
-            ) : null}
-            <p className="mt-1 font-mono text-xs tabular-nums text-subtle">
-              {todayHit.scored}/{todayHit.n} {t("scored")}
-              {todayHit.blank ? ` · ${todayHit.blank} ${t("left")}` : ""}
-            </p>
-          </div>
-          {peeking && live != null ? (
-            <button type="button" onClick={onNow} className="min-h-11 shrink-0 rounded-md bg-accent px-3 text-sm font-semibold text-accent-fg">
-              P{live}
-            </button>
-          ) : null}
-          {unlocked ? (
-            <button type="button" title={t("Score")} onClick={() => onPeriod(shown)} className="min-h-11 shrink-0 rounded-md bg-fg px-3 text-sm font-semibold text-bg">
-              {t("Score")}
-            </button>
-          ) : null}
-        </div>
-        {lanes.length ? (
-          sameStage ? (
-            <p className="mt-3 truncate text-sm text-muted">{lanes.map((c) => c.name).join(" · ")}</p>
-          ) : (
-            <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {lanes.map((c, i) => {
-                const idx = phaseIndex(c.current);
-                const pct = Math.min(100, Math.round(((idx + 1) / (goalIdx + 1)) * 100));
-                return (
-                  <li key={c.key} className="flex flex-col items-center text-center">
-                    <ProgressRing pct={Math.max(8, pct)} label={`${pct}`} sub={c.name} tone={i === 0 ? "gold" : c.lag > 0 ? "warn" : "gain"} size="sm" />
-                    <span className="mt-0.5 text-[10px] text-muted">{prettyStage(c.current) || "—"}</span>
-                  </li>
-                );
-              })}
-            </ul>
-          )
+      {berty ? <BertyPeek pose={bertyPose({ live: true, slot: "work" })} className="absolute -top-1 right-0 z-10" /> : null}
+      <JobCard
+        job={job}
+        period={shown}
+        onTeach={onTeach}
+        actions={actions}
+        ppeOn={gogglesOn}
+        onPpe={unlocked && onChange ? () => onChange(setPpe(file, shown, !gogglesOn)) : undefined}
+      />
+      {todayHit.n > 0 ? (
+        <p className="mt-2 font-mono text-xs tabular-nums text-subtle">
+          {todayHit.scored}/{todayHit.n} {t("scored")}
+          {todayHit.blank ? ` · ${todayHit.blank} ${t("left")}` : ""}
+        </p>
+      ) : unlocked ? (
+        <p className="mt-2 text-xs text-muted">{t("This desk lives on the shop PC.")}</p>
+      ) : null}
+      {lanes.length ? (
+        sameStage ? (
+          <p className="mt-2 truncate text-sm text-muted">{lanes.map((c) => c.name).join(" · ")}</p>
+        ) : unlocked ? (
+          <p className="mt-2 truncate text-sm text-muted">{lanes.map((c) => `${c.name} · ${prettyStage(c.current)}`).join(" · ")}</p>
         ) : (
-          <p className="mt-3 text-sm text-muted">{t("No crews yet.")}</p>
-        )}
-      </div>
-      <div className="grid min-w-0 grid-cols-2 gap-2 sm:grid-cols-1">
-        <div className="rounded-lg bg-elevated px-2.5 py-2">
-          <p className="text-xs font-semibold uppercase tracking-wider text-subtle">{t("Reward")}</p>
-          <PeriodRewardChip file={file} period={shown} className="mt-1" />
+          <p className="mt-2 truncate text-sm text-muted">{lanes.map((c) => c.name).join(" · ")}</p>
+        )
+      ) : unlocked ? (
+        <p className="mt-2 text-sm text-muted">{t("No crews yet.")}</p>
+      ) : null}
+      {hasRanks ? (
+        <div className="mt-3 grid min-w-0 grid-cols-2 gap-2 sm:grid-cols-1">
+          <div className="rounded-lg bg-elevated px-2.5 py-2">
+            <p className="text-xs font-semibold uppercase tracking-wider text-subtle">{t("Reward")}</p>
+            <PeriodRewardChip file={file} period={shown} className="mt-1" />
+          </div>
+          <div className="rounded-lg bg-elevated px-2.5 py-2">
+            <p className="text-xs font-semibold uppercase tracking-wider text-subtle">{t("Top 3")}</p>
+            <ol className="mt-1 space-y-1">
+              {viewKids.slice(0, 3).map((s, i) => (
+                <li key={s.id}>
+                  <button type="button" disabled={!unlocked} onClick={() => onOpenId(s.id)} className="flex w-full min-h-9 items-center gap-1.5 text-left disabled:cursor-default">
+                    <span className="w-3 font-mono text-xs text-subtle">{i + 1}</span>
+                    <span className="text-base" aria-hidden>
+                      {avatarOf(s.icon, s.id)}
+                    </span>
+                    <span className={cn("min-w-0 flex-1 truncate text-sm", i === 0 ? "font-semibold text-gold" : "")}>{s.first}</span>
+                    <XpBit xp={s.xp} level={s.level} hot />
+                    {s.quarter ? <PerkBit n={s.quarter} hot /> : null}
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
-        <div className="rounded-lg bg-elevated px-2.5 py-2">
-          <p className="text-xs font-semibold uppercase tracking-wider text-subtle">{t("Top 3")}</p>
-          <ol className="mt-1 space-y-1">
-            {viewKids.length ? viewKids.slice(0, 3).map((s, i) => (
-              <li key={s.id}>
-                <button type="button" disabled={!unlocked} onClick={() => onOpenId(s.id)} className="flex w-full min-h-9 items-center gap-1.5 text-left disabled:cursor-default">
-                  <span className="w-3 font-mono text-xs text-subtle">{i + 1}</span>
-                  <span className="text-base" aria-hidden>{avatarOf(s.icon, s.id)}</span>
-                  <span className={cn("min-w-0 flex-1 truncate text-sm", i === 0 ? "font-semibold text-gold" : "")}>{s.first}</span>
-                  <XpBit xp={s.xp} level={s.level} hot />
-                  {s.quarter ? <PerkBit n={s.quarter} hot /> : null}
-                </button>
-              </li>
-            )) : (
-              <li className="text-sm text-muted">{t("No aliases yet.")}</li>
-            )}
-          </ol>
-        </div>
-      </div>
+      ) : null}
     </div>
   );
 }

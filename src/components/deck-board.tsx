@@ -5,7 +5,8 @@ import { ChevronLeft, ChevronRight, Copy, Download, Maximize2, Pencil, Plus, Rot
 import { Berty } from "@/components/berty";
 import { COPYRIGHT_LINE } from "@/lib/copy";
 import { DECK, type DeckCard, type DeckKind, type DeckSlide } from "@/data/deck";
-import { blankSlide, cloneDeck, downloadDeck, loadDeck, resetDeck, saveDeck, sanitizeSlide } from "@/lib/deck-store";
+import { blankSlide, cloneDeck, copyDeckToQuarter, DECK_QUARTERS, downloadDeck, hasQuarterDeck, liveDeckQuarter, loadDeck, loadQuarterDeck, resetDeck, saveDeck, saveQuarterDeck, sanitizeSlide, setLiveDeckQuarter, type DeckQuarter } from "@/lib/deck-store";
+import { quarterNow, todayIso } from "@/lib/calendar";
 import { cn } from "@/lib/utils";
 
 const FILE = "/TechWorks-Deck.pptx";
@@ -354,6 +355,7 @@ export function DeckBoard({
   onNeedPin?: () => void;
 }) {
   const [pack, setPack] = useState(() => loadDeck());
+  const [q, setQ] = useState<DeckQuarter>(() => liveDeckQuarter());
   const [i, setI] = useState(0);
   const [editing, setEditing] = useState(false);
   const [dirty, setDirty] = useState(false);
@@ -372,12 +374,13 @@ export function DeckBoard({
     if (saveTimer.current) window.clearTimeout(saveTimer.current);
     const write = () => {
       saveDeck(next);
+      saveQuarterDeck(q, next);
       setDirty(false);
       setSaved(true);
     };
     if (now) write();
     else saveTimer.current = window.setTimeout(write, 480);
-  }, []);
+  }, [q]);
 
   const patchSlide = useCallback(
     (partial: Partial<DeckSlide>) => {
@@ -484,7 +487,27 @@ export function DeckBoard({
     setI(0);
     setDirty(false);
     setSaved(true);
+    saveQuarterDeck(q, next);
   }
+
+  function switchQ(next: DeckQuarter) {
+    if (next === q) return;
+    saveDeck(pack);
+    saveQuarterDeck(q, pack);
+    setLiveDeckQuarter(next);
+    const loaded = loadQuarterDeck(next);
+    const nextPack = loaded ?? { title: pack.title, slides: cloneDeck(pack.slides) };
+    if (!loaded) saveQuarterDeck(next, nextPack);
+    setPack(nextPack);
+    saveDeck(nextPack);
+    setQ(next);
+    setI(0);
+    setDirty(false);
+    setSaved(true);
+  }
+
+  const liveQ = quarterNow(todayIso()).n;
+  const nextQ = liveQ < 4 ? (`Q${liveQ + 1}` as DeckQuarter) : null;
 
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-2">
@@ -535,6 +558,37 @@ export function DeckBoard({
             <Download className="size-4" /> PowerPoint
           </a>
         </div>
+      </div>
+      <div className="flex flex-wrap items-center gap-1">
+        <span className="text-[11px] font-bold uppercase tracking-wide text-subtle">Pack</span>
+        {DECK_QUARTERS.map((id) => {
+          const snap = hasQuarterDeck(id);
+          return (
+            <button
+              key={id}
+              type="button"
+              onClick={() => switchQ(id)}
+              className={cn(
+                "tw-tap min-h-9 rounded-md px-2.5 font-mono text-xs font-bold",
+                q === id ? "bg-accent text-accent-fg" : snap ? "bg-elevated text-fg" : "bg-elevated text-muted",
+              )}
+            >
+              {id}
+            </button>
+          );
+        })}
+        {unlocked && nextQ ? (
+          <button
+            type="button"
+            onClick={() => {
+              copyDeckToQuarter(q, nextQ);
+              setSaved(true);
+            }}
+            className="tw-tap min-h-9 rounded-md bg-gold px-3 text-xs font-semibold text-bg"
+          >
+            Copy pack → {nextQ}
+          </button>
+        ) : null}
       </div>
       <div
         ref={stage}

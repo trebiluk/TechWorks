@@ -1,6 +1,7 @@
 import { memo, useMemo, useRef } from "react";
 import type { EconomyFile } from "@/lib/economy";
 import { FEATURES, featureOn, type FeatureId } from "@/lib/features";
+import { chromeReady } from "@/lib/wall-chrome";
 import { luckyOf } from "@/lib/lucky";
 import { printsOf } from "@/lib/prints";
 import { agendaFor } from "@/lib/projects";
@@ -33,6 +34,7 @@ export const FeatureCards = memo(function FeatureCards({
   onOpen,
   onToggle,
   compact,
+  showOff,
 }: {
   file: EconomyFile;
   unlocked: boolean;
@@ -40,18 +42,20 @@ export const FeatureCards = memo(function FeatureCards({
   onOpen?: (id: string) => void;
   onToggle?: (id: FeatureId, on: boolean) => void;
   compact?: boolean;
+  showOff?: boolean;
 }) {
   const open = useRef(onOpen);
   open.current = onOpen;
   const list = useMemo(() => {
     const rows = FEATURES.filter((f) => {
       if (SKIP.has(f.id)) return false;
-      if (unlocked && onToggle) return true;
+      if (showOff && unlocked && onToggle) return true;
       if (!featureOn(file, f.id)) return false;
+      if (!chromeReady(f.id, file)) return false;
       return unlocked || WALL.includes(f.id);
     });
     return compact ? rows.slice(0, 8) : rows;
-  }, [file, unlocked, compact, onToggle]);
+  }, [file, unlocked, compact, onToggle, showOff]);
 
   if (!list.length) return null;
 
@@ -93,7 +97,7 @@ export const FeatureCards = memo(function FeatureCards({
       })}
     </section>
   );
-}, (a, b) => a.file === b.file && a.period === b.period && a.unlocked === b.unlocked && a.compact === b.compact && a.onToggle === b.onToggle);
+}, (a, b) => a.file === b.file && a.period === b.period && a.unlocked === b.unlocked && a.compact === b.compact && a.onToggle === b.onToggle && a.showOff === b.showOff);
 
 function snapOf(id: FeatureId, file: EconomyFile, period: number): string {
   if (id === "weather") return "Sky";

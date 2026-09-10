@@ -1,10 +1,14 @@
 import { DECK, DECK_TITLE, type DeckCard, type DeckKind, type DeckSlide } from "@/data/deck";
+import { quarterNow, todayIso } from "@/lib/calendar";
 
 const KEY = "techworks-deck-v1";
+const QKEY = "techworks-deck-q";
 const KINDS: DeckKind[] = ["title", "cards", "steps", "ladder", "letters", "now", "blank", "close"];
 const POSES = ["waving", "standing", "point", "think"] as const;
 
 export type DeckPack = { title: string; slides: DeckSlide[] };
+export const DECK_QUARTERS = ["Q1", "Q2", "Q3", "Q4"] as const;
+export type DeckQuarter = (typeof DECK_QUARTERS)[number];
 
 function clip(v: unknown, n: number): string {
   return String(v ?? "")
@@ -85,6 +89,72 @@ export function saveDeck(pack: DeckPack) {
   } catch {
     /* quota */
   }
+}
+
+export function quarterDeckKey(q: string): string {
+  return `${KEY}-${q.replace(/[^A-Z0-9]/gi, "").slice(0, 4) || "Q"}`;
+}
+
+export function loadQuarterDeck(q: string): DeckPack | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(quarterDeckKey(q));
+    if (!raw) return null;
+    const p = JSON.parse(raw) as Partial<DeckPack>;
+    const slides = Array.isArray(p.slides) ? p.slides.map((s, i) => sanitizeSlide(s, `s${i + 1}`)) : [];
+    if (!slides.length) return null;
+    return { title: clip(p.title, 80) || DECK_TITLE, slides };
+  } catch {
+    return null;
+  }
+}
+
+export function saveQuarterDeck(q: string, pack: DeckPack) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(quarterDeckKey(q), JSON.stringify({ title: clip(pack.title, 80) || DECK_TITLE, slides: cloneDeck(pack.slides) }));
+  } catch {
+    /* */
+  }
+}
+
+export function hasQuarterDeck(q: string): boolean {
+  return loadQuarterDeck(q) != null;
+}
+
+export function liveDeckQuarter(): DeckQuarter {
+  try {
+    const v = window.localStorage.getItem(QKEY);
+    if (v === "Q1" || v === "Q2" || v === "Q3" || v === "Q4") return v;
+  } catch {
+    /* */
+  }
+  try {
+    return quarterNow(todayIso()).label;
+  } catch {
+    return "Q1";
+  }
+}
+
+export function setLiveDeckQuarter(q: DeckQuarter) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(QKEY, q);
+  } catch {
+    /* */
+  }
+}
+
+/** Snapshot `from` (or the live deck) onto `to` so Q2 can be edited without losing Q1. */
+export function copyDeckToQuarter(from: string, to: string) {
+  if (typeof window === "undefined") return;
+  const pack = loadQuarterDeck(from) ?? loadDeck();
+  saveQuarterDeck(from, pack);
+  saveQuarterDeck(to, { title: pack.title, slides: cloneDeck(pack.slides) });
+}
+
+export function useQuarterDeck(q: string): DeckPack {
+  return loadQuarterDeck(q) ?? loadDeck();
 }
 
 export function resetDeck(): DeckPack {

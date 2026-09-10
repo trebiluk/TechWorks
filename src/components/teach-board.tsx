@@ -26,6 +26,7 @@ import {
   teachObjective,
 } from "@/lib/teach";
 import { cn } from "@/lib/utils";
+import { jobCardOf } from "@/lib/projects";
 
 export function TeachBoard({
   file,
@@ -61,6 +62,7 @@ export function TeachBoard({
   const left = clock?.left ?? 0;
   const between = !liveHere && !cur;
   const workSlot = slots.find((s) => s.kind === "work") ?? slots.find((s) => !s.clean);
+  const job = jobCardOf(file, period);
   const title = between
     ? "BETWEEN CLASSES"
     : cleanup
@@ -70,7 +72,9 @@ export function TeachBoard({
     ? "Next bell: sit with your crew."
     : cleanup
       ? obj
-      : cur?.line ?? "Sit with your crew.";
+      : cur?.kind === "work"
+        ? job.today || cur?.line
+        : cur?.line ?? "Sit with your crew.";
   const [look, setLook] = useState<TeachLook>(() => loadTeachLook());
 
   function setLookFlag(key: keyof TeachLook, on: boolean) {

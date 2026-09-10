@@ -24,8 +24,8 @@ export function TwWordmark({ className }: { className?: string; mark?: number; c
         alt="TechWorks"
         width={180}
         height={44}
-        className="tw-lockup-img"
-        style={{ height: 44, width: "auto", maxWidth: 220, display: "block" }}
+        className="tw-lockup-img h-11 w-auto max-w-[13.75rem]"
+        style={{ display: "block" }}
         draggable={false}
       />
     </span>

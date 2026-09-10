@@ -35,8 +35,13 @@ describe("t grade-6", () => {
     assert.equal(t("Help", "ru"), "Помощь");
   });
 
-  it("falls back to the English key", () => {
-    assert.equal(t("not-a-real-phrase", "uk"), "not-a-real-phrase");
+  it("translates the P1 job card at grade 6", () => {
+    assert.equal(t("Rules", "uk"), "Правила");
+    assert.equal(t("Look-for", "uk"), "Шукай");
+    assert.match(t("How can a small force move a bigger load?", "uk"), /сил/);
+    assert.equal(t("Goggles on", "ru"), "Очки на глазах");
+    assert.equal(t("Goggles first.", "uk"), "Спочатку окуляри.");
+    assert.match(t("Build a model that lifts or moves a load.", "ru"), /модел/);
   });
 });
 

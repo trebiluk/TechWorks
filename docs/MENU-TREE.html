@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TechWorks menu tree · v1.80.80</title>
+  <style>
+    :root { --bg:#06122B; --fg:#F7F9FF; --muted:#B7C4EA; --gold:#E8C547; --line:#1E3A6E; --accent:#22D3EE; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; }
+    main { max-width: 52rem; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+    h1 { font-size: 2rem; letter-spacing: -0.03em; margin: 0; }
+    .kicker { color: var(--gold); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; }
+    .lede { color: var(--muted); margin: 0.6rem 0 2rem; }
+    h2 { font-size: 1.15rem; margin: 2rem 0 0.5rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+    h3 { font-size: 0.95rem; margin: 1rem 0 0.25rem; color: var(--accent); }
+    ul { margin: 0.2rem 0 0.6rem; padding-left: 1.2rem; }
+    li { margin: 0.15rem 0; }
+    code, pre { font-family: ui-monospace, Menlo, monospace; }
+    pre { background: #0B1A40; padding: 0.8rem 1rem; border-radius: 8px; overflow: auto; font-size: 0.85rem; }
+    .pin { color: var(--gold); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { text-align: left; padding: 0.35rem 0.5rem; border-bottom: 1px solid var(--line); }
+    th { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; }
+    @media print {
+      body { background: #fff; color: #111; }
+      .kicker, h3 { color: #0B4; }
+      pre { background: #f4f4f4; }
+      h2 { border-color: #ccc; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <p class="kicker">TechWorks · v1.80.80</p>
+  <h1>Menu tree</h1>
+  <p class="lede">Every module, page, and section on the live desk. Default chrome is Nav v2 (top sections + submenu). <span class="pin">PIN</span> = teacher lock. Wall = projector-safe. Mod = Admin → Modules.</p>
+
+  <h2>Always-on chrome</h2>
+  <ul>
+    <li><strong>TECHWORKS</strong> logo → FERPA dash (Overview)</li>
+    <li><strong>Find</strong> → alias → profile (PIN for full info)</li>
+    <li><strong>NOW P# mm:ss</strong> → live period</li>
+    <li><strong>Wall / Phone</strong> · <strong>Lock</strong> (1111 teacher / 2222 crew) · <strong>Help</strong> · version chip</li>
+    <li>Cleanup coral takeover on <em>Overview only</em></li>
+  </ul>
+  <p>Overlays, not pages: PIN pad · worker profile · Help · cleanup wall · crew-lead lock</p>
+
+  <h2>1. Dashboard <span class="pin">wall</span></h2>
+  <p>Submenu: Wall · Week · YTD · Polls · Data</p>
+  <h3>Wall</h3>
+  <ul>
+    <li>Now — clock, visit, weather</li>
+    <li>Schedule — P1–P10 (P6 time only)</li>
+    <li>Goals — project, one do-this-now line, Score</li>
+    <li>Modules / Tools — hidden by default</li>
+    <li>Announce — collapsed</li>
+    <li>School — top 10, cycle–quarter–year rings</li>
+  </ul>
+  <h3>Week</h3>
+  <p>All 6 shop classes. Not study hall.</p>
+  <h3>YTD</h3>
+  <p>Session bars, archive, next-roster note.</p>
+  <h3>Polls <span class="pin">mod</span></h3>
+  <p>Live vote on the wall.</p>
+  <h3>Data</h3>
+  <p>Graphs, last-year archive, optional study-hall mix-in (does not contaminate class effort).</p>
+
+  <h2>2. Teach <span class="pin">mod</span></h2>
+  <p>Submenu: Now · Plans · Score</p>
+  <ul>
+    <li><strong>Now</strong> — period chips, DO THIS NOW, slot grid, Tools/Polls, Pad (PIN, off until tapped): Slots · Tools · Packs · Objective. Packs: Shop · Demo · Critique · Training · Short · Sub</li>
+    <li><strong>Plans</strong> — date · week · period×grade grid · click assign/clear</li>
+    <li><strong>Score</strong> — same as Desk → Check-in</li>
+  </ul>
+
+  <h2>3. Learn</h2>
+  <p>Submenu (hide with chips): Book · Projects · Skills · Words · Guide</p>
+  <ul>
+    <li><strong>Book</strong> — one grade per project, session mark, Classroom CSV</li>
+    <li><strong>Projects</strong> — library, activities, crew assignment, phases</li>
+    <li><strong>Skills</strong> — Workshop / Soft, 1–4, PIN to edit</li>
+    <li><strong>Words</strong> — glossary</li>
+    <li><strong>Guide</strong> — pedagogy / Standard 5</li>
+  </ul>
+
+  <h2>4. Other</h2>
+  <ul>
+    <li><strong>Club / Club wall</strong> <span class="pin">mod</span> — timer, competitions, events, stations, late bus; IN = $10 + 2 XP; cleanup 3:00–3:05</li>
+    <li><strong>Study hall / Hall wall</strong> <span class="pin">mod</span> — line leader, A/B, where they went; not in Tech effort</li>
+    <li><strong>Prints</strong> <span class="pin">mod</span> — gallery, sizes, shiny/rare, trades</li>
+    <li><strong>Stocks</strong> <span class="pin">mod</span> — separate game</li>
+    <li><strong>Lucky Bench</strong> <span class="pin">mod</span> — die + Friday pot</li>
+    <li><strong>Store</strong> <span class="pin">mod</span> — perk chips, no negative wallet</li>
+  </ul>
+
+  <h2>5. Desk <span class="pin">PIN</span></h2>
+  <p>Submenu: Check-in · Crew</p>
+  <ul>
+    <li><strong>Check-in</strong> — VERIFY / SCHEDULE / CONFIG. 2×2 grid. 3 / 2 / 1 / Absent / Excused / Personal. SUB locks the day.</li>
+    <li><strong>Crew</strong> — daily groups, Separate (roster), lead, crew profile</li>
+  </ul>
+
+  <h2>6. Admin <span class="pin">PIN</span></h2>
+  <p>Submenu: Today · Crews · Look · Day · Roster · Class · Modules · Device</p>
+  <ul>
+    <li><strong>Today</strong> — SchoolTool 8:15, past-due, current class, meetings, SUB</li>
+    <li><strong>Crews</strong> — crew desk</li>
+    <li><strong>Look</strong> — theme, contrast, fonts, Nav v2, wall cards</li>
+    <li><strong>Day</strong> — bells, specials, A/B, visit, lunch, cleanup, Teach pack, cycle</li>
+    <li><strong>Roster</strong> — 24 Tech sections + Study Hall + Tech Club; Hold club skills; Place in class; import; portal PIN</li>
+    <li><strong>Class</strong> — pay, shop lists, skills, rewards, XP bands</li>
+    <li><strong>Modules</strong> — every extra on/off</li>
+    <li><strong>Device</strong> — local save/export/import/restore, names vault, live wall export</li>
+  </ul>
+
+  <h2>Crew-leader mode <span class="pin">2222</span></h2>
+  <p>Current period only. 3 / 2 / 1 / Absent / Excused / Personal. No wallet, no Admin. Overview is locked.</p>
+
+  <h2>Worker / family</h2>
+  <ul>
+    <li>Profile — alias, XP, skills, project grade; hide/show legal + IEP/504</li>
+    <li>Family report card — project mark, not wallet</li>
+    <li>Portal <span class="pin">mod off</span> — worker PIN 2627</li>
+    <li>Embed / Google Site — Overview, aliases only</li>
+  </ul>
+
+  <h2>Surfaces</h2>
+  <table>
+    <thead><tr><th>Surface</th><th>Who</th><th>Default</th></tr></thead>
+    <tbody>
+      <tr><td>Wall</td><td>class</td><td>Dashboard → Wall</td></tr>
+      <tr><td>Phone</td><td>you</td><td>Score / Admin compact</td></tr>
+      <tr><td>Desk</td><td>you</td><td>full Nav v2</td></tr>
+      <tr><td>Crew pad</td><td>lead</td><td>Check-in, this period</td></tr>
+      <tr><td>Club wall</td><td>after school</td><td>Club wall</td></tr>
+      <tr><td>Hall wall</td><td>P6</td><td>Study hall dash</td></tr>
+    </tbody>
+  </table>
+
+  <h2>24 classes + 2 groups</h2>
+<pre>TECH 6   P1    Q1 Q2 Q3 Q4
+TECH 8   P2    Q1 Q2 Q3 Q4
+TECH 7   P3    Q1 Q2 Q3 Q4
+TECH 7   P8    Q1 Q2 Q3 Q4
+TECH 8   P9    Q1 Q2 Q3 Q4
+TECH 6   P10   Q1 Q2 Q3 Q4
+STUDY HALL  P6   year (A/B)
+TECH CLUB   after 10th   year</pre>
+</main>
+</body>
+</html>
