@@ -1,6 +1,7 @@
 import type { EconomyFile } from "@/lib/economy";
 import { bellFor } from "@/lib/economy";
 import { allPeriodRewards, rewardOf, rewardProgressFor, setPeriodReward, setReward } from "@/lib/reward";
+import { featureOn } from "@/lib/features";
 import { cn } from "@/lib/utils";
 
 function Meter({ pct, gold }: { pct: number; gold?: boolean }) {
@@ -15,6 +16,7 @@ function Meter({ pct, gold }: { pct: number; gold?: boolean }) {
 }
 
 export function PeriodRewardChip({ file, period, className }: { file: EconomyFile; period: number; className?: string }) {
+  if (!featureOn(file, "reward")) return null;
   const p = rewardProgressFor(file, period);
   if (!p.on) return null;
   if (p.head < 1) return null;
@@ -39,6 +41,7 @@ export function RewardBar({
   period?: number;
   detail?: boolean;
 }) {
+  if (!featureOn(file, "reward")) return null;
   const base = rewardOf(file);
   if (!base.on) return null;
   if (period != null) {

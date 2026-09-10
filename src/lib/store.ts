@@ -10,13 +10,14 @@ import { afterAffectMaybeConfirm, afterCrewLeaderChange, roleHistoryOf } from "@
 import { persistPack, readLocal, writePack, packDesk, migrateDesk } from "@/lib/vault";
 import { scheduleCloudPush } from "@/lib/desk-cloud";
 import { builtinPacks, type BellPack, type ScheduleId } from "@/lib/bells";
+import { SAVE_FAIL_EVENT, stripFakeDemo } from "@/lib/demo";
 
 const FOCUS_KEY = "techworks-focus";
 const MONEY_STEP = 5;
 const MONEY_MAX = 20;
 const SHOCKS = [-20, -15, -10, -5, 0, 5, 10, 15, 20] as const;
 
-export { MONEY_STEP, MONEY_MAX, SHOCKS };
+export { MONEY_STEP, MONEY_MAX, SHOCKS, stripFakeDemo };
 
 export const DAILY_GOALS = [
   "IDEA STAGE",
@@ -88,9 +89,17 @@ export function deskSavePending(): boolean {
 }
 
 function flushDesk(file: EconomyFile) {
-  const pack = packDesk(file);
+  const pack = packDesk(stripFakeDemo(file));
   const json = JSON.stringify(pack);
-  writePack(pack, json);
+  const wrote = writePack(pack, json);
+  if (!wrote.ok) {
+    try {
+      window.dispatchEvent(new CustomEvent(SAVE_FAIL_EVENT, { detail: "This PC could not save (storage full). Download a full backup now." }));
+    } catch {
+      /* */
+    }
+    return;
+  }
   persistPackObj = pack;
   persistJson = json;
   if (persistHandle) return;
@@ -1108,6 +1117,10 @@ export function patchStudent(
   return next;
 }
 
+export function legalNameKey(last: string, first: string): string {
+  return `${last.trim().toLowerCase()}|${first.trim().toLowerCase()}`;
+}
+
 export function importLegalRoster(file: EconomyFile, rows: LegalRosterRow[]): EconomyFile {
   if (!rows.length) return file;
   const next = clone(file);
@@ -1115,17 +1128,40 @@ export function importLegalRoster(file: EconomyFile, rows: LegalRosterRow[]): Ec
   const quarter = next.meta.quarterName || "Q1";
   const bells = bellFor(next);
   const ids = next.students.map((s) => s.id);
+  const byName = new Map<string, number>();
+  next.students.forEach((s, i) => {
+    const key = legalNameKey(s.legalLast || s.last || "", s.legalFirst || "");
+    if (key !== "|") byName.set(key, i);
+  });
 
-  const added: RawStudent[] = rows.map((row, i) => {
+  for (const row of rows) {
+    const legalLast = row.legalLast.trim().slice(0, 40);
+    const legalFirst = row.legalFirst.trim().slice(0, 40);
+    const key = legalNameKey(legalLast, legalFirst);
+    const hit = key !== "|" ? byName.get(key) : undefined;
+    if (hit != null) {
+      const cur = next.students[hit]!;
+      next.students[hit] = {
+        ...cur,
+        period: row.period || cur.period,
+        legalFirst: legalFirst || cur.legalFirst,
+        legalLast: legalLast || cur.legalLast,
+        last: legalLast || cur.last,
+        flags: {
+          ...(cur.flags ?? {}),
+          iep: Boolean(row.iep) || Boolean(cur.flags?.iep),
+          plan504: Boolean(row.plan504) || Boolean(cur.flags?.plan504),
+        },
+      };
+      continue;
+    }
     const id = newStudentId(ids);
     ids.push(id);
     const alias = aliasAfterId(id, used);
     used.push(alias);
     const grade = bells.find((b) => b.period === row.period)?.grade ?? 6;
-    const crewKey = row.crewKey?.trim() || defaultCrewKey(next, row.period, i);
-    const legalLast = row.legalLast.trim().slice(0, 40);
-    const legalFirst = row.legalFirst.trim().slice(0, 40);
-    return {
+    const crewKey = row.crewKey?.trim() || defaultCrewKey(next, row.period, next.students.filter((s) => s.period === row.period).length);
+    const kid = {
       ...blankWorker({
         id,
         first: alias,
@@ -1142,11 +1178,12 @@ export function importLegalRoster(file: EconomyFile, rows: LegalRosterRow[]): Ec
         iep: Boolean(row.iep),
         plan504: Boolean(row.plan504),
       },
-      abDay: row.period === 6 ? (i % 2 === 0 ? "A" : "B") : "BOTH",
-    };
-  });
+      abDay: row.period === 6 ? (next.students.filter((s) => s.period === 6).length % 2 === 0 ? "A" : "B") : "BOTH",
+    } as RawStudent;
+    byName.set(key, next.students.length);
+    next.students.push(kid);
+  }
 
-  next.students = [...next.students, ...added];
   return next;
 }
 

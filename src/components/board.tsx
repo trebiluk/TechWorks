@@ -1,14 +1,14 @@
 "use client";
 
 import { lazy, startTransition, Suspense, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { CircleHelp, Search } from "lucide-react";
+import { CircleHelp, Search, Settings } from "lucide-react";
 import { TwWordmark } from "@/components/tw-mark";
 import snapshot from "@/data/economy.json";
 import type { EconomyFile } from "@/lib/economy";
-import { bellFor, isLiveStudent, score, shopBells } from "@/lib/economy";
+import { bellFor, isLiveStudent, score } from "@/lib/economy";
 import { loadDesk, saveDesk, saveDeskNow, applyDjia, stampLiveExport, isSubDay, exportedThisPeriod, lunchOn, deskBellId, deskSavePending, setSchooltoolDone } from "@/lib/store";
 import { hydrateVault } from "@/lib/vault";
-import { applyCloudPack, localIsNewer, pullCloud, pushCloud } from "@/lib/desk-cloud";
+import { applyCloudPack, cloudPackCount, cloudSyncPlan, localIsNewer, pullCloud, pushCloud } from "@/lib/desk-cloud";
 import { CloudChip } from "@/components/cloud-board";
 import { LockBar, PinPad } from "@/components/pin-pad";
 import { DescribeBar } from "@/components/describe-bar";
@@ -16,7 +16,7 @@ import { storedDescribe } from "@/lib/describe";
 import { TipsProvider } from "@/lib/tips";
 import { Dashboard } from "@/components/dashboard";
 import { featureOn } from "@/lib/features";
-import { paintDemo, storedDemo, type DemoId } from "@/lib/demo";
+import { paintDemo, SAVE_FAIL_EVENT, storedDemo, takeRealDesk, type DemoId } from "@/lib/demo";
 import { isUnlocked, lockCrew, ensureDefaultPin } from "@/lib/pin";
 import { daySlot, isSchoolDay, todayIso } from "@/lib/calendar";
 import { loadDjia, type DjiaQuote } from "@/lib/djia";
@@ -35,7 +35,8 @@ import { VersionChip } from "@/components/version-chip";
 import { ErrorGate } from "@/components/error-gate";
 import { AdminHub } from "@/components/admin-hub";
 import type { LearnStart } from "@/components/learning-center";
-import type { AdminPane } from "@/components/settings";
+import { SettingsBody, type AdminPane } from "@/components/settings";
+import { gearTabFor } from "@/components/admin-drawer";
 import { modeOf } from "@/components/mode-nav";
 import { AppNav } from "@/components/app-nav";
 import { sectionOf, type AppSection, type NavTab } from "@/lib/app-nav";
@@ -84,10 +85,11 @@ export function Board() {
     return paintDemo(file, demoId);
   }, [file, demoId]);
   const wallFile = useDeferredValue(graphFile);
+  const overlayOn = featureOn(file, "debug") && demoId !== "off";
   const list = useMemo(() => score(wallFile), [wallFile]);
   const bells = useMemo(() => bellFor(wallFile), [wallFile]);
   const [view, setView] = useState<View>("overview");
-  const [learnStart, setLearnStart] = useState<LearnStart>("grades");
+  const [learnStart, setLearnStart] = useState<LearnStart>("projects");
   const [teachStart, setTeachStart] = useState<"now" | "plans">("now");
   const [deskPanel] = useState<DeskPanel>("score");
   const [pendingView, setPendingView] = useState<View | null>(null);
@@ -102,6 +104,7 @@ export function Board() {
   const [jumpDate, setJumpDate] = useState<string | null>(null);
   const [deskPad, setDeskPad] = useState<"effort" | "skill">("effort");
   const [adminPane, setAdminPane] = useState<AdminPane>("today");
+  const [gearOpen, setGearOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [describeOn, setDescribeOn] = useState(false);
   const [query, setQuery] = useState("");
@@ -117,8 +120,8 @@ export function Board() {
   const qFind = query.trim().toLowerCase();
   const houseMatch = qFind ? houseHits(qFind) : [];
   const hits = qFind
-    ? file.students
-        .filter((s) => isLiveStudent(s, file.meta.quarterName) && (view === "studyhall" || view === "data" || s.period !== 6))
+    ? wallFile.students
+        .filter((s) => isLiveStudent(s, wallFile.meta.quarterName) && (view === "studyhall" || view === "data" || s.period !== 6))
         .filter((s) => {
           return s.first.toLowerCase().includes(qFind) || publicHandle(s.id).toLowerCase().includes(qFind) || s.id.toLowerCase().includes(qFind);
         })
@@ -130,6 +133,11 @@ export function Board() {
     setOpenId(id);
   }
 
+  function askPin(next?: View) {
+    setPendingView(next ?? view);
+    setPinOpen(true);
+  }
+
   const verChip = <VersionChip peek onBerty={() => setOpenId(HOUSE_BERTY)} onMrk={() => setOpenId(HOUSE_MRK)} />;
 
   function go(next: View) {
@@ -139,8 +147,7 @@ export function Board() {
     }
     const teacher = ["admin", "score", "grades", "projects", "store", "studyhall", "crew", "lucky", "roster"].includes(next);
     if (teacher && !unlocked && !(next === "crew" && crewOn)) {
-      setPendingView(next);
-      setPinOpen(true);
+      askPin(next);
       return;
     }
     if (next === "skills" && !unlocked) {
@@ -200,8 +207,7 @@ export function Board() {
   function goDesk(_panel?: DeskPanel) {
     if (crewOn) return;
     if (!unlocked) {
-      setPendingView("score");
-      setPinOpen(true);
+      askPin("score");
       return;
     }
     startTransition(() => setView("score"));
@@ -250,13 +256,17 @@ export function Board() {
     window.setTimeout(() => setFlash(null), 2400);
   }
 
+  function commitDesk(next: EconomyFile) {
+    setFile(takeRealDesk(file, next, overlayOn));
+  }
+
   function rankUp(alias: string, band: string) {
     flashMsg(`${alias} → ${band}`, "ok");
   }
 
   function saveNow(period?: number) {
     saveDeskNow(file);
-    void pushCloud(file);
+    if (file.students.length > 0) void pushCloud(file);
     setFile((cur) => stampLiveExport(cur, todayIso(), period ?? liveP ?? undefined));
     window.setTimeout(() => flashMsg(saveCloudHint(), "ok"), 80);
   }
@@ -308,13 +318,25 @@ export function Board() {
           setFile(next);
           const pack = await pullCloud();
           if (!pack) return;
-          if (localIsNewer(next, pack.saved)) {
+          const cloudN = cloudPackCount(pack);
+          const localN = next.students.length;
+          const sameStamp = Boolean(pack.saved && pack.saved === (next.meta.savedAt ?? ""));
+          const plan = cloudSyncPlan(localN, cloudN, localIsNewer(next, pack.saved), sameStamp);
+          if (plan === "keep") return;
+          if (plan === "push") {
             void pushCloud(next);
             return;
           }
-          if (pack.saved && pack.saved !== (next.meta.savedAt ?? "")) {
-            const cloudFile = await applyCloudPack(pack);
-            if (cloudFile) setFile(cloudFile);
+          const cloudFile = await applyCloudPack(pack);
+          if (!cloudFile) return;
+          if (localN > 0 && cloudFile.students.length === 0) {
+            void pushCloud(next);
+            flashMsg("Cloud desk was empty · kept this PC's roster", "warn");
+            return;
+          }
+          setFile(cloudFile);
+          if (localN === 0 && cloudFile.students.length > 0) {
+            flashMsg(`Loaded ${cloudFile.students.length} workers from the cloud`, "ok");
           }
         })
         .catch(() => {});
@@ -349,6 +371,15 @@ export function Board() {
     }
     const t = window.setTimeout(run, 2200);
     return () => window.clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    const onFail = (e: Event) => {
+      const detail = e instanceof CustomEvent ? String(e.detail || "") : "";
+      flashMsg(detail || "This PC could not save. Download a full backup now.", "loss");
+    };
+    window.addEventListener(SAVE_FAIL_EVENT, onFail);
+    return () => window.removeEventListener(SAVE_FAIL_EVENT, onFail);
   }, []);
 
   useEffect(() => {
@@ -440,7 +471,7 @@ export function Board() {
     if (crewOn) return;
     if (next === "dash") go("overview");
     else if (next === "learn") {
-      setLearnStart(unlocked ? "grades" : "words");
+      setLearnStart(unlocked ? "projects" : "words");
       go("skills");
     } else if (next === "crew") {
       if (unlocked) {
@@ -448,20 +479,15 @@ export function Board() {
         goDesk("score");
         return;
       }
-      setPendingView("crew");
-      setPinOpen(true);
+      askPin("crew");
     } else if (next === "roster") {
       if (unlocked) go("roster");
-      else {
-        setPendingView("roster");
-        setPinOpen(true);
-      }
+      else askPin("roster");
     } else if (unlocked) {
       setAdminPane("today");
       go("admin");
     } else {
-      setPendingView("admin");
-      setPinOpen(true);
+      askPin("admin");
     }
   }
 
@@ -480,11 +506,10 @@ export function Board() {
         ]
       : section === "learn"
         ? [
-            { id: "book", label: t("Book"), on: learnStart === "grades" || learnStart === "book", onClick: () => { setLearnStart("grades"); go("skills"); }, hidden: !unlocked },
             { id: "projects", label: t("Projects"), on: learnStart === "projects", onClick: () => { setLearnStart("projects"); go("skills"); }, hidden: !unlocked },
             { id: "skills", label: t("Skills"), on: learnStart === "skills", onClick: () => { setLearnStart("skills"); go("skills"); }, hidden: !unlocked },
+            { id: "book", label: t("Book"), on: learnStart === "grades" || learnStart === "book", onClick: () => { setLearnStart("grades"); go("skills"); }, hidden: !unlocked },
             { id: "words", label: t("Words"), on: learnStart === "words", onClick: () => { setLearnStart("words"); go("skills"); } },
-            { id: "guide", label: t("Guide"), on: learnStart === "guide" || learnStart === "bench", onClick: () => { setLearnStart("guide"); go("skills"); } },
           ]
         : section === "crew"
           ? []
@@ -512,7 +537,7 @@ export function Board() {
     <AppNav
       section={section}
       onSection={goSection}
-      tabs={section === "admin" && view === "admin" && adminPane !== "wall" ? [] : v2Tabs}
+      tabs={section === "admin" && view === "admin" ? [] : v2Tabs}
       unlocked={unlocked}
       hideSections
     />
@@ -578,6 +603,11 @@ export function Board() {
                     ) : null}
                   </div>
                 ) : null}
+                {demoId !== "off" && featureOn(file, "debug") ? (
+                  <span className="rounded-full bg-gold px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-bg">
+                    Fake data · not saved
+                  </span>
+                ) : null}
                 {unlocked ? <NextJobChip file={file} onGo={runJob} /> : null}
                 <NowDock
                   schedule={deskBellId(file)}
@@ -586,13 +616,34 @@ export function Board() {
                 />
                 <LockBar
                   unlocked={unlocked || crewOn}
-                  onAsk={() => setPinOpen(true)}
+                  onAsk={() => askPin()}
                   onLock={() => {
                     setUnlocked(false);
                     setCrewOn(false);
-                    setView("overview");
+                    setGearOpen(false);
+                    const stay = ["overview", "week", "year", "prints", "teach", "polls", "deck", "skills"];
+                    if (!stay.includes(view)) setView("overview");
                   }}
                 />
+                <button
+                  type="button"
+                  title="Settings"
+                  aria-label="Settings"
+                  onClick={() => {
+                    if (!unlocked) {
+                      askPin();
+                      setGearOpen(true);
+                      return;
+                    }
+                    setGearOpen((v) => !v);
+                  }}
+                  className={cn(
+                    "tw-hud-btn tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-xl text-fg hover:bg-elevated",
+                    gearOpen ? "bg-gold text-bg" : "",
+                  )}
+                >
+                  <Settings className="size-5" />
+                </button>
                 <button type="button" title={t("How this class works")} aria-label={t("Help")} onClick={() => setHelpOpen(true)} className="tw-hud-btn tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-xl text-fg hover:bg-elevated">
                   <CircleHelp className="size-5" />
                 </button>
@@ -660,41 +711,11 @@ export function Board() {
         </button>
       ) : null}
       <div className="board-main flex min-h-0 flex-1 flex-col overflow-hidden">
-      <CleanupStage file={file} unlocked={unlocked} onChange={setFile} off={view !== "overview"}>
+      <CleanupStage file={wallFile} unlocked={unlocked} onChange={commitDesk} off={view !== "overview"}>
       <Suspense fallback={<p className="px-3 py-8 text-center text-sm text-gold">{t("Loading wall…")}</p>}>
-      {view === "admin" && unlocked && adminPane === "wall" ? (
-        <Dashboard
-          list={list}
-          bells={bells}
-          file={file}
-          unlocked={unlocked}
-          arrange
-          rankBoard={rankBoard}
-          onRankBoard={toggleRank}
-          onPeriod={(p) => {
-            if (p === 6) {
-              go(unlocked ? "studyhall" : "hallwall");
-              return;
-            }
-            setJumpPeriod(p);
-            goDesk("score");
-          }}
-          onOpenId={(id) => setOpenId(id)}
-          onChange={setFile}
-          onClub={() => go("club")}
-          onHelp={() => setHelpOpen(true)}
-          onPrints={featureOn(file, "prints") ? () => go("prints") : undefined}
-          onOpenMod={(id) => {
-            if (id === "teach") go("teach");
-            else if (id === "polls") go("polls");
-            else if (id === "prints") go("prints");
-            else if (id === "lucky") go("lucky");
-            else if (id === "store") go("store");
-          }}
-        />
-      ) : view === "roster" && unlocked ? (
+      {view === "roster" && unlocked ? (
         <RosterWall
-          file={file}
+          file={wallFile}
           list={list}
           unlocked={unlocked}
           onOpenId={(id) => setOpenId(id)}
@@ -705,8 +726,8 @@ export function Board() {
         />
       ) : view === "admin" && unlocked ? (
         <AdminHub
-          file={file}
-          onChange={setFile}
+          file={wallFile}
+          onChange={commitDesk}
           start={adminPane}
           onPane={setAdminPane}
           onScore={() => goDesk("score")}
@@ -732,6 +753,7 @@ export function Board() {
           onLucky={() => go("lucky")}
           onStore={() => go("store")}
           onPrints={() => go("prints")}
+          onWall={() => go("overview")}
           onStudyHall={() => go("studyhall")}
           onClub={() => go("club")}
           onData={() => go("data")}
@@ -739,7 +761,7 @@ export function Board() {
           onPolls={() => go("polls")}
           onOpenId={(id) => setOpenId(id)}
           unlocked={unlocked}
-          onNeedPin={() => setPinOpen(true)}
+          onNeedPin={() => askPin()}
           onExport={() => void exportLive()}
           onSave={saveNow}
           onHelp={() => setHelpOpen(true)}
@@ -748,18 +770,15 @@ export function Board() {
         />
       ) : view === "score" && unlocked ? (
         <ScoreDesk
-          file={file}
-          onChange={setFile}
+          file={wallFile}
+          onChange={commitDesk}
           unlocked={unlocked}
-          onNeedPin={() => setPinOpen(true)}
+          onNeedPin={() => askPin()}
           onOpenId={(id) => setOpenId(id)}
           jumpPeriod={jumpPeriod}
           jumpCrew={jumpCrew}
           jumpDate={jumpDate}
-          onOpenSettings={() => {
-            setAdminPane("today");
-            go("admin");
-          }}
+          onOpenSettings={() => setGearOpen(true)}
           mode="teacher"
           panel="score"
           startPad={deskPad}
@@ -767,9 +786,9 @@ export function Board() {
         />
       ) : view === "crew" && crewOn ? (
         <CrewLead
-          file={file}
-          onChange={setFile}
-          onNeedPin={() => setPinOpen(true)}
+          file={wallFile}
+          onChange={commitDesk}
+          onNeedPin={() => askPin()}
           onSignOut={() => {
             setCrewOn(false);
             lockCrew();
@@ -777,17 +796,17 @@ export function Board() {
           }}
         />
       ) : view === "portal" || portalMode ? (
-        <WorkerPortal file={file} />
+        <WorkerPortal file={wallFile} />
       ) : view === "skills" || view === "projects" || view === "grades" ? (
         <SkillsBoard
-          file={file}
-          onChange={setFile}
+          file={wallFile}
+          onChange={commitDesk}
           unlocked={unlocked}
-          onNeedPin={() => setPinOpen(true)}
+          onNeedPin={() => askPin()}
           onOpenId={(id) => {
             if (!unlocked) {
               setPendingId(id);
-              setPinOpen(true);
+              askPin();
               return;
             }
             setOpenId(id);
@@ -796,67 +815,64 @@ export function Board() {
           jumpPeriod={jumpPeriod}
           jumpCrew={jumpCrew}
           jumpDate={jumpDate}
-          onOpenSettings={() => {
-            setAdminPane("room");
-            go("admin");
-          }}
+          onOpenSettings={() => setGearOpen(true)}
           onRankUp={rankUp}
         />
       ) : view === "wallet" ? (
-        <WalletBoard file={file} quote={quote} unlocked={unlocked} onNeedPin={() => setPinOpen(true)} onChange={setFile} />
+        <WalletBoard file={wallFile} quote={quote} unlocked={unlocked} onNeedPin={() => askPin()} onChange={commitDesk} />
       ) : view === "lucky" ? (
-        <LuckyBoard file={file} unlocked={unlocked} onNeedPin={() => setPinOpen(true)} onChange={setFile} onFlash={(m) => flashMsg(m, m.includes("−") || m.includes("needs") ? "loss" : "ok")} />
+        <LuckyBoard file={wallFile} unlocked={unlocked} onNeedPin={() => askPin()} onChange={commitDesk} onFlash={(m) => flashMsg(m, m.includes("−") || m.includes("needs") ? "loss" : "ok")} />
       ) : view === "store" ? (
-        <StoreBoard file={file} unlocked={unlocked} onNeedPin={() => setPinOpen(true)} onChange={setFile} onFlash={(m) => flashMsg(m, m.includes("can't") ? "loss" : "ok")} />
+        <StoreBoard file={wallFile} unlocked={unlocked} onNeedPin={() => askPin()} onChange={commitDesk} onFlash={(m) => flashMsg(m, m.includes("can't") ? "loss" : "ok")} />
       ) : view === "prints" ? (
-        <PrintsBoard file={file} unlocked={unlocked} onNeedPin={() => setPinOpen(true)} onChange={setFile} onFlash={(m) => flashMsg(m, m.includes("can't") ? "loss" : "ok")} />
+        <PrintsBoard file={file} unlocked={unlocked} onNeedPin={() => askPin()} onChange={commitDesk} onFlash={(m) => flashMsg(m, m.includes("can't") ? "loss" : "ok")} />
       ) : view === "hallwall" ? (
         <StudyHallDash
-          file={file}
+          file={wallFile}
           unlocked={unlocked}
           onPeriod={(p) => {
             if (p === 6) return;
             go("overview");
           }}
           onOpenId={(id) => setOpenId(id)}
-          onChange={setFile}
+          onChange={commitDesk}
         />
       ) : view === "studyhall" ? (
         <StudyHallBoard
-          file={file}
+          file={wallFile}
           unlocked={unlocked}
-          onNeedPin={() => setPinOpen(true)}
-          onChange={setFile}
+          onNeedPin={() => askPin()}
+          onChange={commitDesk}
           onOpenId={(id) => setOpenId(id)}
           onWall={() => go("hallwall")}
         />
       ) : view === "clubwall" ? (
-        <ClubBoard unlocked={unlocked} onNeedPin={() => setPinOpen(true)} wall onWall={() => go("club")} desk={file} onDesk={setFile} />
+        <ClubBoard unlocked={unlocked} onNeedPin={() => askPin()} wall onWall={() => go("club")} desk={file} onDesk={commitDesk} />
       ) : view === "club" ? (
-        <ClubBoard unlocked={unlocked} onNeedPin={() => setPinOpen(true)} onWall={() => go("clubwall")} desk={file} onDesk={setFile} />
+        <ClubBoard unlocked={unlocked} onNeedPin={() => askPin()} onWall={() => go("clubwall")} desk={file} onDesk={commitDesk} />
       ) : view === "teach" ? (
         teachStart === "plans" ? (
           <LessonBoard
-            file={file}
+            file={wallFile}
             unlocked={unlocked}
-            onChange={setFile}
-            onNeedPin={() => setPinOpen(true)}
+            onChange={commitDesk}
+            onNeedPin={() => askPin()}
             onNow={() => {
               setTeachStart("now");
               go("teach");
             }}
           />
         ) : (
-        <TeachBoard file={file} unlocked={unlocked} onChange={setFile} onNeedPin={() => setPinOpen(true)} onPolls={() => go("polls")} onBerty={() => setOpenId(HOUSE_BERTY)} />
+        <TeachBoard file={wallFile} unlocked={unlocked} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onBerty={() => setOpenId(HOUSE_BERTY)} />
         )
       ) : view === "polls" ? (
-        <PollBoard file={file} unlocked={unlocked} onChange={setFile} onNeedPin={() => setPinOpen(true)} />
+        <PollBoard file={file} unlocked={unlocked} onChange={commitDesk} onNeedPin={() => askPin()} />
       ) : view === "deck" ? (
-        <DeckBoard unlocked={unlocked} onNeedPin={() => setPinOpen(true)} />
+        <DeckBoard unlocked={unlocked} onNeedPin={() => askPin()} />
       ) : view === "week" ? (
         <WeekBoard file={wallFile} list={list} bells={bells} cycle={file.meta.config?.currentCycle ?? 1} onPeriod={(p) => { setJumpPeriod(p); goDesk("score"); }} />
       ) : view === "year" ? (
-        <YearBoard file={wallFile} onChange={featureOn(file, "debug") ? () => {} : setFile} />
+        <YearBoard file={wallFile} onChange={commitDesk} />
       ) : view === "data" ? (
         <DataBoard file={wallFile} onOpenProfile={(id) => setOpenId(id)} />
       ) : (
@@ -864,8 +880,9 @@ export function Board() {
         <Dashboard
           list={list}
           bells={bells}
-          file={file}
+          file={wallFile}
           unlocked={unlocked}
+          arrange={unlocked}
           rankBoard={rankBoard}
           onRankBoard={toggleRank}
           onPeriod={(p) => {
@@ -877,7 +894,7 @@ export function Board() {
             goDesk("score");
           }}
           onOpenId={(id) => setOpenId(id)}
-          onChange={setFile}
+          onChange={commitDesk}
           onClub={() => go("club")}
           onHelp={() => setHelpOpen(true)}
           onPrints={featureOn(file, "prints") ? () => go("prints") : undefined}
@@ -908,12 +925,12 @@ export function Board() {
       {helpOpen && !crewOn ? <HelpPanel onClose={() => setHelpOpen(false)} wallOnly={!unlocked} /> : null}
       {openId ? (
         <Dossier
-          file={file}
+          file={wallFile}
           id={openId}
           unlocked={unlocked}
-          onChange={setFile}
+          onChange={commitDesk}
           onClose={() => setOpenId(null)}
-          onNeedPin={() => setPinOpen(true)}
+          onNeedPin={() => askPin()}
         />
       ) : null}
       </Suspense>
@@ -933,7 +950,7 @@ export function Board() {
           onOther={() => goSection("admin")}
           onRoster={() => goSection("roster")}
           onSkills={() => {
-            setLearnStart(unlocked ? "grades" : "words");
+            setLearnStart(unlocked ? "projects" : "words");
             go("skills");
           }}
           onProjects={() => {
@@ -947,6 +964,32 @@ export function Board() {
         />
       )}
       </div>
+      {unlocked && gearOpen ? (
+        <div className="fixed inset-0 z-40 flex justify-end bg-bg/70" onClick={() => setGearOpen(false)}>
+          <aside
+            className="flex h-full w-full max-w-md flex-col overflow-hidden bg-surface ring-1 ring-border"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <header className="flex items-center justify-between gap-2 px-3 py-2">
+              <p className="text-sm font-bold uppercase tracking-wide">Edit this screen</p>
+              <button type="button" onClick={() => setGearOpen(false)} className="tw-tap min-h-10 rounded-md bg-elevated px-3 text-sm font-semibold">
+                Done
+              </button>
+            </header>
+            <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-6">
+              <SettingsBody
+                file={file}
+                tab={gearTabFor(view)}
+                onChange={commitDesk}
+                onExportNames={exportNames}
+                onExport={() => void exportLive()}
+                onSave={saveNow}
+                onTips={setDescribeOn}
+              />
+            </div>
+          </aside>
+        </div>
+      ) : null}
       {pinOpen ? (
         <PinPad
           want={pendingView === "crew" ? "crew" : "teacher"}
@@ -971,18 +1014,7 @@ export function Board() {
             else if (next === "grades" || next === "projects" || next === "skills") {
               setLearnStart(next === "grades" ? "grades" : next === "projects" ? "projects" : "skills");
               setView("skills");
-            } else if (next) setView(next);
-            else if (!embed && !portalMode) {
-              const live = periodNow(deskBellId(file));
-              const shop = shopBells(file).map((b) => b.period);
-              if (live != null && live !== 6 && shop.includes(live)) {
-                setJumpPeriod(live);
-                setView("score");
-              } else {
-                setAdminPane("today");
-                setView("admin");
-              }
-            }
+            } else if (next && next !== view) setView(next);
             if (pendingId) {
               setOpenId(pendingId);
               setPendingId(null);

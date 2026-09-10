@@ -20,6 +20,7 @@ import {
 } from "@/lib/vault";
 import { loadClub } from "@/lib/club";
 import { cn } from "@/lib/utils";
+import { stripFakeDemo } from "@/lib/demo";
 
 export function VaultBoard({
   file,
@@ -120,7 +121,7 @@ export function VaultBoard({
       </ol>
 
       <div className="tw-gadget p-3">
-        <p className="font-display text-2xl font-semibold leading-none">{file.students.length} workers</p>
+        <p className="font-display text-2xl font-semibold leading-none">{stripFakeDemo(file).students.length} workers</p>
         <p className="mt-1 font-mono text-xs text-subtle">
           Last save {file.meta.savedAt ? new Date(file.meta.savedAt).toLocaleString() : "not yet"} · schema {file.meta.schema ?? "—"}
           {file.meta.clearedAt ? ` · cleared ${new Date(file.meta.clearedAt).toLocaleString()}` : ""}

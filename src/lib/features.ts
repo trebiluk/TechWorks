@@ -23,13 +23,14 @@ export const FEATURES = [
   { id: "lucky", label: "Lucky Bench", group: "Games", hint: "Die + Friday pot. Class cash only." },
   { id: "portal", label: "Worker portal", group: "Games", hint: "Off. Wall is the FERPA view." },
   { id: "achievements", label: "Achievements", group: "Extra", hint: "Crew-lead XP lines" },
-  { id: "debug", label: "Fake data", group: "Extra", hint: "Paints graphs only. Not saved." },
+  { id: "debug", label: "Fake data", group: "Extra", hint: "Paints every crew board. Not saved." },
 ] as const;
 
 export type FeatureId = (typeof FEATURES)[number]["id"];
 export type FeatureGroup = (typeof FEATURES)[number]["group"];
 
-const DEFAULT_OFF: FeatureId[] = ["contrast", "portal", "store", "stocks", "nytech", "ambient", "debug", "lucky"];
+/** Off until you tap them. Must match the real chrome (guide, contrast, games). */
+const DEFAULT_OFF: FeatureId[] = ["contrast", "portal", "store", "stocks", "nytech", "ambient", "debug", "lucky", "tips"];
 
 export function featureOn(file: EconomyFile, id: FeatureId): boolean {
   const v = file.meta.config?.modules?.[id];
@@ -48,3 +49,30 @@ export function setFeature(file: EconomyFile, id: FeatureId, on: boolean): Econo
 }
 
 export const FEATURE_GROUPS: FeatureGroup[] = ["Wall", "Crew", "Learn", "Tools", "After school", "Games", "Extra"];
+
+/** Where Off actually hides something. Tests fail if a card is a no-op. */
+export const FEATURE_HIDES: Record<FeatureId, string> = {
+  weather: "WeatherChip",
+  berty: "BertyBot",
+  teach: "Teach tab",
+  polls: "Polls tab",
+  reward: "RewardBar",
+  tips: "Screen guide",
+  contrast: "High contrast paint",
+  crews: "Crew manager card",
+  grades: "Grades export card",
+  nytech: "NY Tech path",
+  projects: "Projects card",
+  picker: "Name picker",
+  timer: "Focus timer",
+  ambient: "Ambient Chaos",
+  club: "Club tab",
+  studyhall: "Hall tab",
+  store: "Store tab",
+  prints: "Prints tab",
+  stocks: "Stocks tab",
+  lucky: "Lucky tab",
+  portal: "Worker portal",
+  achievements: "Profile XP lines",
+  debug: "Fake data overlay",
+};

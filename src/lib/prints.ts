@@ -48,49 +48,43 @@ export const RARITY_LABEL: Record<PrintRarity, string> = {
   wild: "Wild",
 };
 
-function swatch(fill: string): string {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160"><rect width="160" height="160" rx="28" fill="${fill}"/></svg>`;
-  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
-}
-
-const C = {
-  dragon: "#7B2D8E",
-  axolotl: "#E889B5",
-  snake: "#3D8B5A",
-  cheese: "#E8C547",
-  custom: "#3B82F6",
-  key: "#8B7355",
-  gift: "#A855F7",
-};
-
 function pid(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 24);
 }
 
-export const DEFAULT_PRINTS: PrintPiece[] = [
-  { id: "dragon-s", name: "Small Dragon", size: "S", rarity: "rare", price: 12, stock: 6, series: "Dragon", photo: swatch(C.dragon) },
-  { id: "dragon-m", name: "Medium Dragon", size: "M", rarity: "rare", price: 28, stock: 3, series: "Dragon", photo: swatch(C.dragon) },
-  { id: "dragon-l", name: "Large Dragon", size: "L", rarity: "rare", price: 50, stock: 1, series: "Dragon", photo: swatch(C.dragon) },
-  { id: "axolotl-s", name: "Small Axolotl", size: "S", rarity: "shiny", price: 8, stock: 8, series: "Axolotl", photo: swatch(C.axolotl) },
-  { id: "axolotl-m", name: "Medium Axolotl", size: "M", rarity: "shiny", price: 20, stock: 4, series: "Axolotl", photo: swatch(C.axolotl) },
-  { id: "axolotl-l", name: "Large Axolotl", size: "L", rarity: "shiny", price: 40, stock: 2, series: "Axolotl", photo: swatch(C.axolotl) },
-  { id: "snake-s", name: "Small Snake", size: "S", rarity: "common", price: 5, stock: 10, series: "Snake", photo: swatch(C.snake) },
-  { id: "snake-m", name: "Medium Snake", size: "M", rarity: "common", price: 15, stock: 5, series: "Snake", photo: swatch(C.snake) },
-  { id: "snake-l", name: "Large Snake", size: "L", rarity: "common", price: 35, stock: 2, series: "Snake", photo: swatch(C.snake) },
-  { id: "cheese-clicker", name: "Cheese Clicker", size: "S", rarity: "shiny", price: 10, stock: 6, series: "Desk", photo: swatch(C.cheese) },
-  { id: "keychain", name: "Keychain", size: "S", rarity: "common", price: 4, stock: 12, series: "Desk", photo: swatch(C.key) },
-  { id: "custom-s", name: "Custom Choice · Small", size: "S", rarity: "common", price: 10, stock: 0, series: "Custom", photo: swatch(C.custom), note: "They pick the model. Print on request." },
-  { id: "custom-m", name: "Custom Choice · Medium", size: "M", rarity: "common", price: 22, stock: 0, series: "Custom", photo: swatch(C.custom), note: "They pick the model. Print on request." },
-  { id: "custom-l", name: "Custom Choice · Large", size: "L", rarity: "common", price: 45, stock: 0, series: "Custom", photo: swatch(C.custom), note: "They pick the model. Print on request." },
-  { id: "teacher-gift", name: "Custom Teacher Gift", size: "M", rarity: "rare", price: 0, stock: 2, series: "Gift", photo: swatch(C.gift), note: "Not for sale. You grant it." },
-];
+/** Empty on a new desk. Old factory animals are not re-seeded. */
+export const DEFAULT_PRINTS: PrintPiece[] = [];
 
-const OLD_SEED = new Set(["tiny-gear", "hex-token", "bearcat-chip", "bench-buddy", "shiny-paw", "rare-bot", "shop-sign", "legend-totem"]);
+const FACTORY_IDS = new Set([
+  "tiny-gear",
+  "hex-token",
+  "bearcat-chip",
+  "bench-buddy",
+  "shiny-paw",
+  "rare-bot",
+  "shop-sign",
+  "legend-totem",
+  "dragon-s",
+  "dragon-m",
+  "dragon-l",
+  "axolotl-s",
+  "axolotl-m",
+  "axolotl-l",
+  "snake-s",
+  "snake-m",
+  "snake-l",
+  "cheese-clicker",
+  "keychain",
+  "custom-s",
+  "custom-m",
+  "custom-l",
+  "teacher-gift",
+]);
 
 export function printsOf(file: EconomyFile): PrintPiece[] {
   const list = file.meta.config?.prints?.pieces;
-  if (!list?.length) return DEFAULT_PRINTS;
-  if (list.every((p) => OLD_SEED.has(p.id))) return DEFAULT_PRINTS;
+  if (!list?.length) return [];
+  if (list.every((p) => FACTORY_IDS.has(p.id))) return [];
   return list;
 }
 
@@ -324,8 +318,25 @@ export function duplicateVariant(file: EconomyFile, pieceId: string, variant: st
   });
 }
 
+/** Copy a line as a new piece (same size, price, rarity). */
+export function copyPiece(file: EconomyFile, pieceId: string): EconomyFile {
+  const src = printsOf(file).find((p) => p.id === pieceId);
+  if (!src) return file;
+  const id = pid(`${src.name}-${Date.now().toString(36)}`);
+  return upsertPiece(file, {
+    ...src,
+    id,
+    name: src.name,
+    variant: undefined,
+    stock: 0,
+    made: 0,
+    released: 0,
+    photo: src.photo,
+  });
+}
+
 export function resetPrintCatalog(file: EconomyFile): EconomyFile {
-  return putPrints(file, DEFAULT_PRINTS, printLogOf(file));
+  return putPrints(file, [], printLogOf(file));
 }
 
 export async function compressPrintPhoto(file: File): Promise<string> {

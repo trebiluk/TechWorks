@@ -232,7 +232,7 @@ export const Dashboard = memo(function Dashboard({
           <ProgressTrio cycle={cyc} quarter={qtr} year={yr} />
         </div>
       ) : null}
-      {layout.nowWeather && live == null ? <div className="mt-2"><WeatherChip /></div> : null}
+      {featureOn(file, "weather") && live == null ? <div className="mt-2"><WeatherChip /></div> : null}
     </article>
   );
 
@@ -336,7 +336,7 @@ export const Dashboard = memo(function Dashboard({
           </button>
         ) : null}
         <ProgressTrio cycle={cyc} quarter={qtr} year={yr} />
-        <RewardBar file={file} period={shown} />
+        {featureOn(file, "reward") ? <RewardBar file={file} period={shown} /> : null}
       </article>
     </section>
   );
@@ -472,7 +472,7 @@ function LayoutBar({
   const { layout } = dash;
   return (
     <section className="shrink-0">
-      <p className="text-xs text-muted">Admin wall. Drag a plate by the grip. Do this now is off the live Dash until you turn it on here — Teach still has the beats. Now and Goals sit side by side when they are neighbors.</p>
+      <p className="text-xs text-muted">Editing the wall. Drag plates. Settings gear edits titles and modules. Lock when the class should see the projector.</p>
       <div className="mt-1 flex flex-wrap items-center gap-1">
         <ToolsToggle on={dash.on("tools")} onClick={() => dash.setOn("tools", !dash.on("tools"))} />
         <button type="button" onClick={() => onRankBoard(rankBoard === "skill" ? "perk" : "skill")} className="tw-btn-2 inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 text-[12px]">
@@ -613,10 +613,12 @@ function GoalsCard({
       ) : null}
       {hasRanks ? (
         <div className="mt-3 grid min-w-0 grid-cols-2 gap-2 sm:grid-cols-1">
+          {featureOn(file, "reward") ? (
           <div className="rounded-lg bg-elevated px-2.5 py-2">
             <p className="text-xs font-semibold uppercase tracking-wider text-subtle">{t("Reward")}</p>
             <PeriodRewardChip file={file} period={shown} className="mt-1" />
           </div>
+          ) : null}
           <div className="rounded-lg bg-elevated px-2.5 py-2">
             <p className="text-xs font-semibold uppercase tracking-wider text-subtle">{t("Top 3")}</p>
             <ol className="mt-1 space-y-1">

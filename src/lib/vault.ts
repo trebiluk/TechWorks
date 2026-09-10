@@ -9,6 +9,7 @@ import { todayIso } from "@/lib/calendar";
 import { ensureStudentIds } from "@/lib/ids";
 import { loadClub, saveClub, type ClubFile } from "@/lib/club";
 import { emptyRoster, pickDesk } from "@/lib/vault-core";
+import { stripFakeDemo } from "@/lib/demo";
 
 export { emptyRoster, pickDesk };
 
@@ -271,7 +272,7 @@ export async function hydrateVault(local: EconomyFile): Promise<EconomyFile> {
 }
 
 export function downloadDeskBackup(file: EconomyFile, label?: string) {
-  const bundle = packVault(file, label || "Desk backup");
+  const bundle = packVault(stripFakeDemo(file), label || "Desk backup");
   const day = todayIso();
   downloadBlob(`techworks-full-${day}.json`, JSON.stringify(bundle, null, 2), "application/json");
 }
@@ -282,7 +283,7 @@ export function downloadRosterTemplate() {
 }
 
 export async function snapshotNow(file: EconomyFile, label: string): Promise<SnapInfo> {
-  const bundle = packVault(file, label);
+  const bundle = packVault(stripFakeDemo(file), label);
   const key = `${SNAP_PREFIX}${bundle.saved}`;
   await archivePut(key, bundle);
   return { key, saved: bundle.saved, label: bundle.label || "Snapshot", students: bundle.students, app: bundle.app };

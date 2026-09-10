@@ -2,6 +2,7 @@ import { APP_VERSION } from "@/lib/version";
 import { packVault, unpackVault, persistVault, applyVaultClub, type VaultBundle } from "@/lib/vault";
 import { loadDeck, saveDeck, type DeckPack } from "@/lib/deck-store";
 import type { EconomyFile } from "@/lib/economy";
+import { isDemoStudentId, stripFakeDemo } from "@/lib/demo";
 
 const KEY = "techworks-desk-key";
 const ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -153,13 +154,18 @@ function headers(): HeadersInit {
   return { "content-type": "application/json" };
 }
 
+export function cloudPackCount(pack: CloudPack): number {
+  return pack.vault?.students ?? pack.vault?.desk?.file?.students?.length ?? 0;
+}
+
 export function buildCloudPack(file: EconomyFile): CloudPack {
+  const real = stripFakeDemo(file);
   return {
     kind: "techworks-cloud",
     v: 1,
     saved: new Date().toISOString(),
     app: APP_VERSION,
-    vault: packVault(file, "Cloud desk"),
+    vault: packVault(real, "Cloud desk"),
     deck: loadDeck(),
   };
 }
@@ -168,14 +174,15 @@ export async function pushCloud(file: EconomyFile): Promise<boolean> {
   if (typeof window === "undefined") return false;
   const pass = ensureDeskKey();
   const token = await deskToken(pass);
-  const pack = buildCloudPack(file);
+  const real = stripFakeDemo(file);
+  const pack = buildCloudPack(real);
   setStatus("saving");
   try {
     const enc = await encryptPack(pack, pass);
     const body = {
       saved: pack.saved,
       app: pack.app,
-      n: file.students.length,
+      n: real.students.length,
       ...enc,
     };
     const res = await fetch("/api/desk", { method: "PUT", headers: headers(), body: JSON.stringify({ ...body, keyHash: token }) });
@@ -255,9 +262,24 @@ export function localIsNewer(file: EconomyFile, cloudSaved: string): boolean {
   return Boolean(local && cloudSaved && local > cloudSaved);
 }
 
+/** Who wins when this PC and the cloud disagree. Never auto-push an empty desk over names. */
+export function cloudSyncPlan(localN: number, cloudN: number, localNewer: boolean, sameStamp: boolean): "push" | "pull" | "keep" {
+  if (localN === 0 && cloudN > 0) return "pull";
+  if (cloudN === 0 && localN > 0) return "push";
+  if (localN === 0 && cloudN === 0) return "keep";
+  if (sameStamp) return "keep";
+  if (localNewer) return "push";
+  return "pull";
+}
+
+function realCount(file: EconomyFile): number {
+  return file.students.filter((s) => !isDemoStudentId(s.id)).length;
+}
+
 let pushTimer = 0;
 export function scheduleCloudPush(file: EconomyFile) {
   if (typeof window === "undefined") return;
+  if (realCount(file) === 0) return;
   if (pushTimer) window.clearTimeout(pushTimer);
   pushTimer = window.setTimeout(() => {
     pushTimer = 0;

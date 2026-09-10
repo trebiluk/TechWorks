@@ -569,6 +569,48 @@ export function projectForCrew(file: EconomyFile, cycle: number, period: number,
   return projectsOf(file).find((p) => p.id === id) ?? projectForCycle(file, gradeOfPeriod(file, period), cycle);
 }
 
+/** Active project slots on a period. Empty storage falls back to the grade’s live unit. */
+export function slotsOf(file: EconomyFile, period: number, date = todayIso()): ShopProject[] {
+  const list = projectsOf(file);
+  const ids = file.meta.config?.periodProjects?.[String(period)];
+  if (ids?.length) {
+    const rows = ids.map((id) => list.find((p) => p.id === id)).filter((p): p is ShopProject => Boolean(p));
+    if (rows.length) return rows;
+  }
+  return [projectForCycle(file, gradeOfPeriod(file, period), cycleNow(date))];
+}
+
+export function putOnPeriod(file: EconomyFile, period: number, projectId: string): EconomyFile {
+  if (period === 6) return file;
+  const next = cloneFile(file);
+  const key = String(period);
+  const stored = next.meta.config?.periodProjects?.[key];
+  const cur = [...(stored?.length ? stored : slotsOf(file, period).map((p) => p.id))];
+  if (!cur.includes(projectId)) cur.push(projectId);
+  next.meta.config = {
+    ...(next.meta.config ?? {}),
+    periodProjects: { ...(next.meta.config?.periodProjects ?? {}), [key]: cur },
+  };
+  const grade = gradeOfPeriod(next, period);
+  const p = projectsOf(next).find((x) => x.id === projectId);
+  if (p && grade !== 5 && !p.grades.includes(grade)) {
+    return upsertProject(next, { ...p, grades: [...p.grades, grade] });
+  }
+  return next;
+}
+
+export function pullFromPeriod(file: EconomyFile, period: number, projectId: string): EconomyFile {
+  const next = cloneFile(file);
+  const key = String(period);
+  const stored = next.meta.config?.periodProjects?.[key];
+  const cur = (stored?.length ? stored : slotsOf(file, period).map((p) => p.id)).filter((id) => id !== projectId);
+  const map = { ...(next.meta.config?.periodProjects ?? {}) };
+  if (cur.length) map[key] = cur;
+  else delete map[key];
+  next.meta.config = { ...(next.meta.config ?? {}), periodProjects: map };
+  return next;
+}
+
 export function crewOwnsProject(file: EconomyFile, cycle: number, period: number, crewKey: string, projectId: string): boolean {
   return crewProjectId(file, cycle, period, crewKey) === projectId;
 }
@@ -605,7 +647,9 @@ export function agendaFor(file: EconomyFile, period: number, date = todayIso(), 
       activityName: "Productivity",
     };
   }
-  const project = crewKey ? projectForCrew(file, cycle, period, crewKey) : projectForCycle(file, grade, cycle);
+  const project = crewKey
+    ? projectForCrew(file, cycle, period, crewKey)
+    : (slotsOf(file, period, date)[0] ?? projectForCycle(file, grade, cycle));
   const stage =
     project.stages.find((s) => s.cycle === cycle && s.slot === slot) ??
     project.stages.find((s) => s.cycle === cycle) ??

@@ -5,10 +5,9 @@ import type { EconomyFile } from "@/lib/economy";
 import { isLiveStudent, money, periodTitle, score, shopBells } from "@/lib/economy";
 import {
   buyPrint,
-  circulation,
   compressPrintPhoto,
   dropPiece,
-  duplicateVariant,
+  copyPiece,
   fidgetCensus,
   fidgetCounts,
   giftPrint,
@@ -18,7 +17,6 @@ import {
   pieceLabel,
   printsOf,
   printLogOf,
-  resetPrintCatalog,
   RARITY_LABEL,
   SIZE_LABEL,
   smallCount,
@@ -54,6 +52,7 @@ function PieceCard({
   counts,
   onClick,
   dim,
+  compact,
 }: {
   piece: PrintPiece;
   held?: number;
@@ -61,6 +60,7 @@ function PieceCard({
   counts?: { made: number; released: number; out: number; bin: number };
   onClick?: () => void;
   dim?: boolean;
+  compact?: boolean;
 }) {
   const Tag = onClick ? "button" : "div";
   return (
@@ -79,21 +79,23 @@ function PieceCard({
         {piece.photo ? (
           <img src={piece.photo} alt="" className="size-full object-cover" />
         ) : (
-          <div className="flex size-full items-center justify-center font-display text-3xl text-muted">{piece.size}</div>
+          <div className={cn("flex size-full items-center justify-center font-display text-muted", compact ? "text-lg" : "text-3xl")}>{piece.size}</div>
         )}
       </div>
-      <div className="flex flex-1 flex-col gap-1 p-2">
-        <p className="truncate font-display text-base font-semibold">{pieceLabel(piece)}</p>
-        <div className="flex flex-wrap items-center gap-1">
-          <span className="text-[10px] font-bold uppercase text-muted">{SIZE_LABEL[piece.size]}</span>
-          <RarityChip rarity={piece.rarity} />
-        </div>
-        <p className="mt-auto font-mono text-sm tabular-nums">
+      <div className={cn("flex flex-1 flex-col gap-0.5", compact ? "p-1.5" : "gap-1 p-2")}>
+        <p className={cn("truncate font-display font-semibold", compact ? "text-xs" : "text-base")}>{pieceLabel(piece)}</p>
+        {compact ? null : (
+          <div className="flex flex-wrap items-center gap-1">
+            <span className="text-[10px] font-bold uppercase text-muted">{SIZE_LABEL[piece.size]}</span>
+            <RarityChip rarity={piece.rarity} />
+          </div>
+        )}
+        <p className={cn("mt-auto font-mono tabular-nums", compact ? "text-[11px]" : "text-sm")}>
           {piece.price <= 0 ? "GIFT" : money(piece.price)}
-          {held != null ? <span className="ml-2 text-muted">{stock ? `you ${held}` : `${held} out`}</span> : null}
-          {stock ? <span className="ml-2 text-muted">{piece.stock} in bin</span> : null}
+          {held != null && !compact ? <span className="ml-2 text-muted">{stock ? `you ${held}` : `${held} out`}</span> : null}
+          {stock && !compact ? <span className="ml-2 text-muted">{piece.stock} in bin</span> : null}
         </p>
-        {counts ? (
+        {counts && !compact ? (
           <p className="text-[10px] font-semibold uppercase tracking-wide text-muted">
             {counts.released} released · {counts.out} out · {counts.bin} bin
             {counts.made ? ` · ${counts.made} made` : ""}
@@ -121,7 +123,7 @@ export function PrintsBoard({
   const log = printLogOf(file);
   const bells = shopBells(file);
   const list = useMemo(() => score(file), [file]);
-  const [pane, setPane] = useState<"wall" | "desk" | "stock">(unlocked ? "desk" : "wall");
+  const [pane, setPane] = useState<"wall" | "desk" | "stock">(unlocked ? "stock" : "wall");
   const [period, setPeriod] = useState(bells[0]?.period ?? 1);
   const kids = list.filter((s) => s.period === period && isLiveStudent(s, file.meta.quarterName));
   const [id, setId] = useState(kids[0]?.id ?? "");
@@ -175,7 +177,9 @@ export function PrintsBoard({
         <div>
           <h1 className="font-display text-3xl font-semibold tracking-tight">Prints</h1>
           <p className="text-sm text-muted">
-            Fidget economy · {releasedAll} released · {outAll} in the wild · {binAll} in the bin. Wild cards do not trade. Gallery has no names.
+            {pieces.length
+              ? `Fidget bin · ${releasedAll} released · ${outAll} in the wild · ${binAll} in the bin.`
+              : "Bin is empty. Add a piece, then copy the line for the next size or color."}
           </p>
         </div>
         <div className="flex flex-wrap gap-1">
@@ -196,20 +200,24 @@ export function PrintsBoard({
       </header>
 
       {pane === "wall" ? (
-        <div className="flex flex-col gap-4">
-          {[...new Set(gallery.map((p) => p.series || "Prints"))].map((series) => (
-            <section key={series}>
-              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted">{series}</p>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-                {gallery
-                  .filter((p) => (p.series || "Prints") === series)
-                  .map((p) => (
-                    <PieceCard key={p.id} piece={p} held={circulation(file, p.id)} counts={fidgetCounts(file, p)} />
-                  ))}
-              </div>
-            </section>
-          ))}
-        </div>
+        pieces.length ? (
+          <div className="flex flex-col gap-4">
+            {[...new Set(gallery.map((p) => p.series || "Prints"))].map((series) => (
+              <section key={series}>
+                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted">{series}</p>
+                <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-6 lg:grid-cols-8">
+                  {gallery
+                    .filter((p) => (p.series || "Prints") === series)
+                    .map((p) => (
+                      <PieceCard key={p.id} piece={p} compact />
+                    ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        ) : (
+          <p className="tw-gadget p-4 text-sm text-muted">No pieces on the wall yet. Unlock and add a line in Bin.</p>
+        )
       ) : null}
 
       {pane === "desk" && unlocked ? (
@@ -248,7 +256,7 @@ export function PrintsBoard({
               {me.first} · smalls shiny {smallCount(file, me.id, "shiny")} · rare {smallCount(file, me.id, "rare")}
             </p>
           ) : null}
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-6 lg:grid-cols-8">
             {gallery.map((p) => {
               const held = ownedQty(raw, p.id);
               const gift = p.price <= 0;
@@ -262,6 +270,7 @@ export function PrintsBoard({
                   stock
                   counts={fidgetCounts(file, p)}
                   dim={(broke || empty) && !held}
+                  compact
                   onClick={() => {
                     if (!me) return;
                     if (empty) {
@@ -356,15 +365,15 @@ export function PrintsBoard({
               </tbody>
             </table>
           </div>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-6">
             {gallery.map((p) => (
               <div key={p.id} className="flex flex-col gap-1">
-                <PieceCard piece={p} stock counts={fidgetCounts(file, p)} />
-                <div className="flex gap-1">
+                <PieceCard piece={p} stock compact />
+                <div className="flex flex-wrap gap-1">
                   <button type="button" className="tw-tap min-h-10 flex-1 rounded-md bg-elevated text-sm" onClick={() => onChange(logPrintRun(file, p.id, runQty, "print run"))}>
                     +{runQty}
                   </button>
-                  <button type="button" className="tw-tap min-h-10 flex-1 rounded-md bg-elevated text-sm" onClick={() => onChange(logPrintRun(file, p.id, -1, "adjust"))}>
+                  <button type="button" className="tw-tap min-h-10 rounded-md bg-elevated px-2 text-sm" onClick={() => onChange(logPrintRun(file, p.id, -1, "adjust"))}>
                     −1
                   </button>
                   <button type="button" className="tw-tap min-h-10 rounded-md bg-loss px-2 text-xs text-accent-fg" onClick={() => setDraft(p)}>
@@ -374,16 +383,13 @@ export function PrintsBoard({
                     type="button"
                     className="tw-tap min-h-10 rounded-md bg-elevated px-2 text-xs"
                     onClick={() => {
-                      const v = window.prompt("Variant name (color, flake, pose…)", p.variant || "");
-                      if (!v?.trim()) return;
-                      onChange(duplicateVariant(file, p.id, v.trim()));
-                      onFlash?.(`${p.name} · ${v.trim()} added`);
+                      onChange(copyPiece(file, p.id));
+                      onFlash?.(`Copied ${p.name}`);
                     }}
                   >
-                    +Var
+                    Copy
                   </button>
                 </div>
-                <p className="text-[11px] text-muted">{circulation(file, p.id)} out with workers</p>
               </div>
             ))}
           </div>
@@ -398,7 +404,7 @@ export function PrintsBoard({
           >
             <p className="text-xs font-bold uppercase tracking-wide text-muted">Piece</p>
             <input className="min-h-10 rounded-md bg-elevated px-2 text-sm" placeholder="Name" value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value, id: draft.id })} />
-            <input className="min-h-10 rounded-md bg-elevated px-2 text-sm" placeholder="Series (Dragon, Axolotl…)" value={draft.series ?? ""} onChange={(e) => setDraft({ ...draft, series: e.target.value })} />
+            <input className="min-h-10 rounded-md bg-elevated px-2 text-sm" placeholder="Series (optional)" value={draft.series ?? ""} onChange={(e) => setDraft({ ...draft, series: e.target.value })} />
             <input className="min-h-10 rounded-md bg-elevated px-2 text-sm" placeholder="Variant (blue, translucent, gold flake…)" value={draft.variant ?? ""} onChange={(e) => setDraft({ ...draft, variant: e.target.value })} />
             <div className="grid grid-cols-3 gap-1">
               {(["S", "M", "L"] as PrintSize[]).map((sz) => (
@@ -433,18 +439,20 @@ export function PrintsBoard({
               <input type="number" className="mt-1 min-h-10 w-full rounded-md bg-elevated px-2 text-sm" value={runQty} onChange={(e) => setRunQty(Math.max(1, Number(e.target.value) || 1))} />
             </label>
             <button type="submit" className="tw-tap min-h-11 rounded-full bg-accent text-sm font-semibold text-accent-fg">
-              Save piece
+              {draft.id ? "Save piece" : "Add piece"}
             </button>
-            <button
-              type="button"
-              className="tw-tap min-h-10 rounded-full bg-elevated text-sm"
-              onClick={() => {
-                onChange(resetPrintCatalog(file));
-                onFlash?.("Classroom print set loaded");
-              }}
-            >
-              Load dragon / axolotl / snake set
-            </button>
+            {draft.id ? (
+              <button
+                type="button"
+                className="tw-tap min-h-10 rounded-full bg-elevated text-sm"
+                onClick={() => {
+                  onChange(copyPiece(file, draft.id));
+                  onFlash?.(`Copied ${draft.name}`);
+                }}
+              >
+                Copy this line
+              </button>
+            ) : null}
             {draft.id ? (
               <button
                 type="button"

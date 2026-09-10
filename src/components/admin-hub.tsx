@@ -36,6 +36,7 @@ export function AdminHub({
   onLucky,
   onStore,
   onPrints,
+  onWall,
   onStudyHall,
   onClub,
   onExport,
@@ -63,6 +64,7 @@ export function AdminHub({
   onLucky?: () => void;
   onStore: () => void;
   onPrints?: () => void;
+  onWall?: () => void;
   onStudyHall: () => void;
   onClub?: () => void;
   onExport: () => void;
@@ -128,7 +130,13 @@ export function AdminHub({
       id: g.id,
       label: g.label,
       on: group.id === g.id,
-      go: () => pickPane(g.panes[0] as AdminPane),
+      go: () => {
+        if (g.id === "wall" && onWall) {
+          onWall();
+          return;
+        }
+        pickPane(g.panes[0] as AdminPane);
+      },
       show: true,
     })),
     { id: "club", label: "Club", on: false, go: () => onClub?.(), show: featureOn(file, "club") && Boolean(onClub) },
@@ -184,7 +192,7 @@ export function AdminHub({
         ) : pane === "cloud" ? (
           <CloudBoard file={file} unlocked={unlocked} onNeedPin={() => onNeedPin?.()} onLoad={onChange} />
         ) : pane === "wall" ? (
-          <p className="p-3 text-sm text-muted">Wall arrange is the projector layout.</p>
+          <p className="p-3 text-sm text-muted">The wall is the projector. Unlock and stay on Dash — drag plates there. This pad is records and the day.</p>
         ) : pane !== "today" ? (
           <SettingsBody
             file={file}

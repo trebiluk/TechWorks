@@ -51,6 +51,7 @@ function Field({
         className={cn(box, "resize-none")}
         style={style}
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
         onChange={(e) => onChange(e.target.value)}
       />
     );
@@ -62,6 +63,7 @@ function Field({
       className={box}
       style={style}
       onClick={(e) => e.stopPropagation()}
+      onKeyDown={(e) => e.stopPropagation()}
       onChange={(e) => onChange(e.target.value)}
     />
   );
@@ -386,8 +388,7 @@ export function DeckBoard({
     (partial: Partial<DeckSlide>) => {
       const cur = slides[i];
       if (!cur) return;
-      const nextSlide = sanitizeSlide({ ...cur, ...partial }, cur.id);
-      persist({ ...pack, slides: slides.map((s, n) => (n === i ? nextSlide : s)) });
+      persist({ ...pack, slides: slides.map((s, n) => (n === i ? { ...s, ...partial } : s)) });
     },
     [i, pack, persist, slides],
   );
@@ -400,10 +401,18 @@ export function DeckBoard({
   );
 
   useEffect(() => {
+    function typing(e: KeyboardEvent) {
+      const el = (e.target as HTMLElement | null) ?? (document.activeElement as HTMLElement | null);
+      if (!el) return false;
+      const tag = el.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+      if (el.isContentEditable) return true;
+      return Boolean(el.closest?.("input, textarea, select, [contenteditable='true'], [contenteditable='']"));
+    }
     function onKey(e: KeyboardEvent) {
-      const t = e.target as HTMLElement | null;
-      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
-      if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") {
+      if (typing(e)) return;
+      if (liveEdit && (e.key === " " || e.code === "Space")) return;
+      if (e.key === "ArrowRight" || e.key === " " || e.code === "Space" || e.key === "PageDown") {
         e.preventDefault();
         go(1);
       } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
@@ -422,7 +431,7 @@ export function DeckBoard({
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [go, onNeedPin, pack, persist, slides.length, unlocked]);
+  }, [go, liveEdit, onNeedPin, pack, persist, slides.length, unlocked]);
 
   useEffect(() => {
     function onFs() {
@@ -516,6 +525,7 @@ export function DeckBoard({
           <input
             value={pack.title}
             onChange={(e) => persist({ ...pack, title: e.target.value })}
+            onKeyDown={(e) => e.stopPropagation()}
             className="min-h-10 min-w-[12rem] rounded-md bg-elevated px-3 text-sm font-medium uppercase tracking-wider"
           />
         ) : (

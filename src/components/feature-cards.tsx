@@ -68,6 +68,10 @@ export const FeatureCards = memo(function FeatureCards({
             <button
               type="button"
               onClick={() => {
+                if (unlocked && onToggle) {
+                  onToggle(f.id, !on);
+                  return;
+                }
                 if (!on) {
                   onToggle?.(f.id, true);
                   return;

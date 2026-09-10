@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TECHWORKS TECHNICAL DETAILS, VERSION 7.0</title>
+<style>
+  :root { --bg:#06122B; --surface:#0B1A40; --elev:#132A5C; --fg:#F7F9FF; --muted:#B7C4EA; --accent:#22D3EE; --gold:#E8C547; --warn:#ff6a45; --line:color-mix(in oklab,#fff 12%,transparent); }
+  * { box-sizing: border-box; }
+  body { margin:0; font:16px/1.5 ui-sans-serif,system-ui,sans-serif; background:var(--bg); color:var(--fg); }
+  header.hero { padding:2.5rem 1.5rem 1.5rem; background:linear-gradient(90deg,#22D3EE 0%,#3B82F6 35%,#6366F1 65%,#A855F7 100%); color:#06122B; }
+  header.hero h1 { margin:0; font-size:clamp(1.6rem,4vw,2.4rem); letter-spacing:-0.03em; }
+  nav.toc { display:flex; flex-wrap:wrap; gap:0.4rem; padding:0.8rem 1.5rem; background:var(--surface); position:sticky; top:0; }
+  nav.toc a { color:var(--accent); text-decoration:none; font-size:0.8rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; padding:0.35rem 0.6rem; border-radius:999px; background:var(--elev); }
+  main { max-width:52rem; margin:0 auto; padding:1.5rem; }
+  h2 { color:var(--accent); letter-spacing:0.04em; text-transform:uppercase; font-size:0.85rem; margin-top:2.5rem; }
+  h3 { font-size:1.15rem; margin:1.4rem 0 0.4rem; }
+  .muted, footer { color:var(--muted); }
+  table { width:100%; border-collapse:collapse; font-size:0.92rem; }
+  th, td { text-align:left; padding:0.45rem 0.5rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-size:0.75rem; text-transform:uppercase; }
+  code { font-family:ui-monospace,monospace; font-size:0.86em; color:var(--gold); }
+  .card { background:var(--surface); border-radius:16px; padding:1rem 1.1rem; margin:0.8rem 0; }
+  .warn { color:var(--warn); }
+  ol.monday li { margin:0.4rem 0; }
+  footer { padding:2rem 1.5rem; font-size:0.8rem; }
+  a { color:var(--accent); }
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>TECHWORKS TECHNICAL DETAILS, VERSION 7.0</h1>
+  <p>Live desk <strong>v1.92.2</strong> · © 2026 Richard Kulibert · TECHWORKS™</p>
+  <p>Source of truth: this shop PC. Workshop zips are not this app.</p>
+</header>
+<nav class="toc">
+  <a href="#monday">Monday</a>
+  <a href="#copies">Three copies</a>
+  <a href="#roster">Roster</a>
+  <a href="#fake">Fake data</a>
+  <a href="#where">Where it lives</a>
+  <a href="#privacy">Privacy</a>
+</nav>
+<main>
+
+<h2 id="monday">0. Monday live test</h2>
+<div class="card">
+  <p>Use the <strong>shop PC</strong> that will stay in the room. Phone browsers are a preview, not the gradebook.</p>
+  <ol class="monday">
+    <li>Unlock. Admin → Modules → <strong>Fake data Off</strong> (gold chip gone).</li>
+    <li>Admin → Records → <strong>Snapshot now</strong> “Before Monday roster”.</li>
+    <li>Records → Cloud → mint / confirm the <strong>desk key</strong>. Write it in the planner. Not the PIN.</li>
+    <li>Tap <strong>Save</strong> on Cloud so the empty-or-current desk is on the internet.</li>
+    <li>Download <strong>JSON desk backup</strong> and <strong>Google book</strong>. Put both in a private Drive folder. Google book is an archive spreadsheet — it does not sync live.</li>
+    <li>Records → Names / Add a class: paste <code>Last, First, Period</code>. Same legal name <em>keeps</em> the alias. Do not paste twice expecting a merge of aliases — the second pass skips duplicates.</li>
+    <li>Snapshot again “After P1 import”. Cloud Save. Download JSON.</li>
+    <li>Open the wall: aliases only. Open a profile with PIN: legal name in the vault, not on the projector.</li>
+  </ol>
+  <p class="warn">If a second computer shows 0 workers, do not Save Cloud from that computer. Pull with the desk key, or restore a snapshot on the shop PC.</p>
+</div>
+
+<h2 id="copies">1. Three copies (none of them is “Google Drive sync”)</h2>
+<table>
+  <thead><tr><th>Copy</th><th>What</th><th>Monday use</th></tr></thead>
+  <tbody>
+    <tr><td>This PC</td><td><code>localStorage</code> desk pack + IndexedDB daily backups</td><td>The gradebook. Auto-saves ~0.5s after a change.</td></tr>
+    <tr><td>Cloud desk</td><td>Encrypted blob at <code>/api/desk</code>, unlocked by the 8–12 char desk key</td><td>Other shop PC / rebuild. Same key. Names are inside the vault, locked with that key.</td></tr>
+    <tr><td>Drive folder</td><td>JSON backup + Google book .xlsx you download, then File → Open with Google Sheets</td><td>Year archive. Gold headers stay locked. VAULT tab = legal names — do not share.</td></tr>
+  </tbody>
+</table>
+<p>PIN (1111 teacher / 2222 crew) is not a backup. The desk key is not a PIN. Losing the desk key means you cannot decrypt the cloud copy — keep the JSON file.</p>
+<p>Cloud will not replace a roster on this PC with an empty cloud. It will push this PC instead.</p>
+
+<h2 id="roster">2. Rosters</h2>
+<div class="card">
+  <h3>Import</h3>
+  <p>CSV or paste: Last, First, Period, optional IEP / 504. The desk mints a locked id, then a wall alias. Legal names never become the projector name.</p>
+  <ul>
+    <li>Same legal first+last already on the desk → <strong>skip add</strong>, keep that alias and id, update period/flags if the file says so.</li>
+    <li>New name → new id + new alias.</li>
+    <li>Manual add, then later CSV of the same people → they keep the aliases you already showed the class.</li>
+  </ul>
+  <h3>What rides in the cloud pack</h3>
+  <p>Students (aliases + vault legal names), crews, marks, skills, projects, day plans, prints catalog, deck slides, club file. Layout, theme, PIN, and Fake data toggle stay on this browser.</p>
+</div>
+
+<h2 id="fake">3. Fake data</h2>
+<div class="card">
+  <p>Admin → Modules → Fake data, then One week / One cycle / Messy cycle. Overlay only. The saved roster stays day 0. A gold chip reads <strong>Fake data · not saved</strong>.</p>
+  <p>On an empty desk, Messy draws a throwaway Forge / Volt shop (ids <code>demo-…</code>) onto the wall, week, year, crews, and data. Those workers cannot be written to disk. Turn Off before importing real names.</p>
+</div>
+
+<h2 id="where">4. Where the bits live</h2>
+<ul>
+  <li>Desk pack kind <code>techworks-desk</code>, schema 12, app version from <code>src/lib/version.ts</code>.</li>
+  <li>Vault bundle kind <code>techworks-vault</code> = desk + club + student count.</li>
+  <li>Cloud pack kind <code>techworks-cloud</code> = vault + deck, AES-GCM with the desk key (PBKDF2 80k).</li>
+  <li>Public GitHub ships <code>students: []</code>. Do not commit legal names.</li>
+</ul>
+
+<h2 id="privacy">5. Privacy</h2>
+<p>Projector and embed (<code>?embed=1</code>) are aliases only. IEP / 504 / legal names: vault, PIN, Google book VAULT tab. Family sheet can show a legal name after PIN — never on the wall.</p>
+
+<p class="muted">Older manuals: v6.0 described chrome at 1.80.33. This sheet is the live desk.</p>
+</main>
+<footer>© 2026 Richard Kulibert. TECHWORKS™. Changelog twin in the app Help / CHANGELOG.md.</footer>
+</body>
+</html>

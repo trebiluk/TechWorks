@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { EconomyFile } from "./economy.ts";
-import { ensureProjects, jobCardOf } from "./projects.ts";
+import { assignCrewProject, crewProjectId, ensureProjects, jobCardOf, putOnPeriod, pullFromPeriod, slotsOf } from "./projects.ts";
 
 function desk(): EconomyFile {
   return {
@@ -18,7 +18,11 @@ function desk(): EconomyFile {
       config: { currentCycle: 1 },
     },
     crews: [],
-    students: [],
+    students: [
+      { id: "a", first: "Ada", last: "", period: 1, crewKey: "Forge", skills: {}, days: [], bonus: 0, deduct: 0, clutch: 0, opening: 0 },
+      { id: "b", first: "Bea", last: "", period: 1, crewKey: "Forge", skills: {}, days: [], bonus: 0, deduct: 0, clutch: 0, opening: 0 },
+      { id: "c", first: "Cal", last: "", period: 1, crewKey: "Volt", skills: {}, days: [], bonus: 0, deduct: 0, clutch: 0, opening: 0 },
+    ],
   };
 }
 
@@ -72,5 +76,37 @@ describe("job card", () => {
     const job = jobCardOf(file, 1, "2026-09-09");
     assert.equal(job.stage, "Design");
     assert.match(job.today, /Draw the machine/i);
+  });
+});
+
+describe("period slots", () => {
+  it("starts P1 on Simple machines, then can hold a second job", () => {
+    const file = ensureProjects(desk());
+    const start = slotsOf(file, 1).map((p) => p.id);
+    assert.equal(start[0], "prj6");
+    const two = putOnPeriod(file, 1, "prj-figure");
+    assert.deepEqual(
+      slotsOf(two, 1).map((p) => p.id),
+      ["prj6", "prj-figure"],
+    );
+    const job = jobCardOf(two, 1, "2026-09-10");
+    assert.equal(job.question, "How can a small force move a bigger load?");
+  });
+
+  it("lets a crew take slot 2 without moving the class job", () => {
+    let file = putOnPeriod(ensureProjects(desk()), 1, "prj-figure");
+    file = assignCrewProject(file, 1, 1, "Volt", "prj-figure");
+    assert.equal(crewProjectId(file, 1, 1, "Volt"), "prj-figure");
+    assert.equal(crewProjectId(file, 1, 1, "Forge"), "prj6");
+    assert.equal(jobCardOf(file, 1, "2026-09-10").title, "Simple machines");
+  });
+
+  it("taking the extra job off a period restores one slot", () => {
+    const two = putOnPeriod(ensureProjects(desk()), 1, "prj-figure");
+    const one = pullFromPeriod(two, 1, "prj-figure");
+    assert.deepEqual(
+      slotsOf(one, 1).map((p) => p.id),
+      ["prj6"],
+    );
   });
 });

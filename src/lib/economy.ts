@@ -161,6 +161,8 @@ export type EconomyFile = {
       projectByGrade?: Record<string, string>;
       /** Cycle · period · crew → project id. Empty = grade default for that cycle. */
       crewProjects?: { cycle: number; period: number; crewKey: string; projectId: string }[];
+      /** Period → ordered active project slots. Empty = grade live unit. */
+      periodProjects?: Record<string, string[]>;
       projects?: {
         id: string;
         title: string;

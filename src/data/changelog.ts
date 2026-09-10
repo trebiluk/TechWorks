@@ -6,6 +6,35 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.4 — 2026-09-10
+
+- Features pass: Admin → Modules actually hides what it says. Weather on the wall/score. Class reward bar off when the module is off. Screen guide starts Off (it was On in the list but the strip was hidden). Every module has a pass test.
+
+## 1.92.3 — 2026-09-10
+
+- Monday-safe saves: an empty PC will not auto-push over a cloud roster. Empty shop PC with the desk key loads the cloud names. Pushing 0 workers asks first. Storage-full flashes so you download a backup. Import writes to this PC immediately. Google book / JSON / snapshots never include Fake data workers.
+- Fake data Messy / week / cycle now paints Score, Crews, Learn, Wallet, Rosters, Cleanup, and the wall — still not saved. Gold chip on every size.
+- Manual: TECHWORKS TECHNICAL DETAILS v7.1.
+
+## 1.92.2 — 2026-09-10
+
+- Fake data (Messy / week / cycle) actually paints the wall, week, year, crews, and data. Empty desk gets a throwaway Forge/Volt shop. Gold chip: not saved. Overlay workers never write to the gradebook.
+- Roster import: same legal name keeps the alias. Cloud will not replace a real roster with an empty cloud copy.
+- Manual: TECHWORKS TECHNICAL DETAILS v7.0 — Monday backup (this PC, cloud key, Drive folder). Help: Do not lose Monday’s roster.
+
+## 1.92.1 — 2026-09-10
+
+- Prints bin starts empty. Add a piece, copy the line for the next size. No factory dragon set. Gallery tiles are half size, still square.
+- Unlock is a full editor: stay on this screen, Settings gear on the HUD, wall plates drag in place. Lock returns the projector. PIN no longer dumps you on Admin Today.
+
+## 1.92.0 — 2026-09-10
+
+- Learn is project-based: Options (pick a unit) → Floor (put it on a period, more than one at a time) → crews take a slot. Crew lead can pick the slot. Write the job is the five lines, not a wall of chips. Learn opens on Projects. Hide-card toggles and Guide are off the everyday menu.
+
+## 1.91.4 — 2026-09-10
+
+- Deck edit: spacebar types a space again. Slide fields were trimming on every key, so a space at the end of a word never stuck. Present mode still uses space for next slide.
+
 ## 1.91.3 — 2026-09-10
 
 - Phone pass: the job plate is full-width again (it had borrowed the HUD chip’s max-width). Header is one swipe row, not a wrapped stack. Version number hides; paw stays. Period strip and Admin segments swipe. Goggles chip fills the plate. Dock sits on the home bar. Safe-area padding on the shell.

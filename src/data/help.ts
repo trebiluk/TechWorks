@@ -160,6 +160,20 @@ export const HELP_ARTICLES: HelpArticle[] = [
     body: "Admin → Crews (desk PIN). Tap a worker, tap a crew. 3–4 people, up to 5 crews. Each move is dated so yesterday’s group still scores as yesterday. Separate rules live on Admin → Records → Roster: pick two existing names, the desk will not seat them together. Override today logs an exception. Never on the wall.",
   },
   {
+    id: "admin-backup",
+    category: "Admin",
+    title: "Do not lose Monday’s roster",
+    tags: ["backup", "cloud", "drive", "google", "vault", "roster", "csv", "key"],
+    body: "Three copies, not one. 1) This PC is the gradebook (localStorage + a daily snapshot on the device). 2) Records → Cloud: mint a desk key, write it in your planner, Save. That is the shop-PC copy — encrypted, not Google Drive. Same key on the other room. An empty browser will not overwrite a cloud roster. 3) Records → Download Google book, then File → Open in Drive as a Sheet. Also download a JSON desk backup into a private Drive folder. Before you import names: Fake data Off, snapshot, then paste Last, First, Period. The same legal name keeps the alias. PIN is not the cloud key.",
+  },
+  {
+    id: "admin-fake",
+    category: "Admin",
+    title: "Fake data",
+    tags: ["fake", "demo", "messy", "debug", "graph"],
+    body: "Admin → Modules → Fake data, then Off / One week / One cycle / Messy cycle. That paints Wall, Week, Year, Score, Crews, Learn, Wallet, Rosters, Cleanup, and Data. Taps on those boards do not write to the saved roster. Gold chip says Fake data · not saved. Off before you import real names. Messy on an empty desk shows a throwaway Forge/Volt shop so you can see every board.",
+  },
+  {
     id: "roles-teacher",
     category: "Roles",
     title: "Teacher path",
@@ -405,7 +419,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "3D print collections",
     tags: ["print", "gallery", "rare", "shiny", "trade", "small", "large"],
     wall: true,
-    body: "Dashboard → Prints is the fidget gallery: photo, size, rarity (common / shiny / rare / wild), variant, and counts — released, in the wild, in the bin. No legal names. Cash buys from the bin (PIN). Trade: 2 rare smalls or 3 shiny smalls → one large. Wild cards do not trade. Bin: add pieces on the fly, +Var for a color/finish, print-run +N (counts as made), photos. Custom Teacher Gift is a grant. Wallet only — not XP or grades.",
+    body: "Unlock → Prints → Bin. The catalog starts empty — add a piece, Copy the line for the next size. Gallery tiles are small squares. Cash buys from the bin (PIN). Wallet only — not XP or grades. Hidden on the projector until something is released.",
   },
   {
     id: "schedule",

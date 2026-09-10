@@ -1,4 +1,4 @@
-/** Excel renderer for the Google book. Light paper, navy lock headers. */
+import { stripFakeDemo } from "@/lib/demo";
 import ExcelJS from "exceljs";
 import type { EconomyFile } from "./economy";
 import type { ClubFile } from "./club";
@@ -130,7 +130,7 @@ export async function buildBookBuffer(file: EconomyFile, club: ClubFile): Promis
 }
 
 export async function downloadGoogleBook(file: EconomyFile, club: ClubFile) {
-  const buf = await buildBookBuffer(file, club);
+  const buf = await buildBookBuffer(stripFakeDemo(file), club);
   triggerDownload(
     bookFileName(),
     buf,

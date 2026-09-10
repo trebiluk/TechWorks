@@ -406,7 +406,7 @@ export function SettingsBody({
                                 const next = !on;
                                 onChange(setFeature(file, f.id as FeatureId, next));
                                 if (f.id === "debug") {
-                                  const set = next ? "week" : "off";
+                                  const set = next ? (demoId === "off" ? "week" : demoId) : "off";
                                   commitDemo(set);
                                   setDemoId(set);
                                 }
@@ -438,30 +438,29 @@ export function SettingsBody({
                     </ul>
                   </div>
                 ))}
-                {featureOn(file, "debug") ? (
-                  <div className="mt-4">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-subtle">Graph set</p>
-                    <p className="mt-1 text-sm text-muted">Paints the wall only. Desk and the saved roster stay day 0.</p>
-                    <div className="mt-2 grid grid-cols-2 gap-2">
-                      {DEMO_SETS.map((s) => (
-                        <button
-                          key={s.id}
-                          type="button"
-                          onClick={() => {
-                            commitDemo(s.id);
-                            setDemoId(s.id);
-                          }}
-                          className={cn(
-                            "min-h-11 rounded-md px-3 text-sm font-semibold",
-                            demoId === s.id ? "bg-accent text-accent-fg" : "bg-elevated text-muted",
-                          )}
-                        >
-                          {s.label}
-                        </button>
-                      ))}
-                    </div>
+                <div className="mt-4">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-subtle">Fake data</p>
+                  <p className="mt-1 text-sm text-muted">Paints Wall, Week, Year, Score, Crews, Learn, Wallet, Rosters, and Data. The saved roster stays day 0. Turn Off before you import Monday’s names.</p>
+                  <div className="mt-2 grid grid-cols-2 gap-2">
+                    {DEMO_SETS.map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => {
+                          commitDemo(s.id);
+                          setDemoId(s.id);
+                          onChange(setFeature(file, "debug", s.id !== "off"));
+                        }}
+                        className={cn(
+                          "min-h-11 rounded-md px-3 text-sm font-semibold",
+                          demoId === s.id ? "bg-gold text-bg" : "bg-elevated text-muted",
+                        )}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
                   </div>
-                ) : null}
+                </div>
               </section>
             ) : null}
 

@@ -41,6 +41,7 @@ import { cn } from "@/lib/utils";
 import { useShopClock } from "@/lib/use-clock";
 import { PollPad } from "@/components/polls";
 import { crewDone, crewPulse, crewsOf } from "@/lib/crews";
+import { featureOn } from "@/lib/features";
 
 const PERIOD_CLASS: Record<number, string> = {
   1: "bg-period-1",
@@ -544,7 +545,7 @@ export function ScoreDesk({
               <input type="date" value={date} onChange={(e) => setDate(e.target.value || date)} className="bg-transparent text-sm outline-none" />
             </label>
             {slot.label ? <span className="text-sm text-muted">{cycleDayLabel(slot.label, cycle)}</span> : null}
-            <WeatherChip compact />
+            {featureOn(file, "weather") ? <WeatherChip compact /> : null}
             <p className="flex min-h-9 min-w-32 flex-1 items-center gap-2 rounded-lg bg-elevated px-2 text-sm">
               <span className="text-xs text-subtle">Lunch</span>
               <span className="min-w-0 truncate">{lunchOn(file, date) || "Admin → Lunch"}</span>

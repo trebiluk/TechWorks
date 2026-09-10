@@ -9,6 +9,8 @@ import { todayIso } from "@/lib/calendar";
 import { periodNow } from "@/lib/bells";
 import { CrewBanner, WorkerCard } from "@/components/shop-cards";
 import { ScoreDesk } from "@/components/score";
+import { assignCrewProject, crewProjectId, slotsOf } from "@/lib/projects";
+import { currentCycleOf } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 
 const FACES = ["😞", "😐", "🙂", "😄"] as const;
@@ -154,6 +156,8 @@ function CrewEdit({
         <CrewBanner name={name} motto={motto} icon={icon} color={color} logo={logo} period={period} n={kids.length} />
       </article>
 
+      <CrewSlot file={file} period={period} crewKey={crewKey} onChange={onChange} />
+
       <label className="block">
         <span className="text-xs font-bold uppercase tracking-wide text-muted">Crew name</span>
         <input value={name} maxLength={28} onChange={(e) => patch({ name: e.target.value })} className="mt-1 min-h-12 w-full rounded-xl bg-crew-card px-3 font-display text-xl font-semibold outline-none" />
@@ -236,6 +240,40 @@ function CrewEdit({
           );
         })}
       </ul>
+    </div>
+  );
+}
+
+function CrewSlot({
+  file,
+  period,
+  crewKey,
+  onChange,
+}: {
+  file: EconomyFile;
+  period: number;
+  crewKey: string;
+  onChange: (next: EconomyFile) => void;
+}) {
+  const cycle = currentCycleOf(file);
+  const slots = slotsOf(file, period);
+  const pid = crewProjectId(file, cycle, period, crewKey);
+  if (!slots.length) return null;
+  return (
+    <div>
+      <p className="text-xs font-bold uppercase tracking-wide text-muted">Our job this cycle</p>
+      <div className="mt-1 flex flex-wrap gap-1">
+        {slots.map((p, i) => (
+          <button
+            key={p.id}
+            type="button"
+            onClick={() => onChange(assignCrewProject(file, cycle, period, crewKey, p.id))}
+            className={cn("tw-tap min-h-12 rounded-xl px-3 text-sm font-bold", pid === p.id ? "bg-accent text-accent-fg" : "bg-crew-card text-muted")}
+          >
+            {i + 1} · {p.title}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

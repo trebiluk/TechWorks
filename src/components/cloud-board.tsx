@@ -13,9 +13,11 @@ import {
   pushCloud,
   saveDeskKey,
   storedDeskKey,
+  cloudPackCount,
   type CloudStatus,
 } from "@/lib/desk-cloud";
 import type { EconomyFile } from "@/lib/economy";
+import { stripFakeDemo } from "@/lib/demo";
 import { Cloud, Copy, Eye, EyeOff, KeyRound } from "lucide-react";
 import { CtrlHud } from "@/components/ctrl";
 import { cn } from "@/lib/utils";
@@ -69,6 +71,10 @@ export function CloudBoard({
       setMsg(cloudError() || "No cloud desk yet.");
       return;
     }
+    if (file.students.length > 0 && cloudPackCount(pack) === 0) {
+      setMsg("Cloud is empty. This PC still has the roster. Not replaced.");
+      return;
+    }
     const next = await applyCloudPack(pack);
     if (!next) {
       setMsg("Could not open that desk.");
@@ -80,6 +86,9 @@ export function CloudBoard({
 
   async function push() {
     if (!gate()) return;
+    if (stripFakeDemo(file).students.length === 0) {
+      if (!window.confirm("This PC has 0 workers. Pushing will replace the cloud copy. Continue only if the cloud should also be empty.")) return;
+    }
     const ok = await pushCloud(file);
     setMsg(ok ? "Saved on the internet." : cloudError() || "Still on this PC.");
   }

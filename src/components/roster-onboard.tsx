@@ -2,7 +2,8 @@ import { useMemo, useState } from "react";
 import { X } from "lucide-react";
 import { bellFor, legalFirstOf, legalLastOf, type EconomyFile } from "@/lib/economy";
 import { parseLegalRosterText } from "@/lib/alias-bank";
-import { importLegalRoster, rerollAlias, setAlias } from "@/lib/store";
+import { importLegalRoster, rerollAlias, setAlias, saveDeskNow } from "@/lib/store";
+import { snapshotNow } from "@/lib/vault";
 import { publicHandle } from "@/lib/live";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +23,7 @@ export function RosterOnboard({
   const [period, setPeriod] = useState(bells[0]?.period ?? 1);
   const [paste, setPaste] = useState("");
   const [showLegal, setShowLegal] = useState(false);
+  const [note, setNote] = useState("");
   const parsed = useMemo(() => parseLegalRosterText(paste), [paste]);
   const recent = file.students.filter((s) => s.period === period).slice(-24);
 
@@ -81,14 +83,27 @@ export function RosterOnboard({
             <p className="self-center text-xs text-muted">Last, First, Period, IEP, 504 · Period in the file wins if present</p>
           </div>
           <p className="text-xs text-muted">
-            {parsed.length} rows · missing period uses P{period} · id first, then alias · legal stays vault-only
+            {parsed.length} rows · missing period uses P{period} · same legal name keeps the alias · id first, then alias
           </p>
+          {note ? <p className="text-xs font-semibold text-gold">{note}</p> : null}
           <button
             type="button"
             disabled={!parsed.length}
             onClick={() => {
-              onChange(importLegalRoster(file, parsed.map((r) => ({ ...r, period: r.period || period }))));
+              const before = file.students.length;
+              const rows = parsed.map((r) => ({ ...r, period: r.period || period }));
+              void snapshotNow(file, "Before roster import");
+              const next = importLegalRoster(file, rows);
+              const added = next.students.length - before;
+              const skipped = rows.length - added;
+              saveDeskNow(next);
+              onChange(next);
               setPaste("");
+              setNote(
+                skipped > 0
+                  ? `${added} new · ${skipped} already on the desk (same legal name, kept the alias)`
+                  : `${added} new aliases minted`,
+              );
             }}
             className={cn(
               "min-h-11 w-full rounded-md px-3 text-sm font-semibold",

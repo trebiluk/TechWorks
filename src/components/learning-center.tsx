@@ -10,10 +10,8 @@ import { SkillsBoard } from "@/components/skills-board";
 import { ProjectsBoard } from "@/components/projects-board";
 import { GlossaryDesk } from "@/components/glossary";
 import { Chip } from "@/components/ui";
-import { BookOpen, GraduationCap, Landmark, Hammer, Heart, FolderKanban } from "lucide-react";
-import { markOf } from "@/lib/nav-marks";
+import { BookOpen, GraduationCap, Hammer, Heart, FolderKanban } from "lucide-react";
 import { Word } from "@/lib/tips";
-import { LEARN_CARDS, learnCardOn, loadLearnLook, saveLearnLook, toggleLearnCard, type LearnLook } from "@/lib/learn-look";
 import { useLang } from "@/lib/i18n-hook";
 import { cn } from "@/lib/utils";
 
@@ -36,7 +34,7 @@ export function LearningCenter({
   unlocked,
   onNeedPin,
   onOpenId,
-  start = "grades",
+  start = "projects",
   jumpPeriod: _jumpPeriod,
   jumpCrew: _jumpCrew,
   jumpDate: _jumpDate,
@@ -59,7 +57,6 @@ export function LearningCenter({
   const first = splitStart(start);
   const [pane, setPane] = useState<LearnPane>(first.pane);
   const [family, setFamily] = useState<"shop" | "soft">(first.family);
-  const [look, setLook] = useState<LearnLook>(() => loadLearnLook());
   useEffect(() => {
     const next = splitStart(start);
     setPane(next.pane);
@@ -68,32 +65,16 @@ export function LearningCenter({
   useEffect(() => {
     if (!unlocked && (pane === "book" || pane === "projects" || pane === "skills")) setPane("words");
   }, [unlocked, pane]);
-  function flipCard(id: (typeof LEARN_CARDS)[number]["id"]) {
-    const next = toggleLearnCard(look, id);
-    setLook(next);
-    saveLearnLook(next);
-    if (!learnCardOn(next, pane) && next.wallOn[0]) setPane(next.wallOn[0] as LearnPane);
-  }
   const nav = [
-    { id: "book", label: t("Book"), Icon: GraduationCap, on: pane === "book", go: () => setPane("book"), lock: true },
     { id: "projects", label: t("Projects"), Icon: FolderKanban, on: pane === "projects", go: () => setPane("projects"), lock: true },
     { id: "skills", label: t("Skills"), Icon: Hammer, on: pane === "skills", go: () => setPane("skills"), lock: true },
+    { id: "book", label: t("Book"), Icon: GraduationCap, on: pane === "book", go: () => setPane("book"), lock: true },
     { id: "words", label: t("Words"), Icon: BookOpen, on: pane === "words", go: () => setPane("words") },
-    { id: "guide", label: t("Guide"), Icon: Landmark, on: pane === "guide", go: () => setPane("guide") },
-  ].filter((tab) => learnCardOn(look, tab.id as LearnPane) && (unlocked || !tab.lock));
+  ].filter((tab) => unlocked || !tab.lock);
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      <header className="mb-1 hidden shrink-0 sm:mb-2 md:block">
-        <p className="hidden px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-subtle sm:block">{t("Learn · grades and skills, not daily pay")}</p>
-        {unlocked ? (
-          <div className="mb-1 flex flex-wrap gap-1">
-            {LEARN_CARDS.map((c) => (
-              <Chip key={c.id} mark={markOf(c.id)} on={learnCardOn(look, c.id)} onClick={() => flipCard(c.id)} className={learnCardOn(look, c.id) ? "" : "line-through"}>
-                {t(c.label)}
-              </Chip>
-            ))}
-          </div>
-        ) : null}
+      <header className="mb-1 shrink-0 sm:mb-2">
+        <p className="hidden px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-subtle sm:block">{t("Learn · pick a project, put it on a period, crews take a slot")}</p>
         <nav className="flex flex-wrap gap-1" aria-label="Learning">
           {nav.map((tab) => (
             <button
