@@ -1,8 +1,16 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.90.14. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.90.16. -->
 
 # TechWorks changelog
 
-App version **1.90.14**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.90.16**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.90.16 — 2026-09-09
+
+- Full pictogram pass: Goals stages, Admin tabs, Records filters, Wall On/Off plates, Tools, Rank XP/$, Prints, Learn cards. Word still sits next to the mark.
+
+## 1.90.15 — 2026-09-09
+
+- Every place-chip has a pictogram next to the word (Wall, Teach, Deck, Week, Rosters, Admin, Learn). Same marks on the dock. Words stay so a phone still shows every option.
 
 ## 1.90.14 — 2026-09-09
 

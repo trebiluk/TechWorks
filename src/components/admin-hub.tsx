@@ -13,6 +13,8 @@ import { abOn, deskBellId, deskPacks, exportedThisPeriod, isSubDay, lunchOn, mee
 import type { EconomyFile } from "@/lib/economy";
 import { CloudBoard } from "@/components/cloud-board";
 import { CrewDesk } from "@/components/crew-desk";
+import { MarkChip } from "@/components/ui";
+import { markOf } from "@/lib/nav-marks";
 import { cn } from "@/lib/utils";
 import { useNavV2 } from "@/lib/app-nav";
 import { ADMIN_GROUPS, PANE_LABEL, groupOfPane } from "@/lib/admin-nav";
@@ -125,14 +127,9 @@ export function AdminHub({
       {!navV2 ? (
       <nav className="tw-gadget mb-2 flex flex-wrap gap-1 p-1" aria-label="Admin">
         {nav.map((n) => (
-          <button
-            key={n.id}
-            type="button"
-            onClick={n.go}
-            className={cn("min-h-10 rounded-md px-3 text-xs font-semibold", n.on ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
-          >
+          <MarkChip key={n.id} mark={markOf(n.id)} on={n.on} onClick={n.go}>
             {n.label}
-          </button>
+          </MarkChip>
         ))}
       </nav>
       ) : null}
@@ -141,14 +138,15 @@ export function AdminHub({
         {inner.length ? (
           <div className="mb-2 flex flex-wrap gap-1 px-1">
             {inner.map((id) => (
-              <button
+              <MarkChip
                 key={id}
-                type="button"
+                mark={markOf(id)}
+                on={pane === id}
                 onClick={() => setPane(id as AdminPane)}
-                className={cn("tw-tap min-h-9 rounded-full px-3 text-xs font-semibold", pane === id ? "bg-fg text-bg" : "bg-elevated text-muted")}
+                className={pane === id ? "bg-fg text-bg" : undefined}
               >
                 {PANE_LABEL[id] ?? id}
-              </button>
+              </MarkChip>
             ))}
           </div>
         ) : null}

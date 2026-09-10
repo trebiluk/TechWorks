@@ -1,5 +1,7 @@
 import { APP_SECTIONS, type AppSection, type NavTab } from "@/lib/app-nav";
+import { markOf } from "@/lib/nav-marks";
 import { useLang } from "@/lib/i18n-hook";
+import { MarkChip } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
 const ROW =
@@ -22,42 +24,24 @@ export function AppNav({
 }) {
   const { t } = useLang();
   const shown = APP_SECTIONS.filter((s) => !s.lock || unlocked);
-  const row = tabs.filter((t) => !t.hidden);
+  const row = tabs.filter((tab) => !tab.hidden);
   return (
     <div className={cn("flex w-full min-w-0 flex-col gap-0.5", className)}>
       {hideSections ? null : (
       <nav className={cn(ROW, "tw-gadget p-1")} aria-label={t("Place")}>
         {shown.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            title={t(s.label)}
-            onClick={() => onSection(s.id)}
-            className={cn(
-              "tw-tap min-h-10 min-w-0 shrink-0 rounded-lg px-3 text-[11px] font-bold uppercase tracking-[0.12em] sm:min-h-9 sm:px-4 sm:text-xs",
-              section === s.id ? "bg-accent text-accent-fg" : "text-muted hover:bg-elevated hover:text-fg",
-            )}
-          >
+          <MarkChip key={s.id} mark={markOf(s.id)} on={section === s.id} title={t(s.label)} onClick={() => onSection(s.id)}>
             {t(s.label)}
-          </button>
+          </MarkChip>
         ))}
       </nav>
       )}
       {row.length ? (
         <nav className={ROW} aria-label={t("In this section")}>
-          {row.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              title={t.label}
-              onClick={t.onClick}
-              className={cn(
-                "inline-flex min-h-10 shrink-0 items-center justify-center rounded-lg px-2.5 text-sm font-semibold sm:min-h-8 sm:px-3 sm:text-xs",
-                t.on ? "bg-accent text-accent-fg" : "bg-elevated text-muted hover:text-fg",
-              )}
-            >
-              {t.label}
-            </button>
+          {row.map((tab) => (
+            <MarkChip key={tab.id} mark={markOf(tab.id)} on={tab.on} title={tab.label} onClick={tab.onClick}>
+              {tab.label}
+            </MarkChip>
           ))}
         </nav>
       ) : null}

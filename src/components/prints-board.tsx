@@ -1,4 +1,6 @@
 import { useMemo, useState } from "react";
+import { MarkChip } from "@/components/ui";
+import { markOf } from "@/lib/nav-marks";
 import type { EconomyFile } from "@/lib/economy";
 import { isLiveStudent, money, periodTitle, score, shopBells } from "@/lib/economy";
 import {
@@ -178,17 +180,17 @@ export function PrintsBoard({
         </div>
         <div className="flex flex-wrap gap-1">
           {(["wall", "desk", "stock"] as const).map((p) => (
-            <button
+            <MarkChip
               key={p}
-              type="button"
+              mark={markOf(p === "wall" ? "gallery" : p === "desk" ? "buy" : "bin")}
+              on={pane === p}
               onClick={() => {
                 if (p !== "wall" && !mustPin()) return;
                 setPane(p);
               }}
-              className={cn("tw-tap min-h-10 rounded-full px-4 text-xs font-semibold uppercase", pane === p ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
             >
               {p === "wall" ? "Gallery" : p === "desk" ? "Buy / trade" : "Bin"}
-            </button>
+            </MarkChip>
           ))}
         </div>
       </header>

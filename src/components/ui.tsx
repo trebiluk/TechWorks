@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
 /** Gold fill = on. Use for periods, stages, filters. */
@@ -8,12 +9,14 @@ export function Chip({
   onClick,
   disabled,
   className,
+  mark: Icon,
 }: {
   on?: boolean;
   children: ReactNode;
   onClick?: () => void;
   disabled?: boolean;
   className?: string;
+  mark?: LucideIcon;
 }) {
   return (
     <button
@@ -21,12 +24,47 @@ export function Chip({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        "inline-flex min-h-11 touch-manipulation items-center rounded-full px-3 text-xs font-semibold uppercase tracking-wide disabled:opacity-40",
+        "inline-flex min-h-11 touch-manipulation items-center gap-1.5 rounded-full px-3 text-xs font-semibold uppercase tracking-wide disabled:opacity-40",
         on ? "bg-gold text-bg" : "bg-elevated text-muted hover:bg-surface hover:text-fg",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold active:brightness-95",
         className,
       )}
     >
+      {Icon ? <Icon className="size-4 shrink-0" strokeWidth={on ? 2.4 : 2} aria-hidden /> : null}
+      {children}
+    </button>
+  );
+}
+
+/** Place chips: pictogram + word. Accent when you are there. */
+export function MarkChip({
+  mark: Icon,
+  on,
+  children,
+  onClick,
+  title,
+  className,
+}: {
+  mark?: LucideIcon;
+  on?: boolean;
+  children: ReactNode;
+  onClick?: () => void;
+  title?: string;
+  className?: string;
+}) {
+  return (
+    <button
+      type="button"
+      title={title}
+      onClick={onClick}
+      aria-current={on ? "page" : undefined}
+      className={cn(
+        "tw-tap inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-sm font-semibold sm:min-h-9 sm:px-3",
+        on ? "bg-accent text-accent-fg" : "bg-elevated text-muted hover:text-fg",
+        className,
+      )}
+    >
+      {Icon ? <Icon className="size-4 shrink-0" strokeWidth={on ? 2.4 : 2} aria-hidden /> : null}
       {children}
     </button>
   );

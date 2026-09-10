@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Dices } from "lucide-react";
+import { Dices, Timer } from "lucide-react";
+import { markOf } from "@/lib/nav-marks";
 import type { EconomyFile } from "@/lib/economy";
 import { isLiveStudent } from "@/lib/economy";
 import { abOn, onAbRoster } from "@/lib/store";
@@ -83,12 +84,14 @@ export function DashTools({ file, period }: { file: EconomyFile; period: number 
 }
 
 export function ToolsToggle({ on, onClick }: { on: boolean; onClick: () => void }) {
+  const Icon = markOf("tools") ?? Timer;
   return (
     <button
       type="button"
       onClick={onClick}
-      className={cn("min-h-8 rounded-full px-3 text-[12px] font-medium", on ? "bg-accent text-accent-fg" : "tw-btn-2")}
+      className={cn("tw-tap inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 text-[12px] font-medium", on ? "bg-accent text-accent-fg" : "tw-btn-2")}
     >
+      <Icon className="size-3.5" strokeWidth={2.2} aria-hidden />
       Tools
     </button>
   );

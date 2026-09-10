@@ -12,6 +12,8 @@ import { LunchPanel } from "@/components/lunch-panel";
 import { commitContrast, storedContrast } from "@/lib/theme";
 import { savePortalPin, storedPortalPin } from "@/lib/pin";
 import { PinField } from "@/components/pin-pad";
+import { MarkChip } from "@/components/ui";
+import { markOf } from "@/lib/nav-marks";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { COPYRIGHT_LONG } from "@/lib/copy";
@@ -91,14 +93,9 @@ export function SettingsBody({
             {onTab ? (
               <nav className="mb-3 flex flex-wrap gap-1" aria-label="Settings">
                 {TABS.map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => onTab(t.id)}
-                    className={cn("min-h-10 rounded-md px-2.5 text-xs font-semibold", tab === t.id ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
-                  >
+                  <MarkChip key={t.id} mark={markOf(t.id)} on={tab === t.id} onClick={() => onTab(t.id)}>
                     {t.label}
-                  </button>
+                  </MarkChip>
                 ))}
               </nav>
             ) : null}

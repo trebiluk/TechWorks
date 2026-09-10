@@ -27,6 +27,8 @@ import { emptyRoster, snapshotNow } from "@/lib/vault";
 import { publicHandle } from "@/lib/live";
 import { todayIso } from "@/lib/calendar";
 import { bansOf, dropCrewBan, placeBlock, rosterLabel, separatePair, setStudentCrew, whoOf } from "@/lib/crew-desk";
+import { MarkChip } from "@/components/ui";
+import { markOf } from "@/lib/nav-marks";
 import { cn } from "@/lib/utils";
 
 type Filter = "all" | "live" | "q1" | "q2" | "q3" | "q4" | "club" | "hall" | "hold";
@@ -122,12 +124,12 @@ export function YearRoster({
               Clear workers
             </button>
           ) : null}
-          <button type="button" onClick={() => setShowLegal((v) => !v)} className={cn("tw-tap min-h-11 rounded-md px-3 text-sm font-semibold", showLegal ? "bg-accent text-accent-fg" : "bg-elevated")}>
+          <MarkChip mark={markOf("legal")} on={showLegal} onClick={() => setShowLegal((v) => !v)}>
             {showLegal ? "Hide legal" : "Show legal"}
-          </button>
-          <button type="button" onClick={() => setSt((v) => !v)} className={cn("tw-tap min-h-11 rounded-md px-3 text-sm font-semibold", st ? "bg-accent text-accent-fg" : "bg-elevated")}>
+          </MarkChip>
+          <MarkChip mark={markOf("schooltool")} on={st} onClick={() => setSt((v) => !v)}>
             SchoolTool
-          </button>
+          </MarkChip>
         </div>
       </header>
 
@@ -178,14 +180,9 @@ export function YearRoster({
             ["hold", "Hold"],
           ] as const
         ).map(([id, label]) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => setFilter(id)}
-            className={cn("tw-tap min-h-9 rounded-full px-3 text-xs font-semibold", filter === id ? "bg-fg text-bg" : "bg-elevated text-muted")}
-          >
+          <MarkChip key={id} mark={markOf(id)} on={filter === id} onClick={() => setFilter(id)} className={filter === id ? "bg-fg text-bg" : undefined}>
             {label}
-          </button>
+          </MarkChip>
         ))}
         <input
           value={q}

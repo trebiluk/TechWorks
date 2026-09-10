@@ -6,6 +6,14 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.90.16 — 2026-09-09
+
+- Full pictogram pass: Goals stages, Admin tabs, Records filters, Wall On/Off plates, Tools, Rank XP/$, Prints, Learn cards. Word still sits next to the mark.
+
+## 1.90.15 — 2026-09-09
+
+- Every place-chip has a pictogram next to the word (Wall, Teach, Deck, Week, Rosters, Admin, Learn). Same marks on the dock. Words stay so a phone still shows every option.
+
 ## 1.90.14 — 2026-09-09
 
 - Do this now is off the live Dash. It was eating the phone and you could not scroll or hide it. Teach still has the beats. Turn the plate on in Admin → Wall if the projector needs it.

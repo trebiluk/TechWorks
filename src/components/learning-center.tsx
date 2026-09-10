@@ -11,6 +11,7 @@ import { ProjectsBoard } from "@/components/projects-board";
 import { GlossaryDesk } from "@/components/glossary";
 import { Chip } from "@/components/ui";
 import { BookOpen, GraduationCap, Landmark, Hammer, Heart, FolderKanban } from "lucide-react";
+import { markOf } from "@/lib/nav-marks";
 import { Word } from "@/lib/tips";
 import { LEARN_CARDS, learnCardOn, loadLearnLook, saveLearnLook, toggleLearnCard, type LearnLook } from "@/lib/learn-look";
 import { useLang } from "@/lib/i18n-hook";
@@ -87,14 +88,9 @@ export function LearningCenter({
         {unlocked ? (
           <div className="mb-1 flex flex-wrap gap-1">
             {LEARN_CARDS.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => flipCard(c.id)}
-                className={cn("tw-tap min-h-8 rounded-full px-3 text-[11px] font-semibold", learnCardOn(look, c.id) ? "bg-fg text-bg" : "bg-elevated text-muted line-through")}
-              >
+              <Chip key={c.id} mark={markOf(c.id)} on={learnCardOn(look, c.id)} onClick={() => flipCard(c.id)} className={learnCardOn(look, c.id) ? "" : "line-through"}>
                 {t(c.label)}
-              </button>
+              </Chip>
             ))}
           </div>
         ) : null}
@@ -111,7 +107,7 @@ export function LearningCenter({
               )}
             >
               <tab.Icon className="size-4" strokeWidth={2} aria-hidden />
-              <span className="hidden sm:inline"><Word>{tab.label}</Word></span>
+              <span><Word>{tab.label}</Word></span>
             </button>
           ))}
         </nav>

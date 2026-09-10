@@ -1,5 +1,6 @@
 import { memo, startTransition, useMemo, useState } from "react";
-import { ClipboardList } from "lucide-react";
+import { ChevronDown, ChevronUp, ClipboardList, Coins, RotateCcw, Trophy } from "lucide-react";
+import { markOf } from "@/lib/nav-marks";
 import type { Bell, EconomyFile, ScoredStudent } from "@/lib/economy";
 import { isLiveStudent, periodTitle, shopBells } from "@/lib/economy";
 import { formatBell, periodClock, periodNext, periodNow, SCHOOLTOOL_URL } from "@/lib/bells";
@@ -295,7 +296,8 @@ export const Dashboard = memo(function Dashboard({
       <article className="tw-gadget tw-hud p-3">
         <div className="mb-1 flex items-center gap-2">
           <p className="font-display text-sm font-semibold">{ranked.some((s) => s.xp > 0 || s.quarter > 0) ? `${t("School")} · top ${layout.schoolN}` : t("In the shop")}</p>
-          <button type="button" onClick={() => onRankBoard(rankBoard === "skill" ? "perk" : "skill")} className="tw-btn-2 ml-auto min-h-8 rounded-full px-3 text-[11px] font-semibold">
+          <button type="button" onClick={() => onRankBoard(rankBoard === "skill" ? "perk" : "skill")} className="tw-btn-2 ml-auto inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 text-[11px] font-semibold">
+            {rankBoard === "skill" ? <Trophy className="size-3.5" aria-hidden /> : <Coins className="size-3.5" aria-hidden />}
             {rankBoard === "skill" ? "XP" : "$"}
           </button>
         </div>
@@ -461,7 +463,8 @@ function LayoutBar({
       <p className="text-xs text-muted">Admin wall. Drag a plate by the grip. Do this now is off the live Dash until you turn it on here — Teach still has the beats. Now and Goals sit side by side when they are neighbors.</p>
       <div className="mt-1 flex flex-wrap items-center gap-1">
         <ToolsToggle on={dash.on("tools")} onClick={() => dash.setOn("tools", !dash.on("tools"))} />
-        <button type="button" onClick={() => onRankBoard(rankBoard === "skill" ? "perk" : "skill")} className="tw-btn-2 min-h-8 rounded-full px-3 text-[12px]">
+        <button type="button" onClick={() => onRankBoard(rankBoard === "skill" ? "perk" : "skill")} className="tw-btn-2 inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 text-[12px]">
+          {rankBoard === "skill" ? <Trophy className="size-3.5" aria-hidden /> : <Coins className="size-3.5" aria-hidden />}
           Rank {rankBoard === "skill" ? "XP" : "$"}
         </button>
       </div>
@@ -476,25 +479,31 @@ function LayoutBar({
                 <button
                   type="button"
                   onClick={() => dash.setOn(row.id, !on)}
-                  className={cn("tw-tap min-h-10 flex-1 rounded-lg px-3 text-left text-sm font-semibold", on ? "bg-fg text-bg" : "bg-bg text-muted")}
+                  className={cn("tw-tap inline-flex min-h-10 flex-1 items-center gap-1.5 rounded-lg px-3 text-left text-sm font-semibold", on ? "bg-fg text-bg" : "bg-bg text-muted")}
                 >
+                  {(() => {
+                    const Icon = markOf(row.id);
+                    return Icon ? <Icon className="size-4 shrink-0" aria-hidden /> : null;
+                  })()}
                   {on ? "On · " : "Off · "}
                   {row.label}
                 </button>
                 <button type="button" disabled={i <= 0} onClick={() => dash.move(row.id, -1)} className="tw-tap grid size-10 place-items-center rounded-lg bg-bg text-muted disabled:opacity-25" title="Up">
-                  ↑
+                  <ChevronUp className="size-4" />
                 </button>
                 <button type="button" disabled={i >= layout.order.length - 1} onClick={() => dash.move(row.id, 1)} className="tw-tap grid size-10 place-items-center rounded-lg bg-bg text-muted disabled:opacity-25" title="Down">
-                  ↓
+                  <ChevronDown className="size-4" />
                 </button>
               </li>
             );
           })}
           <li className="flex flex-wrap gap-1 sm:col-span-2">
-            <button type="button" onClick={() => dash.setSchoolN(layout.schoolN === 5 ? 10 : 5)} className="tw-btn-2 min-h-10 rounded-full px-3 text-xs">
+            <button type="button" onClick={() => dash.setSchoolN(layout.schoolN === 5 ? 10 : 5)} className="tw-btn-2 inline-flex min-h-10 items-center gap-1.5 rounded-full px-3 text-xs">
+              <Trophy className="size-3.5" aria-hidden />
               Top {layout.schoolN}
             </button>
-            <button type="button" onClick={() => dash.reset()} className="tw-btn-2 min-h-10 rounded-full px-3 text-xs">
+            <button type="button" onClick={() => dash.reset()} className="tw-btn-2 inline-flex min-h-10 items-center gap-1.5 rounded-full px-3 text-xs">
+              <RotateCcw className="size-3.5" aria-hidden />
               Reset wall
             </button>
           </li>

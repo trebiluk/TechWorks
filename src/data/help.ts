@@ -498,7 +498,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "One desk",
     tags: ["web", "mobile", "ipad", "projector", "layout", "dock"],
-    body: "One layout. Bottom dock is Dash · Learn · Crew · Rosters · Admin. Widescreen lays the same cards in columns; portrait wraps them. Now and Goals grow type so the back row can read it. Do this now stays off the live Dash (it was eating phones) — Teach still has the beats, or turn the plate on in Admin → Wall. Arrange the wall in Admin → Wall (PIN). Rosters is the class yearbook (aliases, gold if you lead). Legal names stay in Admin → Records. No Web/Mobile switch. Google Site embed still hides the dock so the projector stays a wall.",
+    body: "One layout. Bottom dock is Dash · Learn · Crew · Rosters · Admin — each with a pictogram and the word. Widescreen lays the same cards in columns; portrait wraps them. Now and Goals grow type so the back row can read it. Do this now stays off the live Dash (it was eating phones) — Teach still has the beats, or turn the plate on in Admin → Wall. Arrange the wall in Admin → Wall (PIN). Rosters is the class yearbook (aliases, gold if you lead). Legal names stay in Admin → Records. No Web/Mobile switch. Google Site embed still hides the dock so the projector stays a wall.",
   },
   {
     id: "themes",
