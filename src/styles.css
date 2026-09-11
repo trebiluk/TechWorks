@@ -1001,20 +1001,46 @@ html[data-contrast="high"] {
   }
 }
 
-/* Plates eat leftover wall on a widescreen. Portrait stays stacked + compact. */
+/* Now + job eat leftover wall, like Teach slots. Arrange stays compact. */
 .tw-fill-row {
   flex: 0 0 auto;
 }
-@media (min-width: 900px) {
-  .tw-fill-row {
-    flex: 1 1 0;
-    min-height: 10rem;
+.tw-web-wall[data-wall-stage="show"] .tw-fill-row {
+  flex: 1 1 0;
+  min-height: 8rem;
+  display: flex;
+  flex-direction: column;
+}
+.tw-web-wall[data-wall-stage="show"] .tw-fill-row > * {
+  flex: 1 1 0;
+  min-height: 0;
+  height: 100%;
+}
+.tw-web-wall[data-wall-stage="show"] .tw-fill-row > [data-dash-pair],
+.tw-web-wall[data-wall-stage="show"] .tw-fill-row > .tw-fill,
+.tw-web-wall[data-wall-stage="show"] .tw-fill-row > .tw-fill-wide {
+  height: 100%;
+}
+.tw-web-wall[data-wall-stage="show"] [data-dash-pair] {
+  height: 100%;
+  min-height: 0;
+}
+.tw-web-wall[data-wall-stage="show"] [data-dash-pair] > .tw-gadget {
+  min-height: 0;
+}
+@media (max-width: 899px) {
+  .tw-web-wall[data-wall-stage="show"] [data-dash-pair] {
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
   }
-  .tw-fill-row > [data-dash-pair],
-  .tw-fill-row > .tw-fill,
-  .tw-fill-row > .tw-fill-wide {
+}
+@media (min-width: 900px) {
+  .tw-web-wall[data-wall-stage="show"] [data-dash-pair] > .tw-gadget {
     height: 100%;
   }
+}
+[data-wall-edit="on"] .tw-fill-row {
+  flex: 0 0 auto;
+  min-height: 0;
 }
 
 /* Type scales to the plate. Size containers (Now, Teach slots) use height.
@@ -1244,6 +1270,20 @@ html[data-look] [data-teach-hero] {
 .tw-sort-grip svg {
   pointer-events: none;
 }
+.tw-plate-hide {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  z-index: 4;
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--color-muted);
+  background: color-mix(in oklab, var(--color-elevated) 88%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 14%, transparent);
+}
 .tw-sort-grab {
   opacity: 0.55;
   pointer-events: none;
@@ -1266,18 +1306,18 @@ html[data-look] [data-teach-hero] {
 [data-wall-edit="on"] .tw-sort-item > [data-proc-cue],
 [data-wall-edit="on"] .tw-sort-item > [data-kpis] {
   padding-left: 3.15rem;
+  padding-right: 3.15rem;
 }
-[data-wall-edit="on"] .tw-sort-item button:not(.tw-sort-grip),
+[data-wall-edit="on"] .tw-sort-item button:not(.tw-sort-grip):not(.tw-visit):not(.tw-plate-hide),
 [data-wall-edit="on"] .tw-sort-item a,
 [data-wall-edit="on"] .tw-sort-item input,
 [data-wall-edit="on"] .tw-sort-item select {
   pointer-events: none;
 }
-@media (min-width: 900px) {
-  [data-wall-edit="on"] .tw-fill-row {
-    flex: 0 0 auto;
-    min-height: 0;
-  }
+[data-wall-edit="on"] .tw-sort-item .tw-visit,
+[data-wall-edit="on"] .tw-sort-item .tw-visit-desk button,
+[data-wall-edit="on"] .tw-sort-item .tw-plate-hide {
+  pointer-events: auto;
 }
 @media (prefers-reduced-motion: no-preference) {
   .tw-sort-item {

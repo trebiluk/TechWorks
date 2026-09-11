@@ -1,6 +1,7 @@
 import type { EconomyFile } from "./economy.ts";
 import { bellFor, isLiveStudent } from "./economy.ts";
 import { cycleNow, cycleRange, daySlot, todayIso } from "./calendar.ts";
+import { moveId } from "./sort.ts";
 import { skillForGoal, skillTrackOf, skillsOf } from "./skills.ts";
 import type { StemLetter } from "./stems.ts";
 import { stemLettersOf, stemOf, STEM_WHY } from "./stems.ts";
@@ -43,6 +44,8 @@ export type ProjectActivity = {
   done?: string;
   /** What a 3 looks like — no leading "3 =". */
   lookFor?: string;
+  /** Shop days this activity holds. 1 = one class, 2+ = keep going. */
+  days?: number;
 };
 
 export type ProjectStage = {
@@ -78,7 +81,8 @@ export type ShopProject = {
 export const XP_TAX_PER_LAG = 2;
 export const TOP_SKILLS = 4;
 
-const SLOTS: DaySlot[] = ["D1", "D2", "D3", "D4"];
+export const SLOTS: DaySlot[] = ["D1", "D2", "D3", "D4"];
+export const SPAN_DAYS = [1, 2, 3, 4] as const;
 
 /** Shop build sequence. Cycle 1 Day 1 is always idea/design. Two cycles = full path. */
 export const WISE_PATH: { goal: string; skillId: string }[] = [
@@ -208,6 +212,104 @@ export function activityById(p: ShopProject, id?: string): ProjectActivity | und
   return activitiesOf(p).find((a) => a.id === id);
 }
 
+/** Shop days this activity holds. Missing `days` is inferred from the cycle grid. */
+export function activitySpan(p: ShopProject, activityId: string): number {
+  const own = activityById(p, activityId)?.days;
+  if (own && own >= 1) return Math.min(8, Math.round(own));
+  const n = (p.stages ?? []).filter((s) => s.activityId === activityId).length;
+  return Math.max(1, n || 1);
+}
+
+export function unitCells(p: ShopProject): { cycle: number; slot: DaySlot }[] {
+  return projectCycleRows(p).flatMap((cycle) => SLOTS.map((slot) => ({ cycle, slot })));
+}
+
+export function plannedShopDays(p: ShopProject): number {
+  return activitiesOf(p).reduce((n, a) => n + activitySpan(p, a.id), 0);
+}
+
+export function layStagesFromSpans(p: ShopProject): ProjectStage[] {
+  const cells = unitCells(p);
+  const acts = activitiesOf(p);
+  const expanded: ProjectActivity[] = [];
+  for (const a of acts) {
+    const n = activitySpan(p, a.id);
+    for (let i = 0; i < n; i++) expanded.push(a);
+  }
+  if (!cells.length || !expanded.length) return p.stages ?? [];
+  return cells.map((cell, i) => {
+    const a = expanded[Math.min(i, expanded.length - 1)] ?? expanded[0];
+    return {
+      cycle: cell.cycle,
+      slot: cell.slot,
+      goal: a.goal,
+      skillId: a.skillId,
+      activityId: a.id,
+    };
+  });
+}
+
+function withExplicitSpans(p: ShopProject, patchId?: string, patchDays?: number): ShopProject {
+  const activities = activitiesOf(p).map((a) => ({
+    ...a,
+    days: a.id === patchId && patchDays != null ? Math.max(1, Math.min(8, patchDays)) : activitySpan(p, a.id),
+  }));
+  const next = { ...p, activities };
+  return { ...next, stages: layStagesFromSpans(next), pathVer: Math.max(p.pathVer ?? 0, 5) };
+}
+
+export type PlanHit = {
+  activity?: ProjectActivity;
+  day: number;
+  of: number;
+  cycle: number;
+  slot: DaySlot;
+  pinned: boolean;
+};
+
+export function pinnedActivityId(file: EconomyFile, period: number, date: string, crewKey?: string): string {
+  const day = file.meta.dayLog?.[date];
+  if (!day) return "";
+  if (crewKey) {
+    const crew = day.crewActivity?.[`${period}|${crewKey}`];
+    if (crew) return crew;
+  }
+  return day.periodActivity?.[String(period)] ?? "";
+}
+
+export function planHit(p: ShopProject, date: string): PlanHit {
+  const cycle = cycleNow(date);
+  const slot = (daySlot(date).label ?? "D1") as DaySlot;
+  const stages = p.stages?.length ? p.stages : layStagesFromSpans(p);
+  const i = stages.findIndex((s) => s.cycle === cycle && s.slot === slot);
+  const at = i >= 0 ? i : 0;
+  const stage = stages[at];
+  const activity = activityById(p, stage?.activityId) ?? activitiesOf(p).find((a) => a.goal === stage?.goal);
+  let start = at;
+  let end = at;
+  while (start > 0 && stages[start - 1]?.activityId === stage?.activityId) start -= 1;
+  while (end < stages.length - 1 && stages[end + 1]?.activityId === stage?.activityId) end += 1;
+  return {
+    activity,
+    day: at - start + 1,
+    of: Math.max(1, end - start + 1),
+    cycle,
+    slot,
+    pinned: false,
+  };
+}
+
+export function planHitFor(file: EconomyFile, period: number, date: string, crewKey?: string): PlanHit {
+  const project = crewKey
+    ? projectForCrew(file, cycleNow(date), period, crewKey)
+    : (slotsOf(file, period, date)[0] ?? projectForCycle(file, gradeOfPeriod(file, period), cycleNow(date)));
+  const hit = planHit(project, date);
+  const pin = pinnedActivityId(file, period, date, crewKey);
+  const pinned = pin ? activityById(project, pin) : undefined;
+  if (pinned) return { ...hit, activity: pinned, day: 1, of: activitySpan(project, pinned.id), pinned: true };
+  return hit;
+}
+
 export function planActivity(p: ShopProject, cycle: number, slot: DaySlot): ProjectActivity | undefined {
   const st = p.stages.find((s) => s.cycle === cycle && s.slot === slot);
   return activityById(p, st?.activityId) ?? activitiesOf(p).find((a) => a.goal === st?.goal);
@@ -239,6 +341,7 @@ export function ensureActivities(p: ShopProject): ShopProject {
       today: pickCopy(a.today, job?.today, seedAct?.today),
       done: pickCopy(a.done, job?.done, seedAct?.done),
       lookFor: pickCopy(a.lookFor, job?.lookFor, seedAct?.lookFor),
+      days: a.days && a.days >= 1 ? Math.min(8, Math.round(a.days)) : a.days,
     };
   });
   const base = p.stages?.length ? p.stages : wiseStages(start, len);
@@ -645,16 +748,19 @@ export function agendaFor(file: EconomyFile, period: number, date = todayIso(), 
       skillId: "team",
       title: "Study hall",
       activityName: "Productivity",
+      pinned: false,
     };
   }
   const project = crewKey
     ? projectForCrew(file, cycle, period, crewKey)
     : (slotsOf(file, period, date)[0] ?? projectForCycle(file, grade, cycle));
+  const pin = pinnedActivityId(file, period, date, crewKey);
+  const pinned = pin ? activityById(project, pin) : undefined;
   const stage =
     project.stages.find((s) => s.cycle === cycle && s.slot === slot) ??
     project.stages.find((s) => s.cycle === cycle) ??
     project.stages[0];
-  const activity = planActivity(project, cycle, slot) ?? activityById(project, stage?.activityId);
+  const activity = pinned ?? planActivity(project, cycle, slot) ?? activityById(project, stage?.activityId);
   return {
     grade,
     project,
@@ -666,6 +772,7 @@ export function agendaFor(file: EconomyFile, period: number, date = todayIso(), 
     skillId: activity?.skillId ?? stage?.skillId ?? "safety",
     title: project.title,
     activityName: activity?.name ?? prettyStage(stage?.goal ?? "IDEA STAGE"),
+    pinned: Boolean(pinned),
   };
 }
 
@@ -694,8 +801,10 @@ function lookLine(expect: 1 | 2 | 3 | 4, text: string): string {
 export function jobCardOf(file: EconomyFile, period: number, date = todayIso(), crewKey?: string): ShopJob {
   const agenda = agendaFor(file, period, date, crewKey);
   const p = ensureActivities(agenda.project);
-  const phase = goalPhaseOn(file, period, date);
+  const pinned = agenda.activity && agenda.pinned ? agenda.activity : undefined;
+  const phase = pinned ? pinned.goal : goalPhaseOn(file, period, date);
   const a =
+    pinned ??
     activitiesOf(p).find((x) => x.goal === phase) ??
     (agenda.activity ? activitiesOf(p).find((x) => x.id === agenda.activity?.id) ?? agenda.activity : agenda.activity);
   const skillId = a?.skillId ?? agenda.skillId;
@@ -830,14 +939,53 @@ export function setPlanActivity(file: EconomyFile, projectId: string, cycle: num
   });
 }
 
+export function setActivitySpan(file: EconomyFile, projectId: string, activityId: string, days: number): EconomyFile {
+  const p = projectsOf(file).find((x) => x.id === projectId);
+  if (!p) return file;
+  return upsertProject(file, withExplicitSpans(p, activityId, days));
+}
+
+export function moveActivityTo(file: EconomyFile, projectId: string, grab: string, onto: string): EconomyFile {
+  const p = projectsOf(file).find((x) => x.id === projectId);
+  if (!p || grab === onto) return file;
+  const acts = activitiesOf(p);
+  const order = moveId(acts.map((a) => a.id), grab, onto);
+  if (order === acts.map((a) => a.id)) return file;
+  const nextActs = order.map((id) => acts.find((a) => a.id === id)!).filter(Boolean);
+  return upsertProject(file, withExplicitSpans({ ...p, activities: nextActs }));
+}
+
+export function setUnitCycles(file: EconomyFile, projectId: string, cycleLen: 1 | 2): EconomyFile {
+  const p = projectsOf(file).find((x) => x.id === projectId);
+  if (!p) return file;
+  const start = p.cycleStart ?? 1;
+  const dates = datesFromCycles(start, cycleLen);
+  return upsertProject(file, withExplicitSpans({ ...p, cycleLen, start: dates.start, end: dates.end }));
+}
+
+export function pinDayActivity(file: EconomyFile, date: string, period: number, activityId: string): EconomyFile {
+  const next = cloneFile(file);
+  const prev = next.meta.dayLog?.[date];
+  const day = {
+    ...(prev ?? { periodGoals: {}, crewGoals: {} }),
+    periodGoals: { ...(prev?.periodGoals ?? {}) },
+    crewGoals: { ...(prev?.crewGoals ?? {}) },
+    periodActivity: { ...(prev?.periodActivity ?? {}) },
+  };
+  if (activityId) day.periodActivity![String(period)] = activityId;
+  else delete day.periodActivity![String(period)];
+  next.meta.dayLog = { ...(next.meta.dayLog ?? {}), [date]: day };
+  return next;
+}
+
 export function addActivity(file: EconomyFile, projectId: string, name: string, skillId = "draw"): EconomyFile {
   const list = projectsOf(file).map((p) => {
     if (p.id !== projectId) return p;
     const acts = activitiesOf(p);
     const id = `act_${Date.now().toString(36)}`;
-    return ensureActivities({
+    return withExplicitSpans({
       ...p,
-      activities: [...acts, { id, name: name.trim() || "Activity", skillId, goal: "IDEA STAGE", expect: 3 as const }].slice(0, 8),
+      activities: [...acts, { id, name: name.trim() || "Activity", skillId, goal: "IDEA STAGE", expect: 3 as const, days: 1 }].slice(0, 8),
     });
   });
   const next = cloneFile(file);
@@ -863,12 +1011,7 @@ export function dropActivity(file: EconomyFile, projectId: string, activityId: s
     if (p.id !== projectId) return p;
     const acts = activitiesOf(p).filter((a) => a.id !== activityId);
     if (acts.length < 1) return p;
-    const fallback = acts[0].id;
-    return ensureActivities({
-      ...p,
-      activities: acts,
-      stages: p.stages.map((s) => (s.activityId === activityId ? { ...s, activityId: fallback, goal: acts[0].goal, skillId: acts[0].skillId } : s)),
-    });
+    return withExplicitSpans({ ...p, activities: acts });
   });
   const next = cloneFile(file);
   next.meta.config = { ...(next.meta.config ?? {}), projects: list };

@@ -40,6 +40,7 @@ import { gearTabFor } from "@/components/admin-drawer";
 import { modeOf } from "@/components/mode-nav";
 import { AppNav } from "@/components/app-nav";
 import { sectionOf, type AppSection, type NavTab } from "@/lib/app-nav";
+import { lockView } from "@/lib/lock-view";
 import { ADMIN_GROUPS, defaultPane, paneInGroup } from "@/lib/admin-nav";
 import { cn } from "@/lib/utils";
 import { HOUSE_BERTY, HOUSE_MRK, houseHits } from "@/lib/house";
@@ -145,7 +146,7 @@ export function Board() {
       setView("overview");
       return;
     }
-    const teacher = ["admin", "score", "grades", "projects", "store", "studyhall", "crew", "lucky", "roster"].includes(next);
+    const teacher = ["admin", "score", "grades", "projects", "store", "studyhall", "club", "crew", "lucky", "roster", "data"].includes(next);
     if (teacher && !unlocked && !(next === "crew" && crewOn)) {
       askPin(next);
       return;
@@ -442,11 +443,10 @@ export function Board() {
 
   useEffect(() => {
     if (!unlocked) {
-      const ok = ["overview", "week", "year", "portal", "prints", "teach", "polls", "deck", "skills"];
-      if (crewOn) ok.push("crew");
-      if (!ok.includes(view)) setView("overview");
+      const next = lockView(view, crewOn);
+      if (next !== view) setView(next as View);
     }
-  }, [unlocked, view]);
+  }, [unlocked, view, crewOn]);
 
   const liveP = periodNow(deskBellId(file));
   const mode = modeOf(view);
@@ -495,12 +495,9 @@ export function Board() {
     section === "dash"
       ? [
           { id: "wall", label: t("Wall"), on: view === "overview", onClick: () => go("overview") },
-          { id: "teach", label: t("Teach"), on: view === "teach", onClick: () => go("teach"), hidden: !featureOn(file, "teach") },
+          { id: "teach", label: t("Teach"), on: view === "teach" || view === "polls", onClick: () => go("teach"), hidden: !featureOn(file, "teach") },
           { id: "deck", label: t("Deck"), on: view === "deck", onClick: () => go("deck") },
-          { id: "week", label: t("Week"), on: view === "week", onClick: () => go("week") },
-          { id: "year", label: t("YTD"), on: view === "year", onClick: () => go("year") },
-          { id: "polls", label: t("Polls"), on: view === "polls", onClick: () => go("polls"), hidden: !featureOn(file, "polls") },
-          { id: "data", label: t("Data"), on: view === "data", onClick: () => go("data") },
+          { id: "week", label: t("Week"), on: view === "week" || view === "year" || view === "data", onClick: () => go("week") },
           { id: "clubwall", label: t("Club"), on: view === "clubwall", onClick: () => go("clubwall"), hidden: !featureOn(file, "club") },
           { id: "hallwall", label: t("Hall"), on: view === "hallwall", onClick: () => go("hallwall"), hidden: !featureOn(file, "studyhall") },
         ]
@@ -543,13 +540,60 @@ export function Board() {
     />
   ) : null;
 
+  const wallDash = (arrange: boolean) => (
+        <Dashboard
+          list={list}
+          bells={bells}
+          file={wallFile}
+          unlocked={unlocked}
+          arrange={arrange}
+          onSeeWall={arrange ? () => go("overview") : undefined}
+          rankBoard={rankBoard}
+          onRankBoard={toggleRank}
+          onPeriod={(p) => {
+            if (p === 6) {
+              go(unlocked ? "studyhall" : "hallwall");
+              return;
+            }
+            setJumpPeriod(p);
+            goDesk("score");
+          }}
+          onOpenId={(id) => setOpenId(id)}
+          onChange={commitDesk}
+          onClub={() => go("clubwall")}
+          onHelp={() => setHelpOpen(true)}
+          onPrints={featureOn(file, "prints") ? () => go("prints") : undefined}
+          onOpenMod={(id) => {
+            if (id === "teach") go("teach");
+            else if (id === "polls") go("polls");
+            else if (id === "prints") go("prints");
+            else if (id === "lucky") go("lucky");
+            else if (id === "store") go("store");
+            else if (id === "stocks") go("wallet");
+            else if (id === "club") go("clubwall");
+            else if (id === "studyhall") go("hallwall");
+            else if (id === "grades" || id === "nytech" || id === "projects") {
+              setLearnStart(id === "projects" ? "projects" : "book");
+              go("skills");
+            } else if (id === "crews") {
+              setAdminPane("crews");
+              go("admin");
+            } else if (id === "achievements") {
+              /* profile via search */
+            } else if (id === "picker" || id === "timer") {
+              /* tools live on dash */
+            } else if (id === "help" || id === "tips") setHelpOpen(true);
+          }}
+        />
+  );
+
   return (
     <TipsProvider on={describeOn}>
     <div className={cn(
       "board-root flex h-svh min-h-svh min-w-0 flex-col overflow-x-hidden overflow-y-hidden px-2 py-2 sm:px-3 sm:py-3 bg-bg",
       view === "score" || view === "crew" || view === "skills" || view === "grades" || view === "projects" ? "board-score" : "",
       crewOn ? "p-0" : "",
-    )} data-surface={surface} data-crew={crewOn ? "on" : "off"}>
+    )} data-surface={surface} data-crew={crewOn ? "on" : "off"} data-view={view}>
       {embed || portalMode ? (
         <div className="mb-1 flex items-center gap-2">
           <TwWordmark />
@@ -621,8 +665,8 @@ export function Board() {
                     setUnlocked(false);
                     setCrewOn(false);
                     setGearOpen(false);
-                    const stay = ["overview", "week", "year", "prints", "teach", "polls", "deck", "skills"];
-                    if (!stay.includes(view)) setView("overview");
+                    const stay = lockView(view);
+                    if (stay !== view) setView(stay as View);
                   }}
                 />
                 <button
@@ -726,7 +770,7 @@ export function Board() {
         />
       ) : view === "admin" && unlocked ? (
         <AdminHub
-          file={wallFile}
+          file={file}
           onChange={commitDesk}
           start={adminPane}
           onPane={setAdminPane}
@@ -753,7 +797,6 @@ export function Board() {
           onLucky={() => go("lucky")}
           onStore={() => go("store")}
           onPrints={() => go("prints")}
-          onWall={() => go("overview")}
           onStudyHall={() => go("studyhall")}
           onClub={() => go("club")}
           onData={() => go("data")}
@@ -767,6 +810,7 @@ export function Board() {
           onHelp={() => setHelpOpen(true)}
           onExportNames={exportNames}
           onTips={setDescribeOn}
+          wallDesk={wallDash(true)}
         />
       ) : view === "score" && unlocked ? (
         <ScoreDesk
@@ -863,63 +907,29 @@ export function Board() {
             }}
           />
         ) : (
-        <TeachBoard file={wallFile} unlocked={unlocked} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onBerty={() => setOpenId(HOUSE_BERTY)} />
+        <TeachBoard file={wallFile} unlocked={unlocked} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onBerty={() => setOpenId(HOUSE_BERTY)} onPlan={() => { setLearnStart("projects"); go("skills"); }} onWall={() => go("overview")} />
         )
       ) : view === "polls" ? (
         <PollBoard file={file} unlocked={unlocked} onChange={commitDesk} onNeedPin={() => askPin()} />
       ) : view === "deck" ? (
         <DeckBoard unlocked={unlocked} onNeedPin={() => askPin()} />
       ) : view === "week" ? (
-        <WeekBoard file={wallFile} list={list} bells={bells} cycle={file.meta.config?.currentCycle ?? 1} onPeriod={(p) => { setJumpPeriod(p); goDesk("score"); }} />
-      ) : view === "year" ? (
-        <YearBoard file={wallFile} onChange={commitDesk} />
-      ) : view === "data" ? (
-        <DataBoard file={wallFile} onOpenProfile={(id) => setOpenId(id)} />
-      ) : (
-        <ErrorGate label="wall">
-        <Dashboard
+        <WeekBoard
+          file={wallFile}
           list={list}
           bells={bells}
-          file={wallFile}
-          unlocked={unlocked}
-          arrange={unlocked}
-          rankBoard={rankBoard}
-          onRankBoard={toggleRank}
-          onPeriod={(p) => {
-            if (p === 6) {
-              go(unlocked ? "studyhall" : "hallwall");
-              return;
-            }
-            setJumpPeriod(p);
-            goDesk("score");
-          }}
-          onOpenId={(id) => setOpenId(id)}
-          onChange={commitDesk}
-          onClub={() => go("club")}
-          onHelp={() => setHelpOpen(true)}
-          onPrints={featureOn(file, "prints") ? () => go("prints") : undefined}
-          onOpenMod={(id) => {
-            if (id === "teach") go("teach");
-            else if (id === "polls") go("polls");
-            else if (id === "prints") go("prints");
-            else if (id === "lucky") go("lucky");
-            else if (id === "store") go("store");
-            else if (id === "stocks") go("wallet");
-            else if (id === "club") go("club");
-            else if (id === "studyhall") go(unlocked ? "studyhall" : "hallwall");
-            else if (id === "grades" || id === "nytech" || id === "projects") {
-              setLearnStart(id === "projects" ? "projects" : "book");
-              go("skills");
-            } else if (id === "crews") {
-              setAdminPane("crews");
-              go("admin");
-            } else if (id === "achievements") {
-              /* profile via search */
-            } else if (id === "picker" || id === "timer") {
-              /* tools live on dash */
-            } else if (id === "help" || id === "tips") setHelpOpen(true);
-          }}
+          cycle={file.meta.config?.currentCycle ?? 1}
+          onPeriod={(p) => { setJumpPeriod(p); goDesk("score"); }}
+          onYear={() => go("year")}
+          onData={() => go("data")}
         />
+      ) : view === "year" ? (
+        <YearBoard file={wallFile} onChange={commitDesk} onWeek={() => go("week")} onData={() => go("data")} />
+      ) : view === "data" ? (
+        <DataBoard file={wallFile} onOpenProfile={(id) => setOpenId(id)} onWeek={() => go("week")} onYear={() => go("year")} />
+      ) : (
+        <ErrorGate label="wall">
+        {wallDash(false)}
         </ErrorGate>
       )}
       {helpOpen && !crewOn ? <HelpPanel onClose={() => setHelpOpen(false)} wallOnly={!unlocked} /> : null}

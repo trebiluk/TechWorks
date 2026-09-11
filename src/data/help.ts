@@ -150,7 +150,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Teach mode",
     tags: ["teach", "lesson", "now", "slots", "objective", "demo"],
     wall: true,
-    body: "Dashboard → Teach. Big “Do this now” follows the bell: Enter, Listen, Crew work, Cleanup (or Demo / Critique / Training / Short / Sub packs). Slots stretch to the period, including delay and half-day. Unlock to pin a slot, rewrite the objective, or add a one-line job. Cleanup always wins. No names on this wall.",
+    body: "Dashboard → Teach. Big “Do this now” follows the bell: Enter, Listen, Crew work, Cleanup (or Demo / Critique / Training / Short / Sub packs). Slots stretch to the period, including delay and half-day. Unlock to pin a slot, rewrite the objective, or add a one-line job. Cleanup always wins. No names on this wall. After class, tap Wall — that hangs the scoreboard.",
   },
   {
     id: "admin-crews",
@@ -254,7 +254,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Admin",
     title: "Unlock is Admin",
     tags: ["admin", "pin", "lock", "score", "unlock"],
-    body: "Lock stays top-right. Unlock (PIN 1111) during a Tech period opens Score; otherwise Admin → Today. Today is SchoolTool (open, then I'm in), scoring, cloud, and today's pin. Day is the year planner. Records is Backups / Names / Cloud. Crews, Wall arrange, Class, Theme sit on the pad. Kids never see Admin.",
+    body: "Lock stays top-right. Unlock with the PIN you set. Stay on this screen and edit. Admin is Today (SchoolTool, scoring, cloud), Day (year planner), Records (Backups / Names / Cloud), Crews, Theme, and Wall. Admin → Wall is the only editor — drag plates, Show to bring one back. Dash → Wall is the projector after Teach. Kids never see Admin.",
   },
   {
     id: "admin-year",
@@ -268,14 +268,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "PINs and who can tap what",
     tags: ["pin", "1111", "2222", "lock", "unlock", "teacher", "crew"],
-    body: "Teacher PIN 1111 unlocks Desk, scoring edits, Store, bonuses, Skills edit, roster import, and legal names on profiles. Crew override PIN 2222 opens other periods on the crew pad. Worker portal PIN 2627 (Settings). Locked chrome: Board family, Crew, Stocks, Skills (view), Store (browse), Help. Embed ?embed=1 is Board only.",
+    body: "Teacher PIN is the one you set (never 1111). It unlocks scoring, Store, roster, and legal names. Crew override PIN 2222 opens other periods on the crew pad. Locked chrome: Wall, Teach, Deck, Week, Club, Hall, Learn Words, Help. Embed ?embed=1 is Wall only.",
   },
   {
     id: "nav",
     category: "Start",
     title: "Menu map",
     tags: ["menu", "dashboard", "crew", "stocks", "skills", "desk", "data"],
-    body: "Icons: Board, Crew, Skills, Stocks, Desk (PIN). ⋯ More = Weekly, Yearly, Data, Store, Portal, Grades, Schedule, Config, Settings, Save, Export, Tips, Help. Board family strip: Board / Week / Year / Data. Active icon shows its word. Store is More, not a sixth icon.",
+    body: "Bottom dock: Dash · Learn · Crew · Rosters · Admin (PIN on the last three). Dash strip: Wall · Teach · Deck · Week · Club · Hall. Year and Data sit on Week. Polls sit on Teach and on the wall when a vote is live. Dash Club is the projector. Admin Club is the desk.",
   },
   {
     id: "rank",
@@ -298,7 +298,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Tools on the wall",
     tags: ["timer", "dice", "random", "picker", "ambient"],
     wall: true,
-    body: "Unlock → Tools (next to Arrange). Timer, draw a worker (alias), draw a crew for this period. Ambient Chaos link only if that module is on. Toggle off to hide. Names are aliases.",
+    body: "Admin → Wall. If Tools is hidden, tap Show · Tools. Timer, draw a worker (alias), draw a crew for this period. Ambient Chaos only if that module is on. Names are aliases.",
   },
   {
     id: "crew-pad",
@@ -347,7 +347,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Skills",
     title: "Projects",
     tags: ["project", "agenda", "activity", "plan book", "cycle", "gradebook", "stem", "driving question", "unit"],
-    body: "Learn → Projects. Each title is a STEM unit: a driving question, rules, and one STEM sentence on the wall. Left column is the library. Drag a title into Grade 6 / 7 / 8. Activities average into one project grade; the 1–4 next to an activity is the expected Watch mark (gold ring). Today / Done / Look-for on an activity are the projector lines. Assign G6/G7/G8 makes it live. Not a second MST score — Standard 5 stays on NY Tech. PIN to edit.",
+    body: "Learn → Projects opens on Plan: a week of this period. Each activity has 1–4 days (Modeling is two by default). Drag to reorder. The sequence fills the unit (4 days = one cycle, 8 days = two). Tap an activity, then a day, to park just that class — the rest of the unit stays. Floor puts the unit on a period. Write the job is the five wall lines. Options is the library. Teach → Plan book jumps here. Admin → Day is lunch, sub, and wall cards — not the unit calendar.",
   },
   {
     id: "studyhall",
@@ -361,7 +361,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Club",
     title: "Technology Club",
     tags: ["club", "late bus", "minecraft", "robotics", "workshop", "computer", "3:00", "minutes"],
-    body: "Admin → Club. Calendar (top): tap Mon–Fri for the usual meeting day (Tuesday on). Sign in (first name + last initial), pick Minecraft / Robotics / Workshop / Computer Time, mark late bus / pickup / walker. IN that matches a class alias pays $10 perks + 2 XP once that day (wallet/XP only — not effort, not the project grade). No match = no pay. Cleanup 3:00, door 3:05. Wall is the projector view.",
+    body: "Dash → Club is the projector: stations, late bus, activity clock. Admin → Club is the desk: calendar, sign in, stations. Unlock on the club wall and tap Edit. Sign in (first name + last initial), pick Minecraft / Robotics / Workshop / Computer Time, mark late bus / pickup / walker. IN that matches a class alias pays $10 perks + 2 XP once that day (wallet/XP only — not effort, not the project grade). No match = no pay. Cleanup 3:00, door 3:05.",
   },
   {
     id: "glossary",
@@ -519,7 +519,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "One desk",
     tags: ["web", "mobile", "ipad", "projector", "layout", "dock"],
-    body: "One layout. Bottom dock is Dash · Learn · Crew · Rosters · Admin — pictogram plus the word. Admin opens a tile pad (Today, Records, Crews, Wall…). Records splits Backups / Roster / Cloud on one bar. Dash tabs stay one swipe row. Widescreen lays the same cards in columns; portrait wraps them. Now and Goals grow type so the back row can read it. Do this now stays off the live Dash (it was eating phones) — Teach still has the beats, or turn the plate on in Admin → Wall. Arrange the wall in Admin → Wall (PIN). Rosters is the class yearbook (aliases, gold if you lead). Legal names stay in Admin → Records. No Web/Mobile switch. Google Site embed still hides the dock so the projector stays a wall.",
+    body: "One layout. Bottom dock is Dash · Learn · Crew · Rosters · Admin — pictogram plus the word. Dash strip is Wall · Teach · Deck · Week · Club · Hall. Teach during class. After class, Dash → Wall is the projector — cards fill leftover space, no grips. Admin → Wall is the editor: drag plates, Show to bring a hidden one back. Do this now stays off the live Dash (Teach still has the beats). Rosters is the class yearbook (aliases, gold if you lead). Legal names stay in Admin → Records. Google Site embed still hides the dock so the projector stays a wall.",
   },
   {
     id: "themes",

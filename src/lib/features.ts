@@ -55,7 +55,7 @@ export const FEATURE_HIDES: Record<FeatureId, string> = {
   weather: "WeatherChip",
   berty: "BertyBot",
   teach: "Teach tab",
-  polls: "Polls tab",
+  polls: "Poll wall plate",
   reward: "RewardBar",
   tips: "Screen guide",
   contrast: "High contrast paint",

@@ -13,6 +13,8 @@ import { featureOn } from "@/lib/features";
 import { Berty, BertyPeek } from "@/components/berty";
 import { periodNow } from "@/lib/bells";
 import { weekRace, type ClassRace, type CrewRace, type TodayJob } from "@/lib/week-race";
+import { MarkChip } from "@/components/ui";
+import { markOf } from "@/lib/nav-marks";
 
 const OPT_KEY = "techworks-week-opts-v1";
 
@@ -68,12 +70,16 @@ export function WeekBoard({
   bells,
   cycle,
   onPeriod,
+  onYear,
+  onData,
 }: {
   file: EconomyFile;
   list: ScoredStudent[];
   bells: { period: number; grade: number }[];
   cycle: number;
   onPeriod?: (period: number) => void;
+  onYear?: () => void;
+  onData?: () => void;
 }) {
   const today = todayIso();
   const days = weekOn(today)?.days ?? [];
@@ -199,6 +205,20 @@ export function WeekBoard({
                 : "Score today. Tomorrow this wall crowns a shop lead."}
             </p>
           </div>
+          {onYear || onData ? (
+            <div className="flex flex-wrap items-center gap-1">
+              {onYear ? (
+                <MarkChip mark={markOf("year")} title="Year" onClick={onYear}>
+                  Year
+                </MarkChip>
+              ) : null}
+              {onData ? (
+                <MarkChip mark={markOf("data")} title="Data" onClick={onData}>
+                  Data
+                </MarkChip>
+              ) : null}
+            </div>
+          ) : null}
         </div>
         <div className="mt-2">
           <div className="mb-1 flex justify-between text-xs uppercase tracking-wider text-subtle">

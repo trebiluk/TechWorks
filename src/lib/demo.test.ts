@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { EconomyFile } from "./economy.ts";
-import { paintDemo, seedFakeShop, stripFakeDemo, takeRealDesk } from "./demo.ts";
+import { paintDemo, seedFakeShop, stripFakeDemo, takeRealDesk, mergeTeacherDayLog } from "./demo.ts";
 import { cloneFile } from "./clone.ts";
 
 function desk(): EconomyFile {
@@ -72,6 +72,36 @@ describe("fake data overlay", () => {
     assert.equal(kept.crews.length, 0);
     assert.equal(kept.meta.config?.modules?.debug, true);
     assert.equal(kept.meta.config?.periodProjects, undefined);
+  });
+
+  it("takeRealDesk keeps teacher pass edits while overlay is on", () => {
+    const real = desk();
+    const painted = paintDemo(real, "messy");
+    painted.meta.dayLog = {
+      "2026-09-10": {
+        periodGoals: {},
+        crewGoals: {},
+        visits: { "1": "MEETING", "2": "CLOSED" },
+        crewPhase: { "1|Forge": "IDEA STAGE" },
+      },
+    };
+    const kept = takeRealDesk(real, painted, true);
+    assert.equal(kept.meta.dayLog?.["2026-09-10"]?.visits?.["1"], "MEETING");
+    assert.equal(kept.meta.dayLog?.["2026-09-10"]?.visits?.["2"], "CLOSED");
+    assert.equal(kept.meta.dayLog?.["2026-09-10"]?.crewPhase, undefined);
+    assert.equal(kept.students.length, 0);
+  });
+
+  it("mergeTeacherDayLog does not copy overlay crewPhase over a real day", () => {
+    const real = {
+      "2026-09-10": { periodGoals: {}, crewGoals: {}, visits: { "1": "OPEN" }, crewPhase: { "1|Forge": "FINISHING STAGE" } },
+    };
+    const next = {
+      "2026-09-10": { periodGoals: {}, crewGoals: {}, visits: { "1": "MEETING" }, crewPhase: { "1|Forge": "IDEA STAGE" } },
+    };
+    const merged = mergeTeacherDayLog(real, next);
+    assert.equal(merged?.["2026-09-10"]?.visits?.["1"], "MEETING");
+    assert.equal(merged?.["2026-09-10"]?.crewPhase?.["1|Forge"], "FINISHING STAGE");
   });
 
   it("stripFakeDemo drops demo ids and keeps real kids", () => {

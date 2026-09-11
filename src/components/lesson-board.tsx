@@ -69,7 +69,7 @@ export function LessonBoard({
     <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden p-1">
       <header className="shrink-0">
         <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gold">Lesson plans</p>
-        <p className="text-sm text-muted">Pick a date. Tap a period to park the selected plan. Roster stays off the card.</p>
+        <p className="text-sm text-muted">Period shape for this date (enter / listen / work). Unit days live on Learn → Projects → Plan.</p>
         <div className="mt-2 flex flex-wrap items-center gap-1">
           <button type="button" onClick={() => goDate(stepSchoolDay(date, -1))} className="tw-tap min-h-11 rounded-md bg-elevated px-3 text-sm font-semibold" title="Previous school day">
             ‹

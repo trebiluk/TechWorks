@@ -1,5 +1,5 @@
 import { createContext, useContext, useRef, useState, type PointerEvent, type ReactNode } from "react";
-import { GripVertical } from "lucide-react";
+import { EyeOff, GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const SLOP = 8;
@@ -44,11 +44,14 @@ export function SortableList({
   onMove,
   className,
   children,
+  freeze = true,
 }: {
   enabled: boolean;
   onMove: (grab: string, onto: string) => void;
   className?: string;
   children: ReactNode;
+  /** Wall plates freeze inner buttons so a drag does not tap them. Plan book keeps the chips live. */
+  freeze?: boolean;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const drag = useRef<{ id: string; pointer: number; x: number; y: number; armed: boolean } | null>(null);
@@ -104,7 +107,7 @@ export function SortableList({
       <div
         ref={root}
         className={className}
-        data-wall-edit={enabled ? "on" : undefined}
+        data-wall-edit={enabled && freeze ? "on" : undefined}
       >
         {children}
       </div>
@@ -117,11 +120,13 @@ export function SortableItem({
   className,
   label,
   children,
+  onHide,
 }: {
   id: string;
   className?: string;
   label?: string;
   children: ReactNode;
+  onHide?: () => void;
 }) {
   const ctx = useContext(Ctx);
   const enabled = Boolean(ctx?.enabled);
@@ -160,6 +165,19 @@ export function SortableItem({
           onContextMenu={(e) => e.preventDefault()}
         >
           <GripVertical className="size-4" />
+        </button>
+      ) : null}
+      {enabled && onHide ? (
+        <button
+          type="button"
+          className="tw-plate-hide"
+          aria-label={label ? `Hide ${label}` : "Hide plate"}
+          onClick={(e) => {
+            e.stopPropagation();
+            onHide();
+          }}
+        >
+          <EyeOff className="size-4" />
         </button>
       ) : null}
       {children}

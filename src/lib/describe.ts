@@ -14,7 +14,7 @@ const SITE = "https://www.solvayschools.org/";
 const CARDS: Record<string, DescribeCard> = {
   overview: {
     title: "Dashboard",
-    purpose: "Public wall. Rankings use skill XP first, then wallet. Aliases only.",
+    purpose: "Class projector after Teach. Cards fill the screen. Aliases only.",
     links: [{ label: "Help", href: "#help" }, { label: "District", href: SITE }],
   },
   week: {
@@ -109,7 +109,7 @@ const CARDS: Record<string, DescribeCard> = {
   },
   admin: {
     title: "Admin",
-    purpose: "Teacher home. Learn holds Evaluate. Lock returns the wall.",
+    purpose: "Teacher home. Admin → Wall edits plates. Dash → Wall is the projector after Teach.",
     links: [{ label: "Help", href: "#help" }],
   },
   grades: {
@@ -119,7 +119,7 @@ const CARDS: Record<string, DescribeCard> = {
   },
   teach: {
     title: "Teach",
-    purpose: "Do this now. Lesson slots and the day’s goal on the projector.",
+    purpose: "Do this now. Lesson cards fill the screen. Tap Wall when class is done.",
     links: [{ label: "Help", href: "#help" }],
   },
   deck: {

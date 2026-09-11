@@ -18,6 +18,7 @@ import {
   dayCardsOn,
 } from "@/lib/store";
 import { copyDayPlan, copyDayToRestOfQuarter, copyDayToRestOfYear, copyQuarterCurriculum, isPlannedDay, schoolDaysInQuarter } from "@/lib/year-plan";
+import { agendaFor } from "@/lib/projects";
 import { cn } from "@/lib/utils";
 
 export function YearPlanBoard({
@@ -56,7 +57,7 @@ export function YearPlanBoard({
   return (
     <section className="tw-gadget p-3">
       <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Year plan</p>
-      <p className="mt-1 text-sm text-muted">Set any school day now. Wall cards, lunch, sub, bells, and the meeting pin land on that date. Copy a day across the quarter or the year.</p>
+      <p className="mt-1 text-sm text-muted">Lunch, sub, bells, and wall cards for any school day. The unit calendar is Learn → Projects → Plan.</p>
       <div className="mt-3 flex flex-wrap items-center gap-1">
         <button type="button" onClick={() => go(-1)} className="tw-tap grid size-11 place-items-center rounded-xl bg-elevated text-lg font-semibold">
           ‹
@@ -155,18 +156,22 @@ export function YearPlanBoard({
           ))}
           <div>
             <p className="text-[11px] font-bold uppercase tracking-wide text-subtle">Period goals</p>
+            <p className="text-xs text-muted">The plan book fills the wall. Type here only to override that day’s line.</p>
             <ul className="mt-1 grid gap-1">
-              {periods.map((b) => (
+              {periods.map((b) => {
+                const planned = agendaFor(file, b.period, date);
+                return (
                 <li key={b.period} className="flex items-center gap-2">
                   <span className="w-8 text-xs font-bold">P{b.period}</span>
                   <input
                     value={periodGoal(file, date, b.period)}
                     onChange={(e) => onChange(setPeriodGoal(file, date, b.period, e.target.value))}
-                    placeholder="Override the project stage"
+                    placeholder={planned.activityName ? `${planned.activityName} · ${planned.title}` : "Override the project stage"}
                     className="min-h-10 flex-1 rounded-xl bg-elevated px-3 text-sm outline-none"
                   />
                 </li>
-              ))}
+                );
+              })}
             </ul>
           </div>
           <div className="flex flex-wrap gap-1">

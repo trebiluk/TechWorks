@@ -3,7 +3,8 @@ import { Bar, BarChart, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YA
 import { Copy, Search } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
 import { bellFor, money, periodTitle, shopBells } from "@/lib/economy";
-import { TogglePair } from "@/components/ui";
+import { MarkChip, TogglePair } from "@/components/ui";
+import { markOf } from "@/lib/nav-marks";
 import { formatSchoolDate } from "@/lib/calendar";
 import { LOG_HEADER, MASTER_HEADER, ledgerTsv, logRows, masterRows, toTsv, weeklyTrend, workerCards } from "@/lib/report";
 import { applySort, decorateRank, type SortKey } from "@/lib/rank";
@@ -40,7 +41,17 @@ function show(n: number, m: Metric): string {
   return money(n);
 }
 
-export function DataBoard({ file, onOpenProfile }: { file: EconomyFile; onOpenProfile: (id: string) => void }) {
+export function DataBoard({
+  file,
+  onOpenProfile,
+  onWeek,
+  onYear,
+}: {
+  file: EconomyFile;
+  onOpenProfile: (id: string) => void;
+  onWeek?: () => void;
+  onYear?: () => void;
+}) {
   const [mixSh, setMixSh] = useState(false);
   const [shelf, setShelf] = useState<"live" | "archive">("live");
   const [arch, setArch] = useState<EconomyFile | null>(null);
@@ -119,6 +130,16 @@ export function DataBoard({ file, onOpenProfile }: { file: EconomyFile; onOpenPr
       <header className="shrink-0 rounded-lg bg-surface px-3 py-2">
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="font-display text-2xl font-semibold tracking-tight">Data</h1>
+          {onWeek ? (
+            <MarkChip mark={markOf("week")} title="Week" onClick={onWeek}>
+              Week
+            </MarkChip>
+          ) : null}
+          {onYear ? (
+            <MarkChip mark={markOf("year")} title="Year" onClick={onYear}>
+              Year
+            </MarkChip>
+          ) : null}
           {archived ? <span className="rounded-full bg-elevated px-3 py-1 text-xs font-semibold uppercase tracking-wide">{PRIOR_YEAR}</span> : <QuarterChip />}
           <TogglePair
             value={shelf}

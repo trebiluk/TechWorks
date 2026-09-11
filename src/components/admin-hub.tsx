@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { QuarterChip } from "@/components/quarter-chip";
 import { SettingsBody, type AdminPane, type SettingsTab } from "@/components/settings";
 import { traceToday } from "@/lib/workflow";
@@ -20,6 +20,7 @@ import { featureOn } from "@/lib/features";
 import { ADMIN_GROUPS, PANE_LABEL, groupOfPane } from "@/lib/admin-nav";
 import { cloudStatus } from "@/lib/desk-cloud";
 import { markSchooltoolOpened } from "@/lib/workflow";
+import { VisitDesk } from "@/components/visit-chip";
 
 type Jump = (period: number, crewKey?: string, date?: string) => void;
 
@@ -36,7 +37,6 @@ export function AdminHub({
   onLucky,
   onStore,
   onPrints,
-  onWall,
   onStudyHall,
   onClub,
   onExport,
@@ -44,13 +44,14 @@ export function AdminHub({
   onHelp: _onHelp,
   onExportNames,
   onTips,
-  onData: _onData,
+  onData,
   onOpenId,
   onTeach,
   onPolls,
   unlocked = false,
   onNeedPin,
   onPane,
+  wallDesk,
 }: {
   file: EconomyFile;
   onChange: (next: EconomyFile) => void;
@@ -64,7 +65,6 @@ export function AdminHub({
   onLucky?: () => void;
   onStore: () => void;
   onPrints?: () => void;
-  onWall?: () => void;
   onStudyHall: () => void;
   onClub?: () => void;
   onExport: () => void;
@@ -79,6 +79,7 @@ export function AdminHub({
   unlocked?: boolean;
   onNeedPin?: () => void;
   onPane?: (pane: AdminPane) => void;
+  wallDesk?: ReactNode;
 }) {
   const [more, setMore] = useState(false);
   const [pane, setPane] = useState<AdminPane>(start);
@@ -131,16 +132,13 @@ export function AdminHub({
       label: g.label,
       on: group.id === g.id,
       go: () => {
-        if (g.id === "wall" && onWall) {
-          onWall();
-          return;
-        }
         pickPane(g.panes[0] as AdminPane);
       },
       show: true,
     })),
     { id: "club", label: "Club", on: false, go: () => onClub?.(), show: featureOn(file, "club") && Boolean(onClub) },
     { id: "hall", label: "Hall", on: false, go: () => onStudyHall(), show: featureOn(file, "studyhall") },
+    { id: "data", label: "Data", on: false, go: () => onData?.(), show: Boolean(onData) },
     { id: "prints", label: "Prints", on: false, go: () => onPrints?.(), show: featureOn(file, "prints") && Boolean(onPrints) },
     { id: "lucky", label: "Lucky", on: false, go: () => onLucky?.(), show: featureOn(file, "lucky") && Boolean(onLucky) },
     { id: "stocks", label: "Stocks", on: false, go: () => onStocks(), show: featureOn(file, "stocks") },
@@ -186,13 +184,13 @@ export function AdminHub({
         ) : null}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+      <div className={cn("min-h-0 flex-1", pane === "wall" ? "flex flex-col overflow-hidden" : "overflow-y-auto overscroll-contain")}>
         {pane === "crews" ? (
           <CrewDesk file={file} onChange={onChange} startPeriod={shown} />
         ) : pane === "cloud" ? (
           <CloudBoard file={file} unlocked={unlocked} onNeedPin={() => onNeedPin?.()} onLoad={onChange} />
         ) : pane === "wall" ? (
-          <p className="p-3 text-sm text-muted">The wall is the projector. Unlock and stay on Dash — drag plates there. This pad is records and the day.</p>
+          wallDesk ?? <p className="p-3 text-sm text-muted">Unlock to edit the wall. Dash → Wall stays the projector.</p>
         ) : pane !== "today" ? (
           <SettingsBody
             file={file}
@@ -252,6 +250,9 @@ export function AdminHub({
           >
             Plan ahead · any day through June, or copy a quarter
           </button>
+          <div className="mt-3">
+            <VisitDesk file={file} date={today} onChange={onChange} />
+          </div>
           {cloudDue ? (
             <button
               type="button"

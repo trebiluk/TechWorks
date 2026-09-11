@@ -1,5 +1,5 @@
 import type { EconomyFile } from "@/lib/economy";
-import { boardCardsOf, isSubDay, resetAbCycle, setBoardCard, setCleanupMins, setCleanupSound, setCurrentCycle, setLevelConfig, setSchedule, setSubDay, setVisit, setVisitAll, visitOn, VISIT_STATES } from "@/lib/store";
+import { boardCardsOf, isSubDay, resetAbCycle, setBoardCard, setCleanupMins, setCleanupSound, setCurrentCycle, setLevelConfig, setSchedule, setSubDay } from "@/lib/store";
 import { DEFAULT_LEVEL_BANDS, levelBandsOf } from "@/lib/skills";
 import { storedLeadXp, setLeadXpBonus, clampLeadXp } from "@/lib/roles";
 import { RosterOnboard } from "@/components/roster-onboard";
@@ -22,7 +22,7 @@ import { RewardBar, RewardEditor } from "@/components/reward-bar";
 import { ShopLists, SkillLists } from "@/components/score-panels";
 import { commitDescribe } from "@/lib/describe";
 import { FEATURES, FEATURE_GROUPS, featureOn, setFeature, type FeatureId } from "@/lib/features";
-import { VisitPad } from "@/components/visit-chip";
+import { VisitDesk } from "@/components/visit-chip";
 import { DEMO_SETS, commitDemo, storedDemo, type DemoId } from "@/lib/demo";
 import { YearPlanBoard } from "@/components/year-plan-board";
 import { VaultBoard } from "@/components/vault-board";
@@ -113,6 +113,9 @@ export function SettingsBody({
             {tab === "day" ? (
               <section>
                 {embed ? null : <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Day</h2>}
+                <div className="mb-6">
+                  <VisitDesk file={file} date={todayIso()} onChange={onChange} />
+                </div>
                 <YearPlanBoard file={file} onChange={onChange} />
                 <p className={cn("text-sm text-muted", embed ? "mt-4" : "mt-4")}>Cycle, bells, A/B, sub. Sub voids scores and the projector.</p>
                 <button
@@ -200,31 +203,6 @@ export function SettingsBody({
                     Preview
                   </button>
                 </div>
-                <p className="mt-6 text-sm font-medium uppercase tracking-wider text-subtle">Daily schedule · passes</p>
-                <p className="mt-1 text-sm text-muted">Can students request a pass and visit this room? OPEN / MEETING / CLOSED / SUB. Today only.</p>
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {VISIT_STATES.map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => onChange(setVisitAll(file, todayIso(), s))}
-                      className="min-h-10 rounded-full bg-elevated px-3 text-xs font-semibold uppercase tracking-wide text-muted"
-                    >
-                      All {s}
-                    </button>
-                  ))}
-                </div>
-                <ul className="mt-3 space-y-2">
-                  {(file.meta.bell ?? [{ period: 1, grade: 6 }, { period: 2, grade: 8 }, { period: 3, grade: 7 }, { period: 6, grade: 5 }, { period: 8, grade: 7 }, { period: 9, grade: 8 }, { period: 10, grade: 6 }]).map((b) => (
-                    <li key={b.period} className="flex flex-wrap items-center gap-2">
-                      <span className="w-16 text-sm font-semibold">P{b.period}</span>
-                      <VisitPad
-                        value={visitOn(file, todayIso(), b.period)}
-                        onPick={(s) => onChange(setVisit(file, todayIso(), b.period, s))}
-                      />
-                    </li>
-                  ))}
-                </ul>
                 <p className="mt-4 text-sm text-muted">A today makes tomorrow B. Snow day: reset starts today as A.</p>
                 <button
                   type="button"

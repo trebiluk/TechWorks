@@ -49,7 +49,7 @@ export function stripFakeDemo(file: EconomyFile): EconomyFile {
 
 /**
  * Overlay is display-only. Keep the real roster, crews, marks, and project slots.
- * Module / theme / bell edits from the painted file still apply.
+ * Module / theme / bell / today's pass edits from the painted file still apply.
  */
 export function takeRealDesk(real: EconomyFile, next: EconomyFile, overlayOn: boolean): EconomyFile {
   const cleaned = stripFakeDemo(next);
@@ -60,7 +60,7 @@ export function takeRealDesk(real: EconomyFile, next: EconomyFile, overlayOn: bo
     crews: real.crews,
     meta: {
       ...cleaned.meta,
-      dayLog: real.meta.dayLog,
+      dayLog: mergeTeacherDayLog(real.meta.dayLog, cleaned.meta.dayLog),
       ledger: real.meta.ledger,
       config: {
         ...(cleaned.meta.config ?? {}),
@@ -70,6 +70,28 @@ export function takeRealDesk(real: EconomyFile, next: EconomyFile, overlayOn: bo
       },
     },
   };
+}
+
+/** Teacher taps (passes, sub, lunch, cards) win. Overlay-painted crewPhase does not. */
+export function mergeTeacherDayLog(
+  real: EconomyFile["meta"]["dayLog"],
+  next: EconomyFile["meta"]["dayLog"],
+): EconomyFile["meta"]["dayLog"] {
+  if (!next) return real;
+  if (!real) return next;
+  const out: NonNullable<EconomyFile["meta"]["dayLog"]> = { ...real };
+  for (const date of Object.keys(next)) {
+    const r = real[date];
+    const n = next[date];
+    if (!n) continue;
+    out[date] = {
+      ...(r ?? n),
+      ...n,
+      crewPhase: r?.crewPhase ?? n.crewPhase,
+      goalPhase: r?.goalPhase ?? n.goalPhase,
+    };
+  }
+  return out;
 }
 
 function hash(s: string): number {

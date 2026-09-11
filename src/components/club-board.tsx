@@ -193,7 +193,14 @@ export function ClubBoard({
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] opacity-80">Technology Club</p>
             <p className="font-display text-2xl font-semibold">{clock.headline}</p>
           </div>
-          <p className="font-display text-4xl font-semibold tabular-nums">{clock.phase === "work" || clock.phase === "sign" || clock.phase === "warn" || clock.phase === "arrive" ? clock.label : ""}</p>
+          <div className="flex items-center gap-2">
+            <p className="font-display text-4xl font-semibold tabular-nums">{clock.phase === "work" || clock.phase === "sign" || clock.phase === "warn" || clock.phase === "arrive" ? clock.label : ""}</p>
+            {unlocked && onWall ? (
+              <button type="button" onClick={onWall} className="tw-tap min-h-10 rounded-lg bg-elevated px-3 text-sm font-semibold">
+                Edit
+              </button>
+            ) : null}
+          </div>
         </div>
         <div className="grid min-h-0 flex-1 grid-cols-12 gap-2 overflow-auto">
           {show("activity") ? (

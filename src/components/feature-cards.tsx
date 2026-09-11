@@ -6,7 +6,6 @@ import { luckyOf } from "@/lib/lucky";
 import { printsOf } from "@/lib/prints";
 import { agendaFor } from "@/lib/projects";
 import { bellForPeriod, formatBell } from "@/lib/bells";
-import { cn } from "@/lib/utils";
 
 const WALL: FeatureId[] = [
   "weather",
@@ -29,12 +28,10 @@ const AMBIENT = "https://neal.fun/ambient-chaos/";
 
 export const FeatureCards = memo(function FeatureCards({
   file,
-  unlocked,
+  unlocked: _unlocked,
   period,
   onOpen,
-  onToggle,
   compact,
-  showOff,
 }: {
   file: EconomyFile;
   unlocked: boolean;
@@ -49,59 +46,39 @@ export const FeatureCards = memo(function FeatureCards({
   const list = useMemo(() => {
     const rows = FEATURES.filter((f) => {
       if (SKIP.has(f.id)) return false;
-      if (showOff && unlocked && onToggle) return true;
+      if (!WALL.includes(f.id)) return false;
       if (!featureOn(file, f.id)) return false;
       if (!chromeReady(f.id, file)) return false;
-      return unlocked || WALL.includes(f.id);
+      return true;
     });
     return compact ? rows.slice(0, 8) : rows;
-  }, [file, unlocked, compact, onToggle, showOff]);
+  }, [file, compact]);
 
   if (!list.length) return null;
 
   return (
     <section data-mod-grid data-compact={compact ? "on" : undefined} className="shrink-0">
-      {list.map((f) => {
-        const on = featureOn(file, f.id);
-        return (
-          <div key={f.id} className={cn("tw-gadget flex min-h-[4.25rem] flex-col justify-center px-2.5 py-2", on ? "" : "opacity-55")}>
-            <button
-              type="button"
-              onClick={() => {
-                if (unlocked && onToggle) {
-                  onToggle(f.id, !on);
-                  return;
-                }
-                if (!on) {
-                  onToggle?.(f.id, true);
-                  return;
-                }
-                if (f.id === "ambient") {
-                  window.open(AMBIENT, "_blank", "noreferrer");
-                  return;
-                }
-                open.current?.(f.id);
-              }}
-              className="tw-tap min-w-0 text-left"
-            >
-              <p className="text-[10px] font-bold uppercase tracking-wider text-muted">{f.label}</p>
-              <p className="truncate font-display text-sm font-semibold leading-tight">{on ? snapOf(f.id, file, period) : "Off"}</p>
-            </button>
-            {onToggle ? (
-              <button
-                type="button"
-                onClick={() => onToggle(f.id, !on)}
-                className={cn("mt-1 self-start rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider", on ? "bg-accent/15 text-accent" : "bg-elevated text-muted")}
-              >
-                {on ? "On" : "Off"}
-              </button>
-            ) : null}
-          </div>
-        );
-      })}
+      {list.map((f) => (
+        <div key={f.id} className="tw-gadget flex min-h-[4.25rem] flex-col justify-center px-2.5 py-2">
+          <button
+            type="button"
+            onClick={() => {
+              if (f.id === "ambient") {
+                window.open(AMBIENT, "_blank", "noreferrer");
+                return;
+              }
+              open.current?.(f.id);
+            }}
+            className="tw-tap min-w-0 text-left"
+          >
+            <p className="text-[10px] font-bold uppercase tracking-wider text-muted">{f.label}</p>
+            <p className="truncate font-display text-sm font-semibold leading-tight">{snapOf(f.id, file, period)}</p>
+          </button>
+        </div>
+      ))}
     </section>
   );
-}, (a, b) => a.file === b.file && a.period === b.period && a.unlocked === b.unlocked && a.compact === b.compact && a.onToggle === b.onToggle && a.showOff === b.showOff);
+}, (a, b) => a.file === b.file && a.period === b.period && a.compact === b.compact);
 
 function snapOf(id: FeatureId, file: EconomyFile, period: number): string {
   if (id === "weather") return "Sky";

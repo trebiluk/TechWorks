@@ -7,13 +7,19 @@ import { QuarterChip } from "@/components/quarter-chip";
 import { cn } from "@/lib/utils";
 import { featureOn } from "@/lib/features";
 import { BertyPeek } from "@/components/berty";
+import { MarkChip } from "@/components/ui";
+import { markOf } from "@/lib/nav-marks";
 
 export function YearBoard({
   file,
   onChange,
+  onWeek,
+  onData,
 }: {
   file: EconomyFile;
   onChange: (next: EconomyFile) => void;
+  onWeek?: () => void;
+  onData?: () => void;
 }) {
   const today = todayIso();
   const blocks = sessions();
@@ -62,6 +68,20 @@ export function YearBoard({
             {formatSchoolDate(calendarMeta.first)} → {formatSchoolDate(calendarMeta.last)} · Q{q.n}
           </p>
         </div>
+        {onWeek || onData ? (
+          <div className="mt-2 flex flex-wrap items-center gap-1">
+            {onWeek ? (
+              <MarkChip mark={markOf("week")} title="Week" onClick={onWeek}>
+                Week
+              </MarkChip>
+            ) : null}
+            {onData ? (
+              <MarkChip mark={markOf("data")} title="Data" onClick={onData}>
+                Data
+              </MarkChip>
+            ) : null}
+          </div>
+        ) : null}
         <div className="mt-3">
           <div className="mb-1 flex justify-between text-xs uppercase tracking-wider text-subtle">
             <span>Year · school days</span>

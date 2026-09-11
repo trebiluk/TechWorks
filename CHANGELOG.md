@@ -1,8 +1,30 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.4. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.9. -->
 
 # TechWorks changelog
 
-App version **1.92.4**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.9**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.9 — 2026-09-11
+
+- Teach has a Wall chip to hang the projector when class is done. Dash → Wall stays cards even while the desk is unlocked — Score, Rank XP/$, and SchoolTool stay off that screen. Admin → Wall is the only editor.
+
+## 1.92.8 — 2026-09-11
+
+- Wall projector stays cards. Dash → Wall never opens the editor — Now and the job fill leftover space like Teach. Admin → Wall is the one screen to drag plates and Show hidden ones. Rank XP/$ and “tap = in” stay off the locked wall. Teach during class, then put the Wall up.
+
+## 1.92.7 — 2026-09-11
+
+- Plan book on Learn → Projects. Each activity is 1–4 shop days (Modeling starts at 2). Drag to reorder. The sequence fills the unit. Tap an activity, then a day, to park just that class. Teach has a Plan book chip. Admin → Day still sets lunch, sub, and wall cards.
+
+## 1.92.6 — 2026-09-10
+
+- Club on Dash stays on Club. Locked projector used to bounce that tab back to the Wall.
+- Dash strip is Wall · Teach · Deck · Week · Club · Hall. Year and Data sit on Week. Polls sit on Teach and on the wall when a vote is live.
+- Wall edit is drag plus a Show row for hidden plates — no On/Off grid, no chevron list, no dump of every Off module.
+
+## 1.92.5 — 2026-09-10
+
+- Daily schedule · passes actually tap in Admin. Unlock used to freeze wall chips so OPEN / MEETING / CLOSED / SUB did nothing. Fake data overlay no longer throws away a pass change. Pad sits on Admin → Today and at the top of Day.
 
 ## 1.92.4 — 2026-09-10
 

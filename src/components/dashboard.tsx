@@ -1,6 +1,7 @@
 import { memo, startTransition, useMemo, useState } from "react";
-import { ChevronDown, ChevronUp, ClipboardList, Coins, RotateCcw, Trophy } from "lucide-react";
+import { ClipboardList, Coins, RotateCcw, Trophy } from "lucide-react";
 import { markOf } from "@/lib/nav-marks";
+import { MarkChip } from "@/components/ui";
 import type { Bell, EconomyFile, ScoredStudent } from "@/lib/economy";
 import { isLiveStudent, periodTitle, shopBells } from "@/lib/economy";
 import { formatBell, periodClock, periodNext, periodNow, SCHOOLTOOL_URL } from "@/lib/bells";
@@ -14,7 +15,7 @@ import { Fold } from "@/components/fold";
 import { agendaFor, jobCardOf, periodPaceLine, phaseIndex, prettyStage } from "@/lib/projects";
 import { JobCard } from "@/components/job-card";
 import { ppeOn, setPpe } from "@/lib/ppe";
-import { dayCardsOn, deskBellId, isSubDay, onAbRoster, schooltoolDone, setSchooltoolDone, specialsOn, visitOn, abOn } from "@/lib/store";
+import { dayCardsOn, deskBellId, isSubDay, onAbRoster, schooltoolDone, setSchooltoolDone, specialsOn, visitOn, abOn, cycleVisit } from "@/lib/store";
 import { VisitChip } from "@/components/visit-chip";
 import { cycleProgress, formatSchoolDate, isSchoolDay, nextOpenDay, quarterProgress, todayIso, yearProgress } from "@/lib/calendar";
 import { tapeMark } from "@/lib/tape";
@@ -22,7 +23,7 @@ import { cn } from "@/lib/utils";
 import { ClubPulseCard } from "@/components/club-pulse";
 import { clubPulse, loadClub } from "@/lib/club";
 import { pollForPeriod } from "@/lib/polls";
-import { featureOn, setFeature, type FeatureId } from "@/lib/features";
+import { featureOn } from "@/lib/features";
 import { bertyPose, showBerty } from "@/lib/berty";
 import { procedureStep } from "@/lib/procedure";
 import { hideDashRow, loadDashLayout, moveDashRow, moveDashTo, pairMate, patchDash, rowOn, saveDashLayout, DASH_ROWS, DEFAULT_LAYOUT, type DashLayout, type DashRowId } from "@/lib/dash-layout";
@@ -95,6 +96,7 @@ export const Dashboard = memo(function Dashboard({
   onPrints,
   onOpenMod,
   arrange = false,
+  onSeeWall,
 }: {
   list: ScoredStudent[];
   bells: Bell[];
@@ -110,6 +112,7 @@ export const Dashboard = memo(function Dashboard({
   onPrints?: () => void;
   onOpenMod?: (id: string) => void;
   arrange?: boolean;
+  onSeeWall?: () => void;
 }) {
   const { t } = useLang();
   const fold = useDashFold();
@@ -213,7 +216,14 @@ export const Dashboard = memo(function Dashboard({
           <p className="tw-fill-label flex flex-wrap items-center gap-2 font-semibold uppercase tracking-wider text-muted">
             <span className={cn("tw-dot", clock?.live ? "tw-dot-on" : "", clock?.cleanup ? "tw-dot-warn" : "")} />
             {clock?.live ? (clock.cleanup ? t("Cleanup") : t("Now")) : nxt ? t("Next") : t("Workshop")}
-            <VisitChip state={visitOn(file, today, live ?? nxt?.period ?? shown)} />
+            <VisitChip
+              state={visitOn(file, today, live ?? nxt?.period ?? shown)}
+              onClick={
+                arrange && unlocked && onChange
+                  ? () => onChange(cycleVisit(file, today, live ?? nxt?.period ?? shown))
+                  : undefined
+              }
+            />
           </p>
           <p className="tw-fill-hero mt-0.5 font-display font-semibold tracking-tight">
             {clock?.live ? `P${live}` : nxt ? `P${nxt.period}` : t("done")}
@@ -248,6 +258,7 @@ export const Dashboard = memo(function Dashboard({
           todayHit={todayHit}
           viewKids={viewKids}
           unlocked={unlocked}
+          edit={arrange}
           peeking={peeking}
           live={live}
           today={today}
@@ -278,10 +289,6 @@ export const Dashboard = memo(function Dashboard({
             onPeriod(6);
             return;
           }
-          if (unlocked) {
-            onPeriod(p);
-            return;
-          }
           startTransition(() => {
             if (live != null && p === live) setViewP(null);
             else setViewP(p);
@@ -296,15 +303,17 @@ export const Dashboard = memo(function Dashboard({
       <article className="tw-gadget tw-hud p-3">
         <div className="mb-1 flex items-center gap-2">
           <p className="font-display text-sm font-semibold">{ranked.some((s) => s.xp > 0 || s.quarter > 0) ? `${t("School")} · top ${layout.schoolN}` : t("In the shop")}</p>
+          {arrange ? (
           <button type="button" onClick={() => onRankBoard(rankBoard === "skill" ? "perk" : "skill")} className="tw-btn-2 ml-auto inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 text-[11px] font-semibold">
             {rankBoard === "skill" ? <Trophy className="size-3.5" aria-hidden /> : <Coins className="size-3.5" aria-hidden />}
             {rankBoard === "skill" ? "XP" : "$"}
           </button>
+          ) : null}
         </div>
         <ol className="grid grid-cols-1 gap-0.5 sm:grid-cols-2">
           {!ranked.some((s) => s.xp > 0 || s.quarter > 0) ? (
             unlocked ? (
-              <li className="px-2 py-2 text-sm text-muted sm:col-span-2">{t("Aliases score here.")}</li>
+              <li className="px-2 py-2 text-sm text-muted sm:col-span-2">{arrange ? t("Aliases score here.") : `${t("This desk lives on the shop PC.")} ${t("Open that computer to see the class.")}`}</li>
             ) : (
               <li className="px-2 py-2 text-sm text-muted sm:col-span-2">
                 {t("This desk lives on the shop PC.")} {t("Open that computer to see the class.")}
@@ -372,12 +381,6 @@ export const Dashboard = memo(function Dashboard({
           unlocked={unlocked}
           period={shown}
           onOpen={onOpenMod}
-          showOff={sortOn}
-          onToggle={
-            unlocked && onChange
-              ? (fid: FeatureId, on: boolean) => onChange(setFeature(file, fid, on))
-              : undefined
-          }
         />
       );
     }
@@ -405,9 +408,9 @@ export const Dashboard = memo(function Dashboard({
   }
 
   return (
-    <div className={cn("tw-web-wall relative flex w-full flex-1 flex-col gap-1.5", arrange ? "overflow-auto" : "min-h-0 overflow-hidden")}>
-      {arrange ? <LayoutBar dash={dash} rankBoard={rankBoard} onRankBoard={onRankBoard} /> : null}
-      {stOpen ? (
+    <div className={cn("tw-web-wall relative flex w-full flex-1 flex-col gap-1.5", arrange ? "overflow-auto" : "min-h-0 overflow-hidden")} data-wall-stage={arrange ? "edit" : "show"}>
+      {arrange ? <LayoutBar dash={dash} rankBoard={rankBoard} onRankBoard={onRankBoard} onSeeWall={onSeeWall} /> : null}
+      {arrange && stOpen ? (
         <div className="flex min-w-0 shrink-0 flex-wrap items-center gap-1.5">
           <button
             type="button"
@@ -449,7 +452,7 @@ export const Dashboard = memo(function Dashboard({
             if (!body) return null;
             const row = DASH_ROWS.find((r) => r.id === id);
             return (
-              <SortableItem key={paired ? "now-class" : id} id={id} label={row ? t(row.label) : undefined} className={fill ? "tw-fill-row" : "shrink-0"}>
+              <SortableItem key={paired ? "now-class" : id} id={id} label={row ? t(row.label) : undefined} className={fill ? "tw-fill-row" : "shrink-0"} onHide={() => dash.setOn(id, false)}>
                 {body}
               </SortableItem>
             );
@@ -464,62 +467,48 @@ function LayoutBar({
   dash,
   rankBoard,
   onRankBoard,
+  onSeeWall,
 }: {
   dash: ReturnType<typeof useDashLayout>;
   rankBoard: "skill" | "perk";
   onRankBoard: (next: "skill" | "perk") => void;
+  onSeeWall?: () => void;
 }) {
   const { layout } = dash;
+  const hidden = layout.order.filter((id) => !dash.on(id));
   return (
-    <section className="shrink-0">
-      <p className="text-xs text-muted">Editing the wall. Drag plates. Settings gear edits titles and modules. Lock when the class should see the projector.</p>
-      <div className="mt-1 flex flex-wrap items-center gap-1">
+    <section className="shrink-0 space-y-1.5">
+      <div className="flex flex-wrap items-center gap-1">
+        {onSeeWall ? (
+          <MarkChip mark={markOf("wall")} title="Hang the projector" onClick={onSeeWall} className="bg-fg text-bg hover:text-bg">
+            See wall
+          </MarkChip>
+        ) : null}
         <ToolsToggle on={dash.on("tools")} onClick={() => dash.setOn("tools", !dash.on("tools"))} />
-        <button type="button" onClick={() => onRankBoard(rankBoard === "skill" ? "perk" : "skill")} className="tw-btn-2 inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 text-[12px]">
-          {rankBoard === "skill" ? <Trophy className="size-3.5" aria-hidden /> : <Coins className="size-3.5" aria-hidden />}
+        <MarkChip mark={rankBoard === "skill" ? Trophy : Coins} title="Rank" onClick={() => onRankBoard(rankBoard === "skill" ? "perk" : "skill")}>
           Rank {rankBoard === "skill" ? "XP" : "$"}
-        </button>
+        </MarkChip>
+        <MarkChip mark={Trophy} title="Top list" on={layout.schoolN === 10} onClick={() => dash.setSchoolN(layout.schoolN === 5 ? 10 : 5)}>
+          Top {layout.schoolN}
+        </MarkChip>
+        <MarkChip mark={RotateCcw} title="Reset wall" onClick={() => dash.reset()}>
+          Reset
+        </MarkChip>
       </div>
-      <ul className="mt-1 grid max-h-64 gap-1 overflow-y-auto rounded-xl bg-elevated p-2 sm:grid-cols-2">
-          {layout.order.map((id) => {
+      {hidden.length ? (
+        <div className="flex flex-wrap items-center gap-1">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Show</span>
+          {hidden.map((id) => {
             const row = DASH_ROWS.find((r) => r.id === id);
             if (!row) return null;
-            const on = dash.on(row.id);
-            const i = layout.order.indexOf(row.id);
             return (
-              <li key={row.id} className="flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => dash.setOn(row.id, !on)}
-                  className={cn("tw-tap inline-flex min-h-10 flex-1 items-center gap-1.5 rounded-lg px-3 text-left text-sm font-semibold", on ? "bg-fg text-bg" : "bg-bg text-muted")}
-                >
-                  {(() => {
-                    const Icon = markOf(row.id);
-                    return Icon ? <Icon className="size-4 shrink-0" aria-hidden /> : null;
-                  })()}
-                  {on ? "On · " : "Off · "}
-                  {row.label}
-                </button>
-                <button type="button" disabled={i <= 0} onClick={() => dash.move(row.id, -1)} className="tw-tap grid size-10 place-items-center rounded-lg bg-bg text-muted disabled:opacity-25" title="Up">
-                  <ChevronUp className="size-4" />
-                </button>
-                <button type="button" disabled={i >= layout.order.length - 1} onClick={() => dash.move(row.id, 1)} className="tw-tap grid size-10 place-items-center rounded-lg bg-bg text-muted disabled:opacity-25" title="Down">
-                  <ChevronDown className="size-4" />
-                </button>
-              </li>
+              <MarkChip key={id} mark={markOf(id)} title={`Show ${row.label}`} onClick={() => dash.setOn(id, true)}>
+                {row.label}
+              </MarkChip>
             );
           })}
-          <li className="flex flex-wrap gap-1 sm:col-span-2">
-            <button type="button" onClick={() => dash.setSchoolN(layout.schoolN === 5 ? 10 : 5)} className="tw-btn-2 inline-flex min-h-10 items-center gap-1.5 rounded-full px-3 text-xs">
-              <Trophy className="size-3.5" aria-hidden />
-              Top {layout.schoolN}
-            </button>
-            <button type="button" onClick={() => dash.reset()} className="tw-btn-2 inline-flex min-h-10 items-center gap-1.5 rounded-full px-3 text-xs">
-              <RotateCcw className="size-3.5" aria-hidden />
-              Reset wall
-            </button>
-          </li>
-        </ul>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -530,6 +519,7 @@ function GoalsCard({
   todayHit,
   viewKids,
   unlocked,
+  edit = false,
   peeking,
   live,
   onPeriod,
@@ -548,6 +538,7 @@ function GoalsCard({
   todayHit: { scored: number; blank: number; n: number };
   viewKids: { id: string; first: string; xp: number; level: number; quarter: number; icon?: string }[];
   unlocked: boolean;
+  edit?: boolean;
   peeking: boolean;
   live: number | null;
   today: string;
@@ -566,6 +557,7 @@ function GoalsCard({
   const sameStage = lanes.length > 0 && lanes.every((c) => prettyStage(c.current) === prettyStage(lanes[0].current));
   const hasRanks = viewKids.some((s) => s.xp > 0 || s.quarter > 0);
   const gogglesOn = ppeOn(file, shown);
+  const desk = unlocked && edit;
   const actions = (
     <>
       {peeking && live != null ? (
@@ -573,7 +565,7 @@ function GoalsCard({
           P{live}
         </button>
       ) : null}
-      {unlocked ? (
+      {desk ? (
         <button type="button" title={t("Score")} onClick={() => onPeriod(shown)} className="min-h-11 shrink-0 rounded-md bg-fg px-3 text-sm font-semibold text-bg">
           {t("Score")}
         </button>
@@ -590,25 +582,23 @@ function GoalsCard({
         onTeach={onTeach}
         actions={actions}
         ppeOn={gogglesOn}
-        onPpe={unlocked && onChange ? () => onChange(setPpe(file, shown, !gogglesOn)) : undefined}
+        onPpe={desk && onChange ? () => onChange(setPpe(file, shown, !gogglesOn)) : undefined}
       />
-      {todayHit.n > 0 ? (
+      {desk && todayHit.n > 0 ? (
         <p className="mt-2 font-mono text-xs tabular-nums text-subtle">
           {todayHit.scored}/{todayHit.n} {t("scored")}
           {todayHit.blank ? ` · ${todayHit.blank} ${t("left")}` : ""}
         </p>
-      ) : unlocked ? (
+      ) : desk && todayHit.n === 0 ? (
         <p className="mt-2 text-xs text-muted">{t("This desk lives on the shop PC.")}</p>
       ) : null}
       {lanes.length ? (
-        sameStage ? (
+        sameStage || !desk ? (
           <p className="mt-2 truncate text-sm text-muted">{lanes.map((c) => c.name).join(" · ")}</p>
-        ) : unlocked ? (
-          <p className="mt-2 truncate text-sm text-muted">{lanes.map((c) => `${c.name} · ${prettyStage(c.current)}`).join(" · ")}</p>
         ) : (
-          <p className="mt-2 truncate text-sm text-muted">{lanes.map((c) => c.name).join(" · ")}</p>
+          <p className="mt-2 truncate text-sm text-muted">{lanes.map((c) => `${c.name} · ${prettyStage(c.current)}`).join(" · ")}</p>
         )
-      ) : unlocked ? (
+      ) : desk ? (
         <p className="mt-2 text-sm text-muted">{t("No crews yet.")}</p>
       ) : null}
       {hasRanks ? (

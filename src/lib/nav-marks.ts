@@ -75,6 +75,7 @@ export const NAV_MARK: Record<string, LucideIcon> = {
   book: GraduationCap,
   grades: GraduationCap,
   projects: FolderKanban,
+  plan: Calendar,
   floor: LayoutList,
   options: Lightbulb,
   job: Pencil,

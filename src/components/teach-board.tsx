@@ -35,6 +35,8 @@ export function TeachBoard({
   onNeedPin,
   onPolls,
   onBerty,
+  onPlan,
+  onWall,
 }: {
   file: EconomyFile;
   unlocked: boolean;
@@ -42,6 +44,8 @@ export function TeachBoard({
   onNeedPin: () => void;
   onPolls?: () => void;
   onBerty?: () => void;
+  onPlan?: () => void;
+  onWall?: () => void;
 }) {
   const today = todayIso();
   const bellsId = deskBellId(file, today);
@@ -123,6 +127,24 @@ export function TeachBoard({
             </>
           ) : null}
           <ToolsToggle on={look.tools} onClick={() => setLookFlag("tools", !look.tools)} />
+          {onWall ? (
+            <button
+              type="button"
+              onClick={onWall}
+              className="tw-tap min-h-8 rounded-full bg-fg px-3 text-[12px] font-medium text-bg"
+            >
+              Wall
+            </button>
+          ) : null}
+          {onPlan ? (
+            <button
+              type="button"
+              onClick={onPlan}
+              className="tw-tap min-h-8 rounded-full px-3 text-[12px] font-medium tw-btn-2"
+            >
+              Plan book
+            </button>
+          ) : null}
           {onPolls ? (
             <button
               type="button"

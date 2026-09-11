@@ -74,7 +74,7 @@ export function LearningCenter({
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <header className="mb-1 shrink-0 sm:mb-2">
-        <p className="hidden px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-subtle sm:block">{t("Learn · pick a project, put it on a period, crews take a slot")}</p>
+        <p className="hidden px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-subtle sm:block">{t("Learn · plan the days, put a project on a period")}</p>
         <nav className="flex flex-wrap gap-1" aria-label="Learning">
           {nav.map((tab) => (
             <button

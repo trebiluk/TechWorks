@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { EconomyFile } from "./economy.ts";
-import { assignCrewProject, crewProjectId, ensureProjects, jobCardOf, putOnPeriod, pullFromPeriod, slotsOf } from "./projects.ts";
+import { assignCrewProject, activitySpan, crewProjectId, ensureProjects, jobCardOf, pinDayActivity, plannedShopDays, projectsOf, putOnPeriod, pullFromPeriod, setActivitySpan, slotsOf } from "./projects.ts";
 
 function desk(): EconomyFile {
   return {
@@ -108,5 +108,34 @@ describe("period slots", () => {
       slotsOf(one, 1).map((p) => p.id),
       ["prj6"],
     );
+  });
+});
+
+describe("plan book spans", () => {
+  it("infers modeling as two days on the default unit", () => {
+    const p = projectsOf(ensureProjects(desk())).find((x) => x.id === "prj6");
+    assert.ok(p);
+    assert.equal(activitySpan(p, "act-brain"), 1);
+    assert.equal(activitySpan(p, "act-model"), 2);
+    assert.equal(activitySpan(p, "act-finish"), 2);
+    assert.equal(plannedShopDays(p), 8);
+  });
+
+  it("shortening modeling to one day relayouts the cycle grid", () => {
+    const file = setActivitySpan(ensureProjects(desk()), "prj6", "act-model", 1);
+    const p = projectsOf(file).find((x) => x.id === "prj6");
+    assert.ok(p);
+    assert.equal(activitySpan(p, "act-model"), 1);
+    assert.equal(p.stages.filter((s) => s.activityId === "act-model").length, 1);
+  });
+
+  it("parking an activity on one date does not rewrite the unit", () => {
+    let file = ensureProjects(desk());
+    file = pinDayActivity(file, "2026-09-10", 1, "act-draw");
+    const job = jobCardOf(file, 1, "2026-09-10");
+    assert.match(job.today, /Draw the machine/i);
+    const p = projectsOf(file).find((x) => x.id === "prj6");
+    assert.ok(p);
+    assert.equal(activitySpan(p, "act-model"), 2);
   });
 });

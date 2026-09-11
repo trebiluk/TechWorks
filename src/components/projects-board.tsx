@@ -4,7 +4,6 @@ import { periodTitle, shopBells } from "@/lib/economy";
 import {
   activitiesOf,
   addProject,
-  agendaFor,
   assignCrewProject,
   crewProjectId,
   crewsForPeriod,
@@ -23,9 +22,10 @@ import {
 } from "@/lib/projects";
 import { currentCycleOf } from "@/lib/roles";
 import { CtrlSeg } from "@/components/ctrl";
+import { PlanBook } from "@/components/plan-book";
 import { cn } from "@/lib/utils";
 
-type Pane = "floor" | "options" | "job";
+type Pane = "plan" | "floor" | "options" | "job";
 
 export function ProjectsBoard({
   file,
@@ -40,7 +40,7 @@ export function ProjectsBoard({
 }) {
   const bells = shopBells(file);
   const [period, setPeriod] = useState(bells[0]?.period ?? 1);
-  const [pane, setPane] = useState<Pane>("floor");
+  const [pane, setPane] = useState<Pane>("plan");
   const [kind, setKind] = useState<ProjectKind | "all">("all");
   const [title, setTitle] = useState("");
   const slots = slotsOf(file, period);
@@ -48,7 +48,6 @@ export function ProjectsBoard({
   const list = projectsOf(file);
   const project = list.find((p) => p.id === focusId) ?? slots[0] ?? list[0];
   const cycle = currentCycleOf(file);
-  const today = agendaFor(file, period);
   const crews = crewsForPeriod(file, period);
   const job = jobCardOf(file, period);
 
@@ -61,7 +60,7 @@ export function ProjectsBoard({
     if (!gate()) return;
     onChange(putOnPeriod(file, period, id));
     setFocusId(id);
-    setPane("floor");
+    setPane("plan");
   }
   function pull(id: string) {
     if (!gate()) return;
@@ -88,7 +87,7 @@ export function ProjectsBoard({
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="font-display text-2xl font-semibold tracking-tight">Projects</h1>
           <p className="min-w-0 flex-1 text-sm text-muted">
-            {periodTitle(period, bells)} · {slots.length > 1 ? `${slots.length} jobs on the floor` : today.title}
+            {periodTitle(period, bells)} · plan the days, then park a unit on this period
           </p>
         </div>
         <div className="flex flex-wrap gap-1">
@@ -110,9 +109,10 @@ export function ProjectsBoard({
         </div>
         <CtrlSeg
           items={[
+            { id: "plan", label: "Plan" },
             { id: "floor", label: "Floor" },
-            { id: "options", label: "Options" },
             { id: "job", label: "Write the job" },
+            { id: "options", label: "Options" },
           ]}
           value={pane}
           onChange={(id) => setPane(id as Pane)}
@@ -120,6 +120,16 @@ export function ProjectsBoard({
       </header>
 
       <div className="min-h-0 flex-1 overflow-auto">
+        {pane === "plan" && project ? (
+          <PlanBook
+            file={file}
+            project={project}
+            period={period}
+            unlocked={unlocked}
+            onNeedPin={onNeedPin}
+            onChange={onChange}
+          />
+        ) : null}
         {pane === "floor" ? (
           <Floor
             file={file}
@@ -157,7 +167,7 @@ export function ProjectsBoard({
               onChange(placed);
               if (created) setFocusId(created.id);
               setTitle("");
-              setPane("floor");
+              setPane("plan");
             }}
           />
         ) : null}
@@ -373,6 +383,7 @@ function JobWrite({
   return (
     <div className="tw-gadget mx-auto max-w-3xl space-y-3 p-3 pb-6">
       <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">{prettyStage(acts[0]?.goal ?? "Idea")} · student-facing</p>
+      <p className="text-sm text-muted">These lines hit the wall. How many days each activity holds is on Plan.</p>
       {unlocked ? (
         <input
           value={project.title}
