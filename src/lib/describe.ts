@@ -89,12 +89,12 @@ const CARDS: Record<string, DescribeCard> = {
   },
   club: {
     title: "Tech Club",
-    purpose: "After 10th. Calendar by week. Sign in, stations, late bus, 3:00 cleanup. Not class XP.",
+    purpose: "After 10th. Set dates on the month. Brief holds until you tap Work. Cleanup at 3:00. Not class XP.",
     links: [{ label: "Help", href: "#help" }],
   },
   clubwall: {
     title: "Club wall",
-    purpose: "Projector for club: stations and late-bus names. Aliases only.",
+    purpose: "Projector: Brief first, then stations and late-bus after you release Work. Aliases only.",
     links: [{ label: "Help", href: "#help" }],
   },
   hallwall: {

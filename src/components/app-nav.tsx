@@ -36,7 +36,7 @@ export function AppNav({
       </CtrlRail>
       )}
       {row.length ? (
-        <CtrlRail label={t("In this section")}>
+        <CtrlRail label={t("In this section")} bare={hideSections}>
           {row.map((tab) => (
             <MarkChip key={tab.id} mark={markOf(tab.id)} on={tab.on} title={tab.label} onClick={tab.onClick}>
               {tab.label}

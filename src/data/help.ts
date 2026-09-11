@@ -261,7 +261,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Admin",
     title: "Year plan and copy a quarter",
     tags: ["year", "plan", "day", "copy", "quarter", "deck", "projects", "june"],
-    body: "Admin → Day. Pick any school day through June. Set the meeting pin, lunch, sub, bells, two wall cards, and each period's goal. Copy to the next school day, through this quarter, or through June. Copy Q1 → Q2 (also Q2 → Q3, Q3 → Q4) duplicates that quarter's grade projects onto the next cycles, copies planned days in order, and snapshots the Deck. Then edit Projects and Dash → Deck (Q1–Q4 chips) without losing this quarter. Compact save keeps those future days.",
+    body: "Admin → Day. Pick the date. Sub and bells are for that day. Lunch and two wall cards sit next to it. Copy this day onto the next school day, the rest of the quarter, or June. Q1 → Q2 (also Q2 → Q3, Q3 → Q4) copies projects, planned days, and the Deck. Shop defaults (usual bells, cycle, cleanup, A/B, Teach pack) stay folded under that. Passes stay on Admin → Today. Units live on Learn → Projects → Plan.",
   },
   {
     id: "pins",
@@ -361,7 +361,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Club",
     title: "Technology Club",
     tags: ["club", "late bus", "minecraft", "robotics", "workshop", "computer", "3:00", "minutes"],
-    body: "Dash → Club is the projector: stations, late bus, activity clock. Admin → Club is the desk: calendar, sign in, stations. Unlock on the club wall and tap Edit. Sign in (first name + last initial), pick Minecraft / Robotics / Workshop / Computer Time, mark late bus / pickup / walker. IN that matches a class alias pays $10 perks + 2 XP once that day (wallet/XP only — not effort, not the project grade). No match = no pay. Cleanup 3:00, door 3:05.",
+    body: "Admin → Club. Tap a month day to SET club (usual weekdays still apply). Open that date and pick Talk / Stations / Contest / Workshop. Type the agenda. Brief holds the projector until you tap Work (Release). Then stations, contests, and the activity timer take the wall. Cleanup still 3:00–3:05. Sign in (first name + last initial) pays $10 + 2 XP once that day if the alias matches class — not effort, not the project grade.",
   },
   {
     id: "glossary",

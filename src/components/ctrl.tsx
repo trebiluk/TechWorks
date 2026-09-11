@@ -53,13 +53,15 @@ export function CtrlRail({
   label,
   children,
   className,
+  bare,
 }: {
   label: string;
   children: ReactNode;
   className?: string;
+  bare?: boolean;
 }) {
   return (
-    <nav aria-label={label} className={cn("tw-rail tw-gadget p-1", className)}>
+    <nav aria-label={label} className={cn(bare ? "tw-rail min-w-0" : "tw-rail tw-gadget p-1", className)}>
       {children}
     </nav>
   );

@@ -602,12 +602,12 @@ export function Board() {
       ) : crewOn && view === "crew" ? null : (
         <>
         <header className="desk-chrome tw-gadget tw-hud mb-1 min-w-0">
-            <div className="flex min-w-0 flex-col gap-1">
             <div className="nav-cluster flex min-w-0 items-center gap-1">
               <button type="button" onClick={() => go("overview")} title="FERPA wall · aliases only" className="shrink-0">
                 <TwWordmark />
               </button>
-              <div className="tw-hud-row relative z-20 ml-auto">
+              <div className="min-w-0 flex-1">{appStrip}</div>
+              <div className="tw-hud-row relative z-20 shrink-0">
                 {unlocked ? (
                   <div className="relative hidden md:block">
                     <Search className="pointer-events-none absolute left-2 top-2.5 size-3.5 text-subtle" />
@@ -712,8 +712,6 @@ export function Board() {
                   </button>
                 ) : null}
               </div>
-            </div>
-            {appStrip}
             </div>
         </header>
         </>

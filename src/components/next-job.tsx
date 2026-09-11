@@ -26,6 +26,7 @@ export const NextJobChip = memo(function NextJobChip({
     };
   }, []);
   const job = useMemo(() => nextJob(file, now), [file, now, tick]);
+  if (job.id === "clean") return null;
   const Icon = markOf(job.id) ?? ClipboardList;
   const tone =
     job.tone === "now"

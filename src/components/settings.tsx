@@ -1,5 +1,5 @@
 import type { EconomyFile } from "@/lib/economy";
-import { boardCardsOf, isSubDay, resetAbCycle, setBoardCard, setCleanupMins, setCleanupSound, setCurrentCycle, setLevelConfig, setSchedule, setSubDay } from "@/lib/store";
+import { setCleanupMins, setCleanupSound, setCurrentCycle, setLevelConfig, setSchedule, resetAbCycle } from "@/lib/store";
 import { DEFAULT_LEVEL_BANDS, levelBandsOf } from "@/lib/skills";
 import { storedLeadXp, setLeadXpBonus, clampLeadXp } from "@/lib/roles";
 import { RosterOnboard } from "@/components/roster-onboard";
@@ -22,11 +22,11 @@ import { RewardBar, RewardEditor } from "@/components/reward-bar";
 import { ShopLists, SkillLists } from "@/components/score-panels";
 import { commitDescribe } from "@/lib/describe";
 import { FEATURES, FEATURE_GROUPS, featureOn, setFeature, type FeatureId } from "@/lib/features";
-import { VisitDesk } from "@/components/visit-chip";
 import { DEMO_SETS, commitDemo, storedDemo, type DemoId } from "@/lib/demo";
 import { YearPlanBoard } from "@/components/year-plan-board";
 import { VaultBoard } from "@/components/vault-board";
 import { TEACH_PACKS, setDefaultTeachPack } from "@/lib/teach";
+import { Fold } from "@/components/fold";
 
 export const SETTINGS_TABS = [
   { id: "vault", label: "Records" },
@@ -88,6 +88,7 @@ export function SettingsBody({
   const [leadXp, setLeadXp] = useState(() => storedLeadXp());
   const [demoId, setDemoId] = useState<DemoId>(() => storedDemo());
   const [rosterOpen, setRosterOpen] = useState(false);
+  const [shopOpen, setShopOpen] = useState(false);
 
   return (
     <div className={cn(embed ? "px-0 py-0" : "px-1 py-2 pb-16 sm:px-2")}>
@@ -111,148 +112,122 @@ export function SettingsBody({
             ) : null}
 
             {tab === "day" ? (
-              <section>
-                {embed ? null : <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Day</h2>}
-                <div className="mb-6">
-                  <VisitDesk file={file} date={todayIso()} onChange={onChange} />
-                </div>
+              <section className="space-y-3">
                 <YearPlanBoard file={file} onChange={onChange} />
-                <p className={cn("text-sm text-muted", embed ? "mt-4" : "mt-4")}>Cycle, bells, A/B, sub. Sub voids scores and the projector.</p>
-                <button
-                  type="button"
-                  onClick={() => onChange(setSubDay(file, todayIso(), !isSubDay(file, todayIso())))}
-                  className={cn(
-                    "mt-3 min-h-11 rounded-md px-4 text-sm font-semibold uppercase tracking-wide",
-                    isSubDay(file, todayIso()) ? "bg-work-pto text-accent-fg ring-2 ring-fg" : "bg-elevated text-muted",
-                  )}
-                >
-                  {isSubDay(file, todayIso()) ? "Sub day · on" : "Sub day"}
-                </button>
-                <p className="mt-4 text-sm font-medium uppercase tracking-wider text-subtle">Current cycle</p>
-                <div className="mt-2 grid grid-cols-8 gap-1">
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      onClick={() => onChange(setCurrentCycle(file, n))}
-                      className={cn(
-                        "min-h-11 rounded-md font-mono text-sm font-semibold",
-                        n === cycle ? "bg-accent text-accent-fg ring-2 ring-fg" : "bg-elevated text-muted",
-                      )}
-                    >
-                      {n}
-                    </button>
-                  ))}
-                </div>
-                <p className="mt-6 text-sm font-medium uppercase tracking-wider text-subtle">Bell schedule</p>
-                <div className="mt-2 grid grid-cols-2 gap-2">
-                  {(Object.keys(SCHEDULES) as (keyof typeof SCHEDULES)[]).map((id) => (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => onChange(setSchedule(file, id))}
-                      className={cn(
-                        "min-h-11 rounded-md px-2 text-sm font-semibold uppercase tracking-wide",
-                        scheduleOf(file.meta.config?.schedule) === id ? "bg-accent text-accent-fg ring-2 ring-fg" : "bg-elevated text-muted",
-                      )}
-                    >
-                      {SCHEDULES[id].label}
-                    </button>
-                  ))}
-                </div>
-                <p className="mt-6 text-sm font-medium uppercase tracking-wider text-subtle">Cleanup</p>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => onChange(setCleanupMins(file, clampCleanupMins((file.meta.config?.cleanupMins ?? 5) - 1)))}
-                    className="min-h-11 min-w-11 rounded-md bg-elevated text-lg font-semibold"
-                  >
-                    −
-                  </button>
-                  <span className="min-w-[5.5rem] text-center font-mono text-sm tabular-nums">
-                    {clampCleanupMins(file.meta.config?.cleanupMins ?? cleanupMinsNow())} min
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => onChange(setCleanupMins(file, clampCleanupMins((file.meta.config?.cleanupMins ?? 5) + 1)))}
-                    className="min-h-11 min-w-11 rounded-md bg-elevated text-lg font-semibold"
-                  >
-                    +
-                  </button>
-                </div>
-                <p className="mt-3 text-sm font-medium uppercase tracking-wider text-subtle">Alarm</p>
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {CLEANUP_SOUNDS.map((s) => (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => onChange(setCleanupSound(file, s.id))}
-                      className={cn(
-                        "min-h-11 rounded-md px-3 text-xs font-semibold",
-                        cleanupSoundOf(file.meta.config?.cleanupSound) === s.id ? "bg-gold text-bg" : "bg-elevated text-muted",
-                      )}
-                    >
-                      {s.label}
-                    </button>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => previewCleanupSound(file.meta.config?.cleanupSound)}
-                    className="min-h-11 rounded-md bg-fg px-3 text-xs font-semibold text-accent-fg"
-                  >
-                    Preview
-                  </button>
-                </div>
-                <p className="mt-4 text-sm text-muted">A today makes tomorrow B. Snow day: reset starts today as A.</p>
-                <button
-                  type="button"
-                  onClick={() => onChange(resetAbCycle(file, todayIso()))}
-                  className="mt-2 min-h-11 rounded-lg bg-elevated px-4 text-sm font-medium text-loss"
-                >
-                  Reset A/B · today is A
-                </button>
-                <p className="mt-6 text-sm font-medium uppercase tracking-wider text-subtle">Teach · default pack</p>
-                <p className="mt-1 text-sm text-muted">Used when a period has no override. You can still pin a slot on Teach.</p>
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {TEACH_PACKS.map((p) => (
-                    <button
-                      key={p.id}
-                      type="button"
-                      title={p.hint}
-                      onClick={() => onChange(setDefaultTeachPack(file, p.id))}
-                      className={cn(
-                        "min-h-10 rounded-full px-3 text-xs font-semibold",
-                        (file.meta.config?.teachPack || "shop") === p.id ? "bg-fg text-bg" : "bg-elevated text-muted",
-                      )}
-                    >
-                      {p.label}
-                    </button>
-                  ))}
-                </div>
-                <p className="mt-6 text-sm font-medium uppercase tracking-wider text-subtle">Announcements</p>
-                <p className="mt-1 text-sm text-muted">Up to two cards on the projector. Leave the title blank to hide.</p>
-                {([0, 1] as const).map((i) => {
-                  const card = boardCardsOf(file)[i];
-                  return (
-                    <div key={i} className="mt-3 rounded-lg bg-elevated p-3">
-                      <input
-                        value={card.title}
-                        onChange={(e) => onChange(setBoardCard(file, i, { ...card, title: e.target.value }))}
-                        placeholder={`Card ${i + 1} title`}
-                        className="min-h-11 w-full rounded-md bg-surface px-3 text-sm outline-none"
-                      />
-                      <textarea
-                        value={card.body}
-                        onChange={(e) => onChange(setBoardCard(file, i, { ...card, body: e.target.value }))}
-                        placeholder="One or two lines"
-                        rows={2}
-                        className="mt-2 w-full rounded-md bg-surface px-3 py-2 text-sm outline-none"
-                      />
+                <Fold label="Shop defaults" hint="Usual bells, cycle, cleanup, A/B, Teach pack" open={shopOpen} onToggle={() => setShopOpen((v) => !v)}>
+                  <div className="grid gap-4 p-3">
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-wide text-subtle">Usual bells</p>
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {(Object.keys(SCHEDULES) as (keyof typeof SCHEDULES)[]).map((id) => (
+                          <button
+                            key={id}
+                            type="button"
+                            onClick={() => onChange(setSchedule(file, id))}
+                            className={cn(
+                              "min-h-11 rounded-md px-3 text-sm font-semibold",
+                              scheduleOf(file.meta.config?.schedule) === id ? "bg-accent text-accent-fg" : "bg-elevated text-muted",
+                            )}
+                          >
+                            {SCHEDULES[id].label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  );
-                })}
-                <p className="mt-6 text-sm font-medium uppercase tracking-wider text-subtle">Lunch</p>
-                <LunchPanel file={file} onChange={onChange} />
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-wide text-subtle">Cycle</p>
+                      <div className="mt-2 grid grid-cols-8 gap-1">
+                        {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                          <button
+                            key={n}
+                            type="button"
+                            onClick={() => onChange(setCurrentCycle(file, n))}
+                            className={cn(
+                              "min-h-11 rounded-md font-mono text-sm font-semibold",
+                              n === cycle ? "bg-accent text-accent-fg" : "bg-elevated text-muted",
+                            )}
+                          >
+                            {n}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-wide text-subtle">Cleanup</p>
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => onChange(setCleanupMins(file, clampCleanupMins((file.meta.config?.cleanupMins ?? 5) - 1)))}
+                          className="min-h-11 min-w-11 rounded-md bg-elevated text-lg font-semibold"
+                        >
+                          −
+                        </button>
+                        <span className="min-w-[5.5rem] text-center font-mono text-sm tabular-nums">
+                          {clampCleanupMins(file.meta.config?.cleanupMins ?? cleanupMinsNow())} min
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => onChange(setCleanupMins(file, clampCleanupMins((file.meta.config?.cleanupMins ?? 5) + 1)))}
+                          className="min-h-11 min-w-11 rounded-md bg-elevated text-lg font-semibold"
+                        >
+                          +
+                        </button>
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {CLEANUP_SOUNDS.map((s) => (
+                          <button
+                            key={s.id}
+                            type="button"
+                            onClick={() => onChange(setCleanupSound(file, s.id))}
+                            className={cn(
+                              "min-h-11 rounded-md px-3 text-xs font-semibold",
+                              cleanupSoundOf(file.meta.config?.cleanupSound) === s.id ? "bg-gold text-bg" : "bg-elevated text-muted",
+                            )}
+                          >
+                            {s.label}
+                          </button>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() => previewCleanupSound(file.meta.config?.cleanupSound)}
+                          className="min-h-11 rounded-md bg-fg px-3 text-xs font-semibold text-accent-fg"
+                        >
+                          Preview
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-wide text-subtle">Teach pack</p>
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {TEACH_PACKS.map((p) => (
+                          <button
+                            key={p.id}
+                            type="button"
+                            title={p.hint}
+                            onClick={() => onChange(setDefaultTeachPack(file, p.id))}
+                            className={cn(
+                              "min-h-10 rounded-full px-3 text-xs font-semibold",
+                              (file.meta.config?.teachPack || "shop") === p.id ? "bg-fg text-bg" : "bg-elevated text-muted",
+                            )}
+                          >
+                            {p.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-wide text-subtle">A / B</p>
+                      <p className="mt-1 text-sm text-muted">A today makes tomorrow B. Snow day: start today as A.</p>
+                      <button
+                        type="button"
+                        onClick={() => onChange(resetAbCycle(file, todayIso()))}
+                        className="mt-2 min-h-11 rounded-lg bg-elevated px-4 text-sm font-medium text-loss"
+                      >
+                        Reset A/B · today is A
+                      </button>
+                    </div>
+                  </div>
+                </Fold>
               </section>
             ) : null}
 

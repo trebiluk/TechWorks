@@ -6,6 +6,18 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.12 — 2026-09-11
+
+- Dash chrome is one row: logo, Wall/Teach/Deck/Week/Club/Hall, then one Now clock. Cleanup no longer stacks a second chip. Workshop and Classroom jobs fill the wall so the back row can read them.
+
+## 1.92.11 — 2026-09-11
+
+- Tech Club dates are a month you tap to SET. Each meeting has Talk / Stations / Contest / Workshop. Brief holds the projector until you tap Work. Then stations and contests. Cleanup still 3:00.
+
+## 1.92.10 — 2026-09-11
+
+- Admin → Day is one date: Sub, bells, lunch, meeting, two wall cards, then copy. Shop defaults (usual bells, cycle, cleanup, A/B, Teach pack) stay folded. Passes stay on Today. Units stay on Learn → Projects → Plan.
+
 ## 1.92.9 — 2026-09-11
 
 - Teach has a Wall chip to hang the projector when class is done. Dash → Wall stays cards even while the desk is unlocked — Score, Rank XP/$, and SchoolTool stay off that screen. Admin → Wall is the only editor.

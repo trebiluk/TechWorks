@@ -44,6 +44,11 @@ export type ClubMeeting = {
   overlay: number;
   notes: string;
   rows: ClubRow[];
+  /** talk · stations · contest · workshop */
+  pack?: string;
+  agenda?: string;
+  /** Hold a slot until cleanup. Talk/contest start on Brief until you tap Work. */
+  pin?: string;
 };
 
 export type ClubMember = {
@@ -257,6 +262,220 @@ export function overlayOn(file: ClubFile, date: string): number {
   return file.weekOverlay[date] ?? 0;
 }
 
+export type ClubSlotKind = "sign" | "brief" | "work" | "contest" | "demo" | "clean";
+
+export type ClubSlot = {
+  id: string;
+  title: string;
+  line: string;
+  kind: ClubSlotKind;
+  w?: number;
+  clean?: boolean;
+};
+
+export type ClubPack = {
+  id: string;
+  label: string;
+  hint: string;
+  slots: ClubSlot[];
+};
+
+export const CLUB_PACKS: ClubPack[] = [
+  {
+    id: "talk",
+    label: "Talk then work",
+    hint: "Agenda first. Tap Work to release.",
+    slots: [
+      { id: "sign", title: "SIGN IN", line: "Name, station, late bus.", kind: "sign", w: 3 },
+      { id: "brief", title: "BRIEF", line: "Sit. Agenda. Questions after.", kind: "brief", w: 8 },
+      { id: "work", title: "WORK", line: "Stations, contest, or the posted job.", kind: "work", w: 12 },
+      { id: "clean", title: "CLEAN UP", line: "Tools, chromebooks, late-bus line.", kind: "clean", clean: true },
+    ],
+  },
+  {
+    id: "stations",
+    label: "Stations",
+    hint: "Choice work after sign-in.",
+    slots: [
+      { id: "sign", title: "SIGN IN", line: "Name, station, late bus.", kind: "sign", w: 3 },
+      { id: "work", title: "STATIONS", line: "Pick a station. Stay until cleanup.", kind: "work", w: 20 },
+      { id: "clean", title: "CLEAN UP", line: "Tools, chromebooks, late-bus line.", kind: "clean", clean: true },
+    ],
+  },
+  {
+    id: "contest",
+    label: "Contest",
+    hint: "Rules, then the timed run.",
+    slots: [
+      { id: "sign", title: "SIGN IN", line: "Name and team.", kind: "sign", w: 2 },
+      { id: "brief", title: "RULES", line: "How we win. Questions now.", kind: "brief", w: 5 },
+      { id: "contest", title: "CONTEST", line: "Timed run. Fair play.", kind: "contest", w: 16 },
+      { id: "clean", title: "CLEAN UP", line: "Reset the room. Late-bus line.", kind: "clean", clean: true },
+    ],
+  },
+  {
+    id: "workshop",
+    label: "Workshop",
+    hint: "Demo, then make.",
+    slots: [
+      { id: "sign", title: "SIGN IN", line: "Glasses on the hook.", kind: "sign", w: 2 },
+      { id: "demo", title: "DEMO", line: "Watch once. Ask after.", kind: "demo", w: 8 },
+      { id: "work", title: "MAKE", line: "You do the move.", kind: "work", w: 13 },
+      { id: "clean", title: "CLEAN UP", line: "Tools parked. Late-bus line.", kind: "clean", clean: true },
+    ],
+  },
+];
+
+export const CLUB_START_MIN = 14 * 60 + 40;
+export const CLUB_CLEAN_MIN = 15 * 60;
+export const CLUB_DOOR_MIN = 15 * 60 + 5;
+
+export type LaidClubSlot = ClubSlot & { startMin: number; endMin: number; mins: number };
+
+export function clubPackOf(file: ClubFile, date: string): ClubPack {
+  const id = meetingOf(file, date).pack || "talk";
+  return CLUB_PACKS.find((p) => p.id === id) ?? CLUB_PACKS[0];
+}
+
+export function layClubSlots(file: ClubFile, date: string): LaidClubSlot[] {
+  const pack = clubPackOf(file, date);
+  const start = CLUB_START_MIN;
+  const end = CLUB_DOOR_MIN;
+  const cleanAt = CLUB_CLEAN_MIN;
+  const body = pack.slots.filter((s) => !s.clean);
+  const tail = pack.slots.find((s) => s.clean);
+  const workSpan = Math.max(body.length, cleanAt - start);
+  const weight = body.reduce((n, s) => n + (s.w || 1), 0) || 1;
+  let t = start;
+  const cut = start + workSpan;
+  const out: LaidClubSlot[] = [];
+  body.forEach((s, i) => {
+    const last = i === body.length - 1;
+    const raw = Math.max(1, Math.round((workSpan * (s.w || 1)) / weight));
+    const endMin = last ? cut : Math.min(cut - (body.length - 1 - i), t + raw);
+    const mins = Math.max(1, endMin - t);
+    out.push({ ...s, startMin: t, endMin: t + mins, mins });
+    t += mins;
+  });
+  if (tail) out.push({ ...tail, startMin: cut, endMin: end, mins: Math.max(1, end - cut) });
+  return out;
+}
+
+function holdSlot(pack: ClubPack): ClubSlot | undefined {
+  return pack.slots.find((s) => s.kind === "brief" || s.kind === "demo");
+}
+
+function releasedPin(pack: ClubPack, pin?: string): boolean {
+  if (!pin) return false;
+  const hit = pack.slots.find((s) => s.id === pin);
+  return Boolean(hit && (hit.kind === "work" || hit.kind === "contest" || hit.clean));
+}
+
+export function clubSlotNow(file: ClubFile, date: string, now = new Date()): LaidClubSlot | null {
+  const rows = layClubSlots(file, date);
+  if (!rows.length) return null;
+  const t = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+  const last = rows[rows.length - 1];
+  const clean = rows.find((s) => s.clean);
+  if (clean && t >= clean.startMin && t <= last.endMin + 20) return clean;
+  if (t > last.endMin) return null;
+  const pack = clubPackOf(file, date);
+  const pin = meetingOf(file, date).pin;
+  const hold = holdSlot(pack);
+  const laidHold = hold ? rows.find((s) => s.id === hold.id) : undefined;
+  const sign = rows.find((s) => s.kind === "sign");
+  if (pin) {
+    const hit = rows.find((s) => s.id === pin);
+    if (hit && !hit.clean) return hit;
+  }
+  if (sign && t < sign.startMin) return laidHold ?? rows[0];
+  if (sign && t < sign.endMin && !releasedPin(pack, pin)) return sign;
+  if (laidHold && !releasedPin(pack, pin) && t < (clean?.startMin ?? last.endMin)) return laidHold;
+  for (const s of rows) {
+    if (t >= s.startMin && t < s.endMin) return s;
+  }
+  if (t < rows[0].startMin) return rows[0];
+  return last;
+}
+
+export function setClubPack(file: ClubFile, date: string, pack: string): ClubFile {
+  const p = CLUB_PACKS.find((x) => x.id === pack) ?? CLUB_PACKS[0];
+  const hold = holdSlot(p);
+  return patchMeeting(file, date, { pack: p.id, pin: hold?.id });
+}
+
+export function setClubAgenda(file: ClubFile, date: string, agenda: string): ClubFile {
+  return patchMeeting(file, date, { agenda: agenda.trim().slice(0, 160) });
+}
+
+export function setClubPin(file: ClubFile, date: string, pin?: string): ClubFile {
+  return patchMeeting(file, date, { pin: pin || undefined });
+}
+
+export function clubAgendaOf(file: ClubFile, date: string): string {
+  return meetingOf(file, date).agenda?.trim() || clubPackOf(file, date).hint;
+}
+
+export function monthKey(iso: string): string {
+  return iso.slice(0, 7);
+}
+
+export function shiftMonth(month: string, dir: -1 | 1): string {
+  const [y, m] = month.split("-").map(Number);
+  const d = new Date(y, m - 1 + dir, 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+export function monthClubGrid(file: ClubFile, month: string) {
+  const start = `${month}-01`;
+  const out: {
+    date: string;
+    dow: number;
+    label: string;
+    n: number;
+    school: boolean;
+    half: boolean;
+    club: boolean;
+    planned: boolean;
+  }[] = [];
+  let d = start;
+  for (let i = 0; i < 32 && d.startsWith(month); i++) {
+    const dow = new Date(`${d}T12:00:00`).getDay();
+    if (dow >= 1 && dow <= 5) {
+      const meet = meetingOf(file, d);
+      out.push({
+        date: d,
+        dow,
+        label: DOW[dow],
+        n: Number(d.slice(8, 10)),
+        school: isSchoolDay(d),
+        half: isHalfDay(d),
+        club: isClubDay(file, d),
+        planned: Boolean(meet.agenda?.trim() || (meet.pack && meet.pack !== "talk") || meet.overlay),
+      });
+    }
+    d = addDaysIso(d, 1);
+  }
+  return out;
+}
+
+export function upcomingClubDays(file: ClubFile, from = todayIso(), n = 10): string[] {
+  const out: string[] = [];
+  for (let i = 0; i <= 220 && out.length < n; i++) {
+    const d = addDaysIso(from, i);
+    if (isClubDay(file, d)) out.push(d);
+  }
+  return out;
+}
+
+export function prevClubDay(file: ClubFile, from: string): string | null {
+  for (let i = 1; i <= 40; i++) {
+    const d = addDaysIso(from, -i);
+    if (isClubDay(file, d)) return d;
+  }
+  return null;
+}
+
 export type ClubPulse = {
   kind: "today" | "live" | "cleanup" | "cancelled" | "next";
   title: string;
@@ -269,7 +488,7 @@ export function clubPulse(file: ClubFile, date = todayIso(), now = new Date()): 
   const clock = clubClock(now);
   const overlay = overlayOn(file, date);
   const o = CLUB_OVERLAY.find((x) => x.n === overlay);
-  const oLine = o ? `Workshop ${o.n} · ${o.title}` : "Choice stations";
+  const oLine = o ? `Workshop ${o.n} · ${o.title}` : clubAgendaOf(file, date);
   const cancelledToday =
     file.skip.includes(date) && file.weekdays.includes(new Date(`${date}T12:00:00`).getDay());
   if (cancelledToday) {
@@ -474,6 +693,8 @@ Meeting Date: ${meet.date}
 All members sign in, then choose: Minecraft · Workshop · Robotics · Computer Time
 Clean up at 3:00pm · Meeting ended at 3:05pm
 Workshop overlay: ${overlay ? `${overlay.n} ${overlay.title}` : "choice only"}
+Agenda: ${meet.agenda?.trim() || "—"}
+Pack: ${meet.pack || "talk"}
 
 Signed in (${meet.rows.filter((r) => r.in).length})
 ${CLUB_STATIONS.map((s) => `  ${s.label}: ${by[s.id].map((r) => r.name).join(", ") || "—"}`).join("\n")}
