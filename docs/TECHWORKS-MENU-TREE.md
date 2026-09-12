@@ -1,7 +1,7 @@
 # TechWorks menu tree
 
 **App v1.80.80 · default “New menu”**  
-PIN = teacher 1111 · Crew override 2222 · Portal 2627 (off by default)  
+Teacher unlock = Set teacher PIN (not 1111). Crew pad is separate. Portal 2627 (off by default)  
 Aliases on the wall. Legal names stay in the vault.
 
 ---

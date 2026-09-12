@@ -120,7 +120,7 @@ export function PinPad({
             ? "Choose 4+ digits. Do not use 1111 or 2222. Crew leads keep 2222."
             : want === "crew"
               ? "Crew lead PIN opens Daily scoring and Our crew only. Teacher PIN still opens Admin."
-              : "Teacher PIN for Admin. Crew leads enter 2222. The wall never shows legal names."}
+              : "Teacher PIN for Admin. Set it once with Set teacher PIN. The wall is shop names only."}
         </p>
         {mode === "in" ? (
           <>

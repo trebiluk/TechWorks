@@ -1,8 +1,16 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.12. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.14. -->
 
 # TechWorks changelog
 
-App version **1.92.12**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.14**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.14 — 2026-09-12
+
+- Diego lock: About / Privacy / wall copy never print 1111 as the teacher unlock. Unlock path is Set teacher PIN. Crew 2222 stays off the student-facing About card.
+
+## 1.92.13 — 2026-09-12
+
+- Punch list: teacher PIN copy is the PIN you set (not 1111). Wall cold-start shows Job, Enter → Listen → Crew work → Clean up, and leftover minutes. Rank Cards is an optional gilded Top XP / Top $ view. Wall / Teach / Deck stay on the top rail. Club says Sign in → Brief → Work → Clean up. Themes paint a full token set — no white walls, hover mixes toward the wall, Projector is a dark high-contrast kit. SchoolTool sleeps on non-school days.
 
 ## 1.92.12 — 2026-09-11
 

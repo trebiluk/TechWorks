@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
 import { isLiveStudent } from "@/lib/economy";
 import { abOn, attendOn, deskBellId, hallOf, happenedOn, lineLeaderOn, onAbRoster, pickLineLeader, setHallShow, setLineLeader, specialsOn, type LinePick } from "@/lib/store";
-import { roleHistoryOf } from "@/lib/roles";
 import { todayIso } from "@/lib/calendar";
 import { formatBell, leftClock, periodClock, periodNow } from "@/lib/bells";
 import { useShopClock } from "@/lib/use-clock";
@@ -64,7 +63,6 @@ export function StudyHallDash({
   const notesOn = hall.showNotes && hall.notes.length > 0;
   const owesOn = hall.showOwes && hall.owes.length > 0;
   const nameOf = (id: string) => kids.find((s) => s.id === id)?.first ?? file.students.find((s) => s.id === id)?.first ?? "friend";
-  const neverLed = here.filter((s) => !roleHistoryOf(file).some((e) => e.role === "line_leader" && e.studentId === s.id)).length;
 
   function play(mode: LinePick) {
     if (!unlocked || !onChange || !here.length) return;
@@ -155,18 +153,18 @@ export function StudyHallDash({
 
       <section className="grid gap-2 lg:grid-cols-[minmax(0,1.2fr)_minmax(12rem,0.7fr)]">
         <article className="rounded-3xl bg-surface px-5 py-4">
-          <p className="text-sm font-semibold text-muted">Helper this week</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted">Helper this week</p>
           <div className="mt-2 flex items-center gap-3">
             {lead && !spin ? (
-              <span className="flex size-14 items-center justify-center rounded-full bg-elevated text-3xl">{avatarOf(lead.icon, lead.id)}</span>
+              <span className="flex size-16 shrink-0 items-center justify-center rounded-full bg-elevated text-4xl">{avatarOf(lead.icon, lead.id)}</span>
             ) : null}
-            <p className={cn("font-display font-semibold tracking-tight", spin ? "text-5xl text-gold sm:text-6xl" : "text-4xl")}>
-              {spin ?? lead?.first ?? "Let’s pick"}
-            </p>
+            <div className="min-w-0">
+              <p className={cn("font-display font-semibold tracking-tight", spin ? "text-5xl text-gold sm:text-6xl" : "text-5xl")}>
+                {spin ?? lead?.first ?? "Let’s pick"}
+              </p>
+              <p className="mt-1 text-lg text-muted">{lead ? "Line leader · one job, kind voice" : "Tap Fair, XP, or Draw"}</p>
+            </div>
           </div>
-          <p className="mt-2 text-sm text-muted">
-            {neverLed ? `${neverLed} friends have not been helper yet.` : "Everyone has had a turn. Fair starts over."}
-          </p>
           {unlocked && onChange ? (
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <Btn kind="do" onClick={() => play("fair")}>Fair</Btn>

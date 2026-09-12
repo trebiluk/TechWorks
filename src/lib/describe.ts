@@ -74,7 +74,7 @@ const CARDS: Record<string, DescribeCard> = {
   },
   portal: {
     title: "Portal",
-    purpose: "Off by default. FERPA view is the wall.",
+    purpose: "Off by default. Shop names only on the wall.",
     links: [{ label: "Help", href: "#help" }],
   },
   skills: {
@@ -84,7 +84,7 @@ const CARDS: Record<string, DescribeCard> = {
   },
   studyhall: {
     title: "Study Hall",
-    purpose: "P6 pad. Productive or peaceful. Helper of the week. Not Tech pay.",
+    purpose: "P6 pad. Productive or peaceful. Helper plate is alias + one line. Not Tech pay.",
     links: [{ label: "Help", href: "#help" }],
   },
   club: {

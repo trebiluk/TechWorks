@@ -56,7 +56,7 @@ export function HouseCard({ id, onClose }: { id: HouseId; onClose: () => void })
             <section className="mt-4 rounded-xl bg-elevated p-3">
               <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Public card</p>
               <p className="mt-1 text-sm">Richard Kulibert · Solvay Tech Ed · TechWorks desk</p>
-              <p className="mt-1 text-xs text-muted">This is the teacher card. It is not a student record. No IEP/504. No wallet.</p>
+              <p className="mt-1 text-xs text-muted">This is the teacher card. It is not a student record. Shop names only on the wall.</p>
             </section>
           )}
           <ul className="mt-4 space-y-1 text-xs text-muted">

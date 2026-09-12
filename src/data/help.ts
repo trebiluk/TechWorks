@@ -178,7 +178,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Roles",
     title: "Teacher path",
     tags: ["teacher", "workflow", "pin", "export"],
-    body: "Wall on. SchoolTool by 8:15 — open the site, then tap I'm in. Goal from the project. Unlock 1111. After the last crew, Looks good (10s check) then Save, which names the cloud. Nurse stamps time. Cleanup coral. Store / prints / lucky need PIN. Writes: marks, attend, passes, ledger, skills, grades, vault.",
+    body: "Wall on. SchoolTool by 8:15 — open the site, then tap I'm in. Goal from the project. Unlock with the PIN you set. After the last crew, Looks good (10s check) then Save, which names the cloud. Nurse stamps time. Cleanup coral. Store / prints / lucky need PIN. Writes: marks, attend, passes, ledger, skills, grades, vault.",
   },
   {
     id: "roles-crew",
@@ -289,7 +289,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Dashboard",
     title: "Projector / Google Site",
     tags: ["embed", "google site", "iframe", "overview", "cleanup"],
-    body: "Settings → Show embed copies an iframe with ?embed=1. That load is Dashboard only: aliases and XP or perks. Coral CLEANUP TIME in the last 5 minutes of a live period. No Crew, no Desk, no last names, no IEP.",
+    body: "Settings → Show embed copies an iframe with ?embed=1. That load is Dashboard only: shop names and XP or perks. Coral CLEANUP TIME in the last 5 minutes of a live period. No Crew, no Desk, no last names.",
     wall: true,
   },
   {

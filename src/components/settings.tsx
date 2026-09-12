@@ -240,11 +240,11 @@ export function SettingsBody({
                 ) : (
                   <>
                     <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">People</h2>
-                    <p className="mt-1 text-sm text-muted">Paste legal names. The wall only gets aliases. IEP/504 stay vault-only.</p>
+                    <p className="mt-1 text-sm text-muted">Paste legal names. The wall only gets shop names. Supports stay vault-only.</p>
                   </>
                 )}
                 <p className="mt-6 text-sm font-medium uppercase tracking-wider text-subtle">Privacy</p>
-                <p className="mt-1 text-sm text-muted">Wall is aliases only. Teacher PIN stays 1111 unless you change it on the lock bar.</p>
+                <p className="mt-1 text-sm text-muted">Wall is shop names only. Teacher PIN is the one you set on the lock bar — Set teacher PIN. Never 1111.</p>
                 <p className="mt-4 text-sm font-medium uppercase tracking-wider text-subtle">Worker portal PIN</p>
                 <p className="mt-1 text-sm text-muted">Only if the portal module is on. Default 2627. Not the teacher PIN.</p>
                 <PinField

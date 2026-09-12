@@ -1,6 +1,7 @@
 import { moveId } from "./sort.ts";
 
-const KEY = "techworks-dash-layout-v11";
+const KEY = "techworks-dash-layout-v12";
+const V11 = "techworks-dash-layout-v11";
 const V10 = "techworks-dash-layout-v10";
 const V9 = "techworks-dash-layout-v9";
 const V8 = "techworks-dash-layout-v8";
@@ -43,21 +44,23 @@ export type DashLayout = {
   nowVisit: boolean;
   nowWeather: boolean;
   rankBtns: boolean;
+  rankCards: boolean;
   layoutOpen: boolean;
 };
 
 const IDS = DASH_ROWS.map((r) => r.id);
 
 export const DEFAULT_LAYOUT: DashLayout = {
-  order: [...IDS],
-  hidden: ["tools", "proc", "mods"],
+  order: ["class", "proc", "now", "strip", "club", "specials", "notes", "kpis", "poll", "mods", "tools"],
+  hidden: ["tools", "mods"],
   schoolN: 10,
-  liveProc: false,
+  liveProc: true,
   nowGoal: true,
   nowBars: true,
   nowVisit: false,
   nowWeather: false,
   rankBtns: false,
+  rankCards: false,
   layoutOpen: false,
 };
 
@@ -112,21 +115,21 @@ function normalize(raw: Partial<DashLayout> | null, flagsFromSave: boolean): Das
     }
   }
   const order = graftDashOrder(saved);
-  const hidden = [...new Set((raw?.hidden ?? []).map(asId).filter((x): x is DashRowId => Boolean(x)))];
+  const hidden = [...new Set((raw?.hidden ?? []).map(asId).filter((x): x is DashRowId => Boolean(x)))].filter((id) => id !== "proc");
   const savedOrder = Array.isArray(raw?.order) ? raw!.order : [];
   if (!savedOrder.includes("tools") && !hidden.includes("tools")) hidden.push("tools");
-  if (!savedOrder.includes("proc") && !hidden.includes("proc")) hidden.push("proc");
   const schoolN = raw?.schoolN === 5 ? 5 : 10;
   return {
     order,
     hidden,
     schoolN,
-    liveProc: flagsFromSave ? flag(raw?.liveProc, false) : false,
+    liveProc: flagsFromSave ? flag(raw?.liveProc, true) : true,
     nowGoal: flagsFromSave ? flag(raw?.nowGoal, false) : false,
     nowBars: flagsFromSave ? flag(raw?.nowBars, false) : false,
     nowVisit: flagsFromSave ? flag(raw?.nowVisit, false) : false,
     nowWeather: flagsFromSave ? flag(raw?.nowWeather, false) : false,
     rankBtns: flagsFromSave ? flag(raw?.rankBtns, false) : false,
+    rankCards: flagsFromSave ? flag(raw?.rankCards, false) : false,
     layoutOpen: flagsFromSave ? flag(raw?.layoutOpen, false) : false,
   };
 }
@@ -145,6 +148,8 @@ export function loadDashLayout(): DashLayout {
   try {
     const cur = window.localStorage.getItem(KEY);
     if (cur) return normalize(JSON.parse(cur) as Partial<DashLayout>, true);
+    const v11 = window.localStorage.getItem(V11);
+    if (v11) return normalize(JSON.parse(v11) as Partial<DashLayout>, true);
     const v10 = window.localStorage.getItem(V10);
     if (v10) {
       const n = normalize(JSON.parse(v10) as Partial<DashLayout>, true);

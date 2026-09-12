@@ -624,7 +624,7 @@ export function clubClock(now = new Date()) {
       phase === "before"
         ? "Club after 10th · 2:40"
         : phase === "arrive"
-          ? "Arrive · glasses on the hook"
+          ? "Sign in · glasses on the hook"
           : phase === "sign"
             ? "Sign in · pick a station"
             : phase === "work"

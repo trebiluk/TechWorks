@@ -3,7 +3,7 @@
 Search in the app: tap **?** in the header. Categories and full text live there; **Download help file** saves this markdown.
 
 ## Start
-PINs: teacher **1111**, crew override **2222**. Menu: Dashboard · Crew · Stocks · Skills · Desk (PIN) · Help.
+PINs: teacher is the PIN you set (not 1111). Crew override **2222**. Menu: Dashboard · Crew · Stocks · Skills · Desk (PIN) · Help.
 
 ## Dashboard
 Ranks = **Level × 1.5 + savings**. Stocks are a separate game. Embed `?embed=1` is the Google Site wall.

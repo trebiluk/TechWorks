@@ -12,7 +12,7 @@ Legend: **PIN** = teacher lock. **Wall** = projector-safe. **Mod** = can be turn
 - **Find** → alias search → profile (PIN for full info)
 - **NOW P# mm:ss** → jump to live period
 - **Wall / Phone** surface toggle
-- **Lock** → PIN 1111 (teacher) / 2222 (crew override)
+- **Lock** → Set teacher PIN (teacher) / Crew lead pad (crew)
 - **Help** (?)
 - **Berty** peek (mod)
 - **Version chip** (v1.80.80)

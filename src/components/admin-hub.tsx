@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { QuarterChip } from "@/components/quarter-chip";
 import { SettingsBody, type AdminPane, type SettingsTab } from "@/components/settings";
 import { traceToday } from "@/lib/workflow";
-import { cycleDayLabel, daySlot, formatSchoolDate, todayIso } from "@/lib/calendar";
+import { cycleDayLabel, daySlot, formatSchoolDate, isSchoolDay, todayIso } from "@/lib/calendar";
 import { currentCycleOf } from "@/lib/roles";
 import { periodTitle, shopBells } from "@/lib/economy";
 import { dueCrews, scoredToday } from "@/lib/crews";
@@ -275,6 +275,8 @@ export function AdminHub({
             <p className="mt-3 text-sm text-muted">Pin a meeting on the right.</p>
           )}
           <div className="mt-3 flex flex-wrap gap-2">
+            {isSchoolDay(today) ? (
+              <>
             <a
               href={SCHOOLTOOL_URL}
               target="_blank"
@@ -282,7 +284,7 @@ export function AdminHub({
               onClick={() => markSchooltoolOpened(today)}
               className={cn("inline-flex min-h-11 items-center rounded-xl px-3 text-sm font-semibold", !st ? "bg-loss text-accent-fg" : "bg-elevated text-muted")}
             >
-              SchoolTool {st ? "open" : "open · by 8:15"}
+              SchoolTool {st ? "in" : "open · by 8:15"}
             </a>
             <button
               type="button"
@@ -291,6 +293,10 @@ export function AdminHub({
             >
               {st ? "Undo in" : "I'm in"}
             </button>
+              </>
+            ) : (
+              <p className="self-center text-sm text-muted">No school today · SchoolTool sleeps</p>
+            )}
             {classMine ? (
               <button type="button" onClick={() => onScoreCrew(shown)} className="min-h-11 rounded-md bg-accent px-3 text-sm font-semibold text-accent-fg">
                 Score P{shown}

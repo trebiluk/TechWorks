@@ -25,7 +25,7 @@ import { paintCleanup, periodNow, SCHOOLTOOL_URL } from "@/lib/bells";
 import { CleanupStage } from "@/components/cleanup-wall";
 import { NowDock } from "@/components/now-dock";
 import { NextJobChip } from "@/components/next-job";
-import { installLayoutWatch, surfaceOf, useLayout } from "@/lib/layout";
+import { installLayoutWatch, isPhone, surfaceOf, useLayout } from "@/lib/layout";
 import { PhoneDock } from "@/components/phone-dock";
 import { applyTheme, applyVibe, paintContrast, storedContrast, storedTheme, storedVibe } from "@/lib/theme";
 import { bootLang } from "@/lib/i18n";
@@ -530,11 +530,19 @@ export function Board() {
               { id: "store", label: t("Store"), on: view === "store", onClick: () => go("store"), hidden: !featureOn(file, "store") },
             ];
 
+  const dashPins: NavTab[] = [
+    { id: "wall", label: t("Wall"), on: view === "overview", onClick: () => go("overview") },
+    { id: "teach", label: t("Teach"), on: view === "teach" || view === "polls", onClick: () => go("teach"), hidden: !featureOn(file, "teach") },
+    { id: "deck", label: t("Deck"), on: view === "deck", onClick: () => go("deck") },
+  ];
+  const restTabs = v2Tabs.filter((tab) => tab.id !== "wall" && tab.id !== "teach" && tab.id !== "deck");
+  const headerTabs: NavTab[] = [...dashPins, ...restTabs];
+
   const appStrip = !crewOn ? (
     <AppNav
       section={section}
       onSection={goSection}
-      tabs={section === "admin" && view === "admin" ? [] : v2Tabs}
+      tabs={headerTabs}
       unlocked={unlocked}
       hideSections
     />
@@ -603,13 +611,13 @@ export function Board() {
         <>
         <header className="desk-chrome tw-gadget tw-hud mb-1 min-w-0">
             <div className="nav-cluster flex min-w-0 items-center gap-1">
-              <button type="button" onClick={() => go("overview")} title="FERPA wall · aliases only" className="shrink-0">
+              <button type="button" onClick={() => go("overview")} title="Shop names only" className="shrink-0">
                 <TwWordmark />
               </button>
               <div className="min-w-0 flex-1">{appStrip}</div>
               <div className="tw-hud-row relative z-20 shrink-0">
                 {unlocked ? (
-                  <div className="relative hidden md:block">
+                  <div className="relative hidden xl:block" data-find-box>
                     <Search className="pointer-events-none absolute left-2 top-2.5 size-3.5 text-subtle" />
                     <input
                       data-find
@@ -671,8 +679,8 @@ export function Board() {
                 />
                 <button
                   type="button"
-                  title="Settings"
-                  aria-label="Settings"
+                  title="Edit this screen"
+                  aria-label="Edit this screen"
                   onClick={() => {
                     if (!unlocked) {
                       askPin();
@@ -754,7 +762,7 @@ export function Board() {
       ) : null}
       <div className="board-main flex min-h-0 flex-1 flex-col overflow-hidden">
       <CleanupStage file={wallFile} unlocked={unlocked} onChange={commitDesk} off={view !== "overview"}>
-      <Suspense fallback={<p className="px-3 py-8 text-center text-sm text-gold">{t("Loading wall…")}</p>}>
+      <Suspense fallback={null}>
       {view === "roster" && unlocked ? (
         <RosterWall
           file={wallFile}
@@ -944,7 +952,7 @@ export function Board() {
       </Suspense>
       </CleanupStage>
       </div>
-      {embed || portalMode || (crewOn && view === "crew") ? null : (
+      {embed || portalMode || (crewOn && view === "crew") || !isPhone() ? null : (
         <PhoneDock
           view={view === "skills" && learnStart === "projects" ? "projects" : view}
           pad={deskPad}

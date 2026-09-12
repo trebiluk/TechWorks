@@ -320,11 +320,36 @@ export const Dashboard = memo(function Dashboard({
               </li>
             )
           ) : null}
+          {ranked.some((s) => s.xp > 0 || s.quarter > 0) && layout.rankCards ? (
+            <ol className="mb-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
+              {ranked.slice(0, 3).map((s, i) => (
+                <li key={`star-${s.id}`}>
+                  <button
+                    type="button"
+                    onClick={() => onOpenId(s.id)}
+                    className={cn(
+                      "flex min-h-24 w-full flex-col justify-center rounded-xl px-3 py-3 text-left",
+                      i === 0 ? "bg-gold text-bg" : i === 1 ? "bg-accent text-accent-fg" : "bg-elevated",
+                    )}
+                  >
+                    <span className="font-mono text-[11px] font-bold uppercase tracking-widest opacity-80">Top {i + 1}</span>
+                    <span className="font-display text-2xl font-semibold leading-none">{s.first}</span>
+                    <span className="mt-1 font-mono text-sm tabular-nums">
+                      {rankBoard === "perk" ? `$${Math.round(s.quarter)}` : `${s.xp} XP`}
+                      <span className="ml-1 opacity-70">P{s.period}</span>
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          ) : null}
           {ranked.some((s) => s.xp > 0 || s.quarter > 0)
-            ? ranked.slice(0, layout.schoolN).map((s, i) => (
+            ? ranked.slice(layout.rankCards ? 3 : 0, layout.schoolN).map((s, i) => {
+            const n = (layout.rankCards ? 3 : 0) + i;
+            return (
             <li key={s.id}>
-              <button type="button" onClick={() => onOpenId(s.id)} className={cn("flex w-full min-h-9 items-center gap-2 rounded-md px-2 text-left hover:bg-elevated", i === 0 && "tw-podium")}>
-                <span className={cn("grid size-6 place-items-center rounded-full font-mono text-xs font-bold", i === 0 ? "bg-gold text-bg" : i < 3 ? "bg-accent text-accent-fg" : "tw-readout")}>{i + 1}</span>
+              <button type="button" onClick={() => onOpenId(s.id)} className={cn("flex w-full min-h-9 items-center gap-2 rounded-md px-2 text-left hover:bg-elevated", n === 0 && "tw-podium")}>
+                <span className={cn("grid size-6 place-items-center rounded-full font-mono text-xs font-bold", n === 0 ? "bg-gold text-bg" : n < 3 ? "bg-accent text-accent-fg" : "tw-readout")}>{n + 1}</span>
                 <span className="min-w-0 flex-1 truncate text-sm font-semibold">
                   {s.first}
                   <span className="ml-1 font-normal text-muted">P{s.period}</span>
@@ -333,7 +358,8 @@ export const Dashboard = memo(function Dashboard({
                 {rankBoard === "perk" || s.quarter ? <PerkBit n={s.quarter} hot /> : null}
               </button>
             </li>
-          ))
+            );
+            })
             : null}
         </ol>
       </article>
@@ -363,7 +389,7 @@ export const Dashboard = memo(function Dashboard({
   function plateOf(id: DashRowId) {
     if (id === "now") return nowCard;
     if (id === "class") return classCard;
-    if (id === "proc") return <ProcedureCue step={step} passing={passing} bot={bertyOn} />;
+    if (id === "proc") return <ProcedureCue step={step} passing={passing} bot={bertyOn} left={clock?.live ? Math.max(0, Math.ceil(clock.left)) : undefined} cleanup={Boolean(clock?.cleanup)} />;
     if (id === "strip") return stripCard;
     if (id === "club") {
       if (!pulse) return sortOn ? ghost(t("Club")) : null;
@@ -490,6 +516,9 @@ function LayoutBar({
         </MarkChip>
         <MarkChip mark={Trophy} title="Top list" on={layout.schoolN === 10} onClick={() => dash.setSchoolN(layout.schoolN === 5 ? 10 : 5)}>
           Top {layout.schoolN}
+        </MarkChip>
+        <MarkChip mark={Trophy} title="Rock-star cards" on={layout.rankCards} onClick={() => dash.setFlag("rankCards", !layout.rankCards)}>
+          Cards
         </MarkChip>
         <MarkChip mark={RotateCcw} title="Reset wall" onClick={() => dash.reset()}>
           Reset

@@ -12,7 +12,7 @@ Richard Kulibert, Solvay Middle School, Tech 6/7/8 + Period 6 Study Hall.
 
 - **Projector** (Dashboard) stays up all day. Kids see it. FERPA.
 - **Desk** (Score) is the teacher pad. Fast taps. One screen.
-- **Admin** is PIN-only (1111). Crew override 2222.
+- **Admin** is PIN-only (the PIN the teacher set). Crew override 2222. Never print 1111 as the teacher unlock.
 - He talks in prompts, not tickets. `GO` / `PEACOCK` = build. `PAUSED` / `don’t work` / `read prompts` = intent only, wait.
 
 Do **not** invent Flo, GrokBot, GitHub, hosting, or paid APIs unless he asks.
@@ -43,7 +43,7 @@ If the ask is large, show a 5-line plan and wait unless he already said GO.
 | Rank | Combo = **1.5 × skill + wallet**. Stocks are a **separate game**. |
 | Shop vs SH | Shop = P1, P2, P3, P8, P9, P10. **P6 never contaminates shop XP, effort, or leaderboards.** SH has its own dash. |
 
-PINs: teacher `1111`, crew override `2222`. Keep them.
+PINs: teacher is the PIN they set (1111 is rejected). Crew override `2222`.
 
 ---
 

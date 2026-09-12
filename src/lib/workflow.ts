@@ -48,7 +48,7 @@ export const ROLE_PATHS: {
   {
     id: "teacher",
     title: "Teacher",
-    who: "Unlock desk · PIN 1111",
+    who: "Unlock desk · the PIN you set",
     steps: [
       "Projector on the wall",
       "SchoolTool by 8:15",

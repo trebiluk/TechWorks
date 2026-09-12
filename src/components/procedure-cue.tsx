@@ -10,11 +10,15 @@ export function ProcedureCue({
   passing,
   compact,
   bot = true,
+  left,
+  cleanup,
 }: {
   step: ProcedureId;
   passing?: boolean;
   compact?: boolean;
   bot?: boolean;
+  left?: number;
+  cleanup?: boolean;
 }) {
   const { t } = useLang();
   const pose = bertyPose({ passing, slot: step, cleanup: step === "clean" });
@@ -26,7 +30,8 @@ export function ProcedureCue({
       {bot ? <Berty pose={pose} size={compact ? "sm" : "lg"} className="tw-proc-bot shrink-0" /> : null}
       <div className="min-w-0 flex-1">
         <p className={cn("font-semibold uppercase tracking-wider text-accent", compact ? "text-[11px]" : "tw-fill-label")}>
-          {passing ? t("Between classes") : t("Do this now")}
+          {passing ? t("Between classes") : cleanup ? t("Cleanup") : t("Do this now")}
+          {left != null ? <span className="ml-2 font-mono text-fg tabular-nums">{left}m</span> : null}
         </p>
         <ol data-proc-steps={compact ? "2" : "4"} className="mt-1">
           {DAILY_PROCEDURE.map((s) => {

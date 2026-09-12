@@ -52,7 +52,7 @@ export const HOUSE: Record<HouseId, HouseProfile> = {
     notes: [
       "© 2026 Richard Kulibert. TECHWORKS™.",
       "Google Sheets stays the archive.",
-      "Teacher PIN 1111. Crew override 2222.",
+      "Unlock the desk with the teacher PIN you set.",
     ],
     tags: ["mr k", "mr. k", "kulibert", "teacher", "richard", "solvay"],
   },
