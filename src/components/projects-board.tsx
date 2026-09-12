@@ -381,7 +381,10 @@ function JobWrite({
 }) {
   const acts = activitiesOf(project);
   return (
-    <div className="tw-gadget mx-auto max-w-3xl space-y-3 p-3 pb-6">
+    <div
+      className="tw-gadget mx-auto max-w-3xl space-y-3 p-3 pb-6"
+      onKeyDown={(e) => e.stopPropagation()}
+    >
       <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">{prettyStage(acts[0]?.goal ?? "Idea")} · student-facing</p>
       <p className="text-sm text-muted">These lines hit the wall. How many days each activity holds is on Plan.</p>
       {unlocked ? (
@@ -420,6 +423,7 @@ function JobWrite({
                   .filter(Boolean),
               })
             }
+            onKeyDown={(e) => e.stopPropagation()}
             className="mt-1 min-h-11 w-full rounded-md bg-elevated px-3 text-sm font-normal normal-case tracking-normal text-fg outline-none"
           />
         </label>

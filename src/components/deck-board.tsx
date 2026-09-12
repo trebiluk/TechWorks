@@ -8,6 +8,7 @@ import { DECK, type DeckCard, type DeckKind, type DeckSlide } from "@/data/deck"
 import { blankSlide, cloneDeck, copyDeckToQuarter, DECK_QUARTERS, downloadDeck, hasQuarterDeck, liveDeckQuarter, loadDeck, loadQuarterDeck, resetDeck, saveDeck, saveQuarterDeck, sanitizeSlide, setLiveDeckQuarter, type DeckQuarter } from "@/lib/deck-store";
 import { quarterNow, todayIso } from "@/lib/calendar";
 import { cn } from "@/lib/utils";
+import { isTypingTarget } from "@/lib/keys";
 
 const FILE = "/TechWorks-Deck.pptx";
 const KINDS: DeckKind[] = ["title", "cards", "steps", "ladder", "letters", "now", "blank", "close"];
@@ -401,16 +402,8 @@ export function DeckBoard({
   );
 
   useEffect(() => {
-    function typing(e: KeyboardEvent) {
-      const el = (e.target as HTMLElement | null) ?? (document.activeElement as HTMLElement | null);
-      if (!el) return false;
-      const tag = el.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
-      if (el.isContentEditable) return true;
-      return Boolean(el.closest?.("input, textarea, select, [contenteditable='true'], [contenteditable='']"));
-    }
     function onKey(e: KeyboardEvent) {
-      if (typing(e)) return;
+      if (isTypingTarget(e)) return;
       if (liveEdit && (e.key === " " || e.code === "Space")) return;
       if (e.key === "ArrowRight" || e.key === " " || e.code === "Space" || e.key === "PageDown") {
         e.preventDefault();

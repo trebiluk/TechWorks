@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.15 — 2026-09-12
+
+- Space and letter hotkeys no-op in typing fields (input, textarea, contenteditable, role=textbox), including Projects → Write the job → Rules. Deck still advances on Space only when you are not typing.
+
 ## 1.92.14 — 2026-09-12
 
 - Diego lock: About / Privacy / wall copy never print 1111 as the teacher unlock. Unlock path is Set teacher PIN. Crew 2222 stays off the student-facing About card.

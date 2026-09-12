@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.14. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.15. -->
 
 # TechWorks changelog
 
-App version **1.92.14**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.15**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.15 — 2026-09-12
+
+- Space and letter hotkeys no-op in typing fields (input, textarea, contenteditable, role=textbox), including Projects → Write the job → Rules. Deck still advances on Space only when you are not typing.
 
 ## 1.92.14 — 2026-09-12
 
