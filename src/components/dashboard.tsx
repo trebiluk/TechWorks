@@ -237,12 +237,12 @@ export const Dashboard = memo(function Dashboard({
           </p>
         </div>
       </div>
-      {!clock?.live ? (
+      {!clock?.live && arrange ? (
         <div className="mt-auto pt-2">
           <ProgressTrio cycle={cyc} quarter={qtr} year={yr} />
         </div>
       ) : null}
-      {featureOn(file, "weather") && live == null ? <div className="mt-2"><WeatherChip /></div> : null}
+      {arrange && featureOn(file, "weather") && live == null ? <div className="mt-2"><WeatherChip /></div> : null}
     </article>
   );
 
@@ -302,7 +302,7 @@ export const Dashboard = memo(function Dashboard({
     <section data-kpis>
       <article className="tw-gadget tw-hud p-3">
         <div className="mb-1 flex items-center gap-2">
-          <p className="font-display text-sm font-semibold">{ranked.some((s) => s.xp > 0 || s.quarter > 0) ? `${t("School")} · top ${layout.schoolN}` : t("In the shop")}</p>
+          <p className="font-display text-sm font-semibold">{ranked.some((s) => s.xp > 0 || s.quarter > 0) ? `${t("School")} · top ${layout.schoolN}` : t("Hold the lead")}</p>
           {arrange ? (
           <button type="button" onClick={() => onRankBoard(rankBoard === "skill" ? "perk" : "skill")} className="tw-btn-2 ml-auto inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 text-[11px] font-semibold">
             {rankBoard === "skill" ? <Trophy className="size-3.5" aria-hidden /> : <Coins className="size-3.5" aria-hidden />}
@@ -313,10 +313,10 @@ export const Dashboard = memo(function Dashboard({
         <ol className="grid grid-cols-1 gap-0.5 sm:grid-cols-2">
           {!ranked.some((s) => s.xp > 0 || s.quarter > 0) ? (
             unlocked ? (
-              <li className="px-2 py-2 text-sm text-muted sm:col-span-2">{arrange ? t("Aliases score here.") : `${t("This desk lives on the shop PC.")} ${t("Open that computer to see the class.")}`}</li>
+              <li className="px-2 py-2 text-sm text-muted sm:col-span-2">{arrange ? t("Aliases score here.") : t("Hold the lead")}</li>
             ) : (
               <li className="px-2 py-2 text-sm text-muted sm:col-span-2">
-                {t("This desk lives on the shop PC.")} {t("Open that computer to see the class.")}
+                {t("Hold the lead")}
               </li>
             )
           ) : null}
@@ -364,6 +364,8 @@ export const Dashboard = memo(function Dashboard({
         </ol>
       </article>
       <article className="tw-gadget tw-hud p-3">
+        {arrange ? (
+          <>
         <p className="text-[11px] font-semibold uppercase tracking-wider text-subtle">{t("Year")}</p>
         {onHelp ? (
           <button type="button" onClick={onHelp} className="tw-tap text-left text-xs font-semibold uppercase tracking-wider text-accent">
@@ -371,6 +373,8 @@ export const Dashboard = memo(function Dashboard({
           </button>
         ) : null}
         <ProgressTrio cycle={cyc} quarter={qtr} year={yr} />
+          </>
+        ) : null}
         {featureOn(file, "reward") ? <RewardBar file={file} period={shown} /> : null}
       </article>
     </section>
@@ -407,6 +411,7 @@ export const Dashboard = memo(function Dashboard({
           unlocked={unlocked}
           period={shown}
           onOpen={onOpenMod}
+          compact={!arrange}
         />
       );
     }
@@ -485,6 +490,9 @@ export const Dashboard = memo(function Dashboard({
           })}
         </SortableList>
       </div>
+      {!arrange && bertyOn && !clock?.cleanup ? (
+        <Berty pose="standing" size="md" className="pointer-events-none absolute bottom-1 left-2 z-10 opacity-90" />
+      ) : null}
     </div>
   );
 });
@@ -604,7 +612,7 @@ function GoalsCard({
   return (
     <div data-goals className="relative flex min-h-0 flex-1 flex-col">
       {cleanup ? <Berty pose="point" size="sm" alert className="absolute -top-1 right-0 z-10" /> : null}
-      {berty ? <BertyPeek pose={bertyPose({ live: true, slot: "work" })} className="absolute -top-1 right-0 z-10" /> : null}
+      {berty && edit ? <BertyPeek pose={bertyPose({ live: true, slot: "work" })} className="absolute -top-1 right-0 z-10" /> : null}
       <JobCard
         job={job}
         period={shown}
@@ -619,7 +627,7 @@ function GoalsCard({
           {todayHit.blank ? ` · ${todayHit.blank} ${t("left")}` : ""}
         </p>
       ) : desk && todayHit.n === 0 ? (
-        <p className="mt-2 text-xs text-muted">{t("This desk lives on the shop PC.")}</p>
+        <p className="mt-2 text-xs text-muted">{t("Scores live on this desk.")}</p>
       ) : null}
       {lanes.length ? (
         sameStage || !desk ? (

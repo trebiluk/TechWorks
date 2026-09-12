@@ -81,24 +81,33 @@ function CleanupWall({
       role="dialog"
       aria-label="Cleanup"
     >
-      <header className={cn("flex shrink-0 items-center gap-3", phone ? "gap-2" : "")}>
-        <Berty pose="point" size={phone ? "sm" : "md"} alert />
+      <div className={cn("flex shrink-0 items-end gap-3", phone ? "gap-2" : "gap-5")}>
+        <Berty pose="point" size={phone ? "lg" : "xl"} alert />
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em]">
-            Cleanup · P{live}
+          <p className={cn("font-black uppercase tracking-[0.18em]", phone ? "text-sm" : "text-xl")}>
+            Clean up now · P{live}
             {nxt ? ` · next P${nxt.period} ${formatBell(nxt.start)}` : " · last bell"}
           </p>
-          <h1 className={cn("font-display font-semibold leading-none tracking-tight", phone ? "text-4xl" : "text-6xl")}>
-            {hall ? "Hall tidy" : "Jobs now"}
-          </h1>
-          {sub ? <p className={cn("mt-1 truncate", phone ? "text-base" : "text-2xl")}>{sub}</p> : null}
+          <p
+            className={cn(
+              "font-display font-semibold tabular-nums leading-none tracking-tight",
+              phone ? "text-6xl" : "text-[clamp(5.5rem,16vmin,10rem)]",
+              clock.left < 60 ? "tw-blink" : "",
+            )}
+          >
+            {tick.label}
+          </p>
+          <p className={cn("mt-1 font-bold uppercase tracking-widest", phone ? "text-sm" : "text-2xl")}>
+            Left · cleanup score is live
+          </p>
+          {sub ? <p className={cn("mt-1 truncate opacity-90", phone ? "text-sm" : "text-xl")}>{sub}</p> : null}
         </div>
-        <ProgressRing pct={pct} label={tick.label} sub="left" tone="warn" size="md" live />
-      </header>
+        <ProgressRing pct={pct} label={tick.label} sub="left" tone="warn" size="lg" live />
+      </div>
 
-      <div className={cn("mt-3 min-h-0 flex-1 gap-3", phone || hall ? "flex flex-col overflow-auto" : "grid grid-cols-2")}>
+      <div className={cn("mt-4 min-h-0 flex-1 gap-3", phone || hall ? "flex flex-col overflow-auto" : "grid min-h-0 grid-cols-2")}>
         {hall ? (
-          <JobCard title="Study hall" jobs={HALL_JOBS} phone={phone} />
+          <JobCard title="Hall tidy" jobs={HALL_JOBS} phone={phone} />
         ) : (
           <>
             <JobCard title="Workshop" kicker="Still in the shop" jobs={WORKSHOP_JOBS} phone={phone} />
@@ -107,13 +116,13 @@ function CleanupWall({
         )}
       </div>
 
-      <footer className="mt-2 shrink-0 rounded-xl bg-black/25 px-2 py-2">
+      <footer className="mt-3 shrink-0 rounded-xl bg-black/30 px-3 py-3">
         <div className="flex items-center gap-2">
-          <p className="min-w-0 flex-1 truncate text-[11px] font-bold uppercase tracking-widest">
-            Extra tidy · +${CLEANUP_CASH} cash · not XP
+          <p className={cn("min-w-0 flex-1 font-black uppercase tracking-widest", phone ? "text-xs" : "text-base")}>
+            Extra tidy · +${CLEANUP_CASH} cash · not XP · go get caught
           </p>
           {unlocked ? (
-            <button type="button" onClick={onDesk} className="tw-tap min-h-10 shrink-0 rounded-md bg-black/30 px-3 text-xs font-semibold uppercase tracking-widest">
+            <button type="button" onClick={onDesk} className="tw-tap min-h-10 shrink-0 rounded-md bg-black/40 px-3 text-xs font-semibold uppercase tracking-widest">
               Desk
             </button>
           ) : null}
@@ -131,7 +140,7 @@ function CleanupWall({
                   onClick={() => !maxed && onChange(grantCleanupCatch(file, s.id, today))}
                   className={cn(
                     "tw-tap min-h-11 shrink-0 rounded-full px-3 text-sm font-semibold",
-                    maxed ? "bg-black/40 opacity-70" : "bg-black/30",
+                    maxed ? "bg-black/50 opacity-70" : "bg-black/35",
                   )}
                 >
                   {s.first}
@@ -141,7 +150,7 @@ function CleanupWall({
             })}
           </div>
         ) : (
-          <p className="mt-1 text-sm opacity-90">Go extra. Teacher pays cash when they catch you.</p>
+          <p className={cn("mt-1 font-semibold", phone ? "text-sm" : "text-lg")}>Go extra. Teacher pays cash when they catch you cleaning.</p>
         )}
       </footer>
     </section>
@@ -164,11 +173,11 @@ function JobCard({
   return (
     <div className={cn("flex min-h-0 flex-1 flex-col rounded-xl bg-black/20 px-4 py-4", className)}>
       {kicker ? <p className="text-xs font-bold uppercase tracking-[0.16em] opacity-80">{kicker}</p> : null}
-      <h2 className={cn("font-display font-semibold leading-none", phone ? "text-2xl" : "text-5xl")}>{title}</h2>
-      <ol className={cn("mt-3 min-h-0 flex-1", phone ? "space-y-2" : "space-y-3")}>
+      <h2 className={cn("font-display font-semibold leading-none", phone ? "text-3xl" : "text-6xl")}>{title}</h2>
+      <ol className={cn("mt-3 min-h-0 flex-1", phone ? "space-y-2" : "space-y-4")}>
         {jobs.map((j, i) => (
-          <li key={j} className={cn("flex gap-3", phone ? "text-lg leading-snug" : "text-3xl leading-snug")}>
-            <span className={cn("shrink-0 font-mono opacity-70", phone ? "w-6 text-sm" : "w-8 text-xl")}>{i + 1}</span>
+          <li key={j} className={cn("flex gap-3 font-semibold", phone ? "text-xl leading-snug" : "text-4xl leading-snug")}>
+            <span className={cn("shrink-0 font-mono opacity-80", phone ? "w-6 text-base" : "w-10 text-3xl")}>{i + 1}</span>
             <span>{j}</span>
           </li>
         ))}

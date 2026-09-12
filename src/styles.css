@@ -227,6 +227,14 @@ html[data-edit="on"] .edit-field {
   width: 3.05rem;
   height: 3.05rem;
 }
+.tw-ring-lg {
+  width: clamp(8rem, 22vmin, 14rem);
+  height: clamp(8rem, 22vmin, 14rem);
+}
+.tw-ring-lg > i {
+  width: 72%;
+  height: 72%;
+}
 .tw-ring-gold { --ring: var(--color-gold); }
 .tw-ring-gain { --ring: var(--color-gain); }
 .tw-ring-warn { --ring: var(--color-cleanup); }
@@ -441,6 +449,26 @@ html[data-theme="forest"] {
   --color-crew: #0e2e24;
   --color-crew-card: #18463a;
   --color-crew-hi: #8aebc8;
+}
+
+html[data-theme="oswego"] {
+  --color-bg: #08140c;
+  --color-surface: #102418;
+  --color-elevated: #183224;
+  --color-fg: #e4efe6;
+  --color-muted: #a3c4b0;
+  --color-subtle: #6e917c;
+  --color-accent: #fdae3f;
+  --color-accent-fg: #08140c;
+  --color-gold: #fdae3f;
+  --color-gain: #5ee9a0;
+  --color-loss: #ff2b3a;
+  --color-cleanup: #ff6a45;
+  --color-teacher: #4a1820;
+  --color-teacher-card: #6a2430;
+  --color-crew: #235937;
+  --color-crew-card: #2c6b42;
+  --color-crew-hi: #fdae3f;
 }
 
 html[data-theme="highvis"] {
@@ -1099,6 +1127,10 @@ html[data-contrast="high"] {
   .tw-fill .tw-ring-md {
     width: clamp(4.2rem, 24cqh, 8rem);
     height: clamp(4.2rem, 24cqh, 8rem);
+  }
+  .tw-fill .tw-ring-lg {
+    width: clamp(7rem, 32cqh, 14rem);
+    height: clamp(7rem, 32cqh, 14rem);
   }
   .tw-fill .tw-readout {
     font-size: clamp(0.7rem, 4.5cqh, 1.35rem);

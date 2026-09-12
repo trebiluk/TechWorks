@@ -13,6 +13,7 @@ export const THEMES = [
   { id: "night", label: "Night Shift", group: "solvay", kind: "dark", swatch: "#0a0a0b", fg: "#f4f4f5", gold: "#e8c547" },
   { id: "ink", label: "Ink", group: "solvay", kind: "dark", swatch: "#050505", fg: "#fafafa", gold: "#e8c547" },
   { id: "forest", label: "Pine", group: "solvay", kind: "dark", swatch: "#0c1a14", fg: "#e7f6ee", gold: "#86efac" },
+  { id: "oswego", label: "Oswego", group: "solvay", kind: "dark", swatch: "#08140c", fg: "#e4efe6", gold: "#FDAE3F" },
   { id: "daylight", label: "Daylight", group: "day", kind: "light", swatch: "#c8d2e4", fg: "#0b1a40", gold: "#c2410c" },
   { id: "manila", label: "Manila", group: "day", kind: "light", swatch: "#e2d0ae", fg: "#3f2a14", gold: "#b45309" },
   { id: "polar", label: "Polar", group: "day", kind: "light", swatch: "#c5d4e4", fg: "#111827", gold: "#1d4ed8" },

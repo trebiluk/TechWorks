@@ -82,6 +82,7 @@ export function DataBoard({
   const [chart, setChart] = useState<"bar" | "line">("bar");
   const [sort, setSort] = useState<SortKey>("level");
   const ranked = applySort(decorateRank(src, cards), sort);
+  const [sheet, setSheet] = useState(false);
   const [id, setId] = useState(cards[0]?.id ?? "");
   const [copied, setCopied] = useState("");
   const [bookBusy, setBookBusy] = useState(false);
@@ -89,6 +90,14 @@ export function DataBoard({
   const card = cards.find((c) => c.id === id) ?? cards[0] ?? null;
   const shown = ranked.filter((s) => !q.trim() || s.first.toLowerCase().includes(q.trim().toLowerCase()) || String(s.period) === q.trim());
 
+  const presets = useMemo(() => {
+    const kids = cards;
+    const lead = kids.filter((s) => s.rankSchool === 1);
+    const behind = kids.filter((s) => s.rankPeriod > 1);
+    const need3 = kids.filter((s) => (s.counts["3"] ?? 0) === 0);
+    const wallet = [...kids].sort((a, b) => b.quarter - a.quarter).slice(0, 3);
+    return { lead, behind, need3, wallet };
+  }, [cards]);
   const weeks = useMemo(() => weeklyTrend(src, mixSh), [src, mixSh]);
   const chartRows =
     chart === "line"
@@ -174,6 +183,27 @@ export function DataBoard({
           </ul>
         ) : null}
       </header>
+
+      <div className="grid shrink-0 grid-cols-2 gap-2 sm:grid-cols-4">
+        {(
+          [
+            { id: "lead", label: "Hold the lead", n: presets.lead.length, pick: presets.lead[0]?.id },
+            { id: "behind", label: "Behind", n: presets.behind.length, pick: presets.behind[0]?.id },
+            { id: "need3", label: "Needs a 3", n: presets.need3.length, pick: presets.need3[0]?.id },
+            { id: "wallet", label: "Wallet", n: presets.wallet.length, pick: presets.wallet[0]?.id },
+          ] as const
+        ).map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            onClick={() => p.pick && setId(p.pick)}
+            className={cn("tw-gadget tw-tap p-3 text-left", id && p.pick === id ? "ring-1 ring-gold" : "")}
+          >
+            <p className="text-[11px] font-bold uppercase tracking-wider text-muted">{p.label}</p>
+            <p className="font-display text-2xl font-semibold tabular-nums">{p.n}</p>
+          </button>
+        ))}
+      </div>
 
       <div className="flex flex-wrap items-center gap-1">
         <span className="pr-1 text-xs font-medium uppercase tracking-wider text-subtle">Show</span>
@@ -309,6 +339,15 @@ export function DataBoard({
             </table>
           </div>
           <div className="mt-2 flex flex-wrap gap-1">
+            <button
+              type="button"
+              onClick={() => setSheet((v) => !v)}
+              className={cn("tw-tap min-h-9 rounded-full px-3 text-xs font-semibold", sheet ? "bg-gold text-bg" : "bg-elevated text-muted")}
+            >
+              {sheet ? "Sheets on" : "Sheets"}
+            </button>
+            {sheet ? (
+              <>
             <CopyBtn label={copied === "log" ? "Copied" : "LOG"} onClick={() => void copy("log")} />
             <CopyBtn label={copied === "master" ? "Copied" : "MASTER"} onClick={() => void copy("master")} />
             <CopyBtn label={copied === "ledger" ? "Copied" : "Ledger"} onClick={() => void copy("ledger")} />
@@ -323,6 +362,8 @@ export function DataBoard({
                   .finally(() => setBookBusy(false));
               }}
             />
+              </>
+            ) : null}
           </div>
         </aside>
       ) : null}

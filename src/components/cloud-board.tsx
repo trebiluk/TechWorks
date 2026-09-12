@@ -24,11 +24,11 @@ import { cn } from "@/lib/utils";
 
 const LINE: Record<CloudStatus, string> = {
   off: "Cloud is off until this desk saves once.",
-  "this-pc": "This host still saves on the PC only. Room pipe is not bound yet.",
+  "this-pc": "This desk still saves here only. Room pipe is not bound yet.",
   saving: "Writing to the internet…",
   saved: "Saving to the internet whenever this desk saves.",
-  behind: "Cloud is newer. Pull to replace this PC.",
-  error: "Cloud missed a write. This PC is still saved.",
+  behind: "Cloud is newer. Pull to replace this desk.",
+  error: "Cloud missed a write. This desk is still saved.",
   "need-key": "Paste the desk key from the other room.",
 };
 
@@ -103,7 +103,7 @@ export function CloudBoard({
       <div className="rounded-xl bg-elevated px-4 py-3 ring-1 ring-border">
         <p className="text-[11px] font-bold uppercase tracking-wide text-subtle">Desk key</p>
         <p className="mt-1 font-mono text-xl font-bold tracking-[0.2em]">{key ? (hide ? "••••-••••" : formatDeskKey(key)) : "—"}</p>
-        <p className="mt-2 text-sm text-muted">Same key on every shop PC. Not a student PIN. Names in the cloud are locked with this key.</p>
+        <p className="mt-2 text-sm text-muted">Same key on every desk. Not a student PIN. Names in the cloud are locked with this key.</p>
         <div className="mt-3 flex flex-wrap gap-1">
           <button type="button" onClick={() => setHide((v) => !v)} className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-bg px-3 text-sm font-semibold">
             {hide ? <Eye className="size-4" aria-hidden /> : <EyeOff className="size-4" aria-hidden />}

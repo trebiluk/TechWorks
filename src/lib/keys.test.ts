@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { isTypingNode, isTypingTarget, TYPING_SELECTOR } from "./keys.ts";
+import { isTypingKey, isTypingNode, isTypingTarget, TYPING_SELECTOR } from "./keys.ts";
 
 type Fake = {
   tagName?: string;
@@ -61,6 +61,13 @@ describe("isTypingTarget", () => {
     const box = fake({ tagName: "DIV", attrs: { role: "textbox" } });
     const child = fake({ tagName: "SPAN", parent: box });
     assert.equal(isTypingTarget({ target: child as unknown as EventTarget }), true);
+  });
+
+  it("Space and letters are typing keys; chords are not", () => {
+    assert.equal(isTypingKey({ key: " ", code: "Space" }), true);
+    assert.equal(isTypingKey({ key: "a" }), true);
+    assert.equal(isTypingKey({ key: "s", ctrlKey: true }), false);
+    assert.equal(isTypingKey({ key: "ArrowRight" }), false);
   });
 
   it("Space hotkey must not preventDefault in Write the job → Rules", () => {

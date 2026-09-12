@@ -14,6 +14,7 @@ import { Berty, BertyPeek } from "@/components/berty";
 import { periodNow } from "@/lib/bells";
 import { weekRace, type ClassRace, type CrewRace, type TodayJob } from "@/lib/week-race";
 import { MarkChip } from "@/components/ui";
+import { ProgressRing } from "@/components/progress-ring";
 import { markOf } from "@/lib/nav-marks";
 
 const OPT_KEY = "techworks-week-opts-v1";
@@ -202,7 +203,7 @@ export function WeekBoard({
             <p className="mt-0.5 text-sm text-muted">
               {race.shop.possible > 0
                 ? "As of yesterday · today still in play"
-                : "Score today. Tomorrow this wall crowns a shop lead."}
+                : "Score today. Tomorrow this wall crowns a lead."}
             </p>
           </div>
           {onYear || onData ? (
@@ -407,7 +408,7 @@ function RacePane({
   return (
     <div className="grid min-h-0 flex-1 gap-2 lg:grid-cols-2">
       <section className="flex min-h-0 flex-col gap-2">
-        <p className="px-1 text-[11px] font-bold uppercase tracking-wider text-subtle">Classes · hold the shop</p>
+        <p className="px-1 text-[11px] font-bold uppercase tracking-wider text-subtle">Classes · hold the lead</p>
         {leadClasses.length === 1 ? (
           <ClassLead row={leadClasses[0]!} berty={berty} onPeriod={onPeriod} />
         ) : (
@@ -492,11 +493,16 @@ function ClassLead({
       onClick={() => onPeriod?.(row.period)}
       className="tw-tap relative overflow-hidden rounded-xl bg-gold p-4 text-left text-bg"
     >
-      <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider opacity-80">
-        <Crown className="size-4" aria-hidden /> Shop lead · hold this
+      <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-wider opacity-90">
+        <Crown className="size-4" aria-hidden /> #1 class · hold the lead
       </p>
+      <div className="mt-2 flex items-end gap-3">
+        <div className="min-w-0 flex-1">
       <p className="mt-1 font-display text-2xl font-semibold tracking-tight sm:text-3xl">{row.name}</p>
       <p className="font-mono text-4xl font-semibold tabular-nums leading-none sm:text-5xl">{Math.round(row.pct)}%</p>
+        </div>
+        <ProgressRing pct={row.pct} label={`${Math.round(row.pct)}%`} sub="#1" tone="gold" size="lg" live />
+      </div>
       <p className="mt-2 text-sm opacity-90">
         {row.project} · {row.activity}
       </p>
@@ -519,7 +525,7 @@ function ClassCard({ row, onPeriod }: { row: ClassRace; onPeriod?: (period: numb
       className="tw-tap rounded-xl bg-gold p-3 text-left text-bg"
     >
       <div className="flex items-start justify-between gap-2">
-        <p className="text-[11px] font-bold uppercase tracking-wider opacity-80">Shop lead · hold this</p>
+        <p className="text-[11px] font-black uppercase tracking-wider opacity-90">#1 class · hold the lead</p>
         <Crown className="size-5" aria-hidden />
       </div>
       <p className="mt-1 font-display text-xl font-semibold tracking-tight">{row.name}</p>
@@ -548,11 +554,16 @@ function CrewLead({
       onClick={() => onPeriod?.(row.period)}
       className={cn("tw-tap relative overflow-hidden rounded-xl bg-gold text-left text-bg", compact ? "p-3" : "p-4")}
     >
-      <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider opacity-80">
-        <Crown className="size-4" aria-hidden /> First crew in the shop · keep it
+      <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-wider opacity-90">
+        <Crown className="size-4" aria-hidden /> #1 crew · keep the crown
       </p>
+      <div className="mt-1 flex items-end gap-3">
+        <div className="min-w-0 flex-1">
       <p className={cn("mt-1 font-display font-semibold tracking-tight", compact ? "text-2xl" : "text-3xl")}>{row.name}</p>
       <p className={cn("font-mono font-semibold tabular-nums leading-none", compact ? "text-3xl" : "text-4xl")}>{Math.round(row.pct)}%</p>
+        </div>
+        <ProgressRing pct={row.pct} label={`${Math.round(row.pct)}%`} sub="#1" tone="gold" size={compact ? "md" : "lg"} live />
+      </div>
       <p className="mt-1 text-sm opacity-90">
         P{row.period} · {row.project} · {row.activity}
       </p>

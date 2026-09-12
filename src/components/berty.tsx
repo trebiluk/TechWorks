@@ -1,11 +1,12 @@
 import { BERTY_LABEL, BERTY_SRC, bertyPose, showBerty, type BertyCue, type BertyPose } from "@/lib/berty";
 import { cn } from "@/lib/utils";
 
-const PX: Record<"icon" | "sm" | "md" | "lg", number> = {
+const PX: Record<"icon" | "sm" | "md" | "lg" | "xl", number> = {
   icon: 24,
   sm: 44,
   md: 64,
   lg: 88,
+  xl: 148,
 };
 
 export function Berty({
@@ -17,7 +18,7 @@ export function Berty({
   className,
 }: {
   pose: BertyPose;
-  size?: "icon" | "sm" | "md" | "lg";
+  size?: "icon" | "sm" | "md" | "lg" | "xl";
   float?: boolean;
   corner?: "br" | "bl" | "tr" | "tl";
   alert?: boolean;
@@ -70,7 +71,7 @@ export function BertyCueBot({
 }: {
   on: boolean;
   cue: BertyCue;
-  size?: "icon" | "sm" | "md" | "lg";
+  size?: "icon" | "sm" | "md" | "lg" | "xl";
   className?: string;
   onOpen?: () => void;
 }) {

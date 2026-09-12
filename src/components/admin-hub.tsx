@@ -13,8 +13,9 @@ import { abOn, deskBellId, deskPacks, exportedThisPeriod, isSubDay, lunchOn, mee
 import type { EconomyFile } from "@/lib/economy";
 import { CloudBoard } from "@/components/cloud-board";
 import { CrewDesk } from "@/components/crew-desk";
-import { CtrlPad, CtrlSeg, CtrlTile } from "@/components/ctrl";
+import { CtrlHud, CtrlRail, CtrlSeg } from "@/components/ctrl";
 import { markOf } from "@/lib/nav-marks";
+import { MarkChip } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { featureOn } from "@/lib/features";
 import { ADMIN_GROUPS, PANE_LABEL, groupOfPane } from "@/lib/admin-nav";
@@ -125,7 +126,7 @@ export function AdminHub({
   const sent = live != null ? exportedThisPeriod(file, today, live) : true;
   const away = outNow(file, today);
   const group = groupOfPane(pane);
-  const inner = group.panes.length > 1 ? [...group.panes] : [];
+  const inner = group.panes.filter((id) => id !== "cloud");
   const rooms: { id: string; label: string; on: boolean; go: () => void; show: boolean }[] = [
     ...ADMIN_GROUPS.map((g) => ({
       id: g.id,
@@ -153,27 +154,38 @@ export function AdminHub({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      <div className="shrink-0 px-1 pb-2">
-        <CtrlPad>
+      <div className="shrink-0 px-1 pb-1">
+        <CtrlRail label="Admin">
           {dailyRooms.map((r) => (
-            <CtrlTile key={r.id} id={r.id} label={r.label} on={r.on} onClick={r.go} mark={markOf(r.id)} />
+            <MarkChip key={r.id} mark={markOf(r.id)} title={r.label} on={r.on} onClick={r.go}>
+              {r.label}
+            </MarkChip>
           ))}
-        </CtrlPad>
-        <button
-          type="button"
-          onClick={() => setMore((v) => !v)}
-          className={cn("tw-tap mt-1 min-h-10 w-full rounded-xl text-xs font-bold uppercase tracking-wide", more ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
-        >
-          {more ? "Less" : "More · Class Theme Club"}
-        </button>
+          <CtrlHud
+            mark={markOf("cloud")}
+            title={cloudDue ? "Save status · not bound" : "Save status"}
+            alarm={cloudDue}
+            on={pane === "cloud"}
+            onClick={() => pickPane("cloud")}
+          />
+          <button
+            type="button"
+            onClick={() => setMore((v) => !v)}
+            className={cn("tw-tap inline-flex min-h-9 shrink-0 items-center rounded-lg px-2.5 text-xs font-semibold", more ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+          >
+            {more ? "Less" : "More"}
+          </button>
+        </CtrlRail>
         {more ? (
-          <CtrlPad className="mt-1">
+          <CtrlRail label="More admin" className="mt-1" bare>
             {moreRooms.map((r) => (
-              <CtrlTile key={r.id} id={r.id} label={r.label} on={r.on} onClick={r.go} mark={markOf(r.id)} />
+              <MarkChip key={r.id} mark={markOf(r.id)} title={r.label} on={r.on} onClick={r.go}>
+                {r.label}
+              </MarkChip>
             ))}
-          </CtrlPad>
+          </CtrlRail>
         ) : null}
-        {inner.length ? (
+        {inner.length > 1 ? (
           <div className="mt-1">
             <CtrlSeg
               items={inner.map((id) => ({ id, label: PANE_LABEL[id] ?? id }))}
@@ -259,7 +271,7 @@ export function AdminHub({
               onClick={() => pickPane("cloud")}
               className="mt-3 w-full rounded-xl bg-cleanup px-3 py-2 text-left text-sm font-semibold text-accent-fg"
             >
-              Cloud is not bound. Tap for the desk key so the other shop PC gets tonight's save.
+              Cloud is not bound. Tap for tonight’s save status.
             </button>
           ) : null}
           {meets.length ? (

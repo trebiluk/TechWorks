@@ -31,6 +31,15 @@ export function isTypingNode(el: unknown): boolean {
   return false;
 }
 
+/** Space and printable keys that must type inside a field. */
+export function isTypingKey(e: { key?: string; code?: string; metaKey?: boolean; ctrlKey?: boolean; altKey?: boolean } | null | undefined): boolean {
+  if (!e) return false;
+  if (e.metaKey || e.ctrlKey || e.altKey) return false;
+  if (e.key === " " || e.code === "Space") return true;
+  if (e.key && e.key.length === 1) return true;
+  return false;
+}
+
 /**
  * Space / letter hotkeys must no-op and must not preventDefault
  * when the event is in a typing field (or a descendant of one).
@@ -50,4 +59,17 @@ export function isTypingTarget(e: { target?: EventTarget | null } | null | undef
     walk = walk.parentElement;
   }
   return false;
+}
+
+/**
+ * Desk window keydown. Caller never sees typing-field events, so it must not
+ * preventDefault Space / letters while Question, Rules, or any field is focused.
+ */
+export function onDeskKeydown(handler: (e: KeyboardEvent) => void): () => void {
+  function onKey(e: KeyboardEvent) {
+    if (isTypingTarget(e)) return;
+    handler(e);
+  }
+  window.addEventListener("keydown", onKey);
+  return () => window.removeEventListener("keydown", onKey);
 }

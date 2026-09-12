@@ -7,7 +7,7 @@ export const ADMIN_GROUPS = [
   { id: "people", label: "Crews", panes: ["crews"] as const },
   { id: "wall", label: "Wall", panes: ["wall"] as const },
   { id: "day", label: "Day", panes: ["day"] as const },
-  { id: "class", label: "Class", panes: ["economy"] as const },
+  { id: "class", label: "Rewards", panes: ["economy"] as const },
   { id: "modules", label: "Modules", panes: ["modules"] as const },
   { id: "look", label: "Theme", panes: ["room"] as const },
   { id: "about", label: "About", panes: ["about"] as const },
@@ -24,7 +24,7 @@ export const PANE_LABEL: Record<string, string> = {
   wall: "Wall",
   day: "Day",
   room: "Theme",
-  economy: "Pay",
+  economy: "Pay / XP",
   modules: "Modules",
   about: "About",
 };

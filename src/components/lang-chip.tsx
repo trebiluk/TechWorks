@@ -40,12 +40,13 @@ export function LangChip() {
         )}
       >
         <Languages className="size-5" />
+        <span className="absolute -bottom-0.5 right-0 rounded bg-elevated px-1 font-mono text-[9px] font-bold leading-none">{row.short}</span>
         <span className="sr-only">{row.native}</span>
       </button>
       {open ? (
         <div className="absolute right-0 top-12 z-50 w-[min(16rem,calc(100vw-1.5rem))] overflow-hidden rounded-xl bg-surface p-2 ring-1 ring-border">
           <p className="px-2 pt-1 text-sm font-semibold">{t("Read in your language")}</p>
-          <p className="px-2 pb-2 text-xs leading-snug text-muted">{t("Shop words stay English. Help and Words change.")}</p>
+          <p className="px-2 pb-2 text-xs leading-snug text-muted">{t("Wall words change. XP stays English.")}</p>
           <ul className="grid gap-1">
             {CLASS_LANGS.map((l) => (
               <li key={l.id}>

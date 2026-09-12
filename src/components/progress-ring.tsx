@@ -12,23 +12,32 @@ export function ProgressRing({
   label: string;
   sub?: string;
   tone?: "accent" | "gold" | "gain" | "warn";
-  size?: "sm" | "md";
+  size?: "sm" | "md" | "lg";
   live?: boolean;
 }) {
   const p = Math.max(0, Math.min(100, Number.isFinite(pct) ? pct : 0));
   return (
     <div className="flex flex-col items-center gap-1">
       <div
-        className={cn("tw-ring", size === "md" ? "tw-ring-md" : "", `tw-ring-${tone}`, live && "tw-ring-live")}
+        className={cn(
+          "tw-ring",
+          size === "lg" ? "tw-ring-lg" : size === "md" ? "tw-ring-md" : "",
+          `tw-ring-${tone}`,
+          live && "tw-ring-live",
+        )}
         style={{ ["--pct" as string]: p }}
         role="img"
         aria-label={`${sub ?? ""} ${Math.round(p)} percent`}
       >
         <i>
-          <span className="tw-readout text-[11px] font-bold leading-none">{label}</span>
+          <span className={cn("tw-readout font-bold leading-none", size === "lg" ? "text-3xl" : "text-[11px]")}>{label}</span>
         </i>
       </div>
-      {sub ? <span className="text-[10px] font-bold uppercase tracking-wider text-muted">{sub}</span> : null}
+      {sub ? (
+        <span className={cn("font-bold uppercase tracking-wider", size === "lg" ? "text-base text-inherit" : "text-[10px] text-muted")}>
+          {sub}
+        </span>
+      ) : null}
     </div>
   );
 }

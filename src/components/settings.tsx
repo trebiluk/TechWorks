@@ -32,7 +32,7 @@ export const SETTINGS_TABS = [
   { id: "vault", label: "Records" },
   { id: "roster", label: "Roster" },
   { id: "day", label: "Day" },
-  { id: "economy", label: "Class" },
+  { id: "economy", label: "Rewards" },
   { id: "modules", label: "Modules" },
   { id: "room", label: "Theme" },
   { id: "about", label: "About" },
@@ -276,7 +276,7 @@ export function SettingsBody({
 
             {tab === "economy" || tab === "skills" ? (
               <section>
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Class</h2>
+                <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Rewards</h2>
                 <p className="mt-1 text-sm text-muted">Reward is XP · grade · effort — not pay. Skills are 1–4, XP only.</p>
                 <p className="mt-4 text-sm font-medium uppercase tracking-wider text-subtle">Class reward</p>
                 <RewardBar file={file} detail />
@@ -352,7 +352,7 @@ export function SettingsBody({
                         const on = featureOn(file, f.id);
                         const jump = OPEN_MOD[f.id];
                         return (
-                          <li key={f.id} className={cn("tw-gadget flex flex-col gap-2 p-3", on ? "" : "opacity-60")}>
+                          <li key={f.id} className={cn("tw-gadget flex flex-col gap-2 p-3", on ? "ring-1 ring-gold" : "opacity-60")}>
                             <button
                               type="button"
                               onClick={() => {
@@ -374,6 +374,9 @@ export function SettingsBody({
                               }}
                               className="text-left"
                             >
+                              <span className={cn("mb-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-widest", on ? "bg-gold text-bg" : "bg-elevated text-muted")}>
+                                {on ? "On" : "Off"}
+                              </span>
                               <span className="block text-sm font-semibold">{f.label}</span>
                               <span className="text-[11px] text-subtle">{f.hint}</span>
                             </button>

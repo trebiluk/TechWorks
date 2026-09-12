@@ -1,13 +1,13 @@
 {
   "meta": {
     "title": "TechWorks",
-    "quarterName": "Q1",
-    "currentWeek": 1,
+    "quarterName": "S2",
+    "currentWeek": 8,
     "schoolYear": "2026-27",
     "codes": {
-      "1": 15,
-      "2": 20,
       "3": 25,
+      "2": 20,
+      "1": 15,
       "A": 0,
       "E": 0,
       "P": -25,
@@ -45,10 +45,10 @@
     ],
     "market": {
       "source": "TEACHER",
-      "index": 0,
-      "baseline": 0,
+      "index": 46280,
+      "baseline": 45000,
       "shock": 0,
-      "factor": 1
+      "factor": 1.0284
     },
     "sections": [
       {
@@ -315,12 +315,12 @@
         "PTO",
         "OFF TASK"
       ],
-      "currentCycle": 1,
+      "currentCycle": 8,
       "cycleGoals": {
         "5": "PRODUCTIVITY",
-        "6": "IDEA STAGE",
-        "7": "DESIGN STAGE",
-        "8": "MODELING STAGE"
+        "6": "FINISHING STAGE",
+        "7": "PRESENTATION PREP",
+        "8": "CRITIQUE DAY"
       },
       "bellTimes": [
         {
@@ -393,17 +393,1669 @@
         "8|8|Crew A": "TW-P8-S2-01",
         "8|9|Crew A": "TW-P9-S2-01",
         "8|10|Crew A": "TW-P10-S2-01"
-      },
-      "roleHistory": []
+      }
     },
-    "dayLog": {},
+    "dayLog": {
+      "2026-11-02": {
+        "periodGoals": {
+          "1": "IDEA STAGE",
+          "2": "IDEA STAGE",
+          "3": "IDEA STAGE",
+          "6": "IDEA STAGE",
+          "8": "IDEA STAGE",
+          "9": "IDEA STAGE",
+          "10": "IDEA STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-W",
+          "2": "PROJ-W",
+          "3": "PROJ-W",
+          "6": "PROJ-W",
+          "8": "PROJ-W",
+          "9": "PROJ-W",
+          "10": "PROJ-W"
+        },
+        "lunch": "Chicken Poppers",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-11-04": {
+        "periodGoals": {
+          "1": "IDEA STAGE",
+          "2": "IDEA STAGE",
+          "3": "IDEA STAGE",
+          "6": "IDEA STAGE",
+          "8": "IDEA STAGE",
+          "9": "IDEA STAGE",
+          "10": "IDEA STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-W",
+          "2": "PROJ-W",
+          "3": "PROJ-W",
+          "6": "PROJ-W",
+          "8": "PROJ-W",
+          "9": "PROJ-W",
+          "10": "PROJ-W"
+        },
+        "lunch": "Mac & Cheese",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-11-05": {
+        "periodGoals": {
+          "1": "IDEA STAGE",
+          "2": "IDEA STAGE",
+          "3": "IDEA STAGE",
+          "6": "IDEA STAGE",
+          "8": "IDEA STAGE",
+          "9": "IDEA STAGE",
+          "10": "IDEA STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-W",
+          "2": "PROJ-W",
+          "3": "PROJ-W",
+          "6": "PROJ-W",
+          "8": "PROJ-W",
+          "9": "PROJ-W",
+          "10": "PROJ-W"
+        },
+        "lunch": "Chicken Patty",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-11-06": {
+        "periodGoals": {
+          "1": "IDEA STAGE",
+          "2": "IDEA STAGE",
+          "3": "IDEA STAGE",
+          "6": "IDEA STAGE",
+          "8": "IDEA STAGE",
+          "9": "IDEA STAGE",
+          "10": "IDEA STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-W",
+          "2": "PROJ-W",
+          "3": "PROJ-W",
+          "6": "PROJ-W",
+          "8": "PROJ-W",
+          "9": "PROJ-W",
+          "10": "PROJ-W"
+        },
+        "lunch": "Walking Taco",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-11-09": {
+        "periodGoals": {
+          "1": "DESIGN STAGE",
+          "2": "DESIGN STAGE",
+          "3": "DESIGN STAGE",
+          "6": "DESIGN STAGE",
+          "8": "DESIGN STAGE",
+          "9": "DESIGN STAGE",
+          "10": "DESIGN STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-PC",
+          "2": "PROJ-PC",
+          "3": "PROJ-PC",
+          "6": "PROJ-PC",
+          "8": "PROJ-PC",
+          "9": "PROJ-PC",
+          "10": "PROJ-PC"
+        },
+        "lunch": "Nachos",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-11-10": {
+        "periodGoals": {
+          "1": "DESIGN STAGE",
+          "2": "DESIGN STAGE",
+          "3": "DESIGN STAGE",
+          "6": "DESIGN STAGE",
+          "8": "DESIGN STAGE",
+          "9": "DESIGN STAGE",
+          "10": "DESIGN STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-PC",
+          "2": "PROJ-PC",
+          "3": "PROJ-PC",
+          "6": "PROJ-PC",
+          "8": "PROJ-PC",
+          "9": "PROJ-PC",
+          "10": "PROJ-PC"
+        },
+        "lunch": "Cheeseburger",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-11-12": {
+        "periodGoals": {
+          "1": "DESIGN STAGE",
+          "2": "DESIGN STAGE",
+          "3": "DESIGN STAGE",
+          "6": "DESIGN STAGE",
+          "8": "DESIGN STAGE",
+          "9": "DESIGN STAGE",
+          "10": "DESIGN STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-PC",
+          "2": "PROJ-PC",
+          "3": "PROJ-PC",
+          "6": "PROJ-PC",
+          "8": "PROJ-PC",
+          "9": "PROJ-PC",
+          "10": "PROJ-PC"
+        },
+        "lunch": "Chicken Bowl",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-11-13": {
+        "periodGoals": {
+          "1": "DESIGN STAGE",
+          "2": "DESIGN STAGE",
+          "3": "DESIGN STAGE",
+          "6": "DESIGN STAGE",
+          "8": "DESIGN STAGE",
+          "9": "DESIGN STAGE",
+          "10": "DESIGN STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-PC",
+          "2": "PROJ-PC",
+          "3": "PROJ-PC",
+          "6": "PROJ-PC",
+          "8": "PROJ-PC",
+          "9": "PROJ-PC",
+          "10": "PROJ-PC"
+        },
+        "lunch": "Mozz Sticks",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-11-16": {
+        "periodGoals": {
+          "1": "MODELING STAGE",
+          "2": "MODELING STAGE",
+          "3": "MODELING STAGE",
+          "6": "MODELING STAGE",
+          "8": "MODELING STAGE",
+          "9": "MODELING STAGE",
+          "10": "MODELING STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "P",
+          "2": "P",
+          "3": "P",
+          "6": "P",
+          "8": "P",
+          "9": "P",
+          "10": "P"
+        },
+        "lunch": "Chicken Poppers",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-11-17": {
+        "periodGoals": {
+          "1": "MODELING STAGE",
+          "2": "MODELING STAGE",
+          "3": "MODELING STAGE",
+          "6": "MODELING STAGE",
+          "8": "MODELING STAGE",
+          "9": "MODELING STAGE",
+          "10": "MODELING STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "P",
+          "2": "P",
+          "3": "P",
+          "6": "P",
+          "8": "P",
+          "9": "P",
+          "10": "P"
+        },
+        "lunch": "Mac & Cheese",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-11-18": {
+        "periodGoals": {
+          "1": "MODELING STAGE",
+          "2": "MODELING STAGE",
+          "3": "MODELING STAGE",
+          "6": "MODELING STAGE",
+          "8": "MODELING STAGE",
+          "9": "MODELING STAGE",
+          "10": "MODELING STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "P",
+          "2": "P",
+          "3": "P",
+          "6": "P",
+          "8": "P",
+          "9": "P",
+          "10": "P"
+        },
+        "lunch": "Chicken Patty",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-11-19": {
+        "periodGoals": {
+          "1": "MODELING STAGE",
+          "2": "MODELING STAGE",
+          "3": "MODELING STAGE",
+          "6": "MODELING STAGE",
+          "8": "MODELING STAGE",
+          "9": "MODELING STAGE",
+          "10": "MODELING STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "P",
+          "2": "P",
+          "3": "P",
+          "6": "P",
+          "8": "P",
+          "9": "P",
+          "10": "P"
+        },
+        "lunch": "Walking Taco",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-11-20": {
+        "periodGoals": {
+          "1": "MODELING STAGE",
+          "2": "MODELING STAGE",
+          "3": "MODELING STAGE",
+          "6": "MODELING STAGE",
+          "8": "MODELING STAGE",
+          "9": "MODELING STAGE",
+          "10": "MODELING STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "P",
+          "2": "P",
+          "3": "P",
+          "6": "P",
+          "8": "P",
+          "9": "P",
+          "10": "P"
+        },
+        "lunch": "Pizza",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-11-23": {
+        "periodGoals": {
+          "1": "FINISHING STAGE",
+          "2": "FINISHING STAGE",
+          "3": "FINISHING STAGE",
+          "6": "FINISHING STAGE",
+          "8": "FINISHING STAGE",
+          "9": "FINISHING STAGE",
+          "10": "FINISHING STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PTO",
+          "2": "PTO",
+          "3": "PTO",
+          "6": "PTO",
+          "8": "PTO",
+          "9": "PTO",
+          "10": "PTO"
+        },
+        "lunch": "Nachos",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        },
+        "sub": true
+      },
+      "2026-11-24": {
+        "periodGoals": {
+          "1": "FINISHING STAGE",
+          "2": "FINISHING STAGE",
+          "3": "FINISHING STAGE",
+          "6": "FINISHING STAGE",
+          "8": "FINISHING STAGE",
+          "9": "FINISHING STAGE",
+          "10": "FINISHING STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PTO",
+          "2": "PTO",
+          "3": "PTO",
+          "6": "PTO",
+          "8": "PTO",
+          "9": "PTO",
+          "10": "PTO"
+        },
+        "lunch": "Cheeseburger",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-11-30": {
+        "periodGoals": {
+          "1": "PRESENTATION PREP",
+          "2": "PRESENTATION PREP",
+          "3": "PRESENTATION PREP",
+          "6": "PRESENTATION PREP",
+          "8": "PRESENTATION PREP",
+          "9": "PRESENTATION PREP",
+          "10": "PRESENTATION PREP"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "OFF TASK",
+          "2": "OFF TASK",
+          "3": "OFF TASK",
+          "6": "OFF TASK",
+          "8": "OFF TASK",
+          "9": "OFF TASK",
+          "10": "OFF TASK"
+        },
+        "lunch": "Chicken Poppers",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-12-01": {
+        "periodGoals": {
+          "1": "PRESENTATION PREP",
+          "2": "PRESENTATION PREP",
+          "3": "PRESENTATION PREP",
+          "6": "PRESENTATION PREP",
+          "8": "PRESENTATION PREP",
+          "9": "PRESENTATION PREP",
+          "10": "PRESENTATION PREP"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "OFF TASK",
+          "2": "OFF TASK",
+          "3": "OFF TASK",
+          "6": "OFF TASK",
+          "8": "OFF TASK",
+          "9": "OFF TASK",
+          "10": "OFF TASK"
+        },
+        "lunch": "Mac & Cheese",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-12-02": {
+        "periodGoals": {
+          "1": "PRESENTATION PREP",
+          "2": "PRESENTATION PREP",
+          "3": "PRESENTATION PREP",
+          "6": "PRESENTATION PREP",
+          "8": "PRESENTATION PREP",
+          "9": "PRESENTATION PREP",
+          "10": "PRESENTATION PREP"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "OFF TASK",
+          "2": "OFF TASK",
+          "3": "OFF TASK",
+          "6": "OFF TASK",
+          "8": "OFF TASK",
+          "9": "OFF TASK",
+          "10": "OFF TASK"
+        },
+        "lunch": "Chicken Patty",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-12-03": {
+        "periodGoals": {
+          "1": "PRESENTATION PREP",
+          "2": "PRESENTATION PREP",
+          "3": "PRESENTATION PREP",
+          "6": "PRESENTATION PREP",
+          "8": "PRESENTATION PREP",
+          "9": "PRESENTATION PREP",
+          "10": "PRESENTATION PREP"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "OFF TASK",
+          "2": "OFF TASK",
+          "3": "OFF TASK",
+          "6": "OFF TASK",
+          "8": "OFF TASK",
+          "9": "OFF TASK",
+          "10": "OFF TASK"
+        },
+        "lunch": "Walking Taco",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-12-04": {
+        "periodGoals": {
+          "1": "PRESENTATION PREP",
+          "2": "PRESENTATION PREP",
+          "3": "PRESENTATION PREP",
+          "6": "PRESENTATION PREP",
+          "8": "PRESENTATION PREP",
+          "9": "PRESENTATION PREP",
+          "10": "PRESENTATION PREP"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "OFF TASK",
+          "2": "OFF TASK",
+          "3": "OFF TASK",
+          "6": "OFF TASK",
+          "8": "OFF TASK",
+          "9": "OFF TASK",
+          "10": "OFF TASK"
+        },
+        "lunch": "Pizza",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-12-07": {
+        "periodGoals": {
+          "1": "CRITIQUE DAY",
+          "2": "CRITIQUE DAY",
+          "3": "CRITIQUE DAY",
+          "6": "CRITIQUE DAY",
+          "8": "CRITIQUE DAY",
+          "9": "CRITIQUE DAY",
+          "10": "CRITIQUE DAY"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-W",
+          "2": "PROJ-W",
+          "3": "PROJ-W",
+          "6": "PROJ-W",
+          "8": "PROJ-W",
+          "9": "PROJ-W",
+          "10": "PROJ-W"
+        },
+        "lunch": "Nachos",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-12-08": {
+        "periodGoals": {
+          "1": "CRITIQUE DAY",
+          "2": "CRITIQUE DAY",
+          "3": "CRITIQUE DAY",
+          "6": "CRITIQUE DAY",
+          "8": "CRITIQUE DAY",
+          "9": "CRITIQUE DAY",
+          "10": "CRITIQUE DAY"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-W",
+          "2": "PROJ-W",
+          "3": "PROJ-W",
+          "6": "PROJ-W",
+          "8": "PROJ-W",
+          "9": "PROJ-W",
+          "10": "PROJ-W"
+        },
+        "lunch": "Cheeseburger",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-12-09": {
+        "periodGoals": {
+          "1": "CRITIQUE DAY",
+          "2": "CRITIQUE DAY",
+          "3": "CRITIQUE DAY",
+          "6": "CRITIQUE DAY",
+          "8": "CRITIQUE DAY",
+          "9": "CRITIQUE DAY",
+          "10": "CRITIQUE DAY"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-W",
+          "2": "PROJ-W",
+          "3": "PROJ-W",
+          "6": "PROJ-W",
+          "8": "PROJ-W",
+          "9": "PROJ-W",
+          "10": "PROJ-W"
+        },
+        "lunch": "Chicken Bowl",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-12-10": {
+        "periodGoals": {
+          "1": "CRITIQUE DAY",
+          "2": "CRITIQUE DAY",
+          "3": "CRITIQUE DAY",
+          "6": "CRITIQUE DAY",
+          "8": "CRITIQUE DAY",
+          "9": "CRITIQUE DAY",
+          "10": "CRITIQUE DAY"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-W",
+          "2": "PROJ-W",
+          "3": "PROJ-W",
+          "6": "PROJ-W",
+          "8": "PROJ-W",
+          "9": "PROJ-W",
+          "10": "PROJ-W"
+        },
+        "lunch": "Mozz Sticks",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-12-11": {
+        "periodGoals": {
+          "1": "CRITIQUE DAY",
+          "2": "CRITIQUE DAY",
+          "3": "CRITIQUE DAY",
+          "6": "CRITIQUE DAY",
+          "8": "CRITIQUE DAY",
+          "9": "CRITIQUE DAY",
+          "10": "CRITIQUE DAY"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-W",
+          "2": "PROJ-W",
+          "3": "PROJ-W",
+          "6": "PROJ-W",
+          "8": "PROJ-W",
+          "9": "PROJ-W",
+          "10": "PROJ-W"
+        },
+        "lunch": "PB Uncrustable",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-12-14": {
+        "periodGoals": {
+          "1": "TRAINING",
+          "2": "TRAINING",
+          "3": "TRAINING",
+          "6": "TRAINING",
+          "8": "TRAINING",
+          "9": "TRAINING",
+          "10": "TRAINING"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-PC",
+          "2": "PROJ-PC",
+          "3": "PROJ-PC",
+          "6": "PROJ-PC",
+          "8": "PROJ-PC",
+          "9": "PROJ-PC",
+          "10": "PROJ-PC"
+        },
+        "lunch": "Chicken Poppers",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-12-15": {
+        "periodGoals": {
+          "1": "TRAINING",
+          "2": "TRAINING",
+          "3": "TRAINING",
+          "6": "TRAINING",
+          "8": "TRAINING",
+          "9": "TRAINING",
+          "10": "TRAINING"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-PC",
+          "2": "PROJ-PC",
+          "3": "PROJ-PC",
+          "6": "PROJ-PC",
+          "8": "PROJ-PC",
+          "9": "PROJ-PC",
+          "10": "PROJ-PC"
+        },
+        "lunch": "Mac & Cheese",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-12-16": {
+        "periodGoals": {
+          "1": "TRAINING",
+          "2": "TRAINING",
+          "3": "TRAINING",
+          "6": "TRAINING",
+          "8": "TRAINING",
+          "9": "TRAINING",
+          "10": "TRAINING"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-PC",
+          "2": "PROJ-PC",
+          "3": "PROJ-PC",
+          "6": "PROJ-PC",
+          "8": "PROJ-PC",
+          "9": "PROJ-PC",
+          "10": "PROJ-PC"
+        },
+        "lunch": "Chicken Patty",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-12-17": {
+        "periodGoals": {
+          "1": "TRAINING",
+          "2": "TRAINING",
+          "3": "TRAINING",
+          "6": "TRAINING",
+          "8": "TRAINING",
+          "9": "TRAINING",
+          "10": "TRAINING"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-PC",
+          "2": "PROJ-PC",
+          "3": "PROJ-PC",
+          "6": "PROJ-PC",
+          "8": "PROJ-PC",
+          "9": "PROJ-PC",
+          "10": "PROJ-PC"
+        },
+        "lunch": "Walking Taco",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-12-18": {
+        "periodGoals": {
+          "1": "TRAINING",
+          "2": "TRAINING",
+          "3": "TRAINING",
+          "6": "TRAINING",
+          "8": "TRAINING",
+          "9": "TRAINING",
+          "10": "TRAINING"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-PC",
+          "2": "PROJ-PC",
+          "3": "PROJ-PC",
+          "6": "PROJ-PC",
+          "8": "PROJ-PC",
+          "9": "PROJ-PC",
+          "10": "PROJ-PC"
+        },
+        "lunch": "Pizza",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-12-21": {
+        "periodGoals": {
+          "1": "DEMONSTRATION",
+          "2": "DEMONSTRATION",
+          "3": "DEMONSTRATION",
+          "6": "DEMONSTRATION",
+          "8": "DEMONSTRATION",
+          "9": "DEMONSTRATION",
+          "10": "DEMONSTRATION"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "P",
+          "2": "P",
+          "3": "P",
+          "6": "P",
+          "8": "P",
+          "9": "P",
+          "10": "P"
+        },
+        "lunch": "Nachos",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-12-22": {
+        "periodGoals": {
+          "1": "DEMONSTRATION",
+          "2": "DEMONSTRATION",
+          "3": "DEMONSTRATION",
+          "6": "DEMONSTRATION",
+          "8": "DEMONSTRATION",
+          "9": "DEMONSTRATION",
+          "10": "DEMONSTRATION"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "P",
+          "2": "P",
+          "3": "P",
+          "6": "P",
+          "8": "P",
+          "9": "P",
+          "10": "P"
+        },
+        "lunch": "Cheeseburger",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2026-12-23": {
+        "periodGoals": {
+          "1": "DEMONSTRATION",
+          "2": "DEMONSTRATION",
+          "3": "DEMONSTRATION",
+          "6": "DEMONSTRATION",
+          "8": "DEMONSTRATION",
+          "9": "DEMONSTRATION",
+          "10": "DEMONSTRATION"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "P",
+          "2": "P",
+          "3": "P",
+          "6": "P",
+          "8": "P",
+          "9": "P",
+          "10": "P"
+        },
+        "lunch": "Chicken Bowl",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-01-04": {
+        "periodGoals": {
+          "1": "DRAWING",
+          "2": "DRAWING",
+          "3": "DRAWING",
+          "6": "DRAWING",
+          "8": "DRAWING",
+          "9": "DRAWING",
+          "10": "DRAWING"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PTO",
+          "2": "PTO",
+          "3": "PTO",
+          "6": "PTO",
+          "8": "PTO",
+          "9": "PTO",
+          "10": "PTO"
+        },
+        "lunch": "Chicken Poppers",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-01-05": {
+        "periodGoals": {
+          "1": "DRAWING",
+          "2": "DRAWING",
+          "3": "DRAWING",
+          "6": "DRAWING",
+          "8": "DRAWING",
+          "9": "DRAWING",
+          "10": "DRAWING"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PTO",
+          "2": "PTO",
+          "3": "PTO",
+          "6": "PTO",
+          "8": "PTO",
+          "9": "PTO",
+          "10": "PTO"
+        },
+        "lunch": "Mac & Cheese",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-01-06": {
+        "periodGoals": {
+          "1": "DRAWING",
+          "2": "DRAWING",
+          "3": "DRAWING",
+          "6": "DRAWING",
+          "8": "DRAWING",
+          "9": "DRAWING",
+          "10": "DRAWING"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PTO",
+          "2": "PTO",
+          "3": "PTO",
+          "6": "PTO",
+          "8": "PTO",
+          "9": "PTO",
+          "10": "PTO"
+        },
+        "lunch": "Chicken Patty",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-01-07": {
+        "periodGoals": {
+          "1": "DRAWING",
+          "2": "DRAWING",
+          "3": "DRAWING",
+          "6": "DRAWING",
+          "8": "DRAWING",
+          "9": "DRAWING",
+          "10": "DRAWING"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PTO",
+          "2": "PTO",
+          "3": "PTO",
+          "6": "PTO",
+          "8": "PTO",
+          "9": "PTO",
+          "10": "PTO"
+        },
+        "lunch": "Walking Taco",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-01-08": {
+        "periodGoals": {
+          "1": "DRAWING",
+          "2": "DRAWING",
+          "3": "DRAWING",
+          "6": "DRAWING",
+          "8": "DRAWING",
+          "9": "DRAWING",
+          "10": "DRAWING"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PTO",
+          "2": "PTO",
+          "3": "PTO",
+          "6": "PTO",
+          "8": "PTO",
+          "9": "PTO",
+          "10": "PTO"
+        },
+        "lunch": "Pizza",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-01-11": {
+        "periodGoals": {
+          "1": "FREE DAY",
+          "2": "FREE DAY",
+          "3": "FREE DAY",
+          "6": "FREE DAY",
+          "8": "FREE DAY",
+          "9": "FREE DAY",
+          "10": "FREE DAY"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "OFF TASK",
+          "2": "OFF TASK",
+          "3": "OFF TASK",
+          "6": "OFF TASK",
+          "8": "OFF TASK",
+          "9": "OFF TASK",
+          "10": "OFF TASK"
+        },
+        "lunch": "Nachos",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-01-12": {
+        "periodGoals": {
+          "1": "FREE DAY",
+          "2": "FREE DAY",
+          "3": "FREE DAY",
+          "6": "FREE DAY",
+          "8": "FREE DAY",
+          "9": "FREE DAY",
+          "10": "FREE DAY"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "OFF TASK",
+          "2": "OFF TASK",
+          "3": "OFF TASK",
+          "6": "OFF TASK",
+          "8": "OFF TASK",
+          "9": "OFF TASK",
+          "10": "OFF TASK"
+        },
+        "lunch": "Cheeseburger",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-01-13": {
+        "periodGoals": {
+          "1": "FREE DAY",
+          "2": "FREE DAY",
+          "3": "FREE DAY",
+          "6": "FREE DAY",
+          "8": "FREE DAY",
+          "9": "FREE DAY",
+          "10": "FREE DAY"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "OFF TASK",
+          "2": "OFF TASK",
+          "3": "OFF TASK",
+          "6": "OFF TASK",
+          "8": "OFF TASK",
+          "9": "OFF TASK",
+          "10": "OFF TASK"
+        },
+        "lunch": "Chicken Bowl",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-01-14": {
+        "periodGoals": {
+          "1": "FREE DAY",
+          "2": "FREE DAY",
+          "3": "FREE DAY",
+          "6": "FREE DAY",
+          "8": "FREE DAY",
+          "9": "FREE DAY",
+          "10": "FREE DAY"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "OFF TASK",
+          "2": "OFF TASK",
+          "3": "OFF TASK",
+          "6": "OFF TASK",
+          "8": "OFF TASK",
+          "9": "OFF TASK",
+          "10": "OFF TASK"
+        },
+        "lunch": "Mozz Sticks",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-01-15": {
+        "periodGoals": {
+          "1": "FREE DAY",
+          "2": "FREE DAY",
+          "3": "FREE DAY",
+          "6": "FREE DAY",
+          "8": "FREE DAY",
+          "9": "FREE DAY",
+          "10": "FREE DAY"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "OFF TASK",
+          "2": "OFF TASK",
+          "3": "OFF TASK",
+          "6": "OFF TASK",
+          "8": "OFF TASK",
+          "9": "OFF TASK",
+          "10": "OFF TASK"
+        },
+        "lunch": "PB Uncrustable",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-01-19": {
+        "periodGoals": {
+          "1": "IDEA STAGE",
+          "2": "IDEA STAGE",
+          "3": "IDEA STAGE",
+          "6": "IDEA STAGE",
+          "8": "IDEA STAGE",
+          "9": "IDEA STAGE",
+          "10": "IDEA STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-W",
+          "2": "PROJ-W",
+          "3": "PROJ-W",
+          "6": "PROJ-W",
+          "8": "PROJ-W",
+          "9": "PROJ-W",
+          "10": "PROJ-W"
+        },
+        "lunch": "Chicken Poppers",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-01-20": {
+        "periodGoals": {
+          "1": "IDEA STAGE",
+          "2": "IDEA STAGE",
+          "3": "IDEA STAGE",
+          "6": "IDEA STAGE",
+          "8": "IDEA STAGE",
+          "9": "IDEA STAGE",
+          "10": "IDEA STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-W",
+          "2": "PROJ-W",
+          "3": "PROJ-W",
+          "6": "PROJ-W",
+          "8": "PROJ-W",
+          "9": "PROJ-W",
+          "10": "PROJ-W"
+        },
+        "lunch": "Mac & Cheese",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-01-21": {
+        "periodGoals": {
+          "1": "IDEA STAGE",
+          "2": "IDEA STAGE",
+          "3": "IDEA STAGE",
+          "6": "IDEA STAGE",
+          "8": "IDEA STAGE",
+          "9": "IDEA STAGE",
+          "10": "IDEA STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-W",
+          "2": "PROJ-W",
+          "3": "PROJ-W",
+          "6": "PROJ-W",
+          "8": "PROJ-W",
+          "9": "PROJ-W",
+          "10": "PROJ-W"
+        },
+        "lunch": "Chicken Patty",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-01-22": {
+        "periodGoals": {
+          "1": "IDEA STAGE",
+          "2": "IDEA STAGE",
+          "3": "IDEA STAGE",
+          "6": "IDEA STAGE",
+          "8": "IDEA STAGE",
+          "9": "IDEA STAGE",
+          "10": "IDEA STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-W",
+          "2": "PROJ-W",
+          "3": "PROJ-W",
+          "6": "PROJ-W",
+          "8": "PROJ-W",
+          "9": "PROJ-W",
+          "10": "PROJ-W"
+        },
+        "lunch": "Walking Taco",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-01-25": {
+        "periodGoals": {
+          "1": "DESIGN STAGE",
+          "2": "DESIGN STAGE",
+          "3": "DESIGN STAGE",
+          "6": "DESIGN STAGE",
+          "8": "DESIGN STAGE",
+          "9": "DESIGN STAGE",
+          "10": "DESIGN STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "PROJ-PC",
+          "2": "PROJ-PC",
+          "3": "PROJ-PC",
+          "6": "PROJ-PC",
+          "8": "PROJ-PC",
+          "9": "PROJ-PC",
+          "10": "PROJ-PC"
+        },
+        "lunch": "Nachos",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-02-01": {
+        "periodGoals": {
+          "1": "MODELING STAGE",
+          "2": "MODELING STAGE",
+          "3": "MODELING STAGE",
+          "6": "MODELING STAGE",
+          "8": "MODELING STAGE",
+          "9": "MODELING STAGE",
+          "10": "MODELING STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "P",
+          "2": "P",
+          "3": "P",
+          "6": "P",
+          "8": "P",
+          "9": "P",
+          "10": "P"
+        },
+        "lunch": "Chicken Poppers",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-02-02": {
+        "periodGoals": {
+          "1": "MODELING STAGE",
+          "2": "MODELING STAGE",
+          "3": "MODELING STAGE",
+          "6": "MODELING STAGE",
+          "8": "MODELING STAGE",
+          "9": "MODELING STAGE",
+          "10": "MODELING STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "P",
+          "2": "P",
+          "3": "P",
+          "6": "P",
+          "8": "P",
+          "9": "P",
+          "10": "P"
+        },
+        "lunch": "Mac & Cheese",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-02-03": {
+        "periodGoals": {
+          "1": "MODELING STAGE",
+          "2": "MODELING STAGE",
+          "3": "MODELING STAGE",
+          "6": "MODELING STAGE",
+          "8": "MODELING STAGE",
+          "9": "MODELING STAGE",
+          "10": "MODELING STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "P",
+          "2": "P",
+          "3": "P",
+          "6": "P",
+          "8": "P",
+          "9": "P",
+          "10": "P"
+        },
+        "lunch": "Chicken Patty",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-02-04": {
+        "periodGoals": {
+          "1": "MODELING STAGE",
+          "2": "MODELING STAGE",
+          "3": "MODELING STAGE",
+          "6": "MODELING STAGE",
+          "8": "MODELING STAGE",
+          "9": "MODELING STAGE",
+          "10": "MODELING STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "P",
+          "2": "P",
+          "3": "P",
+          "6": "P",
+          "8": "P",
+          "9": "P",
+          "10": "P"
+        },
+        "lunch": "Walking Taco",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      },
+      "2027-02-05": {
+        "periodGoals": {
+          "1": "MODELING STAGE",
+          "2": "MODELING STAGE",
+          "3": "MODELING STAGE",
+          "6": "MODELING STAGE",
+          "8": "MODELING STAGE",
+          "9": "MODELING STAGE",
+          "10": "MODELING STAGE"
+        },
+        "crewGoals": {},
+        "periodActivity": {
+          "1": "P",
+          "2": "P",
+          "3": "P",
+          "6": "P",
+          "8": "P",
+          "9": "P",
+          "10": "P"
+        },
+        "lunch": "Pizza",
+        "schooltool": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "6": true,
+          "8": true,
+          "9": true,
+          "10": true
+        }
+      }
+    },
     "ledger": [],
     "abAnchor": {
-      "date": "2026-09-08",
+      "date": "2026-11-02",
       "letter": "A"
     },
-    "sessions": [],
-    "clearedAt": "2026-09-08T20:00:00.000Z"
+    "sessions": [
+      {
+        "label": "S1",
+        "cash": 18640,
+        "xp": 512,
+        "headcount": 84,
+        "start": "2026-09-08",
+        "end": "2026-10-30"
+      }
+    ]
   },
   "crews": [
     {

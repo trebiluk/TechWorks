@@ -1,8 +1,22 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.15. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.18. READY for Debugzy Publish. -->
 
 # TechWorks changelog
 
-App version **1.92.15**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.18**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.18 — 2026-09-12
+
+- 2.0 upgrade in place: compact Admin row, Cloud is save status, Class is Rewards, Modules are On/Off tiles. Wall show-mode drops year rings, weather, and shop-PC copy. Hold the lead / keep the crown. Week #1 class and #1 crew are gilded with rings. Data opens on lead / behind / needs a 3 / wallet. Sheets is a teacher toggle. Berty sits on the wall. Oswego still queued.
+
+## 1.92.17 — 2026-09-12
+
+- Teach unlock is the live plate editor: same grips, hide, and reorder as the Wall. No second Cards/Slots editor.
+- Cleanup takes the whole projector: giant leftover clock, Berty pointing at the time, huge job type, extra-tidy score. Desk still peeks. Admin stays a teacher pane.
+- Oswego theme queued (hunter #235937, sunset gold #FDAE3F, deep green walls). Not default. No SUNY mark.
+
+## 1.92.16 — 2026-09-12
+
+- P0: Space types in Projects → Write the job (Question / Rules / activity lines). Desk keydown hotkeys ignore Space and letter keys when the target is input, textarea, contenteditable, or role=textbox (closest) and do not preventDefault there. Rules no longer trim on every key.
 
 ## 1.92.15 — 2026-09-12
 

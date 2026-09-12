@@ -761,7 +761,7 @@ export function Board() {
         </button>
       ) : null}
       <div className="board-main flex min-h-0 flex-1 flex-col overflow-hidden">
-      <CleanupStage file={wallFile} unlocked={unlocked} onChange={commitDesk} off={view !== "overview"}>
+      <CleanupStage file={wallFile} unlocked={unlocked} onChange={commitDesk} off={unlocked && view === "admin"}>
       <Suspense fallback={null}>
       {view === "roster" && unlocked ? (
         <RosterWall
