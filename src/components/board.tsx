@@ -700,12 +700,14 @@ export function Board() {
                   <CircleHelp className="size-5" />
                 </button>
                 <LangChip />
+                {unlocked ? (
                 <CloudChip
                   onOpen={() => {
                     setAdminPane("cloud");
                     go("admin");
                   }}
                 />
+                ) : null}
                 {verChip}
                 {unlocked && dueN && mode !== "board" ? (
                   <button

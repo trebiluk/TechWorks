@@ -192,11 +192,11 @@ export function CloudChip({ onOpen }: { onOpen?: () => void }) {
     return () => window.removeEventListener("techworks-cloud", sync);
   }, []);
   const label =
-    st === "saving" ? "Saving…" : st === "this-pc" ? "This PC" : st === "need-key" ? "Key" : "Cloud";
+    st === "saving" ? "Saving…" : st === "saved" ? "Saved" : st === "this-pc" ? "This desk" : st === "need-key" ? "Key" : "Cloud";
   return (
     <CtrlHud
       mark={Cloud}
-      title={`${label} · ${LINE[st]}`}
+      title={st === "saved" || st === "saving" ? `${label}` : `${label} · ${LINE[st]}`}
       on={st === "saved" || st === "saving"}
       onClick={onOpen}
       className={st === "need-key" || st === "error" ? "bg-cleanup text-accent-fg" : undefined}

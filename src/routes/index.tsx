@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Board } from "@/components/board";
 import { CrashBanner, ErrorGate } from "@/components/error-gate";
@@ -31,12 +31,9 @@ function BootError({ error }: { error: Error; reset: () => void }) {
 }
 
 function Home() {
-  const [on, setOn] = useState(false);
   useEffect(() => {
-    setOn(true);
     clearChunkReload();
   }, []);
-  if (!on) return <div className="min-h-svh bg-bg" aria-busy="true" />;
   return (
     <ErrorGate label="board">
       <CrashBanner />

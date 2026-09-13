@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.19 — 2026-09-13
+
+- Expert pass: Cloud save-status leaves the locked wall. Teach drops the extra Wall chip. Projector boot stays dark (no white flash). Dev no longer 404s /tw.css (inlined; production still emits the file).
+
 ## 1.92.18 — 2026-09-12
 
 - 2.0 upgrade in place: compact Admin row, Cloud is save status, Class is Rewards, Modules are On/Off tiles. Wall show-mode drops year rings, weather, and shop-PC copy. Hold the lead / keep the crown. Week #1 class and #1 crew are gilded with rings. Data opens on lead / behind / needs a 3 / wallet. Sheets is a teacher toggle. Berty sits on the wall. Oswego still queued.

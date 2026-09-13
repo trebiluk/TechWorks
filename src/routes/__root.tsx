@@ -44,7 +44,7 @@ export const Route = createRootRoute({
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
-      { rel: "stylesheet", href: `/tw.css?v=${APP_VERSION}` },
+      ...(import.meta.env.PROD ? [{ rel: "stylesheet" as const, href: `/tw.css?v=${APP_VERSION}` }] : []),
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
@@ -64,11 +64,11 @@ export const Route = createRootRoute({
         <style id="tw-css" dangerouslySetInnerHTML={{ __html: twCss }} />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{if(window.parent&&window.parent!==window){window.parent.postMessage({channel:"grok-preview-bridge",version:1,type:"ready",path:location.pathname||"/"},"*");}}catch(e){}try{var t=localStorage.getItem("techworks-theme-v4")||localStorage.getItem("techworks-theme-v3");if(t)document.documentElement.setAttribute("data-theme",t);else document.documentElement.setAttribute("data-theme","solvay");var light={daylight:1,snowday:1,manila:1,peach:1,lemon:1,seafoam:1,lilac:1,rosewater:1,sky:1,linen:1,honey:1,polar:1,projector:1,mintice:1,cottonday:1,wrapping:1,frostday:1,valentine:1,pumpkin:1,cloverday:1,patriotday:1};var th=document.documentElement.getAttribute("data-theme");document.documentElement.setAttribute("data-kind",light[th]?"light":"dark");document.documentElement.setAttribute("data-layout","one");}catch(e){}})();`,
+            __html: `(function(){try{if(window.parent&&window.parent!==window){window.parent.postMessage({channel:"grok-preview-bridge",version:1,type:"ready",path:location.pathname||"/"},"*");}}catch(e){}try{var t=localStorage.getItem("techworks-theme-v4")||localStorage.getItem("techworks-theme-v3");if(t)document.documentElement.setAttribute("data-theme",t);else document.documentElement.setAttribute("data-theme","solvay");var light={daylight:1,snowday:1,manila:1,peach:1,lemon:1,seafoam:1,lilac:1,rosewater:1,sky:1,linen:1,honey:1,polar:1,mintice:1,cottonday:1,wrapping:1,frostday:1,valentine:1,pumpkin:1,cloverday:1,patriotday:1};var th=document.documentElement.getAttribute("data-theme");document.documentElement.setAttribute("data-kind",light[th]?"light":"dark");document.documentElement.setAttribute("data-layout","one");}catch(e){}})();`,
           }}
         />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <PreviewHostBridge />
         <Outlet />
         <Scripts />

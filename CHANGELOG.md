@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.18. READY for Debugzy Publish. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.19. -->
 
 # TechWorks changelog
 
-App version **1.92.18**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.19**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.19 — 2026-09-13
+
+- Expert pass: Cloud save-status leaves the locked wall. Teach drops the extra Wall chip. Projector boot stays dark (no white flash). Dev no longer 404s /tw.css (inlined; production still emits the file).
 
 ## 1.92.18 — 2026-09-12
 
