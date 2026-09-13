@@ -946,10 +946,15 @@ export function createActivityPlan(
     prove?: "skill" | "done" | "both";
     ask?: string;
     do?: string;
+    done?: string;
+    lookFor?: string;
+    skillId?: string;
+    goal?: string;
+    rules?: string[];
     projectId?: string;
   },
 ): { file: EconomyFile; projectId: string; activityId: string } {
-  const name = opts.name.trim() || "New activity";
+  const name = opts.name.trim() || opts.do?.trim().slice(0, 42) || opts.ask?.trim().slice(0, 42) || "New activity";
   const dates = opts.dates.filter(Boolean).sort();
   const grades = opts.grades.length ? opts.grades : [gradeOfPeriod(file, opts.period)];
   const kind: ProjectKind =
@@ -957,19 +962,29 @@ export function createActivityPlan(
   let next = file;
   let projectId = opts.projectId;
   if (!projectId || !projectsOf(next).some((p) => p.id === projectId)) {
-    next = addProject(next, opts.belong === "solo" || opts.belong === "sub" ? name : name, grades);
+    next = addProject(next, name, grades);
     projectId = projectsOf(next).at(-1)?.id ?? "";
   }
+  const skillId = opts.skillId || (opts.belong === "sub" ? "care" : opts.belong === "train" ? "safety" : "draw");
+  const goal =
+    opts.goal ||
+    (opts.belong === "sub" ? "PRODUCTIVITY" : opts.belong === "train" ? "TRAINING" : opts.belong === "contest" ? "CRITIQUE DAY" : "IDEA STAGE");
   const activity: ProjectActivity = {
     id: `act_${Date.now().toString(36)}`,
     name,
-    skillId: opts.belong === "sub" ? "care" : "draw",
-    goal: opts.belong === "sub" ? "PRODUCTIVITY" : opts.belong === "train" ? "TRAINING" : opts.belong === "contest" ? "CRITIQUE DAY" : "IDEA STAGE",
+    skillId,
+    goal,
     today: opts.do?.trim() || "",
+    done: opts.done?.trim() || "",
+    lookFor: opts.lookFor?.trim() || "",
     prove: opts.prove ?? "both",
     days: Math.max(1, dates.length),
   };
   const p = projectsOf(next).find((x) => x.id === projectId) ?? EMPTY_PROJECT;
+  const rules = [...(p.constraints ?? [])];
+  for (const r of opts.rules ?? []) {
+    if (r && !rules.includes(r)) rules.push(r);
+  }
   next = upsertProject(next, {
     ...p,
     id: projectId,
@@ -977,6 +992,8 @@ export function createActivityPlan(
     title: p.title || name,
     grades: [...new Set([...(p.grades ?? []), ...grades])],
     prompt: opts.ask?.trim() || p.prompt,
+    constraints: rules,
+    skills: [...new Set([...(p.skills ?? []), skillId])].slice(0, TOP_SKILLS),
     activities: [...activitiesOf(p), activity],
     start: dates[0] || p.start,
     end: dates.at(-1) || p.end,

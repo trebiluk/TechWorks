@@ -63,6 +63,26 @@ describe("empty desk", () => {
     assert.equal(job.question, "How can a small force move a bigger load?");
     assert.equal(job.title, "Brainstorm levers");
   });
+
+  it("stores the shop move, skill, and goggles", () => {
+    const made = createActivityPlan(desk(), {
+      name: "Levers",
+      belong: "project",
+      period: 1,
+      grades: [6],
+      dates: ["2026-09-14"],
+      ask: "How can a small force move a bigger load?",
+      do: "Sketch one machine.",
+      done: "Point to the load.",
+      skillId: "draw",
+      goal: "IDEA STAGE",
+      rules: ["Goggles on"],
+    });
+    const job = jobCardOf(made.file, 1, "2026-09-14");
+    assert.equal(job.today, "Sketch one machine.");
+    assert.ok(job.rules.includes("Goggles on"));
+    assert.equal(job.skillId, "draw");
+  });
 });
 
 describe("job card", () => {

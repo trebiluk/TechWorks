@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.28. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.29. -->
 
 # TechWorks changelog
 
-App version **1.92.28**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.29**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.29 — 2026-09-13
+
+- New activity matches a shop STEM write: design-process hour (Ask–Sketch–Build–Test–Share–Safety), Ask, Do this now, Done when, skill, goggles, then park the days.
 
 ## 1.92.28 — 2026-09-13
 
