@@ -31,16 +31,19 @@ import {
   laySlots,
   minClock,
   packOf,
+  setTeachAsk,
+  setTeachDo,
+  setTeachLine,
   setTeachObjective,
   setTeachPack,
   setTeachPin,
   slotNow,
   teachDay,
   teachFocusPeriod,
+  teachJob,
   teachObjective,
 } from "@/lib/teach";
 import { cn } from "@/lib/utils";
-import { jobCardOf } from "@/lib/projects";
 
 export function TeachBoard({
   file,
@@ -88,11 +91,11 @@ export function TeachBoard({
   const passing = date === today && !liveHere;
   const left = clock?.left ?? 0;
   const between = date === today && !liveHere && !cur;
-  const job = jobCardOf(file, period, date);
+  const job = teachJob(file, period, date);
   const writing = date !== today || !liveHere;
   const title = writing ? (job.question || job.title || "This class") : cleanup ? "CLEAN UP" : cur?.title ?? "ENTER";
   const line = writing
-    ? job.today || "Write the hour. Deck plays this."
+    ? job.today || "Type what they do this hour."
     : cleanup
       ? "Tools, scraps, seats. Cleanup score is live."
       : cur?.kind === "work"
@@ -128,32 +131,60 @@ export function TeachBoard({
       return (
         <section
           data-teach-hero
-          className={cn("tw-gadget tw-fill-wide shrink-0 p-3", cleanup && "bg-cleanup text-accent-fg")}
+          className={cn("tw-gadget tw-fill-wide flex shrink-0 gap-3 p-3", cleanup && !writing && "bg-cleanup text-accent-fg")}
         >
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <p className={cn("text-[11px] font-bold uppercase tracking-[0.22em]", cleanup && !writing ? "opacity-90" : "text-gold")}>
               {writing ? `This class · ${formatSchoolDate(date)}` : cleanup ? `Cleanup ${Math.max(0, Math.ceil(left))}m` : between ? "Next" : "Today"}
               <span className={cn("ml-2", cleanup && !writing ? "opacity-80" : "text-muted")}>P{period}</span>
               <span className="ml-2 text-muted">Deck plays this</span>
             </p>
-            <h1 className="tw-fill-hero font-display font-semibold tracking-tight">{title}</h1>
-            <p className={cn("tw-fill-line mt-2 max-w-3xl", cleanup ? "opacity-95" : "text-muted")}>{line}</p>
-            {!cleanup ? (
-              <label className="mt-3 flex flex-wrap items-center gap-2 text-base font-semibold">
-                Objective
-                <input
-                  key={`obj-${date}-${period}`}
-                  defaultValue={day.objective ?? ""}
-                  placeholder={obj}
-                  onBlur={(e) => edit(setTeachObjective(file, date, period, e.target.value))}
-                  disabled={!unlocked}
-                  className="edit-field min-h-10 min-w-[12rem] flex-1 rounded-md bg-elevated px-3 text-base font-normal text-fg outline-none ring-0 disabled:opacity-80"
-                  aria-label="Today's objective"
-                />
-              </label>
-            ) : null}
+            {unlocked ? (
+              <div className="mt-2 grid gap-2">
+                <p className="text-sm font-semibold text-gold">Type here. Leave a field to save.</p>
+                <label className="grid gap-1">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Ask</span>
+                  <input
+                    key={`ask-${date}-${period}`}
+                    defaultValue={job.question}
+                    placeholder="How can a small force move a bigger load?"
+                    onBlur={(e) => edit(setTeachAsk(file, date, period, e.target.value))}
+                    className="edit-field tw-fill-hero min-h-12 w-full rounded-md bg-elevated px-3 font-display text-2xl font-semibold tracking-tight text-fg outline-none ring-1 ring-gold/50"
+                    aria-label="Ask the class"
+                  />
+                </label>
+                <label className="grid gap-1">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Do this now</span>
+                  <input
+                    key={`do-${date}-${period}`}
+                    defaultValue={job.today}
+                    placeholder="Name the load. Sketch one machine."
+                    onBlur={(e) => edit(setTeachDo(file, date, period, e.target.value))}
+                    className="edit-field min-h-11 w-full rounded-md bg-elevated px-3 text-base text-fg outline-none ring-1 ring-gold/50"
+                    aria-label="Do this now"
+                  />
+                </label>
+                <label className="grid gap-1">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Objective</span>
+                  <input
+                    key={`obj-${date}-${period}`}
+                    defaultValue={day.objective ?? ""}
+                    placeholder={obj}
+                    onBlur={(e) => edit(setTeachObjective(file, date, period, e.target.value))}
+                    className="edit-field min-h-11 w-full rounded-md bg-elevated px-3 text-base text-fg outline-none ring-1 ring-gold/50"
+                    aria-label="Today's objective"
+                  />
+                </label>
+              </div>
+            ) : (
+              <>
+                <h1 className="tw-fill-hero font-display font-semibold tracking-tight">{title}</h1>
+                <p className={cn("tw-fill-line mt-2 max-w-3xl", cleanup ? "opacity-95" : "text-muted")}>{line}</p>
+              </>
+            )}
             {day.notes ? <p className={cn("mt-1 text-base", cleanup ? "opacity-90" : "text-muted")}>{day.notes}</p> : null}
           </div>
+          {writing ? null : (
           <div className="flex items-center gap-4">
             {featureOn(file, "berty") || cleanup || passing ? (
               <BertyCueBot
@@ -165,6 +196,7 @@ export function TeachBoard({
             ) : null}
             <TeachRing period={period} bellsId={deskBellId(file, today)} cleanup={cleanup && !writing} liveHere={liveHere} />
           </div>
+          )}
         </section>
       );
     }
@@ -197,11 +229,9 @@ export function TeachBoard({
               const on = cur?.id === s.id;
               return (
                 <li key={s.id} className="min-h-0">
-                  <button
-                    type="button"
-                    onClick={() => edit(setTeachPin(file, date, period, day.pin === s.id ? undefined : s.id))}
+                  <div
                     className={cn(
-                      "tw-fill tw-tap flex h-full min-h-24 w-full flex-col justify-center rounded-xl px-3 py-4 text-left",
+                      "tw-fill flex h-full min-h-24 w-full flex-col justify-center rounded-xl px-3 py-3 text-left",
                       on ? (s.clean ? "bg-cleanup text-accent-fg" : "bg-accent text-accent-fg") : "bg-elevated",
                     )}
                   >
@@ -209,8 +239,18 @@ export function TeachBoard({
                       {minClock(s.startMin)} · {s.mins}m
                     </p>
                     <p className="tw-fill-hero font-display font-semibold">{s.title}</p>
-                    <p className="tw-fill-line opacity-80">{s.line}</p>
-                  </button>
+                    {unlocked ? (
+                      <input
+                        key={`line-${date}-${period}-${s.id}`}
+                        defaultValue={s.line}
+                        onBlur={(e) => edit(setTeachLine(file, date, period, s.id, e.target.value))}
+                        className="edit-field mt-1 min-h-10 w-full rounded-md bg-bg/40 px-2 text-sm text-fg outline-none ring-1 ring-gold/50"
+                        aria-label={`${s.title} line`}
+                      />
+                    ) : (
+                      <p className="tw-fill-line opacity-80">{s.line}</p>
+                    )}
+                  </div>
                 </li>
               );
             })}

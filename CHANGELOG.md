@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.26. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.27. -->
 
 # TechWorks changelog
 
-App version **1.92.26**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.27**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.27 — 2026-09-13
+
+- Teach is type-on-the-page: Ask, Do this now, Objective, and the four beats. Leave a field to save. Gear is still drag/hide only.
 
 ## 1.92.26 — 2026-09-13
 

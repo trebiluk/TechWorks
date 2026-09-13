@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.27 — 2026-09-13
+
+- Teach is type-on-the-page: Ask, Do this now, Objective, and the four beats. Leave a field to save. Gear is still drag/hide only.
+
 ## 1.92.26 — 2026-09-13
 
 - Teach writes a school day, not “right now.” Week strip + “Writing Mon · P1.” Deck plays that day. Packs are the hour shape. Plan book → Teach this day. Sunday no longer looks like BETWEEN CLASSES.

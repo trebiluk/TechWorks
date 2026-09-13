@@ -12,7 +12,7 @@ import { DayStrip } from "@/components/day-strip";
 import { WeatherChip } from "@/components/weather-chip";
 import { Berty, BertyPeek } from "@/components/berty";
 import { Fold } from "@/components/fold";
-import { agendaFor, jobCardOf, periodPaceLine, phaseIndex, prettyStage } from "@/lib/projects";
+import { agendaFor, periodPaceLine, phaseIndex, prettyStage } from "@/lib/projects";
 import { JobCard } from "@/components/job-card";
 import { ppeOn, setPpe } from "@/lib/ppe";
 import { dayCardsOn, deskBellId, isSubDay, onAbRoster, schooltoolDone, setSchooltoolDone, specialsOn, visitOn, abOn, cycleVisit } from "@/lib/store";
@@ -26,6 +26,7 @@ import { pollForPeriod } from "@/lib/polls";
 import { featureOn } from "@/lib/features";
 import { bertyPose, showBerty } from "@/lib/berty";
 import { procedureStep } from "@/lib/procedure";
+import { teachJob } from "@/lib/teach";
 import { hideDashRow, loadDashLayout, moveDashRow, moveDashTo, pairMate, patchDash, rowOn, saveDashLayout, DASH_ROWS, DEFAULT_LAYOUT, type DashLayout, type DashRowId } from "@/lib/dash-layout";
 import { SortableItem, SortableList } from "@/components/sortable";
 import { useShopClock } from "@/lib/use-clock";
@@ -261,7 +262,6 @@ export const Dashboard = memo(function Dashboard({
           edit={arrange}
           peeking={peeking}
           live={live}
-          today={today}
           onPeriod={onPeriod}
           onOpenId={onOpenId}
           onNow={() => setViewP(null)}
@@ -578,7 +578,6 @@ function GoalsCard({
   edit?: boolean;
   peeking: boolean;
   live: number | null;
-  today: string;
   onPeriod: (p: number) => void;
   onOpenId: (id: string) => void;
   onNow: () => void;
@@ -588,7 +587,8 @@ function GoalsCard({
   onChange?: (next: EconomyFile) => void;
 }) {
   const { t } = useLang();
-  const job = jobCardOf(file, shown);
+  const today = todayIso();
+  const job = teachJob(file, shown, today);
   const pace = periodPaceLine(file, shown);
   const lanes = [...pace.rows].sort((a, b) => phaseIndex(b.current) - phaseIndex(a.current));
   const sameStage = lanes.length > 0 && lanes.every((c) => prettyStage(c.current) === prettyStage(lanes[0].current));

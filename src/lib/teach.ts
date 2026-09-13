@@ -1,7 +1,7 @@
 import type { EconomyFile } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
 import { cloneFile } from "@/lib/clone";
-import { agendaFor, prettyStage } from "@/lib/projects";
+import { agendaFor, jobCardOf, prettyStage } from "@/lib/projects";
 import { bellForPeriod, cleanupMinsNow, periodNext, periodNow } from "@/lib/bells";
 import { deskBellId, isSubDay } from "@/lib/store";
 
@@ -95,6 +95,9 @@ export type TeachDay = {
   objective?: string;
   pin?: string;
   notes?: string;
+  ask?: string;
+  do?: string;
+  lines?: Record<string, string>;
 };
 
 export type LaidSlot = TeachSlot & { startMin: number; endMin: number; mins: number };
@@ -119,6 +122,16 @@ export function teachObjective(file: EconomyFile, date: string, period: number):
   const a = agendaFor(file, period, date);
   const stage = prettyStage(a.goal);
   return [a.activityName, stage, a.title].filter(Boolean).filter((x, i, arr) => arr.indexOf(x) === i).join(" · ");
+}
+
+export function teachJob(file: EconomyFile, period: number, date: string) {
+  const job = jobCardOf(file, period, date);
+  const day = teachDay(file, date, period);
+  return {
+    ...job,
+    question: day.ask?.trim() || job.question,
+    today: day.do?.trim() || job.today,
+  };
 }
 
 function toMin(hhmm: string): number {
@@ -147,11 +160,12 @@ export function laySlots(file: EconomyFile, date: string, period: number): LaidS
     const raw = Math.max(1, Math.round((workSpan * (s.w || 1)) / weight));
     const endMin = last ? cut : Math.min(cut - (body.length - 1 - i), t + raw);
     const mins = Math.max(1, endMin - t);
-    out.push({ ...s, startMin: t, endMin: t + mins, mins });
+    const line = teachDay(file, date, period).lines?.[s.id] ?? s.line;
+    out.push({ ...s, line, startMin: t, endMin: t + mins, mins });
     t += mins;
   });
   if (tail) {
-    out.push({ ...tail, startMin: cut, endMin: end, mins: Math.max(1, end - cut) });
+    out.push({ ...tail, line: teachDay(file, date, period).lines?.[tail.id] ?? tail.line, startMin: cut, endMin: end, mins: Math.max(1, end - cut) });
   } else if (out.length) {
     out[out.length - 1].endMin = end;
     out[out.length - 1].mins = Math.max(1, end - out[out.length - 1].startMin);
@@ -235,6 +249,23 @@ export function setTeachPack(file: EconomyFile, date: string, period: number, pa
 
 export function setTeachObjective(file: EconomyFile, date: string, period: number, objective: string): EconomyFile {
   return putDay(file, date, period, { objective: objective.trim().slice(0, 120) });
+}
+
+export function setTeachAsk(file: EconomyFile, date: string, period: number, ask: string): EconomyFile {
+  return putDay(file, date, period, { ask: ask.trim().slice(0, 120) || undefined });
+}
+
+export function setTeachDo(file: EconomyFile, date: string, period: number, line: string): EconomyFile {
+  return putDay(file, date, period, { do: line.trim().slice(0, 160) || undefined });
+}
+
+export function setTeachLine(file: EconomyFile, date: string, period: number, slotId: string, line: string): EconomyFile {
+  const day = teachDay(file, date, period);
+  const lines = { ...(day.lines ?? {}) };
+  const next = line.trim().slice(0, 80);
+  if (next) lines[slotId] = next;
+  else delete lines[slotId];
+  return putDay(file, date, period, { lines });
 }
 
 export function setTeachPin(file: EconomyFile, date: string, period: number, pin?: string): EconomyFile {

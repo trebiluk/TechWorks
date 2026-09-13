@@ -3,11 +3,11 @@ import { todayIso } from "@/lib/calendar";
 import type { DeckSlide } from "@/data/deck";
 import type { DeckPack } from "@/lib/deck-store";
 import { jobCardOf } from "@/lib/projects";
-import { laySlots, packOf, teachObjective } from "@/lib/teach";
+import { laySlots, packOf, teachJob, teachObjective } from "@/lib/teach";
 
 /** Deck plays this period’s Teach plan. Teach is the only author. */
 export function teachDeckOf(file: EconomyFile, period: number, date = todayIso()): DeckPack {
-  const job = jobCardOf(file, period, date);
+  const job = teachJob(file, period, date);
   const obj = teachObjective(file, date, period);
   const pack = packOf(file, date, period);
   const slots = laySlots(file, date, period);
