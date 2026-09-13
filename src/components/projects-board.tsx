@@ -81,7 +81,7 @@ export function ProjectsBoard({
   }, [kind, list]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
+    <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain pb-8">
       <header className="shrink-0 space-y-2">
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="font-display text-2xl font-semibold tracking-tight">Projects</h1>
@@ -118,7 +118,7 @@ export function ProjectsBoard({
         />
       </header>
 
-      <div className="min-h-0 flex-1 overflow-auto">
+      <div className="min-h-0">
         {pane === "plan" && project ? (
           <PlanBook
             file={file}

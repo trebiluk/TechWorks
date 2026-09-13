@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.23. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.24. -->
 
 # TechWorks changelog
 
-App version **1.92.23**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.24**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.24 — 2026-09-13
+
+- Plan the week: tap a day, pick the task, score skill / deliverable / both. Crews can differ. No 4- or 8-day lock. Skills Watch scrolls.
 
 ## 1.92.23 — 2026-09-13
 

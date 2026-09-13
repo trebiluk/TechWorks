@@ -209,7 +209,7 @@ export function SkillsBoard({
   ];
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
+    <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain pb-8">
       <div className="rounded-xl bg-surface px-2 py-2">
         <div className="flex flex-wrap items-center gap-1">
           <QuarterChip />
@@ -249,7 +249,7 @@ export function SkillsBoard({
       {mode !== "watch" ? <SkillGuide /> : null}
 
       {mode === "watch" ? (
-        <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
+        <div className="flex min-h-0 flex-1 flex-col gap-2">
           <div className="rounded-xl bg-surface px-3 py-2">
             <div className="flex flex-wrap items-baseline gap-2">
               <p className="font-display text-2xl font-semibold tracking-tight">

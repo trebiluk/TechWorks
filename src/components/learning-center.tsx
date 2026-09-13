@@ -93,7 +93,7 @@ export function LearningCenter({
           ))}
         </nav>
       </header>
-      <div className="min-h-0 flex-1 overflow-hidden">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
         {pane === "book" ? (
           <Suspense fallback={<p className="px-3 py-8 text-center text-sm text-gold">Loading gradebook…</p>}>
             <GradeBoard file={file} onChange={onChange} unlocked={unlocked} onNeedPin={onNeedPin} onOpenId={onOpenId} />
@@ -102,7 +102,7 @@ export function LearningCenter({
         {pane === "guide" ? <GuideDesk file={file} /> : null}
         {pane === "words" ? <GlossaryDesk /> : null}
         {pane === "skills" ? (
-          <div className="flex h-full min-h-0 flex-col overflow-hidden">
+          <div className="flex h-full min-h-0 flex-col overflow-y-auto overscroll-contain">
             <div className="mb-2 hidden gap-1 md:flex">
               <Chip on={family === "shop"} onClick={() => setFamily("shop")}>
                 <Hammer className="mr-1 size-3.5" />
@@ -113,7 +113,7 @@ export function LearningCenter({
                 <Word>Soft</Word>
               </Chip>
             </div>
-            <div className="min-h-0 flex-1 overflow-hidden">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
               <SkillsBoard file={file} onChange={onChange} unlocked={unlocked} onNeedPin={onNeedPin} onOpenId={onOpenId} family={family} onRankUp={onRankUp} />
             </div>
           </div>

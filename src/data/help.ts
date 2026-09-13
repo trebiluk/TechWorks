@@ -347,7 +347,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Skills",
     title: "Projects",
     tags: ["project", "agenda", "activity", "plan book", "cycle", "gradebook", "stem", "driving question", "unit"],
-    body: "Learn → Projects opens on Plan: a week of this period. Each activity has 1–4 days (Modeling is two by default). Drag to reorder. The sequence fills the unit (4 days = one cycle, 8 days = two). Tap an activity, then a day, to park just that class — the rest of the unit stays. Floor puts the unit on a period. Write the job is the five wall lines. Options is the library. Teach → Plan book jumps here. Admin → Day is lunch, sub, and wall cards — not the unit calendar.",
+    body: "Learn → Projects opens on Plan: fill the week for this period. Tap a day, pick the task, then Skill / Deliverable / Both. Crews can differ. Tasks last 1–5 days — no 4- or 8-day lock. Floor parks the unit on a period. Write the job is the wall lines. Teach still authors today.",
   },
   {
     id: "studyhall",

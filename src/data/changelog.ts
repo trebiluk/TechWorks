@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.24 — 2026-09-13
+
+- Plan the week: tap a day, pick the task, score skill / deliverable / both. Crews can differ. No 4- or 8-day lock. Skills Watch scrolls.
+
 ## 1.92.23 — 2026-09-13
 
 - Deck title no longer sits on the logo or copyright. Job sentence fits the plate.

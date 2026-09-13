@@ -46,6 +46,8 @@ export type ProjectActivity = {
   lookFor?: string;
   /** Shop days this activity holds. 1 = one class, 2+ = keep going. */
   days?: number;
+  /** What you score: skill 1–4, the deliverable, or both. */
+  prove?: "skill" | "done" | "both";
 };
 
 export type ProjectStage = {
@@ -82,7 +84,7 @@ export const XP_TAX_PER_LAG = 2;
 export const TOP_SKILLS = 4;
 
 export const SLOTS: DaySlot[] = ["D1", "D2", "D3", "D4"];
-export const SPAN_DAYS = [1, 2, 3, 4] as const;
+export const SPAN_DAYS = [1, 2, 3, 4, 5] as const;
 
 /** Shop build sequence. Cycle 1 Day 1 is always idea/design. Two cycles = full path. */
 export const WISE_PATH: { goal: string; skillId: string }[] = [
@@ -971,11 +973,33 @@ export function pinDayActivity(file: EconomyFile, date: string, period: number, 
     periodGoals: { ...(prev?.periodGoals ?? {}) },
     crewGoals: { ...(prev?.crewGoals ?? {}) },
     periodActivity: { ...(prev?.periodActivity ?? {}) },
+    crewActivity: { ...(prev?.crewActivity ?? {}) },
   };
   if (activityId) day.periodActivity![String(period)] = activityId;
   else delete day.periodActivity![String(period)];
   next.meta.dayLog = { ...(next.meta.dayLog ?? {}), [date]: day };
   return next;
+}
+
+export function pinCrewActivity(file: EconomyFile, date: string, period: number, crewKey: string, activityId: string): EconomyFile {
+  const next = cloneFile(file);
+  const prev = next.meta.dayLog?.[date];
+  const day = {
+    ...(prev ?? { periodGoals: {}, crewGoals: {} }),
+    periodGoals: { ...(prev?.periodGoals ?? {}) },
+    crewGoals: { ...(prev?.crewGoals ?? {}) },
+    periodActivity: { ...(prev?.periodActivity ?? {}) },
+    crewActivity: { ...(prev?.crewActivity ?? {}) },
+  };
+  const key = `${period}|${crewKey}`;
+  if (activityId) day.crewActivity![key] = activityId;
+  else delete day.crewActivity![key];
+  next.meta.dayLog = { ...(next.meta.dayLog ?? {}), [date]: day };
+  return next;
+}
+
+export function proveOf(a?: ProjectActivity): "skill" | "done" | "both" {
+  return a?.prove === "skill" || a?.prove === "done" ? a.prove : "both";
 }
 
 export function addActivity(file: EconomyFile, projectId: string, name: string, skillId = "draw"): EconomyFile {
