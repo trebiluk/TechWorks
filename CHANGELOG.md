@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.24. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.25. -->
 
 # TechWorks changelog
 
-App version **1.92.24**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.25**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.25 — 2026-09-13
+
+- Edit this screen uses this page’s tools (Wall arrange, Teach plates). No more Day-settings drawer on every gear tap. Deck / Club wall / Hall jump to the real desk.
 
 ## 1.92.24 — 2026-09-13
 

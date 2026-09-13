@@ -35,8 +35,7 @@ import { VersionChip } from "@/components/version-chip";
 import { ErrorGate } from "@/components/error-gate";
 import { AdminHub } from "@/components/admin-hub";
 import type { LearnStart } from "@/components/learning-center";
-import { SettingsBody, type AdminPane } from "@/components/settings";
-import { gearTabFor } from "@/components/admin-drawer";
+import type { AdminPane } from "@/components/settings";
 import { modeOf } from "@/components/mode-nav";
 import { AppNav } from "@/components/app-nav";
 import { sectionOf, type AppSection, type NavTab } from "@/lib/app-nav";
@@ -73,6 +72,20 @@ const RANK_KEY = "techworks-rank-board";
 
 type View = "crew" | "score" | "overview" | "week" | "year" | "data" | "wallet" | "lucky" | "skills" | "store" | "prints" | "portal" | "grades" | "studyhall" | "hallwall" | "club" | "clubwall" | "projects" | "admin" | "teach" | "polls" | "deck" | "roster";
 type DeskPanel = "score" | "schedule" | "config";
+
+function gearHint(view: string): string {
+  if (view === "teach" || view === "polls") return "Drag plates. Hide with the eye. Objective is on Today.";
+  if (view === "week" || view === "year") return "Week race is this page. Data is the look-back.";
+  if (view === "data") return "Presets and the spreadsheet are on this page.";
+  if (view === "skills" || view === "grades") return "Watch, Sit-down, and Book are this page.";
+  if (view === "projects") return "Plan the week on this page. Floor parks the unit.";
+  if (view === "club") return "Club desk. Dates, signup, stations, brief, late bus.";
+  if (view === "studyhall") return "Hall desk is this page.";
+  if (view === "prints") return "Prints is this page.";
+  if (view === "score" || view === "crew") return "Crew score is this page.";
+  if (view === "wallet" || view === "lucky" || view === "store") return "Pay tools are on this page.";
+  return "Tools for this screen are on the page. Admin is the orange key.";
+}
 
 export function Board() {
   const seed = snapshot as unknown as EconomyFile;
@@ -687,6 +700,25 @@ export function Board() {
                       setGearOpen(true);
                       return;
                     }
+                    if (view === "deck") {
+                      go("teach");
+                      setGearOpen(true);
+                      return;
+                    }
+                    if (view === "clubwall") {
+                      go("club");
+                      setGearOpen(true);
+                      return;
+                    }
+                    if (view === "hallwall") {
+                      go("studyhall");
+                      setGearOpen(true);
+                      return;
+                    }
+                    if (view === "admin") {
+                      setGearOpen(false);
+                      return;
+                    }
                     setGearOpen((v) => !v);
                   }}
                   className={cn(
@@ -763,6 +795,11 @@ export function Board() {
         </button>
       ) : null}
       <div className="board-main flex min-h-0 flex-1 flex-col overflow-hidden">
+      {unlocked && gearOpen && view !== "overview" && view !== "admin" ? (
+        <p className="shrink-0 px-3 py-1.5 text-sm font-semibold text-gold" data-gear-hint>
+          {gearHint(view)}
+        </p>
+      ) : null}
       <CleanupStage file={wallFile} unlocked={unlocked} onChange={commitDesk} off={unlocked && view === "admin"}>
       <Suspense fallback={null}>
       {view === "roster" && unlocked ? (
@@ -915,7 +952,7 @@ export function Board() {
             }}
           />
         ) : (
-        <TeachBoard file={wallFile} unlocked={unlocked} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onBerty={() => setOpenId(HOUSE_BERTY)} onPlan={() => { setLearnStart("projects"); go("skills"); }} onWall={() => go("overview")} />
+        <TeachBoard file={wallFile} unlocked={unlocked} editing={unlocked && gearOpen} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onBerty={() => setOpenId(HOUSE_BERTY)} onPlan={() => { setLearnStart("projects"); go("skills"); }} onWall={() => go("overview")} />
         )
       ) : view === "polls" ? (
         <PollBoard file={file} unlocked={unlocked} onChange={commitDesk} onNeedPin={() => askPin()} />
@@ -937,7 +974,7 @@ export function Board() {
         <DataBoard file={wallFile} onOpenProfile={(id) => setOpenId(id)} onWeek={() => go("week")} onYear={() => go("year")} />
       ) : (
         <ErrorGate label="wall">
-        {wallDash(false)}
+        {wallDash(unlocked && gearOpen)}
         </ErrorGate>
       )}
       {helpOpen && !crewOn ? <HelpPanel onClose={() => setHelpOpen(false)} wallOnly={!unlocked} /> : null}
@@ -982,32 +1019,6 @@ export function Board() {
         />
       )}
       </div>
-      {unlocked && gearOpen ? (
-        <div className="fixed inset-0 z-40 flex justify-end bg-bg/70" onClick={() => setGearOpen(false)}>
-          <aside
-            className="flex h-full w-full max-w-md flex-col overflow-hidden bg-surface ring-1 ring-border"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <header className="flex items-center justify-between gap-2 px-3 py-2">
-              <p className="text-sm font-bold uppercase tracking-wide">Edit this screen</p>
-              <button type="button" onClick={() => setGearOpen(false)} className="tw-tap min-h-10 rounded-md bg-elevated px-3 text-sm font-semibold">
-                Done
-              </button>
-            </header>
-            <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-6">
-              <SettingsBody
-                file={file}
-                tab={gearTabFor(view)}
-                onChange={commitDesk}
-                onExportNames={exportNames}
-                onExport={() => void exportLive()}
-                onSave={saveNow}
-                onTips={setDescribeOn}
-              />
-            </div>
-          </aside>
-        </div>
-      ) : null}
       {pinOpen ? (
         <PinPad
           want={pendingView === "crew" ? "crew" : "teacher"}

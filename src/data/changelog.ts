@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.25 — 2026-09-13
+
+- Edit this screen uses this page’s tools (Wall arrange, Teach plates). No more Day-settings drawer on every gear tap. Deck / Club wall / Hall jump to the real desk.
+
 ## 1.92.24 — 2026-09-13
 
 - Plan the week: tap a day, pick the task, score skill / deliverable / both. Crews can differ. No 4- or 8-day lock. Skills Watch scrolls.

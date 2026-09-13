@@ -45,6 +45,7 @@ import { jobCardOf } from "@/lib/projects";
 export function TeachBoard({
   file,
   unlocked,
+  editing,
   onChange,
   onNeedPin,
   onPolls,
@@ -54,6 +55,7 @@ export function TeachBoard({
 }: {
   file: EconomyFile;
   unlocked: boolean;
+  editing?: boolean;
   onChange: (next: EconomyFile) => void;
   onNeedPin: () => void;
   onPolls?: () => void;
@@ -89,7 +91,7 @@ export function TeachBoard({
         ? job.today || cur?.line
         : cur?.line ?? "Sit with your crew.";
   const [layout, setLayout] = useState<TeachLayout>(() => loadTeachLayout());
-  const sortOn = unlocked;
+  const sortOn = unlocked && editing !== false;
 
   function commitLayout(next: TeachLayout) {
     setLayout(next);
