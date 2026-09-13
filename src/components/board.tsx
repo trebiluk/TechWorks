@@ -958,7 +958,7 @@ export function Board() {
             }}
           />
         ) : (
-        <TeachBoard file={wallFile} unlocked={unlocked} editing={unlocked && gearOpen} date={planDate} onDate={setPlanDate} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onBerty={() => setOpenId(HOUSE_BERTY)} onPlan={() => { setLearnStart("projects"); go("skills"); }} onWall={() => go("overview")} onDeck={() => go("deck")} />
+        <TeachBoard file={wallFile} unlocked={unlocked} editing={unlocked && gearOpen} date={planDate} onDate={setPlanDate} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onBerty={() => setOpenId(HOUSE_BERTY)} onPlan={() => { setLearnStart("projects"); go("skills"); }} onWords={() => { setLearnStart("words"); go("skills"); }} onWall={() => go("overview")} onDeck={() => go("deck")} />
         )
       ) : view === "polls" ? (
         <PollBoard file={file} unlocked={unlocked} onChange={commitDesk} onNeedPin={() => askPin()} />

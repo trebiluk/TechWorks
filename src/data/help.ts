@@ -329,6 +329,13 @@ export const HELP_ARTICLES: HelpArticle[] = [
     body: "Attendance lives in SchoolTool, not here. Dashboard shows a dashed SCHOOLTOOL OPEN banner until you tap ST in. After 8:15 (or the delay attend-by) it pulses red so the class can remind you. The wall beeps during P1. Link opens SchoolTool. Desk ST chip still works.",
   },
   {
+    id: "vocab",
+    category: "Skills",
+    title: "Word Heat",
+    tags: ["vocab", "glossary", "words", "quiz", "blooket", "heat"],
+    body: "Learn → Words → Word Heat. Shop vocab from the bank. Projector-size. Keys 1–4. Streak score is this heat, not wallet, not a grade. Review misses at the end. Off is Modules → Word Heat.",
+  },
+  {
     id: "watch",
     category: "Skills",
     title: "Watch one skill",

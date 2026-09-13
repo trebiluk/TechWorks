@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.31 — 2026-09-13
+
+- Word Heat: shop vocab quiz on Words (keys 1–4, streak score, review misses). Glossary bank. Not wallet, not a grade.
+
 ## 1.92.30 — 2026-09-13
 
 - Print lesson (Save as PDF): driving question, safety, week at a glance, skills × NY MST 5 matrix, each class Ask/Do/Done. From Plan book or Teach.

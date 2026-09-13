@@ -2,9 +2,13 @@ import { useMemo, useState } from "react";
 import { GLOSSARY_CATS, glossaryLetters, searchGlossary, type GlossaryCat, type GlossaryEntry } from "@/data/glossary";
 import { useLang } from "@/lib/i18n-hook";
 import { skillTrackOf } from "@/lib/skills";
+import { VocabGame } from "@/components/vocab-game";
+import { featureOn } from "@/lib/features";
+import type { EconomyFile } from "@/lib/economy";
 import { cn } from "@/lib/utils";
 
-export function GlossaryDesk() {
+export function GlossaryDesk({ file }: { file?: EconomyFile }) {
+  const [mode, setMode] = useState<"bank" | "heat">("bank");
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<GlossaryCat | "All">("All");
   const [pick, setPick] = useState<string>("ppe");
@@ -26,6 +30,30 @@ export function GlossaryDesk() {
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-2 overflow-hidden">
+      {file && featureOn(file, "vocab") ? (
+        <div className="flex shrink-0 gap-1">
+          <button
+            type="button"
+            onClick={() => setMode("bank")}
+            className={cn("tw-tap min-h-10 rounded-xl px-3 text-sm font-semibold", mode === "bank" ? "bg-fg text-bg" : "bg-elevated text-muted")}
+          >
+            Bank
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("heat")}
+            className={cn("tw-tap min-h-10 rounded-xl px-3 text-sm font-semibold", mode === "heat" ? "bg-gold text-bg" : "bg-elevated text-muted")}
+          >
+            Word Heat
+          </button>
+        </div>
+      ) : null}
+      {mode === "heat" && file && featureOn(file, "vocab") ? (
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <VocabGame />
+        </div>
+      ) : (
+      <div className="flex h-full min-h-0 flex-col gap-2 overflow-hidden">
       <div className="shrink-0 space-y-2">
         <input
           value={q}
@@ -78,6 +106,8 @@ export function GlossaryDesk() {
           ))}
         </ul>
       </div>
+    </div>
+      )}
     </div>
   );
 }

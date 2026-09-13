@@ -102,7 +102,7 @@ export function LearningCenter({
           </Suspense>
         ) : null}
         {pane === "guide" ? <GuideDesk file={file} /> : null}
-        {pane === "words" ? <GlossaryDesk /> : null}
+        {pane === "words" ? <GlossaryDesk file={file} /> : null}
         {pane === "skills" ? (
           <div className="flex h-full min-h-0 flex-col overflow-y-auto overscroll-contain">
             <div className="mb-2 hidden gap-1 md:flex">

@@ -57,6 +57,7 @@ export function TeachBoard({
   onPolls,
   onBerty,
   onPlan,
+  onWords,
   onWall,
   onDeck,
 }: {
@@ -70,6 +71,7 @@ export function TeachBoard({
   onPolls?: () => void;
   onBerty?: () => void;
   onPlan?: () => void;
+  onWords?: () => void;
   onWall?: () => void;
   onDeck?: () => void;
 }) {
@@ -306,6 +308,11 @@ export function TeachBoard({
             {onPlan ? (
               <button type="button" onClick={onPlan} className="tw-tap min-h-8 rounded-full px-3 text-[12px] font-medium tw-btn-2">
                 Plan book
+              </button>
+            ) : null}
+            {onWords ? (
+              <button type="button" onClick={onWords} className="tw-tap min-h-8 rounded-full px-3 text-[12px] font-medium tw-btn-2">
+                Word Heat
               </button>
             ) : null}
           {onPolls ? (
