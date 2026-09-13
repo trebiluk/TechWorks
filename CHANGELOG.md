@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.20. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.21. -->
 
 # TechWorks changelog
 
-App version **1.92.20**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.21**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.21 — 2026-09-13
+
+- Deck plays this period’s Teach plan. One author. Edit on Teach. Present / Space still advance slides.
 
 ## 1.92.20 — 2026-09-13
 

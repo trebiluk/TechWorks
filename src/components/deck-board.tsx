@@ -1,17 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
-import { ChevronLeft, ChevronRight, Copy, Download, Maximize2, Pencil, Plus, RotateCcw, Save, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { ChevronLeft, ChevronRight, Maximize2, Pencil } from "lucide-react";
 import { Berty } from "@/components/berty";
 import { COPYRIGHT_LINE } from "@/lib/copy";
-import { DECK, type DeckCard, type DeckKind, type DeckSlide } from "@/data/deck";
-import { blankSlide, cloneDeck, copyDeckToQuarter, DECK_QUARTERS, downloadDeck, hasQuarterDeck, liveDeckQuarter, loadDeck, loadQuarterDeck, resetDeck, saveDeck, saveQuarterDeck, sanitizeSlide, setLiveDeckQuarter, type DeckQuarter } from "@/lib/deck-store";
-import { quarterNow, todayIso } from "@/lib/calendar";
+import type { DeckCard, DeckSlide } from "@/data/deck";
+import type { EconomyFile } from "@/lib/economy";
+import { shopBells } from "@/lib/economy";
+import { todayIso } from "@/lib/calendar";
+import { useShopClock } from "@/lib/use-clock";
+import { deskBellId } from "@/lib/store";
+import { teachDeckOf } from "@/lib/teach-deck";
+import { teachFocusPeriod } from "@/lib/teach";
 import { cn } from "@/lib/utils";
 import { isTypingTarget } from "@/lib/keys";
-
-const FILE = "/TechWorks-Deck.pptx";
-const KINDS: DeckKind[] = ["title", "cards", "steps", "ladder", "letters", "now", "blank", "close"];
 
 function Field({
   value,
@@ -351,48 +353,32 @@ function Stage({
 }
 
 export function DeckBoard({
+  file,
   unlocked = false,
   onNeedPin,
+  onTeach,
 }: {
+  file: EconomyFile;
   unlocked?: boolean;
   onNeedPin?: () => void;
+  onTeach?: () => void;
 }) {
-  const [pack, setPack] = useState(() => loadDeck());
-  const [q, setQ] = useState<DeckQuarter>(() => liveDeckQuarter());
+  const today = todayIso();
+  const bellsId = deskBellId(file, today);
+  const now = useShopClock(bellsId, "beat");
+  const shop = shopBells(file).map((b) => b.period);
+  const [pick, setPick] = useState<number | null>(null);
+  const period = teachFocusPeriod(file, today, now, pick);
+  const pack = useMemo(() => teachDeckOf(file, period, today), [file, period, today]);
   const [i, setI] = useState(0);
-  const [editing, setEditing] = useState(false);
-  const [dirty, setDirty] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [full, setFull] = useState(false);
   const stage = useRef<HTMLDivElement>(null);
-  const saveTimer = useRef(0);
   const slides = pack.slides;
-  const slide = slides[i] ?? slides[0]!;
-  const liveEdit = editing && unlocked && !full;
+  const slide = slides[Math.min(i, slides.length - 1)] ?? slides[0]!;
 
-  const persist = useCallback((next: typeof pack, now = false) => {
-    setPack(next);
-    setDirty(true);
-    setSaved(false);
-    if (saveTimer.current) window.clearTimeout(saveTimer.current);
-    const write = () => {
-      saveDeck(next);
-      saveQuarterDeck(q, next);
-      setDirty(false);
-      setSaved(true);
-    };
-    if (now) write();
-    else saveTimer.current = window.setTimeout(write, 480);
-  }, [q]);
-
-  const patchSlide = useCallback(
-    (partial: Partial<DeckSlide>) => {
-      const cur = slides[i];
-      if (!cur) return;
-      persist({ ...pack, slides: slides.map((s, n) => (n === i ? { ...s, ...partial } : s)) });
-    },
-    [i, pack, persist, slides],
-  );
+  useEffect(() => {
+    setI(0);
+  }, [period, pack.title]);
 
   const go = useCallback(
     (d: number) => {
@@ -404,7 +390,6 @@ export function DeckBoard({
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (isTypingTarget(e)) return;
-      if (liveEdit && (e.key === " " || e.code === "Space")) return;
       if (e.key === "ArrowRight" || e.key === " " || e.code === "Space" || e.key === "PageDown") {
         e.preventDefault();
         go(1);
@@ -415,16 +400,13 @@ export function DeckBoard({
       else if (e.key === "End") setI(slides.length - 1);
       else if (e.key === "f" || e.key === "F") void stage.current?.requestFullscreen?.();
       else if (e.key === "e" || e.key === "E") {
-        if (unlocked) setEditing((v) => !v);
+        if (unlocked) onTeach?.();
         else onNeedPin?.();
-      } else if ((e.metaKey || e.ctrlKey) && e.key === "s") {
-        e.preventDefault();
-        persist(pack, true);
       }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [go, liveEdit, onNeedPin, pack, persist, slides.length, unlocked]);
+  }, [go, onNeedPin, onTeach, slides.length, unlocked]);
 
   useEffect(() => {
     function onFs() {
@@ -434,101 +416,36 @@ export function DeckBoard({
     return () => document.removeEventListener("fullscreenchange", onFs);
   }, []);
 
-  useEffect(() => () => {
-    if (saveTimer.current) window.clearTimeout(saveTimer.current);
-  }, []);
-
-  function askEdit() {
+  function askTeach() {
     if (!unlocked) {
       onNeedPin?.();
       return;
     }
-    setEditing((v) => !v);
+    onTeach?.();
   }
-
-  function addCard() {
-    const cards = [...(slide.cards ?? []), { title: "New", line: "Type here." }];
-    patchSlide({ cards: cards.slice(0, 8) });
-  }
-
-  function dropCard() {
-    const cards = (slide.cards ?? []).slice(0, -1);
-    patchSlide({ cards });
-  }
-
-  function dupe() {
-    const copy = sanitizeSlide({ ...slide, id: `s${Date.now().toString(36)}` }, "dupe");
-    const next = [...slides];
-    next.splice(i + 1, 0, copy);
-    persist({ ...pack, slides: next }, true);
-    setI(i + 1);
-  }
-
-  function addSlide() {
-    const next = [...slides, blankSlide()];
-    persist({ ...pack, slides: next }, true);
-    setI(next.length - 1);
-    setEditing(true);
-  }
-
-  function dropSlide() {
-    if (slides.length < 2) return;
-    const next = slides.filter((_, n) => n !== i);
-    persist({ ...pack, slides: next }, true);
-    setI(Math.max(0, i - 1));
-  }
-
-  function resetThis() {
-    const factory = DECK.find((s) => s.id === slide.id) ?? DECK[Math.min(i, DECK.length - 1)]!;
-    patchSlide(cloneDeck([factory])[0]!);
-  }
-
-  function resetAll() {
-    const next = resetDeck();
-    setPack(next);
-    setI(0);
-    setDirty(false);
-    setSaved(true);
-    saveQuarterDeck(q, next);
-  }
-
-  function switchQ(next: DeckQuarter) {
-    if (next === q) return;
-    saveDeck(pack);
-    saveQuarterDeck(q, pack);
-    setLiveDeckQuarter(next);
-    const loaded = loadQuarterDeck(next);
-    const nextPack = loaded ?? { title: pack.title, slides: cloneDeck(pack.slides) };
-    if (!loaded) saveQuarterDeck(next, nextPack);
-    setPack(nextPack);
-    saveDeck(nextPack);
-    setQ(next);
-    setI(0);
-    setDirty(false);
-    setSaved(true);
-  }
-
-  const liveQ = quarterNow(todayIso()).n;
-  const nextQ = liveQ < 4 ? (`Q${liveQ + 1}` as DeckQuarter) : null;
 
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-2">
       <div className="flex flex-wrap items-center gap-2">
-        {liveEdit ? (
-          <input
-            value={pack.title}
-            onChange={(e) => persist({ ...pack, title: e.target.value })}
-            onKeyDown={(e) => e.stopPropagation()}
-            className="min-h-10 min-w-[12rem] rounded-md bg-elevated px-3 text-sm font-medium uppercase tracking-wider"
-          />
-        ) : (
-          <p className="text-sm font-medium uppercase tracking-wider text-subtle">{pack.title}</p>
-        )}
+        <p className="text-sm font-medium uppercase tracking-wider text-subtle">{pack.title}</p>
         <span className="font-mono text-xs text-muted">
-          {i + 1} / {slides.length}
+          {Math.min(i + 1, slides.length)} / {slides.length}
         </span>
-        {dirty ? <span className="font-mono text-[11px] uppercase tracking-wide text-gold">Unsaved</span> : null}
-        {saved && !dirty ? <span className="font-mono text-[11px] uppercase tracking-wide text-muted">Saved on this desk</span> : null}
+        <div className="flex flex-wrap gap-1">
+          {shop.map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => setPick(p)}
+              className={cn(
+                "tw-tap min-h-9 rounded-md px-2.5 font-mono text-xs font-bold",
+                p === period ? "bg-accent text-accent-fg" : "bg-elevated text-muted",
+              )}
+            >
+              P{p}
+            </button>
+          ))}
+        </div>
         <div className="ml-auto flex flex-wrap gap-1">
           <button type="button" onClick={() => go(-1)} className="tw-tap inline-flex size-11 items-center justify-center rounded-md bg-elevated" aria-label="Previous slide">
             <ChevronLeft className="size-5" />
@@ -543,109 +460,31 @@ export function DeckBoard({
           >
             <Maximize2 className="size-4" /> Present
           </button>
-          <button
-            type="button"
-            onClick={askEdit}
-            className={cn("tw-tap inline-flex min-h-11 items-center gap-2 rounded-md px-3 text-sm font-semibold", liveEdit ? "bg-accent text-accent-fg" : "bg-elevated")}
-          >
-            <Pencil className="size-4" /> {liveEdit ? "Editing" : "Edit"}
-          </button>
-          <button
-            type="button"
-            onClick={() => persist(pack, true)}
-            className="tw-tap inline-flex min-h-11 items-center gap-2 rounded-md bg-accent px-3 text-sm font-semibold text-accent-fg"
-          >
-            <Save className="size-4" /> Save
-          </button>
-          <a href={FILE} download className="tw-tap inline-flex min-h-11 items-center gap-2 rounded-md bg-elevated px-3 text-sm font-semibold">
-            <Download className="size-4" /> PowerPoint
-          </a>
-        </div>
-      </div>
-      <div className="flex flex-wrap items-center gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wide text-subtle">Pack</span>
-        {DECK_QUARTERS.map((id) => {
-          const snap = hasQuarterDeck(id);
-          return (
+          {onTeach ? (
             <button
-              key={id}
               type="button"
-              onClick={() => switchQ(id)}
-              className={cn(
-                "tw-tap min-h-9 rounded-md px-2.5 font-mono text-xs font-bold",
-                q === id ? "bg-accent text-accent-fg" : snap ? "bg-elevated text-fg" : "bg-elevated text-muted",
-              )}
+              onClick={askTeach}
+              className="tw-tap inline-flex min-h-11 items-center gap-2 rounded-md bg-gold px-3 text-sm font-semibold text-bg"
             >
-              {id}
+              <Pencil className="size-4" /> Edit on Teach
             </button>
-          );
-        })}
-        {unlocked && nextQ ? (
-          <button
-            type="button"
-            onClick={() => {
-              copyDeckToQuarter(q, nextQ);
-              setSaved(true);
-            }}
-            className="tw-tap min-h-9 rounded-md bg-gold px-3 text-xs font-semibold text-bg"
-          >
-            Copy pack → {nextQ}
-          </button>
-        ) : null}
+          ) : null}
+        </div>
       </div>
       <div
         ref={stage}
-        className="relative mx-auto min-h-0 w-full max-w-6xl flex-1 overflow-hidden rounded-xl bg-[#050816] ring-1 ring-white/10"
+        className="relative mx-auto min-h-0 w-full max-w-6xl flex-1 overflow-hidden rounded-xl bg-bg ring-1 ring-border"
         style={{ aspectRatio: "16 / 9" }}
-        onClick={() => {
-          if (!liveEdit) go(1);
-        }}
+        onClick={() => go(1)}
         role="img"
         aria-label={slide.title}
       >
-        <Stage slide={slide} editing={liveEdit} onPatch={patchSlide} />
+        <Stage slide={slide} editing={false} onPatch={() => {}} />
+        {full ? <span className="sr-only">Presenting</span> : null}
       </div>
-      {liveEdit ? (
-        <div className="flex flex-wrap items-center gap-1">
-          {KINDS.map((k) => (
-            <button
-              key={k}
-              type="button"
-              onClick={() => patchSlide({ kind: k })}
-              className={cn("tw-tap min-h-9 rounded-full px-3 font-mono text-[11px] font-bold uppercase", slide.kind === k ? "bg-fg text-bg" : "bg-elevated text-muted")}
-            >
-              {k}
-            </button>
-          ))}
-          <button type="button" onClick={addCard} className="tw-tap inline-flex min-h-9 items-center gap-1 rounded-md bg-elevated px-3 text-xs font-semibold">
-            <Plus className="size-3.5" /> Card
-          </button>
-          <button type="button" onClick={dropCard} className="tw-tap inline-flex min-h-9 items-center gap-1 rounded-md bg-elevated px-3 text-xs font-semibold">
-            − Card
-          </button>
-          <button type="button" onClick={dupe} className="tw-tap inline-flex min-h-9 items-center gap-1 rounded-md bg-elevated px-3 text-xs font-semibold">
-            <Copy className="size-3.5" /> Duplicate
-          </button>
-          <button type="button" onClick={addSlide} className="tw-tap inline-flex min-h-9 items-center gap-1 rounded-md bg-elevated px-3 text-xs font-semibold">
-            <Plus className="size-3.5" /> Add slide
-          </button>
-          <button type="button" onClick={dropSlide} className="tw-tap inline-flex min-h-9 items-center gap-1 rounded-md bg-elevated px-3 text-xs font-semibold">
-            <Trash2 className="size-3.5" /> Delete
-          </button>
-          <button type="button" onClick={resetThis} className="tw-tap inline-flex min-h-9 items-center gap-1 rounded-md bg-elevated px-3 text-xs font-semibold">
-            <RotateCcw className="size-3.5" /> This slide
-          </button>
-          <button type="button" onClick={resetAll} className="tw-tap inline-flex min-h-9 items-center gap-1 rounded-md bg-elevated px-3 text-xs font-semibold">
-            Factory deck
-          </button>
-          <button type="button" onClick={() => downloadDeck(pack)} className="tw-tap inline-flex min-h-9 items-center gap-1 rounded-md bg-elevated px-3 text-xs font-semibold">
-            JSON
-          </button>
-        </div>
-      ) : null}
       <ol className="flex flex-wrap gap-1">
         {slides.map((s, n) => (
-          <li key={s.id + n}>
+          <li key={s.id}>
             <button
               type="button"
               onClick={() => setI(n)}

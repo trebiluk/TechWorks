@@ -920,7 +920,7 @@ export function Board() {
       ) : view === "polls" ? (
         <PollBoard file={file} unlocked={unlocked} onChange={commitDesk} onNeedPin={() => askPin()} />
       ) : view === "deck" ? (
-        <DeckBoard unlocked={unlocked} onNeedPin={() => askPin()} />
+        <DeckBoard file={wallFile} unlocked={unlocked} onNeedPin={() => askPin()} onTeach={() => go("teach")} />
       ) : view === "week" ? (
         <WeekBoard
           file={wallFile}

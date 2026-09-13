@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.21 — 2026-09-13
+
+- Deck plays this period’s Teach plan. One author. Edit on Teach. Present / Space still advance slides.
+
 ## 1.92.20 — 2026-09-13
 
 - Monday polish: job sentence is door-readable. Rules hug under the question instead of a dead right column. One Berty on the wall.
