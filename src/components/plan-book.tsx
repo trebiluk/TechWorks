@@ -18,6 +18,7 @@ import {
 } from "@/lib/projects";
 import { formatSchoolDate, instructionalWeeks, isSchoolDay, todayIso, weekOn } from "@/lib/calendar";
 import { SortableItem, SortableList } from "@/components/sortable";
+import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
 import { cn } from "@/lib/utils";
 
 const PROVE = [
@@ -46,6 +47,7 @@ export function PlanBook({
   const today = todayIso();
   const [weekDate, setWeekDate] = useState(today);
   const [focus, setFocus] = useState<string | null>(null);
+  const [printOn, setPrintOn] = useState(false);
   const week = weekOn(weekDate);
   const days = week?.days ?? [weekDate];
   const acts = activitiesOf(project);
@@ -103,13 +105,19 @@ export function PlanBook({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3 pb-8" data-plan-book>
+      {printOn ? <LessonPlanSheet file={file} period={period} dates={days} onClose={() => setPrintOn(false)} /> : null}
       <header className="space-y-1">
         <p className="text-sm text-muted">
           Fill {periodTitle(period, bells)}. Tap a day, pick the task, then say if you score the skill, the deliverable, or both. Crews can differ.
         </p>
-        <p className="text-sm font-semibold">
-          {setN} of {schoolCells.length} days set
-          {nextUnset && setN < schoolCells.length ? <span className="ml-2 font-normal text-gold">Next: {formatSchoolDate(nextUnset)}</span> : null}
+        <p className="flex flex-wrap items-center gap-2 text-sm font-semibold">
+          <span>
+            {setN} of {schoolCells.length} days set
+            {nextUnset && setN < schoolCells.length ? <span className="ml-2 font-normal text-gold">Next: {formatSchoolDate(nextUnset)}</span> : null}
+          </span>
+          <button type="button" onClick={() => setPrintOn(true)} className="tw-tap ml-auto min-h-8 rounded-full px-3 text-[12px] font-medium tw-btn-2">
+            Print lesson
+          </button>
         </p>
       </header>
 

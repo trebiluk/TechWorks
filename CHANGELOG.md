@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.29. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.30. -->
 
 # TechWorks changelog
 
-App version **1.92.29**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.30**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.30 — 2026-09-13
+
+- Print lesson (Save as PDF): driving question, safety, week at a glance, skills × NY MST 5 matrix, each class Ask/Do/Done. From Plan book or Teach.
 
 ## 1.92.29 — 2026-09-13
 

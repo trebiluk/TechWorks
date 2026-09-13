@@ -1816,8 +1816,20 @@ html[dir="rtl"] .board-root { direction: rtl; }
   header.desk-chrome,
   .phone-dock,
   .tw-lockup::after,
-  .parent-print button {
+  .parent-print button,
+  .lesson-overlay > div:first-child {
     display: none !important;
+  }
+  body.lesson-printing header.desk-chrome,
+  body.lesson-printing .phone-dock,
+  body.lesson-printing .board-main > *:not(.lesson-overlay),
+  body.lesson-printing .board-root > *:not(.lesson-overlay) {
+    display: none !important;
+  }
+  body.lesson-printing .lesson-overlay {
+    position: static !important;
+    background: #fff !important;
+    overflow: visible !important;
   }
   .board-root {
     height: auto !important;
@@ -1826,7 +1838,8 @@ html[dir="rtl"] .board-root { direction: rtl; }
     color: #111 !important;
   }
   .parent-sheet,
-  .parent-print {
+  .parent-print,
+  .lesson-sheet {
     box-shadow: none !important;
     background: #fff !important;
     color: #111 !important;

@@ -44,6 +44,7 @@ import {
   teachObjective,
 } from "@/lib/teach";
 import { cn } from "@/lib/utils";
+import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
 
 export function TeachBoard({
   file,
@@ -102,6 +103,7 @@ export function TeachBoard({
         ? job.today || cur?.line
         : cur?.line ?? "Sit with your crew.";
   const [layout, setLayout] = useState<TeachLayout>(() => loadTeachLayout());
+  const [printOn, setPrintOn] = useState(false);
   const sortOn = unlocked && editing !== false;
 
   function commitLayout(next: TeachLayout) {
@@ -272,6 +274,7 @@ export function TeachBoard({
 
   return (
     <div className={cn("flex min-h-0 flex-1 flex-col gap-2 overflow-hidden p-1", sortOn ? "overflow-auto" : "")} data-wall-stage={sortOn ? "edit" : "show"}>
+      {printOn ? <LessonPlanSheet file={file} period={period} dates={weekDays} onClose={() => setPrintOn(false)} /> : null}
       <header className="flex shrink-0 flex-col gap-2">
         <div className="flex flex-wrap items-center gap-2">
           {shop.map((p) => (
@@ -297,6 +300,9 @@ export function TeachBoard({
                 Deck
               </button>
             ) : null}
+            <button type="button" onClick={() => setPrintOn(true)} className="tw-tap min-h-8 rounded-full px-3 text-[12px] font-medium tw-btn-2">
+              Print lesson
+            </button>
             {onPlan ? (
               <button type="button" onClick={onPlan} className="tw-tap min-h-8 rounded-full px-3 text-[12px] font-medium tw-btn-2">
                 Plan book
