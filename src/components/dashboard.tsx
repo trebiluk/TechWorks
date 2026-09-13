@@ -26,7 +26,7 @@ import { pollForPeriod } from "@/lib/polls";
 import { featureOn } from "@/lib/features";
 import { bertyPose, showBerty } from "@/lib/berty";
 import { procedureStep } from "@/lib/procedure";
-import { teachJob } from "@/lib/teach";
+import { teachJob, laySlots } from "@/lib/teach";
 import { hideDashRow, loadDashLayout, moveDashRow, moveDashTo, pairMate, patchDash, rowOn, saveDashLayout, DASH_ROWS, DEFAULT_LAYOUT, type DashLayout, type DashRowId } from "@/lib/dash-layout";
 import { SortableItem, SortableList } from "@/components/sortable";
 import { useShopClock } from "@/lib/use-clock";
@@ -138,11 +138,14 @@ export const Dashboard = memo(function Dashboard({
   const peeking = viewP != null && viewP !== live;
   const viewMine = shop.includes(shown);
   const clock = live != null ? periodClock(live, bellsId, now) : null;
-  const agenda = agendaFor(file, shown);
-  const goal = agenda.goal;
+  const shopLive = Boolean(clock?.live);
   const afterBell = isSchoolDay(today) && live == null && nxt == null;
   const openDay = nextOpenDay(today, afterBell);
-  const shopLive = Boolean(clock?.live);
+  const wallDate = shopLive ? today : openDay;
+  const agenda = agendaFor(file, shown, wallDate);
+  const goal = agenda.goal;
+  const wallJob = teachJob(file, shown, wallDate);
+  const wallSlots = laySlots(file, wallDate, shown);
   const passing = isSchoolDay(today) && !shopLive && Boolean(nxt);
   const step = procedureStep({
     live: shopLive,
@@ -227,14 +230,14 @@ export const Dashboard = memo(function Dashboard({
             />
           </p>
           <p className="tw-fill-hero mt-0.5 font-display font-semibold tracking-tight">
-            {clock?.live ? `P${live}` : nxt ? `P${nxt.period}` : t("done")}
+            {clock?.live ? `P${live}` : nxt ? `P${nxt.period}` : wallJob.question ? `P${shown}` : t("done")}
           </p>
           <p className="tw-fill-line mt-1 truncate text-muted">
             {clock?.live
               ? `${periodTitle(live!, bells)} · ${formatBell(clock.start)}–${formatBell(clock.end)}`
               : nxt
                 ? `${periodTitle(nxt.period, bells)} · ${formatBell(nxt.start)}`
-                : `Opens ${formatSchoolDate(openDay)} P1`}
+                : wallJob.question || wallJob.today || `Opens ${formatSchoolDate(openDay)} P1`}
           </p>
         </div>
       </div>
@@ -269,6 +272,7 @@ export const Dashboard = memo(function Dashboard({
           cleanup={Boolean(clock?.cleanup)}
           berty={bertyOn && shopLive && !clock?.cleanup}
           onChange={onChange}
+          date={wallDate}
         />
       ) : (
         <p className="text-sm text-muted">{t("Tap a Tech period on the strip.")}</p>
@@ -393,7 +397,7 @@ export const Dashboard = memo(function Dashboard({
   function plateOf(id: DashRowId) {
     if (id === "now") return nowCard;
     if (id === "class") return classCard;
-    if (id === "proc") return <ProcedureCue step={step} passing={passing} bot={bertyOn && (arrange || Boolean(clock?.cleanup))} left={clock?.live ? Math.max(0, Math.ceil(clock.left)) : undefined} cleanup={Boolean(clock?.cleanup)} />;
+    if (id === "proc") return <ProcedureCue step={step} slots={wallSlots} passing={passing} bot={bertyOn && (arrange || Boolean(clock?.cleanup))} left={clock?.live ? Math.max(0, Math.ceil(clock.left)) : undefined} cleanup={Boolean(clock?.cleanup)} />;
     if (id === "strip") return stripCard;
     if (id === "club") {
       if (!pulse) return sortOn ? ghost(t("Club")) : null;
@@ -553,6 +557,7 @@ function LayoutBar({
 function GoalsCard({
   file,
   shown,
+  date,
   todayHit,
   viewKids,
   unlocked,
@@ -569,6 +574,7 @@ function GoalsCard({
 }: {
   file: EconomyFile;
   shown: number;
+  date?: string;
   bells: Bell[];
   goal: string;
   agenda: ReturnType<typeof agendaFor>;
@@ -588,7 +594,7 @@ function GoalsCard({
 }) {
   const { t } = useLang();
   const today = todayIso();
-  const job = teachJob(file, shown, today);
+  const job = teachJob(file, shown, date ?? today);
   const pace = periodPaceLine(file, shown);
   const lanes = [...pace.rows].sort((a, b) => phaseIndex(b.current) - phaseIndex(a.current));
   const sameStage = lanes.length > 0 && lanes.every((c) => prettyStage(c.current) === prettyStage(lanes[0].current));

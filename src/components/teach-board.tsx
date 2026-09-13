@@ -31,10 +31,7 @@ import {
   laySlots,
   minClock,
   packOf,
-  setTeachAsk,
-  setTeachDo,
   setTeachLine,
-  setTeachObjective,
   setTeachPack,
   setTeachPin,
   slotNow,
@@ -43,6 +40,7 @@ import {
   teachJob,
   teachObjective,
 } from "@/lib/teach";
+import { saveTeachAsk, saveTeachDo, saveTeachObjective } from "@/lib/plan-sync";
 import { cn } from "@/lib/utils";
 import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
 
@@ -152,8 +150,8 @@ export function TeachBoard({
                     key={`ask-${date}-${period}`}
                     defaultValue={job.question}
                     placeholder="How can a small force move a bigger load?"
-                    onBlur={(e) => edit(setTeachAsk(file, date, period, e.target.value))}
-                    className="edit-field tw-fill-hero min-h-12 w-full rounded-md bg-elevated px-3 font-display text-2xl font-semibold tracking-tight text-fg outline-none ring-1 ring-gold/50"
+                    onBlur={(e) => edit(saveTeachAsk(file, date, period, e.target.value))}
+                    className="tw-field tw-fill-hero min-h-12 w-full font-display text-2xl font-semibold tracking-tight"
                     aria-label="Ask the class"
                   />
                 </label>
@@ -163,8 +161,8 @@ export function TeachBoard({
                     key={`do-${date}-${period}`}
                     defaultValue={job.today}
                     placeholder="Name the load. Sketch one machine."
-                    onBlur={(e) => edit(setTeachDo(file, date, period, e.target.value))}
-                    className="edit-field min-h-11 w-full rounded-md bg-elevated px-3 text-base text-fg outline-none ring-1 ring-gold/50"
+                    onBlur={(e) => edit(saveTeachDo(file, date, period, e.target.value))}
+                    className="tw-field"
                     aria-label="Do this now"
                   />
                 </label>
@@ -174,8 +172,8 @@ export function TeachBoard({
                     key={`obj-${date}-${period}`}
                     defaultValue={day.objective ?? ""}
                     placeholder={obj}
-                    onBlur={(e) => edit(setTeachObjective(file, date, period, e.target.value))}
-                    className="edit-field min-h-11 w-full rounded-md bg-elevated px-3 text-base text-fg outline-none ring-1 ring-gold/50"
+                    onBlur={(e) => edit(saveTeachObjective(file, date, period, e.target.value))}
+                    className="tw-field"
                     aria-label="Today's objective"
                   />
                 </label>
@@ -248,7 +246,7 @@ export function TeachBoard({
                         key={`line-${date}-${period}-${s.id}`}
                         defaultValue={s.line}
                         onBlur={(e) => edit(setTeachLine(file, date, period, s.id, e.target.value))}
-                        className="edit-field mt-1 min-h-10 w-full rounded-md bg-bg/40 px-2 text-sm text-fg outline-none ring-1 ring-gold/50"
+                        className="tw-field mt-1 min-h-10"
                         aria-label={`${s.title} line`}
                       />
                     ) : (

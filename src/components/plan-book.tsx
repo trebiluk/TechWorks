@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
 import { periodTitle, shopBells } from "@/lib/economy";
 import {
@@ -19,6 +19,7 @@ import {
 import { formatSchoolDate, instructionalWeeks, isSchoolDay, todayIso, weekOn } from "@/lib/calendar";
 import { SortableItem, SortableList } from "@/components/sortable";
 import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
+import { hydrateWeekFromTeach } from "@/lib/plan-sync";
 import { cn } from "@/lib/utils";
 
 const PROVE = [
@@ -89,6 +90,14 @@ export function PlanBook({
   const nextUnset = schoolCells.find((c) => !c.activity)?.date ?? schoolCells.find((c) => c.live)?.date ?? schoolCells[0]?.date;
   const open = focus ?? nextUnset ?? today;
   const openCell = cells.find((c) => c.date === open);
+
+  useEffect(() => {
+    const school = days.filter((d) => isSchoolDay(d));
+    const next = hydrateWeekFromTeach(file, period, school);
+    if (next !== file) onChange(next);
+    // One pass when the week is missing pins for teach-only days.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [period, week?.start]);
 
   function park(date: string, activityId: string, crewKey?: string) {
     if (!gate()) return;

@@ -140,7 +140,7 @@ export function ProjectsBoard({
                 onTeach={onTeachDay ? (iso) => onTeachDay(iso, period) : undefined}
               />
             ) : (
-              <p className="text-sm text-muted">Plan book is empty. Park an activity above.</p>
+              <p className="text-sm text-muted">Nothing parked this period. Park above, or type Ask / Do on Teach — it saves a unit here.</p>
             )}
           </div>
         ) : null}

@@ -2,11 +2,13 @@ import { Berty } from "@/components/berty";
 import { bertyPose } from "@/lib/berty";
 import { useLang } from "@/lib/i18n-hook";
 import { DAILY_PROCEDURE, type ProcedureId } from "@/lib/procedure";
+import type { LaidSlot } from "@/lib/teach";
 import { cn } from "@/lib/utils";
 
 /** Berty points at the daily procedure — cleanup wall owns the coral overlay. */
 export function ProcedureCue({
   step,
+  slots,
   passing,
   compact,
   bot = true,
@@ -14,6 +16,7 @@ export function ProcedureCue({
   cleanup,
 }: {
   step: ProcedureId;
+  slots?: LaidSlot[];
   passing?: boolean;
   compact?: boolean;
   bot?: boolean;
@@ -22,6 +25,15 @@ export function ProcedureCue({
 }) {
   const { t } = useLang();
   const pose = bertyPose({ passing, slot: step, cleanup: step === "clean" });
+  const rows =
+    slots?.length
+      ? slots.map((s, i) => ({
+          id: s.kind === "clean" ? "clean" : s.kind === "listen" ? "listen" : s.kind === "work" ? "work" : s.kind === "enter" ? "enter" : s.id,
+          n: i + 1,
+          title: s.title,
+          line: s.line,
+        }))
+      : DAILY_PROCEDURE.map((s) => ({ id: s.id, n: s.n, title: s.title, line: s.line }));
   return (
     <aside
       data-proc-cue
@@ -33,18 +45,18 @@ export function ProcedureCue({
           {passing ? t("Between classes") : cleanup ? t("Cleanup") : t("Do this now")}
           {left != null ? <span className="ml-2 font-mono text-fg tabular-nums">{left}m</span> : null}
         </p>
-        <ol data-proc-steps={compact ? "2" : "4"} className="mt-1">
-          {DAILY_PROCEDURE.map((s) => {
-            const on = s.id === step;
+        <ol data-proc-steps={String(Math.min(4, rows.length))} className="mt-1">
+          {rows.map((s) => {
+            const on = s.id === step || (step === "work" && s.id !== "enter" && s.id !== "listen" && s.id !== "clean");
             return (
               <li
-                key={s.id}
+                key={`${s.n}-${s.title}`}
                 className={cn("flex min-h-8 items-baseline gap-2", on ? "tw-proc-on font-semibold text-fg" : "text-muted")}
               >
                 <span className={cn("tw-proc-n font-mono", on ? "text-accent" : "")}>{s.n}</span>
                 <span className="min-w-0">
                   <span className={cn(on && !compact ? "tw-proc-title" : "tw-proc-name")}>{t(s.title)}</span>
-                  {on && !compact ? <span className="tw-proc-line mt-0.5 block font-normal text-muted">{t(s.line)}</span> : null}
+                  {s.line ? <span className="tw-proc-line mt-0.5 block font-normal text-muted">{t(s.line)}</span> : null}
                 </span>
               </li>
             );

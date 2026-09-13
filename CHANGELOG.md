@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.32. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.33. -->
 
 # TechWorks changelog
 
-App version **1.92.32**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.33**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.33 — 2026-09-13
+
+- One spine: Teach blur parks a unit. Plan book hydrates from Teach. Hour plates (Listen / Crew work) pull Ask / Do. Wall shows Monday’s job on Sunday. Activity templates. No red edit rings on Teach.
 
 ## 1.92.32 — 2026-09-13
 

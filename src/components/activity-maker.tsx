@@ -6,6 +6,7 @@ import {
   projectsOf,
   type ActivityPlanKind,
 } from "@/lib/projects";
+import { periodUnits } from "@/lib/plan-sync";
 import { formatSchoolDate, isSchoolDay, nextOpenDay, todayIso, weekOn } from "@/lib/calendar";
 import { cn } from "@/lib/utils";
 
@@ -18,12 +19,12 @@ const BELONG: { id: ActivityPlanKind; label: string; hint: string }[] = [
 ];
 
 const STEPS = [
-  { id: "ask", label: "Ask", goal: "IDEA STAGE", skillId: "draw", hint: "Name the problem" },
-  { id: "sketch", label: "Sketch", goal: "DESIGN STAGE", skillId: "draw", hint: "Draw the idea" },
-  { id: "build", label: "Build", goal: "MODELING STAGE", skillId: "model", hint: "Make and try it" },
-  { id: "test", label: "Test", goal: "MODELING STAGE", skillId: "measure", hint: "Did the move work?" },
-  { id: "share", label: "Share", goal: "PRESENTATION PREP", skillId: "present", hint: "Show the work" },
-  { id: "safety", label: "Safety", goal: "TRAINING", skillId: "safety", hint: "PPE or a new tool" },
+  { id: "ask", label: "Ask", goal: "IDEA STAGE", skillId: "draw", hint: "Name the problem", ask: "How can a small force move a bigger load?", do: "Name the load. Sketch one machine.", done: "Point to the load and the force on the sketch." },
+  { id: "sketch", label: "Sketch", goal: "DESIGN STAGE", skillId: "draw", hint: "Draw the idea", ask: "What does the part look like before we cut?", do: "Three views or an isometric. Label keep vs waste.", done: "A crewmate can cut from the drawing." },
+  { id: "build", label: "Build", goal: "MODELING STAGE", skillId: "model", hint: "Make and try it", ask: "Does the build match the drawing?", do: "Make the part. Try the move.", done: "The part fits and the move works once." },
+  { id: "test", label: "Test", goal: "MODELING STAGE", skillId: "measure", hint: "Did the move work?", ask: "What evidence says it worked?", do: "Run the test. Record one number or a yes/no.", done: "The criterion is checked, not guessed." },
+  { id: "share", label: "Share", goal: "PRESENTATION PREP", skillId: "present", hint: "Show the work", ask: "What should a crewmate notice?", do: "Show the work. Kind and specific.", done: "Two notes written. Work put away." },
+  { id: "safety", label: "Safety", goal: "TRAINING", skillId: "safety", hint: "PPE or a new tool", ask: "What keeps a hand safe on this tool?", do: "Watch once. Guided reps.", done: "You can name the hazard and the stance." },
 ] as const;
 
 const SKILLS = [
@@ -70,22 +71,28 @@ export function ActivityMaker({
   const [belong, setBelong] = useState<ActivityPlanKind>("project");
   const [stepId, setStepId] = useState<(typeof STEPS)[number]["id"]>("ask");
   const step = STEPS.find((s) => s.id === stepId) ?? STEPS[0];
-  const [name, setName] = useState("");
-  const [ask, setAsk] = useState("");
-  const [doit, setDoit] = useState("");
-  const [done, setDone] = useState("");
+  const [name, setName] = useState<string>(STEPS[0].label);
+  const [ask, setAsk] = useState<string>(STEPS[0].ask);
+  const [doit, setDoit] = useState<string>(STEPS[0].do);
+  const [done, setDone] = useState<string>(STEPS[0].done);
   const [skillId, setSkillId] = useState<string>(step.skillId);
   const [goggles, setGoggles] = useState(false);
   const [grades, setGrades] = useState<number[]>([grade]);
   const [picked, setPicked] = useState<string[]>([start]);
   const [prove, setProve] = useState<(typeof PROVE)[number]["id"]>("both");
   const [projectId, setProjectId] = useState("");
+  const [parked, setParked] = useState<string | null>(null);
+  const units = periodUnits(file, period);
 
   function pickStep(id: (typeof STEPS)[number]["id"]) {
     const next = STEPS.find((s) => s.id === id) ?? STEPS[0];
     setStepId(id);
     setSkillId(next.skillId);
     setGoggles(id === "build" || id === "test" || id === "safety");
+    if (!ask.trim()) setAsk(next.ask);
+    if (!doit.trim()) setDoit(next.do);
+    if (!done.trim()) setDone(next.done);
+    if (!name.trim()) setName(next.label);
   }
 
   function gate(): boolean {
@@ -125,10 +132,8 @@ export function ActivityMaker({
     });
     onChange(made.file);
     onMade?.(made.projectId);
-    setName("");
-    setAsk("");
-    setDoit("");
-    setDone("");
+    setParked(made.projectId);
+    setProjectId(made.projectId);
   }
 
   return (
@@ -144,9 +149,16 @@ export function ActivityMaker({
           disabled={!ready}
           className="tw-tap min-h-10 rounded-full bg-gold px-4 text-sm font-bold text-bg disabled:opacity-40"
         >
-          Park on plan book
+          {parked ? "Update plan" : "Park on plan book"}
         </button>
       </div>
+      {parked ? (
+        <p className="text-sm font-semibold text-gold">On the plan · Teach, Wall, and Deck play this. Tap a day below to edit.</p>
+      ) : units.length ? (
+        <p className="text-sm text-muted">
+          This period already has {units.map((u) => u.title).join(" · ")}. Park to add a day, or pick the unit under Add to a project.
+        </p>
+      ) : null}
       <div className="grid gap-3 lg:grid-cols-2">
       <div>
         <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">What is this?</p>

@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.33 — 2026-09-13
+
+- One spine: Teach blur parks a unit. Plan book hydrates from Teach. Hour plates (Listen / Crew work) pull Ask / Do. Wall shows Monday’s job on Sunday. Activity templates. No red edit rings on Teach.
+
 ## 1.92.32 — 2026-09-13
 
 - One Learn menu (no second icon row). Plan / Floor / Job sit in a compact chip bar. Activity fields are two-column, gold focus, no red “edit” rings.

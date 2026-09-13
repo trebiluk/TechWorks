@@ -1,7 +1,7 @@
 import type { EconomyFile } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
 import { cloneFile } from "@/lib/clone";
-import { agendaFor, jobCardOf, prettyStage } from "@/lib/projects";
+import { agendaFor, jobCardOf, prettyStage, type ShopJob } from "@/lib/projects";
 import { bellForPeriod, cleanupMinsNow, periodNext, periodNow } from "@/lib/bells";
 import { deskBellId, isSubDay } from "@/lib/store";
 
@@ -134,6 +134,19 @@ export function teachJob(file: EconomyFile, period: number, date: string) {
   };
 }
 
+/** Enter / listen / work copy from the parked job when the teacher has not overwritten a plate. */
+export function defaultHourLine(slot: TeachSlot, job: ShopJob): string {
+  if (slot.kind === "listen" || slot.id === "listen") return job.question.trim() || slot.line;
+  if (slot.kind === "work") return job.today.trim() || slot.line;
+  if (slot.kind === "share") return job.done.trim() || slot.line;
+  if (slot.kind === "demo") return job.lookFor.replace(/^\d\s*=\s*/, "").trim() || slot.line;
+  if (slot.kind === "enter") {
+    if (job.rules.some((r) => /goggle/i.test(r))) return "Goggles on. Sit with your crew.";
+    return slot.line;
+  }
+  return slot.line;
+}
+
 function toMin(hhmm: string): number {
   const [h, m] = hhmm.split(":").map(Number);
   return h * 60 + m;
@@ -152,6 +165,8 @@ export function laySlots(file: EconomyFile, date: string, period: number): LaidS
   const clean = tail ? Math.min(cleanWant, Math.max(3, span - Math.max(1, body.length))) : 0;
   const workSpan = Math.max(body.length, span - clean);
   const weight = body.reduce((n, s) => n + (s.w || 1), 0) || 1;
+  const job = teachJob(file, period, date);
+  const custom = teachDay(file, date, period).lines ?? {};
   let t = start;
   const cut = start + workSpan;
   const out: LaidSlot[] = [];
@@ -160,12 +175,12 @@ export function laySlots(file: EconomyFile, date: string, period: number): LaidS
     const raw = Math.max(1, Math.round((workSpan * (s.w || 1)) / weight));
     const endMin = last ? cut : Math.min(cut - (body.length - 1 - i), t + raw);
     const mins = Math.max(1, endMin - t);
-    const line = teachDay(file, date, period).lines?.[s.id] ?? s.line;
+    const line = custom[s.id] ?? defaultHourLine(s, job);
     out.push({ ...s, line, startMin: t, endMin: t + mins, mins });
     t += mins;
   });
   if (tail) {
-    out.push({ ...tail, line: teachDay(file, date, period).lines?.[tail.id] ?? tail.line, startMin: cut, endMin: end, mins: Math.max(1, end - cut) });
+    out.push({ ...tail, line: custom[tail.id] ?? defaultHourLine(tail, job), startMin: cut, endMin: end, mins: Math.max(1, end - cut) });
   } else if (out.length) {
     out[out.length - 1].endMin = end;
     out[out.length - 1].mins = Math.max(1, end - out[out.length - 1].startMin);
