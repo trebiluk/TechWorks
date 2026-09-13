@@ -1015,8 +1015,8 @@ html[data-contrast="high"] {
   line-height: 0.95;
 }
 .tw-fill-ask {
-  font-size: calc(clamp(1.15rem, 6.2cqi, 2.75rem) * var(--ui-title, 1));
-  line-height: 1.12;
+  font-size: calc(clamp(1.35rem, 7.2cqi, 3.6rem) * var(--ui-title, 1));
+  line-height: 1.08;
 }
 .tw-fill-line {
   font-size: clamp(1rem, 4cqi, 1.85rem);
@@ -1076,6 +1076,30 @@ html[data-contrast="high"] {
 .tw-ppe {
   max-width: 100%;
 }
+.tw-web-wall[data-wall-stage="show"] [data-job-plate] {
+  justify-content: flex-start;
+  height: auto !important;
+  flex: 0 0 auto;
+  min-height: 0;
+}
+.tw-web-wall[data-wall-stage="show"] .tw-fill-row:has([data-job-plate]):not(:has([data-dash-pair])) {
+  flex: 0 0 auto;
+}
+.tw-web-wall[data-wall-stage="show"] .tw-fill-row:has([data-proc-cue]) {
+  flex: 1 1 0;
+  min-height: 9rem;
+}
+.tw-web-wall[data-wall-stage="show"] .tw-job {
+  flex: 0 1 auto;
+}
+.tw-web-wall[data-wall-stage="show"] .tw-job-rows {
+  grid-template-columns: minmax(0, 1fr);
+  margin-top: 0.55rem;
+  gap: 0.15rem 0.5rem;
+}
+.tw-web-wall[data-wall-stage="show"] .tw-job-v {
+  max-width: 62ch;
+}
 @media (min-width: 900px) {
   .tw-fill-row [data-job-plate] {
     container-type: size;
@@ -1102,7 +1126,7 @@ html[data-contrast="high"] {
   }
   .tw-fill-ask {
     font-size: calc(
-      (1.15rem * (1 - var(--ui-fill, 1)) + clamp(1.15rem, 7.5cqh, 2.75rem) * var(--ui-fill, 1))
+      (1.35rem * (1 - var(--ui-fill, 1)) + clamp(1.5rem, 9.5cqh, 3.75rem) * var(--ui-fill, 1))
       * var(--ui-title, 1)
     );
   }
@@ -1168,7 +1192,7 @@ html[data-contrast="high"] {
 }
 .tw-proc-title {
   font-size: calc(
-    (1.05rem * (1 - var(--ui-fill, 1)) + clamp(1.05rem, 4.6cqi, 2.15rem) * var(--ui-fill, 1))
+    (1.2rem * (1 - var(--ui-fill, 1)) + clamp(1.2rem, 5.4cqi, 2.6rem) * var(--ui-fill, 1))
     * var(--ui-title, 1)
   );
   font-weight: 700;

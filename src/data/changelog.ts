@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.20 — 2026-09-13
+
+- Monday polish: job sentence is door-readable. Rules hug under the question instead of a dead right column. One Berty on the wall.
+
 ## 1.92.19 — 2026-09-13
 
 - Expert pass: Cloud save-status leaves the locked wall. Teach drops the extra Wall chip. Projector boot stays dark (no white flash). Dev no longer 404s /tw.css (inlined; production still emits the file).

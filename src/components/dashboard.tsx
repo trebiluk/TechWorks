@@ -393,7 +393,7 @@ export const Dashboard = memo(function Dashboard({
   function plateOf(id: DashRowId) {
     if (id === "now") return nowCard;
     if (id === "class") return classCard;
-    if (id === "proc") return <ProcedureCue step={step} passing={passing} bot={bertyOn} left={clock?.live ? Math.max(0, Math.ceil(clock.left)) : undefined} cleanup={Boolean(clock?.cleanup)} />;
+    if (id === "proc") return <ProcedureCue step={step} passing={passing} bot={bertyOn && (arrange || Boolean(clock?.cleanup))} left={clock?.live ? Math.max(0, Math.ceil(clock.left)) : undefined} cleanup={Boolean(clock?.cleanup)} />;
     if (id === "strip") return stripCard;
     if (id === "club") {
       if (!pulse) return sortOn ? ghost(t("Club")) : null;
@@ -471,7 +471,7 @@ export const Dashboard = memo(function Dashboard({
             const mate = sortOn ? null : pairMate(layout, id);
             if (mate === "second") return null;
             const paired = mate === "first";
-            const fill = paired || id === "now" || id === "class";
+            const fill = paired || id === "now" || id === "class" || (!sortOn && id === "proc");
             const body = paired ? (
               <section data-dash-pair className={cn(clock?.cleanup ? "rounded-xl ring-2 ring-cleanup" : "")}>
                 {nowCard}

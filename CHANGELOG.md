@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.19. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.20. -->
 
 # TechWorks changelog
 
-App version **1.92.19**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.20**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.20 — 2026-09-13
+
+- Monday polish: job sentence is door-readable. Rules hug under the question instead of a dead right column. One Berty on the wall.
 
 ## 1.92.19 — 2026-09-13
 
