@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
-import { periodTitle, shopBells } from "@/lib/economy";
+import { shopBells } from "@/lib/economy";
 import {
   addProject,
   assignCrewProject,
@@ -83,13 +83,8 @@ export function ProjectsBoard({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain pb-8">
-      <header className="shrink-0 space-y-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <h1 className="font-display text-2xl font-semibold tracking-tight">Projects</h1>
-          <p className="min-w-0 flex-1 text-sm text-muted">
-            {periodTitle(period, bells)} · new activity fills the week. Empty until you park one.
-          </p>
-        </div>
+      <header className="flex shrink-0 flex-wrap items-center gap-2">
+        <h1 className="font-display text-xl font-semibold tracking-tight">Projects</h1>
         <div className="flex flex-wrap gap-1">
           {bells.map((b) => (
             <button
@@ -100,7 +95,7 @@ export function ProjectsBoard({
                 const next = slotsOf(file, b.period)[0];
                 if (next) setFocusId(next.id);
               }}
-              className={cn("min-h-10 rounded-md px-3 text-sm font-semibold", period === b.period ? "bg-fg text-bg" : "bg-elevated text-muted")}
+              className={cn("tw-tap min-h-9 rounded-full px-3 text-xs font-semibold", period === b.period ? "bg-fg text-bg" : "bg-elevated text-muted")}
             >
               P{b.period}
               <span className="ml-1 text-[10px] font-medium opacity-70">G{b.grade}</span>
@@ -108,10 +103,11 @@ export function ProjectsBoard({
           ))}
         </div>
         <CtrlSeg
+          className="ml-auto"
           items={[
             { id: "plan", label: "Plan" },
             { id: "floor", label: "Floor" },
-            { id: "job", label: "Write the job" },
+            { id: "job", label: "Job" },
             { id: "options", label: "Options" },
           ]}
           value={pane}

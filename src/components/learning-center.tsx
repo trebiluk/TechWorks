@@ -10,9 +10,8 @@ import { SkillsBoard } from "@/components/skills-board";
 import { ProjectsBoard } from "@/components/projects-board";
 import { GlossaryDesk } from "@/components/glossary";
 import { Chip } from "@/components/ui";
-import { BookOpen, GraduationCap, Hammer, Heart, FolderKanban } from "lucide-react";
+import { Hammer, Heart } from "lucide-react";
 import { Word } from "@/lib/tips";
-import { useLang } from "@/lib/i18n-hook";
 import { cn } from "@/lib/utils";
 
 const GradeBoard = lazy(() => import("@/components/grade-board").then((m) => ({ default: m.GradeBoard })));
@@ -55,7 +54,6 @@ export function LearningCenter({
   onRankUp?: (alias: string, band: string) => void;
   onTeachDay?: (date: string, period: number) => void;
 }) {
-  const { t } = useLang();
   const first = splitStart(start);
   const [pane, setPane] = useState<LearnPane>(first.pane);
   const [family, setFamily] = useState<"shop" | "soft">(first.family);
@@ -67,34 +65,8 @@ export function LearningCenter({
   useEffect(() => {
     if (!unlocked && (pane === "book" || pane === "projects" || pane === "skills")) setPane("words");
   }, [unlocked, pane]);
-  const nav = [
-    { id: "projects", label: t("Projects"), Icon: FolderKanban, on: pane === "projects", go: () => setPane("projects"), lock: true },
-    { id: "skills", label: t("Skills"), Icon: Hammer, on: pane === "skills", go: () => setPane("skills"), lock: true },
-    { id: "book", label: t("Book"), Icon: GraduationCap, on: pane === "book", go: () => setPane("book"), lock: true },
-    { id: "words", label: t("Words"), Icon: BookOpen, on: pane === "words", go: () => setPane("words") },
-  ].filter((tab) => unlocked || !tab.lock);
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      <header className="mb-1 shrink-0 sm:mb-2">
-        <p className="hidden px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-subtle sm:block">{t("Learn · plan the days, put a project on a period")}</p>
-        <nav className="flex flex-wrap gap-1" aria-label="Learning">
-          {nav.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              title={tab.label}
-              onClick={tab.go}
-              className={cn(
-                "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-md px-2.5 text-sm font-semibold sm:px-3",
-                tab.on ? "bg-accent text-accent-fg" : "bg-surface text-muted hover:bg-elevated hover:text-fg",
-              )}
-            >
-              <tab.Icon className="size-4" strokeWidth={2} aria-hidden />
-              <span><Word>{tab.label}</Word></span>
-            </button>
-          ))}
-        </nav>
-      </header>
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
         {pane === "book" ? (
           <Suspense fallback={<p className="px-3 py-8 text-center text-sm text-gold">Loading gradebook…</p>}>

@@ -1647,13 +1647,27 @@ html[data-finish="felt"] .bg-surface,
   line-height: 1.1;
 }
 .tw-seg {
-  display: grid;
-  grid-auto-columns: 1fr;
-  grid-auto-flow: column;
-  gap: 0.25rem;
-  padding: 0.25rem;
+  display: inline-flex;
+  width: max-content;
+  max-width: 100%;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+  padding: 0.2rem;
   border-radius: 0.75rem;
   background: var(--color-elevated);
+}
+.tw-field {
+  min-height: 2.75rem;
+  width: 100%;
+  border-radius: 0.5rem;
+  background: var(--color-elevated);
+  padding: 0 0.75rem;
+  color: var(--color-fg);
+  outline: none;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-border) 80%, transparent);
+}
+.tw-field:focus {
+  box-shadow: inset 0 0 0 1.5px var(--color-gold);
 }
 .tw-next-job {
   display: inline-flex;
@@ -1794,13 +1808,12 @@ html[dir="rtl"] .board-root { direction: rtl; }
     scroll-snap-align: start;
   }
   .tw-seg {
-    display: flex;
+    display: inline-flex;
     overflow-x: auto;
     scrollbar-width: none;
   }
   .tw-seg > * {
-    flex: 1 0 auto;
-    min-width: 4.25rem;
+    flex: 0 0 auto;
   }
   .phone-dock {
     padding-bottom: max(0.35rem, env(safe-area-inset-bottom));

@@ -105,13 +105,15 @@ export function CtrlSeg({
   items,
   value,
   onChange,
+  className,
 }: {
   items: { id: string; label: string }[];
   value: string;
   onChange: (id: string) => void;
+  className?: string;
 }) {
   return (
-    <div className="tw-seg" role="tablist">
+    <div className={cn("tw-seg", className)} role="tablist">
       {items.map((it) => {
         const Icon = markOf(it.id);
         const on = value === it.id;

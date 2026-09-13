@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.32 — 2026-09-13
+
+- One Learn menu (no second icon row). Plan / Floor / Job sit in a compact chip bar. Activity fields are two-column, gold focus, no red “edit” rings.
+
 ## 1.92.31 — 2026-09-13
 
 - Word Heat: shop vocab quiz on Words (keys 1–4, streak score, review misses). Glossary bank. Not wallet, not a grade.

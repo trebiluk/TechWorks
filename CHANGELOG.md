@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.31. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.32. -->
 
 # TechWorks changelog
 
-App version **1.92.31**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.32**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.32 — 2026-09-13
+
+- One Learn menu (no second icon row). Plan / Floor / Job sit in a compact chip bar. Activity fields are two-column, gold focus, no red “edit” rings.
 
 ## 1.92.31 — 2026-09-13
 

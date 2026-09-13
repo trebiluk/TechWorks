@@ -133,10 +133,21 @@ export function ActivityMaker({
 
   return (
     <section className="tw-gadget space-y-3 p-3" data-activity-maker onKeyDown={keepSpace}>
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-wider text-gold">New activity</p>
-        <p className="mt-1 text-sm text-muted">Ask the problem. Name the move. Park the days. Wall and Deck play this.</p>
+      <div className="flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-wider text-gold">New activity</p>
+          <p className="mt-0.5 text-sm text-muted">Ask the problem. Name the move. Park the days.</p>
+        </div>
+        <button
+          type="button"
+          onClick={make}
+          disabled={!ready}
+          className="tw-tap min-h-10 rounded-full bg-gold px-4 text-sm font-bold text-bg disabled:opacity-40"
+        >
+          Park on plan book
+        </button>
       </div>
+      <div className="grid gap-3 lg:grid-cols-2">
       <div>
         <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">What is this?</p>
         <div className="mt-1 flex flex-wrap gap-1">
@@ -146,7 +157,7 @@ export function ActivityMaker({
               type="button"
               title={b.hint}
               onClick={() => setBelong(b.id)}
-              className={cn("tw-tap min-h-11 rounded-xl px-3 text-sm font-semibold", belong === b.id ? "bg-fg text-bg" : "bg-elevated text-muted")}
+              className={cn("tw-tap min-h-9 rounded-full px-3 text-sm font-semibold", belong === b.id ? "bg-fg text-bg" : "bg-elevated text-muted")}
             >
               {b.label}
             </button>
@@ -164,7 +175,7 @@ export function ActivityMaker({
                 type="button"
                 title={s.hint}
                 onClick={() => pickStep(s.id)}
-                className={cn("tw-tap min-h-11 rounded-xl px-3 text-sm font-semibold", stepId === s.id ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+                className={cn("tw-tap min-h-9 rounded-full px-3 text-sm font-semibold", stepId === s.id ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
               >
                 {s.label}
               </button>
@@ -204,7 +215,7 @@ export function ActivityMaker({
           onChange={(e) => setAsk(e.target.value)}
           onKeyDown={keepSpace}
           placeholder="How can a small force move a bigger load?"
-          className="edit-field min-h-11 rounded-md bg-elevated px-3 text-base text-fg outline-none ring-1 ring-gold/50"
+          className="tw-field"
         />
       </label>
       <label className="grid gap-1">
@@ -214,7 +225,7 @@ export function ActivityMaker({
           onChange={(e) => setDoit(e.target.value)}
           onKeyDown={keepSpace}
           placeholder="Name the load. Sketch one machine that could move it."
-          className="edit-field min-h-11 rounded-md bg-elevated px-3 text-base text-fg outline-none ring-1 ring-gold/50"
+          className="tw-field"
         />
       </label>
       <label className="grid gap-1">
@@ -224,7 +235,7 @@ export function ActivityMaker({
           onChange={(e) => setDone(e.target.value)}
           onKeyDown={keepSpace}
           placeholder="Point to the load and the force on the sketch."
-          className="edit-field min-h-11 rounded-md bg-elevated px-3 text-base text-fg outline-none ring-1 ring-gold/50"
+          className="tw-field"
         />
       </label>
       <label className="grid gap-1">
@@ -234,7 +245,7 @@ export function ActivityMaker({
           onChange={(e) => setName(e.target.value)}
           onKeyDown={keepSpace}
           placeholder={doit.trim() || ask.trim() || "Brainstorm levers"}
-          className="edit-field min-h-11 rounded-md bg-elevated px-3 text-base text-fg outline-none ring-1 ring-gold/50"
+          className="tw-field"
         />
       </label>
       <div>
@@ -245,7 +256,7 @@ export function ActivityMaker({
               key={s.id}
               type="button"
               onClick={() => setSkillId(s.id)}
-              className={cn("tw-tap min-h-11 rounded-xl px-3 text-sm font-semibold", skillId === s.id ? "bg-fg text-bg" : "bg-elevated text-muted")}
+              className={cn("tw-tap min-h-9 rounded-full px-3 text-sm font-semibold", skillId === s.id ? "bg-fg text-bg" : "bg-elevated text-muted")}
             >
               {s.label}
             </button>
@@ -260,7 +271,7 @@ export function ActivityMaker({
               key={p.id}
               type="button"
               onClick={() => setProve(p.id)}
-              className={cn("tw-tap min-h-11 rounded-xl px-3 text-sm font-semibold", prove === p.id ? "bg-gold text-bg" : "bg-elevated text-muted")}
+              className={cn("tw-tap min-h-9 rounded-full px-3 text-sm font-semibold", prove === p.id ? "bg-gold text-bg" : "bg-elevated text-muted")}
             >
               {p.label}
             </button>
@@ -268,7 +279,7 @@ export function ActivityMaker({
           <button
             type="button"
             onClick={() => setGoggles((v) => !v)}
-            className={cn("tw-tap min-h-11 rounded-xl px-3 text-sm font-semibold", goggles ? "bg-cleanup text-accent-fg" : "bg-elevated text-muted")}
+            className={cn("tw-tap min-h-9 rounded-full px-3 text-sm font-semibold", goggles ? "bg-cleanup text-accent-fg" : "bg-elevated text-muted")}
           >
             Goggles {goggles ? "on" : "off"}
           </button>
@@ -284,7 +295,7 @@ export function ActivityMaker({
               key={g}
               type="button"
               onClick={() => toggleGrade(g)}
-              className={cn("tw-tap min-h-11 rounded-xl px-3 text-sm font-semibold", grades.includes(g) ? "bg-fg text-bg" : "bg-elevated text-muted")}
+              className={cn("tw-tap min-h-9 rounded-full px-3 text-sm font-semibold", grades.includes(g) ? "bg-fg text-bg" : "bg-elevated text-muted")}
             >
               G{g}
             </button>
@@ -299,21 +310,14 @@ export function ActivityMaker({
               key={d}
               type="button"
               onClick={() => toggleDay(d)}
-              className={cn("tw-tap min-h-11 rounded-xl px-3 text-sm font-semibold", picked.includes(d) ? "bg-gold text-bg" : "bg-elevated text-muted")}
+              className={cn("tw-tap min-h-9 rounded-full px-3 text-sm font-semibold", picked.includes(d) ? "bg-gold text-bg" : "bg-elevated text-muted")}
             >
               {formatSchoolDate(d)}
             </button>
           ))}
         </div>
       </div>
-      <button
-        type="button"
-        onClick={make}
-        disabled={!ready}
-        className="tw-tap min-h-12 rounded-xl bg-gold px-4 text-base font-bold text-bg disabled:opacity-40"
-      >
-        Park on plan book
-      </button>
+      </div>
     </section>
   );
 }

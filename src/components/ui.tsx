@@ -59,7 +59,7 @@ export function MarkChip({
       onClick={onClick}
       aria-current={on ? "page" : undefined}
       className={cn(
-        "tw-tap inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-sm font-semibold sm:min-h-9 sm:px-3",
+        "tw-tap inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-sm font-semibold",
         on ? "bg-accent text-accent-fg" : "bg-elevated text-muted hover:text-fg",
         className,
       )}
