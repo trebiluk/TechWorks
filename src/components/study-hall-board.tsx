@@ -51,7 +51,6 @@ const READY = [
 ] as const;
 const OUT = new Set<string>(WHERE_OUT.map((w) => w.id));
 const P6 = 6;
-const SH_LAWS = "Habits, not Tech marks. Wallet only on cleanup miss. Productive or peaceful.";
 
 export function StudyHallBoard({
   file,
@@ -120,9 +119,8 @@ export function StudyHallBoard({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
-      <p className="shrink-0 rounded-lg bg-elevated px-3 py-2 text-xs font-medium text-muted ring-1 ring-border">{SH_LAWS}</p>
       <header className="flex shrink-0 flex-wrap items-center gap-2">
-        <h1 className="font-display text-2xl font-semibold tracking-tight">Study Hall Manager</h1>
+        <h1 className="font-display text-2xl font-semibold tracking-tight">Study Hall</h1>
         <QuarterChip date={date} />
         {bell ? <span className="font-mono text-sm text-muted">{formatBell(bell.start)}–{formatBell(bell.end)}</span> : null}
         <span className="text-sm text-muted">{hereN} here · {kids.length - hereN} out</span>
@@ -147,6 +145,19 @@ export function StudyHallBoard({
           </button>
         </div>
       </header>
+
+      <label className="shrink-0">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-gold">Study Hall Today</span>
+        <input
+          value={happened}
+          onFocus={() => { if (!unlocked) onNeedPin(); }}
+          onChange={(e) => { if (!unlocked) return; onChange(setHappened(file, date, P6, e.target.value)); }}
+          maxLength={160}
+          placeholder="Productive or peaceful. One job for the hour."
+          className="tw-field mt-1 font-display text-lg font-semibold"
+          aria-label="Study Hall Today"
+        />
+      </label>
 
       <div className="grid min-h-0 flex-1 gap-2 overflow-hidden lg:grid-cols-[minmax(16rem,28%)_1fr]">
         <aside className="flex min-h-0 flex-col gap-2 overflow-auto">
@@ -218,14 +229,6 @@ export function StudyHallBoard({
               </button>
             </div>
           </section>
-          <input
-            value={happened}
-            onFocus={() => { if (!unlocked) onNeedPin(); }}
-            onChange={(e) => { if (!unlocked) return; onChange(setHappened(file, date, P6, e.target.value)); }}
-            maxLength={160}
-            placeholder="Happened today"
-            className="min-h-11 w-full rounded-xl bg-surface px-3 text-sm outline-none"
-          />
           <HallStore file={file} unlocked={unlocked} kids={kids} onNeedPin={onNeedPin} onChange={onChange} />
         </aside>
 

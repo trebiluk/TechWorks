@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
 import { isLiveStudent } from "@/lib/economy";
-import { abOn, attendOn, deskBellId, hallOf, happenedOn, lineLeaderOn, onAbRoster, pickLineLeader, setHallShow, setLineLeader, specialsOn, type LinePick } from "@/lib/store";
+import { abOn, attendOn, deskBellId, hallOf, happenedOn, lineLeaderOn, onAbRoster, pickLineLeader, setHallShow, setHappened, setLineLeader, specialsOn, type LinePick } from "@/lib/store";
 import { todayIso } from "@/lib/calendar";
 import { formatBell, leftClock, periodClock, periodNow } from "@/lib/bells";
 import { useShopClock } from "@/lib/use-clock";
@@ -107,6 +107,23 @@ export function StudyHallDash({
         ) : null}
       </div>
 
+      <section className="tw-gadget tw-fill-wide px-5 py-4">
+        <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold">Study Hall Today</p>
+        {unlocked && onChange ? (
+          <input
+            key={`hall-today-${today}`}
+            defaultValue={happened}
+            placeholder="Productive or peaceful."
+            onBlur={(e) => onChange(setHappened(file, today, P6, e.target.value))}
+            className="tw-field tw-fill-hero mt-2 font-display text-3xl font-semibold tracking-tight"
+            aria-label="Study Hall Today"
+          />
+        ) : (
+          <h1 className="tw-fill-hero mt-1 font-display font-semibold tracking-tight">{happened || "Productive or peaceful."}</h1>
+        )}
+        <p className="tw-fill-line mt-2 max-w-3xl text-muted">Work, rest quietly, or both. Kind voices. Calm bodies.</p>
+      </section>
+
       {notesOn ? (
         <section className="rounded-3xl bg-surface px-5 py-4">
           <p className="font-display text-2xl font-semibold tracking-tight">Notes from Grade 5 teachers</p>
@@ -140,15 +157,6 @@ export function StudyHallDash({
         </section>
       ) : null}
 
-      <section className="rounded-3xl bg-surface px-5 py-5">
-        <p className="font-display text-4xl font-semibold tracking-tight sm:text-5xl">Productive or peaceful.</p>
-        <p className="mt-2 max-w-2xl text-lg text-muted">You can work. You can rest quietly. You can do both. Kind voices. Calm bodies.</p>
-        <div className="mt-4 grid gap-2 sm:grid-cols-2">
-          <p className="rounded-2xl bg-elevated px-4 py-3 text-lg font-semibold">✏️ Productive — read, write, finish something</p>
-          <p className="rounded-2xl bg-elevated px-4 py-3 text-lg font-semibold">🌙 Peaceful — quiet seat, kind words, soft feet</p>
-        </div>
-      </section>
-
       <DayStrip schedule={bellsId} shop={shop} view={6} onPeriod={onPeriod} specials={specialsOn(file, today)} />
 
       <section className="grid gap-2 lg:grid-cols-[minmax(0,1.2fr)_minmax(12rem,0.7fr)]">
@@ -175,7 +183,6 @@ export function StudyHallDash({
           ) : (
             <p className="mt-2 text-sm text-muted">Watch the draw. Be ready if your name pops.</p>
           )}
-          {happened ? <p className="mt-3 text-sm text-muted">{happened}</p> : null}
         </article>
         <HallTime clock={clock} live={live === P6} />
       </section>

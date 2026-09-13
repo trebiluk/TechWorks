@@ -395,8 +395,17 @@ export function clubPackOf(file: ClubFile, date: string): ClubPack {
   return CLUB_PACKS.find((p) => p.id === id) ?? CLUB_PACKS[0];
 }
 
+export function defaultClubLine(slot: ClubSlot, agenda: string): string {
+  const line = agenda.trim();
+  if (!line) return slot.line;
+  if (slot.kind === "brief" || slot.kind === "demo") return line;
+  if (slot.kind === "work" || slot.kind === "contest") return line;
+  return slot.line;
+}
+
 export function layClubSlots(file: ClubFile, date: string): LaidClubSlot[] {
   const pack = clubPackOf(file, date);
+  const agenda = meetingOf(file, date).agenda?.trim() ?? "";
   const start = CLUB_START_MIN;
   const end = CLUB_DOOR_MIN;
   const cleanAt = CLUB_CLEAN_MIN;
@@ -412,7 +421,7 @@ export function layClubSlots(file: ClubFile, date: string): LaidClubSlot[] {
     const raw = Math.max(1, Math.round((workSpan * (s.w || 1)) / weight));
     const endMin = last ? cut : Math.min(cut - (body.length - 1 - i), t + raw);
     const mins = Math.max(1, endMin - t);
-    out.push({ ...s, startMin: t, endMin: t + mins, mins });
+    out.push({ ...s, line: defaultClubLine(s, agenda), startMin: t, endMin: t + mins, mins });
     t += mins;
   });
   if (tail) out.push({ ...tail, startMin: cut, endMin: end, mins: Math.max(1, end - cut) });
@@ -584,7 +593,7 @@ export function clubPulse(file: ClubFile, date = todayIso(), now = new Date()): 
       return { kind: "cleanup", title: "Tech Club · cleanup", sub: `${clock.headline} · ${oLine}`, date, overlay };
     }
     if (clock.phase === "arrive" || clock.phase === "sign" || clock.phase === "work") {
-      return { kind: "live", title: "Tech Club now", sub: `${clock.headline} · ${oLine}`, date, overlay };
+      return { kind: "live", title: clubAgendaOf(file, date), sub: `Tech Club · ${clock.headline}`, date, overlay };
     }
     if (clock.phase === "after") {
       const nxt = nextClubDay(file, date, false);
@@ -596,7 +605,7 @@ export function clubPulse(file: ClubFile, date = todayIso(), now = new Date()): 
         overlay: nxt ? overlayOn(file, nxt) : overlay,
       };
     }
-    return { kind: "today", title: "Tech Club today", sub: `2:40–3:05 · ${oLine} · late bus`, date, overlay };
+    return { kind: "today", title: clubAgendaOf(file, date), sub: "Tech Club · 2:40–3:05 · late bus", date, overlay };
   }
   const nxt = nextClubDay(file, date, false);
   if (!nxt) return null;

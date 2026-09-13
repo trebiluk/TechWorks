@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.33. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.34. -->
 
 # TechWorks changelog
 
-App version **1.92.33**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.34**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.34 — 2026-09-13
+
+- One directive: Tech Club Agenda fills brief/work plates and the wall. Study Hall Today fills the hall wall. Same pattern as Teach.
 
 ## 1.92.33 — 2026-09-13
 

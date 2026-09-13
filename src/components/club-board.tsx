@@ -164,14 +164,27 @@ export function ClubBoard({
     const kind = clubWallKind(file, today, nowTick);
     const nxt = nextClubDay(file, today, false);
     if (kind === "off") {
+      const focus = nxt ?? today;
+      const nextAgenda = clubAgendaOf(file, focus);
       return (
         <section className="flex min-h-0 flex-1 flex-col justify-center gap-3 rounded-xl bg-surface px-6 py-8">
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold">Tech Club</p>
-          <h1 className="tw-fill-hero font-display font-semibold tracking-tight">
-            {nxt ? `Next club · ${formatClubDay(nxt)}` : "No club on the calendar"}
-          </h1>
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold">Tech Club Agenda</p>
+          {unlocked ? (
+            <input
+              key={`club-next-${focus}`}
+              defaultValue={meetingOf(file, focus).agenda ?? ""}
+              placeholder="Choice stations · late bus names"
+              onBlur={(e) => commit(patchMeeting(file, focus, { agenda: e.target.value.slice(0, 160) }))}
+              className="tw-field tw-fill-hero max-w-4xl font-display text-3xl font-semibold tracking-tight"
+              aria-label="Tech Club Agenda"
+            />
+          ) : (
+            <h1 className="tw-fill-hero font-display font-semibold tracking-tight">
+              {meetingOf(file, focus).agenda?.trim() || (nxt ? `Next club · ${formatClubDay(nxt)}` : "No club on the calendar")}
+            </h1>
+          )}
           <p className="tw-fill-line max-w-3xl text-muted">
-            {nxt ? "2:40–3:05 · sign in, then the posted job. Late bus names at the door." : "Set Tuesdays (or extra days) on Club."}
+            {nxt ? `${formatClubDay(nxt)} · 2:40–3:05 · ${nextAgenda}` : "Set Tuesdays (or extra days) on Club."}
           </p>
           {unlocked && onWall ? (
             <button type="button" onClick={onWall} className="tw-tap mt-2 min-h-11 w-fit rounded-lg bg-fg px-4 text-sm font-semibold text-bg">
@@ -252,10 +265,23 @@ export function ClubBoard({
             </span>
           </header>
           <section data-teach-hero className="tw-gadget tw-fill-wide shrink-0 p-3">
-            <div className="min-w-0">
-              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold">{liveCur?.title ?? "BRIEF"}</p>
-              <h1 className="tw-fill-hero font-display font-semibold tracking-tight">{liveCur?.title ?? "BRIEF"}</h1>
-              <p className="tw-fill-line mt-2 max-w-3xl text-muted">{liveMeet.agenda?.trim() || liveCur?.line || liveAgenda}</p>
+            <div className="min-w-0 flex-1">
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold">
+                Tech Club Agenda
+                <span className="ml-2 text-muted">{liveCur?.title ?? "BRIEF"}</span>
+              </p>
+              {unlocked ? (
+                <input
+                  key={`club-agenda-${today}`}
+                  defaultValue={liveMeet.agenda ?? ""}
+                  placeholder={clubPackOf(file, today).hint}
+                  onBlur={(e) => commit(patchMeeting(file, today, { agenda: e.target.value.slice(0, 160) }))}
+                  className="tw-field tw-fill-hero mt-2 font-display text-3xl font-semibold tracking-tight"
+                  aria-label="Tech Club Agenda"
+                />
+              ) : (
+                <h1 className="tw-fill-hero mt-1 font-display font-semibold tracking-tight">{liveAgenda}</h1>
+              )}
             </div>
             <Berty pose="waving" size="lg" />
           </section>
@@ -508,7 +534,8 @@ export function ClubBoard({
           </section>
 
           <section className="rounded-xl bg-surface p-3">
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-subtle">This meeting</p>
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-gold">Tech Club Agenda</p>
+            <p className="mt-0.5 text-sm text-muted">One line. Brief, work, and the wall play this.</p>
             <div className="mt-2 flex flex-wrap gap-1">
               <button
                 type="button"
@@ -519,6 +546,13 @@ export function ClubBoard({
               </button>
             </div>
             {!clubOn ? <p className="mt-1 text-sm font-semibold text-loss">Off this day. Set it, or pick a Tuesday.</p> : null}
+            <input
+              value={meet.agenda ?? ""}
+              onChange={(e) => edit({ agenda: e.target.value.slice(0, 160) })}
+              placeholder={pack.hint}
+              className="tw-field mt-2 font-display text-lg font-semibold"
+              aria-label="Tech Club Agenda"
+            />
             <div className="mt-2 flex flex-wrap gap-1">
               {CLUB_PACKS.map((p) => (
                 <button
@@ -526,21 +560,12 @@ export function ClubBoard({
                   type="button"
                   title={p.hint}
                   onClick={() => gate() && commit(setClubPack(file, date, p.id))}
-                  className={cn("tw-tap min-h-10 rounded-full px-3 text-xs font-semibold", pack.id === p.id ? "bg-fg text-bg" : "bg-elevated text-muted")}
+                  className={cn("tw-tap min-h-9 rounded-full px-3 text-xs font-semibold", pack.id === p.id ? "bg-fg text-bg" : "bg-elevated text-muted")}
                 >
                   {p.label}
                 </button>
               ))}
             </div>
-            <label className="mt-2 grid gap-1 text-sm">
-              <span className="text-[11px] font-bold uppercase tracking-wide text-subtle">Agenda</span>
-              <input
-                value={meet.agenda ?? ""}
-                onChange={(e) => edit({ agenda: e.target.value.slice(0, 160) })}
-                placeholder={pack.hint}
-                className="min-h-11 rounded-xl bg-elevated px-3 outline-none"
-              />
-            </label>
             <ol className="mt-2 grid gap-1">
               {slots.map((s) => {
                 const on = cur?.id === s.id;
