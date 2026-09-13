@@ -6,7 +6,6 @@ import {
   assignCrewProject,
   crewProjectId,
   crewsForPeriod,
-  IDEA_PROJECTS,
   jobCardOf,
   patchActivity,
   PROJECT_KINDS,
@@ -22,6 +21,7 @@ import { currentCycleOf } from "@/lib/roles";
 import { CtrlSeg } from "@/components/ctrl";
 import { JobWrite } from "@/components/job-write";
 import { PlanBook } from "@/components/plan-book";
+import { ActivityMaker } from "@/components/activity-maker";
 import { cn } from "@/lib/utils";
 
 type Pane = "plan" | "floor" | "options" | "job";
@@ -78,8 +78,7 @@ export function ProjectsBoard({
 
   const options = useMemo(() => {
     const rows = list.filter((p) => (kind === "all" ? true : (p.kind || "build") === kind));
-    const ideas = IDEA_PROJECTS.filter((p) => !rows.some((x) => x.id === p.id));
-    return [...rows, ...ideas].filter((p) => (kind === "all" ? true : (p.kind || "build") === kind));
+    return rows;
   }, [kind, list]);
 
   return (
@@ -88,7 +87,7 @@ export function ProjectsBoard({
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="font-display text-2xl font-semibold tracking-tight">Projects</h1>
           <p className="min-w-0 flex-1 text-sm text-muted">
-            {periodTitle(period, bells)} · plan the days, then park a unit on this period
+            {periodTitle(period, bells)} · new activity fills the week. Empty until you park one.
           </p>
         </div>
         <div className="flex flex-wrap gap-1">
@@ -121,16 +120,33 @@ export function ProjectsBoard({
       </header>
 
       <div className="min-h-0">
-        {pane === "plan" && project ? (
-          <PlanBook
-            file={file}
-            project={project}
-            period={period}
-            unlocked={unlocked}
-            onNeedPin={onNeedPin}
-            onChange={onChange}
-            onTeach={onTeachDay ? (iso) => onTeachDay(iso, period) : undefined}
-          />
+        {pane === "plan" ? (
+          <div className="grid gap-3">
+            <ActivityMaker
+              file={file}
+              period={period}
+              unlocked={unlocked}
+              onNeedPin={onNeedPin}
+              onChange={onChange}
+              onMade={(id) => {
+                setFocusId(id);
+                setPane("plan");
+              }}
+            />
+            {project ? (
+              <PlanBook
+                file={file}
+                project={project}
+                period={period}
+                unlocked={unlocked}
+                onNeedPin={onNeedPin}
+                onChange={onChange}
+                onTeach={onTeachDay ? (iso) => onTeachDay(iso, period) : undefined}
+              />
+            ) : (
+              <p className="text-sm text-muted">Plan book is empty. Park an activity above.</p>
+            )}
+          </div>
         ) : null}
         {pane === "floor" ? (
           <Floor
@@ -218,6 +234,7 @@ function Floor({
     <div className="grid gap-3 pb-4 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)]">
       <section className="space-y-2">
         <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">On this period</p>
+        {slots.length === 0 ? <p className="text-sm text-muted">Nothing parked. New activity is on Plan.</p> : null}
         <ul className="grid gap-2">
           {slots.map((p, i) => (
             <li key={p.id}>

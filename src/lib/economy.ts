@@ -161,8 +161,10 @@ export type EconomyFile = {
       projectByGrade?: Record<string, string>;
       /** Cycle · period · crew → project id. Empty = grade default for that cycle. */
       crewProjects?: { cycle: number; period: number; crewKey: string; projectId: string }[];
-      /** Period → ordered active project slots. Empty = grade live unit. */
+      /** Period → ordered active project slots. Empty until the teacher parks one. */
       periodProjects?: Record<string, string[]>;
+      /** Once true, factory units are not re-injected. First load after 1.92.28 clears them. */
+      authoredPlans?: boolean;
       projects?: {
         id: string;
         title: string;

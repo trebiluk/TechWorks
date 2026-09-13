@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.27. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.28. -->
 
 # TechWorks changelog
 
-App version **1.92.27**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.28**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.28 — 2026-09-13
+
+- Plan book, projects, and activities start empty. New activity: project / independent / sub / contest / training, grade, days. Park fills the week. Factory Simple Machines is a template, not the desk.
 
 ## 1.92.27 — 2026-09-13
 

@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.28 — 2026-09-13
+
+- Plan book, projects, and activities start empty. New activity: project / independent / sub / contest / training, grade, days. Park fills the week. Factory Simple Machines is a template, not the desk.
+
 ## 1.92.27 — 2026-09-13
 
 - Teach is type-on-the-page: Ask, Do this now, Objective, and the four beats. Leave a field to save. Gear is still drag/hide only.

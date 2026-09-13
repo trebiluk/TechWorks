@@ -206,7 +206,7 @@ export function wiseStages(cycleStart: number, cycleLen: 1 | 2 = 2): ProjectStag
 export const DEFAULT_STAGES: ProjectStage[] = wiseStages(1, 2);
 
 export function activitiesOf(p: ShopProject): ProjectActivity[] {
-  return p.activities?.length ? p.activities : DEFAULT_ACTIVITIES;
+  return p.activities ?? [];
 }
 
 export function activityById(p: ShopProject, id?: string): ProjectActivity | undefined {
@@ -602,41 +602,63 @@ export const IDEA_PROJECTS: ShopProject[] = [
 
 export function ensureProjects(file: EconomyFile): EconomyFile {
   const next = cloneFile(file);
-  const raw = next.meta.config?.projects?.length ? next.meta.config.projects : DEFAULT_PROJECTS;
-  const list = raw
-    .filter((p) => p.id !== "prjsh" && !p.grades.includes(5))
-    .map((p) =>
-      ensureActivities(
-        ((p.pathVer ?? 0) >= 2 ? p : { ...p, stages: wiseStages(p.cycleStart ?? 1, p.cycleLen === 1 ? 1 : 2), pathVer: 3 }) as ShopProject,
-      ),
-    );
-  const haveFigure = list.some((p) => p.id === "prj-figure");
-  const withFigure = haveFigure ? list : [...list, ensureActivities(DEFAULT_PROJECTS.find((p) => p.id === "prj-figure")!)];
-  const extras = IDEA_PROJECTS.filter((p) => !withFigure.some((x) => x.id === p.id)).map((p) => ensureActivities(p));
-  const full = [...withFigure, ...extras];
+  const factory = new Set([...DEFAULT_PROJECTS, ...IDEA_PROJECTS].map((p) => p.id));
+  const authored = Boolean(next.meta.config?.authoredPlans);
+  const raw = next.meta.config?.projects ?? [];
+  const kept = authored ? raw : raw.filter((p) => !factory.has(p.id));
+  const list = kept
+    .filter((p) => p.id !== "prjsh" && p.id !== "none" && !p.grades.includes(5))
+    .map((p) => {
+      const asP = p as ShopProject;
+      if (asP.activities?.length) {
+        return ensureActivities(
+          ((asP.pathVer ?? 0) >= 2 ? asP : { ...asP, stages: wiseStages(asP.cycleStart ?? 1, asP.cycleLen === 1 ? 1 : 2), pathVer: 3 }) as ShopProject,
+        );
+      }
+      return asP;
+    });
   const by = { ...(next.meta.config?.projectByGrade ?? {}) };
   delete by["5"];
+  if (!authored) {
+    for (const id of factory) {
+      for (const g of Object.keys(by)) {
+        if (by[g] === id) delete by[g];
+      }
+    }
+  }
   next.meta.config = {
     ...(next.meta.config ?? {}),
-    projects: full.length ? full : DEFAULT_PROJECTS,
-    projectByGrade: { "6": "prj6", "7": "prj7", "8": "prj8", ...by },
+    projects: list,
+    projectByGrade: by,
+    authoredPlans: true,
   };
   return next;
 }
 
-export function projectsOf(file: EconomyFile): ShopProject[] {
-  const raw = file.meta.config?.projects?.length ? file.meta.config.projects : DEFAULT_PROJECTS;
-  const list = raw
-    .filter((p) => p.id !== "prjsh" && !p.grades.includes(5))
-    .map((p) => ensureActivities(p as ShopProject));
-  const extras = IDEA_PROJECTS.filter((p) => !list.some((x) => x.id === p.id)).map((p) => ensureActivities(p));
-  return [...list, ...extras];
+export function catalogProjects(): ShopProject[] {
+  return [...DEFAULT_PROJECTS, ...IDEA_PROJECTS].map((p) => ensureActivities(p));
 }
+
+export function projectsOf(file: EconomyFile): ShopProject[] {
+  const raw = file.meta.config?.projects ?? [];
+  return raw
+    .filter((p) => p.id !== "prjsh" && p.id !== "none" && !p.grades.includes(5))
+    .map((p) => ((p as ShopProject).activities?.length ? ensureActivities(p as ShopProject) : (p as ShopProject)));
+}
+
+export const EMPTY_PROJECT: ShopProject = {
+  id: "none",
+  title: "",
+  grades: [],
+  skills: [],
+  stages: [],
+  activities: [],
+};
 
 export function projectForGrade(file: EconomyFile, grade: number): ShopProject {
   const list = projectsOf(file);
   const id = file.meta.config?.projectByGrade?.[String(grade)];
-  return list.find((p) => p.id === id) ?? list.find((p) => p.grades.includes(grade)) ?? list[0];
+  return list.find((p) => p.id === id) ?? list.find((p) => p.grades.includes(grade)) ?? list[0] ?? EMPTY_PROJECT;
 }
 
 export function projectForCycle(file: EconomyFile, grade: number, cycle: number): ShopProject {
@@ -674,15 +696,12 @@ export function projectForCrew(file: EconomyFile, cycle: number, period: number,
   return projectsOf(file).find((p) => p.id === id) ?? projectForCycle(file, gradeOfPeriod(file, period), cycle);
 }
 
-/** Active project slots on a period. Empty storage falls back to the grade’s live unit. */
+/** Active project slots on a period. Empty until the teacher parks one. */
 export function slotsOf(file: EconomyFile, period: number, date = todayIso()): ShopProject[] {
   const list = projectsOf(file);
   const ids = file.meta.config?.periodProjects?.[String(period)];
-  if (ids?.length) {
-    const rows = ids.map((id) => list.find((p) => p.id === id)).filter((p): p is ShopProject => Boolean(p));
-    if (rows.length) return rows;
-  }
-  return [projectForCycle(file, gradeOfPeriod(file, period), cycleNow(date))];
+  if (!ids?.length) return [];
+  return ids.map((id) => list.find((p) => p.id === id)).filter((p): p is ShopProject => Boolean(p));
 }
 
 export function putOnPeriod(file: EconomyFile, period: number, projectId: string): EconomyFile {
@@ -753,9 +772,10 @@ export function agendaFor(file: EconomyFile, period: number, date = todayIso(), 
       pinned: false,
     };
   }
+  const parked = slotsOf(file, period, date)[0];
   const project = crewKey
     ? projectForCrew(file, cycle, period, crewKey)
-    : (slotsOf(file, period, date)[0] ?? projectForCycle(file, grade, cycle));
+    : (parked ?? EMPTY_PROJECT);
   const pin = pinnedActivityId(file, period, date, crewKey);
   const pinned = pin ? activityById(project, pin) : undefined;
   const stage =
@@ -803,6 +823,21 @@ function lookLine(expect: 1 | 2 | 3 | 4, text: string): string {
 export function jobCardOf(file: EconomyFile, period: number, date = todayIso(), crewKey?: string): ShopJob {
   const agenda = agendaFor(file, period, date, crewKey);
   const p = ensureActivities(agenda.project);
+  if (!p.title && !p.prompt && !activitiesOf(p).length && !agenda.pinned) {
+    return {
+      question: "",
+      stemLine: "",
+      rules: [],
+      today: "",
+      done: "",
+      lookFor: "",
+      expect: 3,
+      stage: "",
+      title: "",
+      skillId: "",
+      grade: agenda.grade,
+    };
+  }
   const pinned = agenda.activity && agenda.pinned ? agenda.activity : undefined;
   const phase = pinned ? pinned.goal : goalPhaseOn(file, period, date);
   const a =
@@ -880,23 +915,75 @@ export function upsertProject(file: EconomyFile, project: ShopProject): EconomyF
 export function addProject(file: EconomyFile, title: string, grades: number[]): EconomyFile {
   const id = `prj_${Date.now().toString(36)}`;
   const cycleStart = cycleNow(todayIso());
-  const dates = datesFromCycles(cycleStart, 2);
   return upsertProject(file, {
     id,
     title: title.trim() || "New project",
     grades,
     skills: ["safety", "draw", "model", "tools"].slice(0, TOP_SKILLS),
-    stages: wiseStages(cycleStart, 2),
-    activities: DEFAULT_ACTIVITIES,
-    start: dates.start,
-    end: dates.end,
+    stages: [],
+    activities: [],
+    start: todayIso(),
+    end: todayIso(),
     constraints: [],
     cycleStart,
-    cycleLen: 2,
+    cycleLen: 1,
     pathVer: 4,
     prompt: "",
     stem: ["T", "E"],
   });
+}
+
+export type ActivityPlanKind = "project" | "solo" | "sub" | "contest" | "train";
+
+export function createActivityPlan(
+  file: EconomyFile,
+  opts: {
+    name: string;
+    belong: ActivityPlanKind;
+    period: number;
+    grades: number[];
+    dates: string[];
+    prove?: "skill" | "done" | "both";
+    ask?: string;
+    do?: string;
+    projectId?: string;
+  },
+): { file: EconomyFile; projectId: string; activityId: string } {
+  const name = opts.name.trim() || "New activity";
+  const dates = opts.dates.filter(Boolean).sort();
+  const grades = opts.grades.length ? opts.grades : [gradeOfPeriod(file, opts.period)];
+  const kind: ProjectKind =
+    opts.belong === "contest" ? "contest" : opts.belong === "solo" ? "individual" : opts.belong === "train" ? "challenge" : opts.belong === "sub" ? "individual" : "build";
+  let next = file;
+  let projectId = opts.projectId;
+  if (!projectId || !projectsOf(next).some((p) => p.id === projectId)) {
+    next = addProject(next, opts.belong === "solo" || opts.belong === "sub" ? name : name, grades);
+    projectId = projectsOf(next).at(-1)?.id ?? "";
+  }
+  const activity: ProjectActivity = {
+    id: `act_${Date.now().toString(36)}`,
+    name,
+    skillId: opts.belong === "sub" ? "care" : "draw",
+    goal: opts.belong === "sub" ? "PRODUCTIVITY" : opts.belong === "train" ? "TRAINING" : opts.belong === "contest" ? "CRITIQUE DAY" : "IDEA STAGE",
+    today: opts.do?.trim() || "",
+    prove: opts.prove ?? "both",
+    days: Math.max(1, dates.length),
+  };
+  const p = projectsOf(next).find((x) => x.id === projectId) ?? EMPTY_PROJECT;
+  next = upsertProject(next, {
+    ...p,
+    id: projectId,
+    kind,
+    title: p.title || name,
+    grades: [...new Set([...(p.grades ?? []), ...grades])],
+    prompt: opts.ask?.trim() || p.prompt,
+    activities: [...activitiesOf(p), activity],
+    start: dates[0] || p.start,
+    end: dates.at(-1) || p.end,
+  });
+  if (opts.period !== 6 && projectId) next = putOnPeriod(next, opts.period, projectId);
+  for (const d of dates) next = pinDayActivity(next, d, opts.period, activity.id);
+  return { file: next, projectId, activityId: activity.id };
 }
 
 export function pushStageToday(file: EconomyFile, grade: number, stage: ProjectStage): EconomyFile {
