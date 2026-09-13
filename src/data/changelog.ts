@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.36 — 2026-09-13
+
+- Crew tools: size packs (pairs / 3–4 / tables), Deal even, Copy look to every period, Drop, Crown. Look stays off the wall except the #1 crew stripe.
+
 ## 1.92.35 — 2026-09-13
 
 - Brand lockup is T + TECHWORKS, not a PNG in a second plate. Berty sits on the hour plate (correct ratio, drop shadow). Chrome peek is a badge.

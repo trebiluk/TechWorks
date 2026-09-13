@@ -147,6 +147,7 @@ export type EconomyFile = {
       meetings?: { title: string; date?: string; dow?: number; time?: string }[];
       crewBans?: { a: string; b: string; note?: string; by?: string; since?: string }[];
       crewExceptions?: { a: string; b: string; date: string; note: string }[];
+      crewRules?: { min?: number; max?: number; crewsMax?: number };
       teachPack?: string;
       teachDays?: Record<string, Record<string, { pack?: string; objective?: string; pin?: string; notes?: string; ask?: string; do?: string; lines?: Record<string, string> }>>;
       lessons?: { id: string; title: string; cat: string; grade?: number; pack?: string; objective?: string; notes?: string; used?: { date: string; period: number; q?: string }[] }[];

@@ -1,5 +1,5 @@
 import type { EconomyFile, RawStudent } from "./economy";
-import { isLiveStudent, legalFirstOf, legalLastOf } from "./economy";
+import { isLiveStudent, legalFirstOf, legalLastOf, shopBells } from "./economy";
 import { cloneFile } from "./clone";
 import { todayIso } from "./calendar";
 
@@ -8,6 +8,37 @@ export const CREW_MAX = 4;
 export const CREWS_MAX = 5;
 export const BENCH = "Bench";
 export const CREW_COLORS = ["#22D3EE", "#3B82F6", "#A855F7", "#E85820", "#22c55e", "#f59e0b", "#f43f5e", "#94a3b8"];
+
+export type CrewRules = { min: number; max: number; crewsMax: number };
+
+export const CREW_PACKS: { id: string; label: string; hint: string; min: number; max: number; crewsMax: number }[] = [
+  { id: "classic", label: "3–4", hint: "Shop tables", min: 3, max: 4, crewsMax: 5 },
+  { id: "pairs", label: "Pairs", hint: "Two at a station", min: 2, max: 2, crewsMax: 8 },
+  { id: "triples", label: "Trios", hint: "Tight labs", min: 3, max: 3, crewsMax: 6 },
+  { id: "tables", label: "5–6", hint: "Big tables", min: 5, max: 6, crewsMax: 4 },
+];
+
+function clamp(n: number, lo: number, hi: number) {
+  return Math.min(hi, Math.max(lo, n));
+}
+
+export function crewRulesOf(file: EconomyFile): CrewRules {
+  const r = file.meta.config?.crewRules ?? {};
+  const max = clamp(Number(r.max) || CREW_MAX, 2, 8);
+  const min = clamp(Number(r.min) || CREW_MIN, 1, max);
+  const crewsMax = clamp(Number(r.crewsMax) || CREWS_MAX, 2, 8);
+  return { min, max, crewsMax };
+}
+
+export function setCrewRules(file: EconomyFile, patch: Partial<CrewRules>): EconomyFile {
+  const cur = crewRulesOf(file);
+  const max = clamp(Number(patch.max ?? cur.max), 2, 8);
+  const min = clamp(Number(patch.min ?? cur.min), 1, max);
+  const crewsMax = clamp(Number(patch.crewsMax ?? cur.crewsMax), 2, 8);
+  const next = cloneFile(file);
+  next.meta.config = { ...(next.meta.config ?? {}), crewRules: { min, max, crewsMax } };
+  return next;
+}
 
 export type CrewBan = {
   a: string;
@@ -98,7 +129,7 @@ export function placeBlock(
     const there = file.students.filter(
       (s) => s.period === student.period && s.id !== student.id && isLiveStudent(s, file.meta.quarterName) && crewAt(s, date) === dest,
     );
-    if (there.length >= CREW_MAX) return `${dest} already has ${CREW_MAX}`;
+    if (there.length >= crewRulesOf(file).max) return `${dest} already has ${crewRulesOf(file).max}`;
     for (const other of there) {
       const ban = banBetween(file, student.id, other.id);
       if (ban && !excepted(file, student.id, other.id, date)) {
@@ -201,12 +232,83 @@ export function addCrewException(file: EconomyFile, a: string, b: string, date: 
 export function addPeriodCrew(file: EconomyFile, period: number): EconomyFile {
   const next = cloneFile(file);
   const have = next.crews.filter((c) => c.period === period);
-  if (have.length >= CREWS_MAX) return file;
-  const letters = ["A", "B", "C", "D", "E"];
+  if (have.length >= crewRulesOf(file).crewsMax) return file;
+  const letters = ["A", "B", "C", "D", "E", "F", "G", "H"];
   const used = new Set(have.map((c) => c.key));
   const letter = letters.find((l) => !used.has(`Crew ${l}`)) ?? String(have.length + 1);
   const key = `Crew ${letter}`;
   next.crews = [...next.crews, { period, key, name: key }];
+  return next;
+}
+
+export function dropPeriodCrew(file: EconomyFile, period: number, key: string, date = todayIso()): EconomyFile {
+  let next = file;
+  for (const s of next.students.filter((x) => x.period === period && crewAt(x, date) === key)) {
+    next = setStudentCrew(next, s.id, BENCH, date);
+  }
+  const out = cloneFile(next);
+  out.crews = out.crews.filter((c) => !(c.period === period && c.key === key));
+  return out;
+}
+
+/** Even deal. Honors Separate. Extra kids sit bench. */
+export function dealCrews(file: EconomyFile, period: number, date = todayIso()): EconomyFile {
+  const rules = crewRulesOf(file);
+  const kids = file.students.filter((s) => s.period === period && isLiveStudent(s, file.meta.quarterName));
+  if (!kids.length) return file;
+  let next = file;
+  const need = Math.min(rules.crewsMax, Math.max(1, Math.ceil(kids.length / rules.max)));
+  while (next.crews.filter((c) => c.period === period).length < need) {
+    const grown = addPeriodCrew(next, period);
+    if (grown === next) break;
+    next = grown;
+  }
+  const keys = next.crews.filter((c) => c.period === period).map((c) => c.key).slice(0, Math.max(need, 1));
+  if (!keys.length) return next;
+  for (const s of kids) next = setStudentCrew(next, s.id, BENCH, date);
+  const counts: Record<string, number> = Object.fromEntries(keys.map((k) => [k, 0]));
+  for (const s of kids) {
+    const order = keys.slice().sort((a, b) => counts[a] - counts[b] || a.localeCompare(b));
+    let dest = BENCH;
+    for (const k of order) {
+      if (counts[k] >= rules.max) continue;
+      if (!placeBlock(next, s, k, date)) {
+        dest = k;
+        break;
+      }
+    }
+    next = setStudentCrew(next, s.id, dest, date);
+    if (dest !== BENCH) counts[dest] += 1;
+  }
+  return next;
+}
+
+export function copyCrewLooks(file: EconomyFile, fromPeriod: number, toPeriod: number): EconomyFile {
+  if (fromPeriod === toPeriod) return file;
+  let next = file;
+  const src = next.crews.filter((c) => c.period === fromPeriod);
+  for (const c of src) {
+    if (!next.crews.some((x) => x.period === toPeriod && x.key === c.key)) {
+      const grown = cloneFile(next);
+      grown.crews = [...grown.crews, { period: toPeriod, key: c.key, name: c.name || c.key }];
+      next = grown;
+    }
+    next = setCrewProfile(next, toPeriod, c.key, {
+      name: c.name,
+      motto: c.motto ?? "",
+      icon: c.icon ?? "",
+      color: c.color ?? "",
+      logo: c.logo ?? "",
+    });
+  }
+  return next;
+}
+
+export function copyCrewLooksToShop(file: EconomyFile, fromPeriod: number): EconomyFile {
+  let next = file;
+  for (const b of shopBells(file)) {
+    if (b.period !== fromPeriod) next = copyCrewLooks(next, fromPeriod, b.period);
+  }
   return next;
 }
 

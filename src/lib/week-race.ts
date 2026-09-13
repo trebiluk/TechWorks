@@ -46,6 +46,9 @@ export type CrewRace = PaceSlice & {
   period: number;
   key: string;
   name: string;
+  icon?: string;
+  color?: string;
+  motto?: string;
   project: string;
   activity: string;
   assignment: string;
@@ -237,6 +240,9 @@ export function weekRace(file: EconomyFile, today = todayIso()): WeekRace {
       period: row.period,
       key: row.key,
       name: rec?.name ?? row.key,
+      icon: rec?.icon,
+      color: rec?.color,
+      motto: rec?.motto,
       project: job?.project ?? pace.title,
       activity: job?.activity ?? pace.activityName,
       assignment: assignmentOf(job?.project ?? pace.title, job?.cycle ?? pace.cycle),

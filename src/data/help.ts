@@ -157,7 +157,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Admin",
     title: "Crew manager",
     tags: ["crew", "group", "separate", "roster", "history"],
-    body: "Admin → Crews (desk PIN). Tap a worker, tap a crew. 3–4 people, up to 5 crews. Each move is dated so yesterday’s group still scores as yesterday. Separate rules live on Admin → Records → Roster: pick two existing names, the desk will not seat them together. Override today logs an exception. Never on the wall.",
+    body: "Admin → Crews (desk PIN). Size pack first (pairs / 3–4 / tables). Deal even seats the period. Look is name, color, mark, motto, logo — Copy look paints every period. Crown a lead on the card. Tap a worker, tap Here. Each move is dated. Separate rules live on Roster. Never on the wall.",
   },
   {
     id: "admin-backup",

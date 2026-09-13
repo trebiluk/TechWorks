@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.35. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.36. -->
 
 # TechWorks changelog
 
-App version **1.92.35**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.36**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.36 — 2026-09-13
+
+- Crew tools: size packs (pairs / 3–4 / tables), Deal even, Copy look to every period, Drop, Crown. Look stays off the wall except the #1 crew stripe.
 
 ## 1.92.35 — 2026-09-13
 

@@ -553,13 +553,18 @@ function CrewLead({
       type="button"
       onClick={() => onPeriod?.(row.period)}
       className={cn("tw-tap relative overflow-hidden rounded-xl bg-gold text-left text-bg", compact ? "p-3" : "p-4")}
+      style={row.color ? { boxShadow: `inset 0.55rem 0 0 ${row.color}` } : undefined}
     >
       <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-wider opacity-90">
         <Crown className="size-4" aria-hidden /> #1 crew · keep the crown
       </p>
       <div className="mt-1 flex items-end gap-3">
         <div className="min-w-0 flex-1">
-      <p className={cn("mt-1 font-display font-semibold tracking-tight", compact ? "text-2xl" : "text-3xl")}>{row.name}</p>
+      <p className={cn("mt-1 font-display font-semibold tracking-tight", compact ? "text-2xl" : "text-3xl")}>
+        {row.icon ? <span className="mr-1">{row.icon}</span> : null}
+        {row.name}
+      </p>
+      {row.motto ? <p className="truncate text-sm opacity-80">{row.motto}</p> : null}
       <p className={cn("font-mono font-semibold tabular-nums leading-none", compact ? "text-3xl" : "text-4xl")}>{Math.round(row.pct)}%</p>
         </div>
         <ProgressRing pct={row.pct} label={`${Math.round(row.pct)}%`} sub="#1" tone="gold" size={compact ? "md" : "lg"} live />

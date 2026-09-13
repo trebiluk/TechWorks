@@ -9,22 +9,25 @@ import {
   bansOf,
   BENCH,
   CREW_COLORS,
-  CREW_MAX,
-  CREW_MIN,
-  CREWS_MAX,
+  CREW_PACKS,
+  copyCrewLooksToShop,
   crewAt,
   crewConflicts,
   crewHistory,
+  crewRulesOf,
+  dealCrews,
   dropCrewBan,
+  dropPeriodCrew,
   placeBlock,
   readCrewLogo,
   renameCrew,
   setCrewProfile,
+  setCrewRules,
   setStudentCrew,
   whoOf,
 } from "@/lib/crew-desk";
 import { formatSchoolDate, todayIso } from "@/lib/calendar";
-import { abOn, onAbRoster } from "@/lib/store";
+import { abOn, crewLeaderId, onAbRoster, setCrewLeader } from "@/lib/store";
 import { AVATARS } from "@/lib/avatars";
 import { CrewBanner, WorkerCard } from "@/components/shop-cards";
 import { titleOf } from "@/lib/flair";
@@ -46,7 +49,9 @@ export function CrewDesk({
   const [hist, setHist] = useState<string | null>(null);
   const [err, setErr] = useState("");
   const [want, setWant] = useState<string | null>(null);
+  const [look, setLook] = useState<string | null>(null);
   const letter = abOn(file, date);
+  const rules = crewRulesOf(file);
   const kids = useMemo(
     () => file.students.filter((s) => s.period === period && isLiveStudent(s, file.meta.quarterName) && onAbRoster(s, letter)),
     [file, period, letter],
@@ -56,6 +61,7 @@ export function CrewDesk({
   const hits = crewConflicts(file, period, date);
   const bans = bansOf(file).filter((b) => kids.some((k) => k.id === b.a) && kids.some((k) => k.id === b.b));
   const picked = pick ? kids.find((s) => s.id === pick) : null;
+  const packId = CREW_PACKS.find((p) => p.min === rules.min && p.max === rules.max && p.crewsMax === rules.crewsMax)?.id;
 
   function place(dest: string, force = false) {
     if (!picked) return;
@@ -79,10 +85,10 @@ export function CrewDesk({
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto">
       <header className="tw-gadget p-3">
-        <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Crew manager</p>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-gold">Crew tools</p>
         <p className="font-display text-2xl font-semibold tracking-tight">Who sits with whom</p>
         <p className="mt-1 text-sm text-muted">
-          {CREW_MIN}–{CREW_MAX} per crew · up to {CREWS_MAX} crews · Separate rules live on Roster
+          {rules.min}–{rules.max} per crew · up to {rules.crewsMax} crews · Separate stays on Roster
         </p>
         <div className="mt-2 flex flex-wrap gap-1">
           <input type="date" value={date} onChange={(e) => setDate(e.target.value || date)} className="min-h-10 rounded-md bg-elevated px-2 text-sm" />
@@ -91,6 +97,32 @@ export function CrewDesk({
               P{p}
             </button>
           ))}
+        </div>
+        <div className="mt-2 flex flex-wrap gap-1">
+          {CREW_PACKS.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              title={p.hint}
+              onClick={() => onChange(setCrewRules(file, p))}
+              className={cn("tw-tap min-h-9 rounded-full px-3 text-xs font-semibold", packId === p.id ? "bg-gold text-bg" : "bg-elevated text-muted")}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+        <div className="mt-2 flex flex-wrap gap-1">
+          <button type="button" onClick={() => onChange(dealCrews(file, period, date))} className="tw-tap min-h-10 rounded-md bg-accent px-3 text-xs font-semibold text-accent-fg">
+            Deal even
+          </button>
+          <button type="button" onClick={() => onChange(copyCrewLooksToShop(file, period))} className="tw-tap min-h-10 rounded-md bg-elevated px-3 text-xs font-semibold">
+            Copy look → all periods
+          </button>
+          {crews.length < rules.crewsMax ? (
+            <button type="button" onClick={() => onChange(addPeriodCrew(file, period))} className="tw-tap min-h-10 rounded-md bg-elevated px-3 text-xs font-semibold">
+              + Crew
+            </button>
+          ) : null}
         </div>
       </header>
 
@@ -108,85 +140,72 @@ export function CrewDesk({
       {err ? <p className="rounded-lg bg-cleanup/20 px-3 py-2 text-sm font-semibold text-cleanup">{err}</p> : null}
       {picked ? (
         <p className="text-sm">
-          Place <span className="font-semibold">{whoOf(picked, true)}</span> → tap a crew
+          Place <span className="font-semibold">{whoOf(picked, true)}</span> → tap Here
           <button type="button" className="ml-2 text-xs text-muted" onClick={() => { setPick(null); setErr(""); }}>
             cancel
           </button>
         </p>
       ) : (
-        <p className="text-sm text-muted">Tap a worker, then tap a crew. History is kept per day.</p>
+        <p className="text-sm text-muted">Tap a worker, then Here. Deal even seats the period. Look is name, color, mark, motto.</p>
       )}
 
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {crews.map((c) => {
           const n = c.kids.length;
-          const size = n < CREW_MIN ? "short" : n > CREW_MAX ? "over" : "ok";
+          const size = n < rules.min ? "short" : n > rules.max ? "over" : "ok";
+          const leadId = crewLeaderId(file, period, c.key);
           return (
             <article key={c.key} className="tw-gadget overflow-hidden p-3">
               <CrewBanner name={c.name} motto={c.motto} icon={c.icon} color={c.color} logo={c.logo} period={period} n={n} />
-              <div className="mt-2 flex items-center gap-2">
-                <input
-                  value={c.name}
-                  onChange={(e) => onChange(renameCrew(file, period, c.key, e.target.value))}
-                  className="min-h-9 min-w-0 flex-1 bg-transparent font-display text-lg font-semibold outline-none"
-                />
+              <div className="mt-2 flex flex-wrap items-center gap-1">
                 <span className={cn("text-xs font-bold", size === "ok" ? "text-gain" : "text-loss")}>
-                  {n}/{CREW_MAX}
+                  {n}/{rules.max}
                 </span>
                 <button type="button" disabled={!picked} onClick={() => place(c.key)} className={cn("min-h-9 rounded-md px-2 text-xs font-semibold", picked ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}>
                   Here
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setLook(look === c.key ? null : c.key)}
+                  className={cn("min-h-9 rounded-md px-2 text-xs font-semibold", look === c.key ? "bg-gold text-bg" : "bg-elevated")}
+                >
+                  Look
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onChange(dropPeriodCrew(file, period, c.key, date))}
+                  className="min-h-9 rounded-md px-2 text-xs font-semibold text-muted"
+                >
+                  Drop
+                </button>
               </div>
-              <input
-                value={c.motto ?? ""}
-                onChange={(e) => onChange(setCrewProfile(file, period, c.key, { motto: e.target.value }))}
-                placeholder="Motto"
-                className="mt-1 min-h-9 w-full rounded-md bg-elevated px-2 text-sm outline-none"
-              />
-              <div className="mt-1 flex flex-wrap gap-0.5">
-                {AVATARS.slice(0, 12).map((a) => (
-                  <button
-                    key={a}
-                    type="button"
-                    onClick={() => onChange(setCrewProfile(file, period, c.key, { icon: c.icon === a ? "" : a }))}
-                    className={cn("flex size-8 items-center justify-center rounded-md text-base", c.icon === a ? "bg-gold text-bg" : "bg-elevated")}
-                  >
-                    {a}
-                  </button>
-                ))}
-              </div>
-              <div className="mt-1 flex flex-wrap gap-1">
-                {CREW_COLORS.map((col) => (
-                  <button
-                    key={col}
-                    type="button"
-                    onClick={() => onChange(setCrewProfile(file, period, c.key, { color: c.color === col ? "" : col }))}
-                    className={cn("size-7 rounded-full ring-2", c.color === col ? "ring-fg" : "ring-transparent")}
-                    style={{ background: col }}
-                    aria-label={col}
-                  />
-                ))}
-              </div>
-              <label className="mt-1 block text-[11px] text-muted">
-                Logo
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="mt-0.5 block w-full text-xs"
-                  onChange={(e) => readCrewLogo(e.target.files, (url) => onChange(setCrewProfile(file, period, c.key, { logo: url })))}
+              {look === c.key ? (
+                <LookPad
+                  name={c.name}
+                  motto={c.motto ?? ""}
+                  icon={c.icon ?? ""}
+                  color={c.color ?? ""}
+                  logo={c.logo ?? ""}
+                  onName={(name) => onChange(renameCrew(file, period, c.key, name))}
+                  onPatch={(patch) => onChange(setCrewProfile(file, period, c.key, patch))}
                 />
-              </label>
-              {c.logo ? (
-                <div className="mt-1 flex items-center gap-2">
-                  <img src={c.logo} alt="" className="size-10 rounded-md object-cover" />
-                  <button type="button" className="text-xs text-muted" onClick={() => onChange(setCrewProfile(file, period, c.key, { logo: "" }))}>
-                    Remove
-                  </button>
-                </div>
               ) : null}
+              <label className="mt-2 block text-[11px] font-semibold uppercase tracking-wide text-muted">
+                Crown
+                <select
+                  value={leadId}
+                  onChange={(e) => onChange(setCrewLeader(file, period, c.key, e.target.value))}
+                  className="mt-0.5 min-h-10 w-full rounded-md bg-elevated px-2 text-sm"
+                >
+                  <option value="">No lead yet</option>
+                  {c.kids.map((s) => (
+                    <option key={s.id} value={s.id}>{s.first}</option>
+                  ))}
+                </select>
+              </label>
               <ul className="mt-2 grid grid-cols-2 gap-1.5">
                 {c.kids.map((s) => (
-                  <Kid key={s.id} s={s} file={file} xp={xpIntoLevel(file, s.id).xp} on={pick === s.id} onPick={() => { setPick(s.id); setHist(s.id); setErr(""); }} />
+                  <Kid key={s.id} s={s} file={file} xp={xpIntoLevel(file, s.id).xp} lead={s.id === leadId} on={pick === s.id} onPick={() => { setPick(s.id); setHist(s.id); setErr(""); }} />
                 ))}
               </ul>
             </article>
@@ -204,11 +223,6 @@ export function CrewDesk({
               <Kid key={s.id} s={s} file={file} xp={xpIntoLevel(file, s.id).xp} on={pick === s.id} onPick={() => { setPick(s.id); setHist(s.id); setErr(""); }} />
             ))}
           </ul>
-          {crews.length < CREWS_MAX ? (
-            <button type="button" onClick={() => onChange(addPeriodCrew(file, period))} className="mt-2 min-h-9 text-xs font-semibold text-muted">
-              + Crew
-            </button>
-          ) : null}
         </article>
       </div>
 
@@ -245,15 +259,65 @@ export function CrewDesk({
   );
 }
 
-function Kid({ s, file, xp, on, onPick }: { s: RawStudent; file: EconomyFile; xp: number; on: boolean; onPick: () => void }) {
+function LookPad({
+  name,
+  motto,
+  icon,
+  color,
+  logo,
+  onName,
+  onPatch,
+}: {
+  name: string;
+  motto: string;
+  icon: string;
+  color: string;
+  logo: string;
+  onName: (name: string) => void;
+  onPatch: (patch: { motto?: string; icon?: string; color?: string; logo?: string }) => void;
+}) {
+  return (
+    <div className="mt-2 grid gap-1 rounded-xl bg-elevated p-2">
+      <input value={name} onChange={(e) => onName(e.target.value)} className="min-h-10 rounded-md bg-surface px-2 font-display text-lg font-semibold outline-none" aria-label="Crew name" />
+      <input value={motto} onChange={(e) => onPatch({ motto: e.target.value })} placeholder="Motto" className="min-h-9 rounded-md bg-surface px-2 text-sm outline-none" aria-label="Motto" />
+      <div className="flex flex-wrap gap-0.5">
+        {AVATARS.slice(0, 12).map((a) => (
+          <button key={a} type="button" onClick={() => onPatch({ icon: icon === a ? "" : a })} className={cn("flex size-8 items-center justify-center rounded-md text-base", icon === a ? "bg-gold text-bg" : "bg-surface")}>
+            {a}
+          </button>
+        ))}
+      </div>
+      <div className="flex flex-wrap gap-1">
+        {CREW_COLORS.map((col) => (
+          <button key={col} type="button" onClick={() => onPatch({ color: color === col ? "" : col })} className={cn("size-7 rounded-full ring-2", color === col ? "ring-fg" : "ring-transparent")} style={{ background: col }} aria-label={col} />
+        ))}
+      </div>
+      <label className="block text-[11px] text-muted">
+        Logo
+        <input type="file" accept="image/*" className="mt-0.5 block w-full text-xs" onChange={(e) => readCrewLogo(e.target.files, (url) => onPatch({ logo: url }))} />
+      </label>
+      {logo ? (
+        <div className="flex items-center gap-2">
+          <img src={logo} alt="" className="size-10 rounded-md object-cover" />
+          <button type="button" className="text-xs text-muted" onClick={() => onPatch({ logo: "" })}>
+            Remove
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function Kid({ s, file, xp, lead, on, onPick }: { s: RawStudent; file: EconomyFile; xp: number; lead?: boolean; on: boolean; onPick: () => void }) {
   return (
     <li className={on ? "rounded-xl ring-2 ring-accent" : ""}>
       <WorkerCard
         id={s.id}
         name={s.first}
         icon={s.icon}
-        title={titleOf(xp)}
+        title={lead ? "Crew lead" : titleOf(xp)}
         xp={xp}
+        lead={lead}
         legal={s.legalLast}
         onClick={onPick}
       />

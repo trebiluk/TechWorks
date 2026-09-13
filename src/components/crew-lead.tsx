@@ -4,7 +4,7 @@ import { shopBells } from "@/lib/economy";
 import { crewsOf } from "@/lib/crews";
 import { CREW_COLORS, readCrewLogo, setCrewProfile } from "@/lib/crew-desk";
 import { AVATARS, avatarOf } from "@/lib/avatars";
-import { abOn, attendOn, deskBellId, onAbRoster, setAffect, setAvatar, setStudentAttend, setStudentNote } from "@/lib/store";
+import { abOn, attendOn, crewLeaderId, deskBellId, onAbRoster, setAffect, setAvatar, setCrewLeader, setStudentAttend, setStudentNote } from "@/lib/store";
 import { todayIso } from "@/lib/calendar";
 import { periodNow } from "@/lib/bells";
 import { CrewBanner, WorkerCard } from "@/components/shop-cards";
@@ -157,6 +157,20 @@ function CrewEdit({
       </article>
 
       <CrewSlot file={file} period={period} crewKey={crewKey} onChange={onChange} />
+
+      <label className="block">
+        <span className="text-xs font-bold uppercase tracking-wide text-muted">Crown</span>
+        <select
+          value={crewLeaderId(file, period, crewKey)}
+          onChange={(e) => onChange(setCrewLeader(file, period, crewKey, e.target.value))}
+          className="mt-1 min-h-12 w-full rounded-xl bg-crew-card px-3 text-base"
+        >
+          <option value="">No lead yet</option>
+          {kids.map((s) => (
+            <option key={s.id} value={s.id}>{s.first}</option>
+          ))}
+        </select>
+      </label>
 
       <label className="block">
         <span className="text-xs font-bold uppercase tracking-wide text-muted">Crew name</span>
