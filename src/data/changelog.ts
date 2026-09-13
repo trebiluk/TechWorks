@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.23 — 2026-09-13
+
+- Deck title no longer sits on the logo or copyright. Job sentence fits the plate.
+
 ## 1.92.22 — 2026-09-13
 
 - Club robustness: check-in names the kid you typed. Calendar tap selects; Set / Skip is explicit. Off-day wall shows the next meeting, not a fake brief. Release to work / Hold brief. Corrupt club saves no longer wipe the roster.

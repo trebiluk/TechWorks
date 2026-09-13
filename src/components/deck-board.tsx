@@ -97,8 +97,8 @@ function Stage({
     >
       <span className="absolute inset-y-0 left-0 w-2.5 bg-[#8b6cff]" aria-hidden />
       <span className="absolute right-0 top-0 h-24 w-24 rounded-bl-[4rem] bg-[#1E4BAF]/40" aria-hidden />
-      <header className="flex items-start justify-between gap-4 px-10 pt-7 pl-12">
-        <img src="/brand/techworks.png" alt="TechWorks" className="h-9 w-auto" draggable={false} />
+      <header className="relative z-10 flex shrink-0 items-center justify-between gap-4 px-10 pb-1 pt-5 pl-12">
+        <img src="/brand/techworks.png" alt="TechWorks" className="h-7 w-auto shrink-0" draggable={false} />
         <Field
           editing={editing}
           value={slide.kicker ?? ""}
@@ -109,14 +109,16 @@ function Stage({
       </header>
 
       {slide.kind === "title" || slide.kind === "close" ? (
-        <div className="flex min-h-0 flex-1 flex-col justify-center px-12 pb-10">
+        <div className="flex min-h-0 flex-1 flex-col justify-center overflow-hidden px-12 py-3 pr-36 pb-6">
           <Field
             editing={editing}
             value={slide.title}
             placeholder="Title"
             className={cn(
-              "font-black uppercase leading-[0.9] tracking-tight text-[#2ee6ff]",
-              slide.kind === "title" ? "text-[clamp(2.4rem,8vw,6.4rem)]" : "text-[clamp(2rem,5vw,4.2rem)] normal-case tracking-tight",
+              "block font-black uppercase tracking-tight text-[#2ee6ff] text-balance break-words",
+              slide.kind === "title"
+                ? "text-[clamp(1.6rem,4.6vw,3.6rem)] leading-[1.08]"
+                : "text-[clamp(1.6rem,4vw,3rem)] leading-[1.1] normal-case tracking-tight",
             )}
             style={slide.kind === "close" ? { color: "#f7f9ff" } : undefined}
             onChange={(title) => onPatch({ title })}
@@ -126,14 +128,14 @@ function Stage({
             value={slide.line ?? ""}
             placeholder="Line"
             multiline
-            className="mt-5 max-w-3xl text-2xl font-medium text-[#b7c4ea]"
+            className="mt-4 max-w-3xl text-xl font-medium leading-snug text-[#b7c4ea]"
             onChange={(line) => onPatch({ line })}
           />
           <Field
             editing={editing}
             value={slide.note ?? ""}
             placeholder="Note"
-            className="mt-4 font-mono text-sm uppercase tracking-[0.16em] text-[#f0d48a]"
+            className="mt-3 font-mono text-sm uppercase tracking-[0.16em] text-[#f0d48a]"
             onChange={(note) => onPatch({ note })}
           />
         </div>
@@ -343,11 +345,11 @@ function Stage({
       ) : null}
 
       {berty ? (
-        <div className="pointer-events-none absolute bottom-6 right-8">
-          <Berty pose={berty} size="lg" />
+        <div className="pointer-events-none absolute bottom-10 right-8">
+          <Berty pose={berty} size="md" />
         </div>
       ) : null}
-      <footer className="px-12 pb-4 pl-12 font-mono text-[10px] uppercase tracking-[0.16em] text-[#b7c4ea]/70">{COPYRIGHT_LINE}</footer>
+      <footer className="relative z-10 shrink-0 px-12 pb-3 pl-12 font-mono text-[10px] uppercase tracking-[0.16em] text-[#b7c4ea]/70">{COPYRIGHT_LINE}</footer>
     </article>
   );
 }

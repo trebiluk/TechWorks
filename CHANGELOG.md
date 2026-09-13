@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.22. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.23. -->
 
 # TechWorks changelog
 
-App version **1.92.22**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.23**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.23 — 2026-09-13
+
+- Deck title no longer sits on the logo or copyright. Job sentence fits the plate.
 
 ## 1.92.22 — 2026-09-13
 
