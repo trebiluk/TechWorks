@@ -7,7 +7,7 @@ import { COPYRIGHT_LINE } from "@/lib/copy";
 import type { DeckCard, DeckSlide } from "@/data/deck";
 import type { EconomyFile } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
-import { todayIso } from "@/lib/calendar";
+import { formatSchoolDate, todayIso } from "@/lib/calendar";
 import { useShopClock } from "@/lib/use-clock";
 import { deskBellId } from "@/lib/store";
 import { teachDeckOf } from "@/lib/teach-deck";
@@ -357,21 +357,24 @@ function Stage({
 export function DeckBoard({
   file,
   unlocked = false,
+  date: dateProp,
   onNeedPin,
   onTeach,
 }: {
   file: EconomyFile;
   unlocked?: boolean;
+  date?: string;
   onNeedPin?: () => void;
   onTeach?: () => void;
 }) {
   const today = todayIso();
+  const date = dateProp || today;
   const bellsId = deskBellId(file, today);
   const now = useShopClock(bellsId, "beat");
   const shop = shopBells(file).map((b) => b.period);
   const [pick, setPick] = useState<number | null>(null);
-  const period = teachFocusPeriod(file, today, now, pick);
-  const pack = useMemo(() => teachDeckOf(file, period, today), [file, period, today]);
+  const period = date === today ? teachFocusPeriod(file, today, now, pick) : (pick && shop.includes(pick) ? pick : shop[0] ?? 1);
+  const pack = useMemo(() => teachDeckOf(file, period, date), [file, period, date]);
   const [i, setI] = useState(0);
   const [full, setFull] = useState(false);
   const stage = useRef<HTMLDivElement>(null);
@@ -430,6 +433,7 @@ export function DeckBoard({
     <section className="flex min-h-0 flex-1 flex-col gap-2">
       <div className="flex flex-wrap items-center gap-2">
         <p className="text-sm font-medium uppercase tracking-wider text-subtle">{pack.title}</p>
+        <span className="text-sm font-semibold text-gold">{formatSchoolDate(date)} · from Teach</span>
         <span className="font-mono text-xs text-muted">
           {Math.min(i + 1, slides.length)} / {slides.length}
         </span>

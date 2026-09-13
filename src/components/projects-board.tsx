@@ -31,11 +31,13 @@ export function ProjectsBoard({
   unlocked,
   onNeedPin,
   onChange,
+  onTeachDay,
 }: {
   file: EconomyFile;
   unlocked: boolean;
   onNeedPin: () => void;
   onChange: (next: EconomyFile) => void;
+  onTeachDay?: (date: string, period: number) => void;
 }) {
   const bells = shopBells(file);
   const [period, setPeriod] = useState(bells[0]?.period ?? 1);
@@ -127,6 +129,7 @@ export function ProjectsBoard({
             unlocked={unlocked}
             onNeedPin={onNeedPin}
             onChange={onChange}
+            onTeach={onTeachDay ? (iso) => onTeachDay(iso, period) : undefined}
           />
         ) : null}
         {pane === "floor" ? (

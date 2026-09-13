@@ -40,6 +40,7 @@ export function LearningCenter({
   jumpDate: _jumpDate,
   onOpenSettings: _onOpenSettings,
   onRankUp,
+  onTeachDay,
 }: {
   file: EconomyFile;
   onChange: (next: EconomyFile) => void;
@@ -52,6 +53,7 @@ export function LearningCenter({
   jumpDate?: string | null;
   onOpenSettings?: () => void;
   onRankUp?: (alias: string, band: string) => void;
+  onTeachDay?: (date: string, period: number) => void;
 }) {
   const { t } = useLang();
   const first = splitStart(start);
@@ -120,7 +122,7 @@ export function LearningCenter({
         ) : null}
         {pane === "projects" ? (
           <div className="h-full overflow-auto">
-            <ProjectsBoard file={file} unlocked={unlocked} onNeedPin={onNeedPin} onChange={onChange} />
+            <ProjectsBoard file={file} unlocked={unlocked} onNeedPin={onNeedPin} onChange={onChange} onTeachDay={onTeachDay} />
           </div>
         ) : null}
       </div>

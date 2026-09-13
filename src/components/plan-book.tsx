@@ -33,6 +33,7 @@ export function PlanBook({
   unlocked,
   onNeedPin,
   onChange,
+  onTeach,
 }: {
   file: EconomyFile;
   project: ShopProject;
@@ -40,6 +41,7 @@ export function PlanBook({
   unlocked: boolean;
   onNeedPin: () => void;
   onChange: (next: EconomyFile) => void;
+  onTeach?: (date: string) => void;
 }) {
   const today = todayIso();
   const [weekDate, setWeekDate] = useState(today);
@@ -153,6 +155,11 @@ export function PlanBook({
         <section className="tw-gadget space-y-3 p-3">
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">This class · {formatSchoolDate(open)}</p>
+            {onTeach ? (
+              <button type="button" onClick={() => onTeach(open)} className="tw-tap min-h-9 rounded-xl bg-gold px-3 text-xs font-semibold text-bg">
+                Teach this day
+              </button>
+            ) : null}
             {openCell.activity ? (
               <button type="button" onClick={() => park(open, "")} className="ml-auto text-xs font-semibold text-muted">
                 Clear day

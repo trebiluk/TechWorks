@@ -4,7 +4,7 @@ import type { EconomyFile } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
 import { periodClock, periodNow, formatBell } from "@/lib/bells";
 import { deskBellId } from "@/lib/store";
-import { todayIso } from "@/lib/calendar";
+import { formatSchoolDate, isSchoolDay, nextOpenDay, stepSchoolDay, todayIso, weekOn } from "@/lib/calendar";
 import { useShopClock } from "@/lib/use-clock";
 import { BertyCueBot } from "@/components/berty";
 import { ProgressRing } from "@/components/progress-ring";
@@ -46,45 +46,53 @@ export function TeachBoard({
   file,
   unlocked,
   editing,
+  date: dateProp,
+  onDate,
   onChange,
   onNeedPin,
   onPolls,
   onBerty,
   onPlan,
   onWall,
+  onDeck,
 }: {
   file: EconomyFile;
   unlocked: boolean;
   editing?: boolean;
+  date?: string;
+  onDate?: (iso: string) => void;
   onChange: (next: EconomyFile) => void;
   onNeedPin: () => void;
   onPolls?: () => void;
   onBerty?: () => void;
   onPlan?: () => void;
   onWall?: () => void;
+  onDeck?: () => void;
 }) {
   const today = todayIso();
-  const bellsId = deskBellId(file, today);
-  const now = useShopClock(bellsId, "beat");
+  const date = dateProp || nextOpenDay(today);
+  const bellsId = deskBellId(file, date);
+  const now = useShopClock(deskBellId(file, today), "beat");
   const shop = shopBells(file).map((b) => b.period);
-  const live = periodNow(bellsId, now);
+  const live = date === today ? periodNow(deskBellId(file, today), now) : null;
   const [pick, setPick] = useState<number | null>(null);
-  const period = teachFocusPeriod(file, today, now, pick);
-  const clock = periodClock(period, bellsId, now);
-  const pack = packOf(file, today, period);
-  const slots = laySlots(file, today, period);
-  const cur = slotNow(file, today, period, now);
-  const obj = teachObjective(file, today, period);
-  const day = teachDay(file, today, period);
+  const period = date === today ? teachFocusPeriod(file, today, now, pick) : (pick && shop.includes(pick) ? pick : shop[0] ?? 1);
+  const clock = date === today ? periodClock(period, deskBellId(file, today), now) : null;
+  const pack = packOf(file, date, period);
+  const slots = laySlots(file, date, period);
+  const cur = date === today ? slotNow(file, today, period, now) : null;
+  const obj = teachObjective(file, date, period);
+  const day = teachDay(file, date, period);
   const cleanup = Boolean(clock?.cleanup || cur?.clean);
   const liveHere = Boolean(clock?.live);
-  const passing = !liveHere;
+  const passing = date === today && !liveHere;
   const left = clock?.left ?? 0;
-  const between = !liveHere && !cur;
-  const job = jobCardOf(file, period);
-  const title = between ? "BETWEEN CLASSES" : cleanup ? "CLEAN UP" : cur?.title ?? "ENTER";
-  const line = between
-    ? "Next bell: sit with your crew."
+  const between = date === today && !liveHere && !cur;
+  const job = jobCardOf(file, period, date);
+  const writing = date !== today || !liveHere;
+  const title = writing ? (job.question || job.title || "This class") : cleanup ? "CLEAN UP" : cur?.title ?? "ENTER";
+  const line = writing
+    ? job.today || "Write the hour. Deck plays this."
     : cleanup
       ? "Tools, scraps, seats. Cleanup score is live."
       : cur?.kind === "work"
@@ -106,6 +114,13 @@ export function TeachBoard({
     onChange(next);
   }
 
+  function goDate(iso: string) {
+    onDate?.(iso);
+  }
+
+  const week = weekOn(date);
+  const weekDays = week?.days ?? [date];
+
   const hidden = layout.order.filter((id) => !teachRowOn(layout, id));
 
   function plateOf(id: TeachRowId) {
@@ -116,9 +131,10 @@ export function TeachBoard({
           className={cn("tw-gadget tw-fill-wide shrink-0 p-3", cleanup && "bg-cleanup text-accent-fg")}
         >
           <div className="min-w-0">
-            <p className={cn("text-[11px] font-bold uppercase tracking-[0.22em]", cleanup ? "opacity-90" : "text-gold")}>
-              {cleanup ? `Cleanup ${Math.max(0, Math.ceil(left))}m` : between ? "Next" : "Today"}
-              <span className={cn("ml-2", cleanup ? "opacity-80" : "text-muted")}>P{period}</span>
+            <p className={cn("text-[11px] font-bold uppercase tracking-[0.22em]", cleanup && !writing ? "opacity-90" : "text-gold")}>
+              {writing ? `This class · ${formatSchoolDate(date)}` : cleanup ? `Cleanup ${Math.max(0, Math.ceil(left))}m` : between ? "Next" : "Today"}
+              <span className={cn("ml-2", cleanup && !writing ? "opacity-80" : "text-muted")}>P{period}</span>
+              <span className="ml-2 text-muted">Deck plays this</span>
             </p>
             <h1 className="tw-fill-hero font-display font-semibold tracking-tight">{title}</h1>
             <p className={cn("tw-fill-line mt-2 max-w-3xl", cleanup ? "opacity-95" : "text-muted")}>{line}</p>
@@ -126,10 +142,10 @@ export function TeachBoard({
               <label className="mt-3 flex flex-wrap items-center gap-2 text-base font-semibold">
                 Objective
                 <input
-                  key={`obj-${today}-${period}`}
+                  key={`obj-${date}-${period}`}
                   defaultValue={day.objective ?? ""}
                   placeholder={obj}
-                  onBlur={(e) => edit(setTeachObjective(file, today, period, e.target.value))}
+                  onBlur={(e) => edit(setTeachObjective(file, date, period, e.target.value))}
                   disabled={!unlocked}
                   className="edit-field min-h-10 min-w-[12rem] flex-1 rounded-md bg-elevated px-3 text-base font-normal text-fg outline-none ring-0 disabled:opacity-80"
                   aria-label="Today's objective"
@@ -147,7 +163,7 @@ export function TeachBoard({
                 onOpen={onBerty}
               />
             ) : null}
-            <TeachRing period={period} bellsId={bellsId} cleanup={cleanup} liveHere={liveHere} />
+            <TeachRing period={period} bellsId={deskBellId(file, today)} cleanup={cleanup && !writing} liveHere={liveHere} />
           </div>
         </section>
       );
@@ -155,12 +171,13 @@ export function TeachBoard({
     if (id === "packs") {
       return (
         <section className="tw-gadget flex shrink-0 flex-wrap items-center gap-2 p-2">
+          <p className="w-full text-[11px] font-bold uppercase tracking-wider text-subtle">Hour shape · Deck plays this pack</p>
           {TEACH_PACKS.map((p) => (
             <button
               key={p.id}
               type="button"
               title={p.hint}
-              onClick={() => edit(setTeachPack(file, today, period, p.id))}
+              onClick={() => edit(setTeachPack(file, date, period, p.id))}
               className={cn("tw-tap min-h-9 rounded-full px-3 text-xs font-semibold", pack.id === p.id ? "bg-fg text-bg" : "bg-elevated text-muted")}
             >
               {p.label}
@@ -182,7 +199,7 @@ export function TeachBoard({
                 <li key={s.id} className="min-h-0">
                   <button
                     type="button"
-                    onClick={() => edit(setTeachPin(file, today, period, day.pin === s.id ? undefined : s.id))}
+                    onClick={() => edit(setTeachPin(file, date, period, day.pin === s.id ? undefined : s.id))}
                     className={cn(
                       "tw-fill tw-tap flex h-full min-h-24 w-full flex-col justify-center rounded-xl px-3 py-4 text-left",
                       on ? (s.clean ? "bg-cleanup text-accent-fg" : "bg-accent text-accent-fg") : "bg-elevated",
@@ -199,7 +216,7 @@ export function TeachBoard({
             })}
           </ol>
           {day.pin ? (
-            <button type="button" className="mt-1 self-start text-xs font-semibold text-muted" onClick={() => edit(setTeachPin(file, today, period, undefined))}>
+            <button type="button" className="mt-1 self-start text-xs font-semibold text-muted" onClick={() => edit(setTeachPin(file, date, period, undefined))}>
               Auto clock
             </button>
           ) : (
@@ -215,30 +232,36 @@ export function TeachBoard({
 
   return (
     <div className={cn("flex min-h-0 flex-1 flex-col gap-2 overflow-hidden p-1", sortOn ? "overflow-auto" : "")} data-wall-stage={sortOn ? "edit" : "show"}>
-      <header className="flex shrink-0 flex-wrap items-center gap-2">
-        {shop.map((p) => (
-          <button
-            key={p}
-            type="button"
-            onClick={() => setPick(p)}
-            className={cn("tw-tap min-h-10 rounded-full px-3 text-xs font-semibold", period === p ? "bg-fg text-bg" : "bg-elevated text-muted")}
-          >
-            P{p}
-            {live === p ? <span className="ml-1 text-[10px]">now</span> : null}
-          </button>
-        ))}
-        <span className="ml-auto flex flex-wrap items-center gap-1 font-mono text-sm text-muted">
-          {clock ? `${formatBell(clock.start)}-${formatBell(clock.end)}` : ""}
-          {clock?.cleanup ? (
-            <span className="rounded-full bg-cleanup px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-accent-fg">
-              Cleanup {Math.max(0, Math.ceil(clock.left))}m
-            </span>
-          ) : null}
-          {onPlan ? (
-            <button type="button" onClick={onPlan} className="tw-tap min-h-8 rounded-full px-3 text-[12px] font-medium tw-btn-2">
-              Plan book
+      <header className="flex shrink-0 flex-col gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {shop.map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => setPick(p)}
+              className={cn("tw-tap min-h-10 rounded-full px-3 text-xs font-semibold", period === p ? "bg-fg text-bg" : "bg-elevated text-muted")}
+            >
+              P{p}
+              {live === p ? <span className="ml-1 text-[10px]">now</span> : null}
             </button>
-          ) : null}
+          ))}
+          <span className="ml-auto flex flex-wrap items-center gap-1 font-mono text-sm text-muted">
+            {clock ? `${formatBell(clock.start)}-${formatBell(clock.end)}` : formatSchoolDate(date)}
+            {clock?.cleanup ? (
+              <span className="rounded-full bg-cleanup px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-accent-fg">
+                Cleanup {Math.max(0, Math.ceil(clock.left))}m
+              </span>
+            ) : null}
+            {onDeck ? (
+              <button type="button" onClick={onDeck} className="tw-tap min-h-8 rounded-full bg-gold px-3 text-[12px] font-semibold text-bg">
+                Deck
+              </button>
+            ) : null}
+            {onPlan ? (
+              <button type="button" onClick={onPlan} className="tw-tap min-h-8 rounded-full px-3 text-[12px] font-medium tw-btn-2">
+                Plan book
+              </button>
+            ) : null}
           {onPolls ? (
             <button
               type="button"
@@ -249,6 +272,50 @@ export function TeachBoard({
             </button>
           ) : null}
         </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-1">
+          <button
+            type="button"
+            onClick={() => goDate(stepSchoolDay(date, -1))}
+            className="tw-tap grid size-10 place-items-center rounded-xl bg-elevated text-lg font-semibold"
+            aria-label="Previous school day"
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            onClick={() => goDate(nextOpenDay(today))}
+            className={cn("tw-tap min-h-10 rounded-xl px-3 text-xs font-semibold", date === today || date === nextOpenDay(today) ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+          >
+            {isSchoolDay(today) ? "Today" : "Next class"}
+          </button>
+          {weekDays.map((d) => {
+            const school = isSchoolDay(d);
+            return (
+              <button
+                key={d}
+                type="button"
+                disabled={!school}
+                onClick={() => school && goDate(d)}
+                className={cn(
+                  "tw-tap min-h-10 rounded-xl px-2.5 text-left text-xs font-semibold",
+                  d === date ? "bg-fg text-bg" : school ? "bg-elevated text-muted" : "opacity-40",
+                )}
+              >
+                {formatSchoolDate(d)}
+              </button>
+            );
+          })}
+          <button
+            type="button"
+            onClick={() => goDate(stepSchoolDay(date, 1))}
+            className="tw-tap grid size-10 place-items-center rounded-xl bg-elevated text-lg font-semibold"
+            aria-label="Next school day"
+          >
+            ›
+          </button>
+          <p className="ml-1 text-sm font-semibold text-gold">Writing {formatSchoolDate(date)} · P{period}</p>
+        </div>
       </header>
 
       {sortOn ? (

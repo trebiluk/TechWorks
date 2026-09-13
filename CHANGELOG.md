@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.25. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.26. -->
 
 # TechWorks changelog
 
-App version **1.92.25**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.26**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.26 — 2026-09-13
+
+- Teach writes a school day, not “right now.” Week strip + “Writing Mon · P1.” Deck plays that day. Packs are the hour shape. Plan book → Teach this day. Sunday no longer looks like BETWEEN CLASSES.
 
 ## 1.92.25 — 2026-09-13
 

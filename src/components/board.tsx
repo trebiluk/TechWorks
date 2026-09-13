@@ -18,7 +18,7 @@ import { Dashboard } from "@/components/dashboard";
 import { featureOn } from "@/lib/features";
 import { paintDemo, SAVE_FAIL_EVENT, storedDemo, takeRealDesk, type DemoId } from "@/lib/demo";
 import { isUnlocked, lockCrew, ensureDefaultPin } from "@/lib/pin";
-import { daySlot, isSchoolDay, todayIso } from "@/lib/calendar";
+import { daySlot, isSchoolDay, nextOpenDay, todayIso } from "@/lib/calendar";
 import { loadDjia, type DjiaQuote } from "@/lib/djia";
 import { downloadText, periodPulses, publicHandle, publishLive, splitExport } from "@/lib/live";
 import { paintCleanup, periodNow, SCHOOLTOOL_URL } from "@/lib/bells";
@@ -116,6 +116,7 @@ export function Board() {
   const [jumpPeriod, setJumpPeriod] = useState<number | null>(null);
   const [jumpCrew, setJumpCrew] = useState<string | null>(null);
   const [jumpDate, setJumpDate] = useState<string | null>(null);
+  const [planDate, setPlanDate] = useState(() => nextOpenDay(todayIso()));
   const [deskPad, setDeskPad] = useState<"effort" | "skill">("effort");
   const [adminPane, setAdminPane] = useState<AdminPane>("today");
   const [gearOpen, setGearOpen] = useState(false);
@@ -906,6 +907,11 @@ export function Board() {
           jumpDate={jumpDate}
           onOpenSettings={() => setGearOpen(true)}
           onRankUp={rankUp}
+          onTeachDay={(iso, p) => {
+            setPlanDate(iso);
+            setJumpPeriod(p);
+            go("teach");
+          }}
         />
       ) : view === "wallet" ? (
         <WalletBoard file={wallFile} quote={quote} unlocked={unlocked} onNeedPin={() => askPin()} onChange={commitDesk} />
@@ -952,12 +958,12 @@ export function Board() {
             }}
           />
         ) : (
-        <TeachBoard file={wallFile} unlocked={unlocked} editing={unlocked && gearOpen} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onBerty={() => setOpenId(HOUSE_BERTY)} onPlan={() => { setLearnStart("projects"); go("skills"); }} onWall={() => go("overview")} />
+        <TeachBoard file={wallFile} unlocked={unlocked} editing={unlocked && gearOpen} date={planDate} onDate={setPlanDate} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onBerty={() => setOpenId(HOUSE_BERTY)} onPlan={() => { setLearnStart("projects"); go("skills"); }} onWall={() => go("overview")} onDeck={() => go("deck")} />
         )
       ) : view === "polls" ? (
         <PollBoard file={file} unlocked={unlocked} onChange={commitDesk} onNeedPin={() => askPin()} />
       ) : view === "deck" ? (
-        <DeckBoard file={wallFile} unlocked={unlocked} onNeedPin={() => askPin()} onTeach={() => go("teach")} />
+        <DeckBoard file={wallFile} unlocked={unlocked} date={planDate} onNeedPin={() => askPin()} onTeach={() => go("teach")} />
       ) : view === "week" ? (
         <WeekBoard
           file={wallFile}
