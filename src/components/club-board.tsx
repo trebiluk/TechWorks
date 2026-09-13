@@ -264,7 +264,7 @@ export function ClubBoard({
               ) : null}
             </span>
           </header>
-          <section data-teach-hero className="tw-gadget tw-fill-wide shrink-0 p-3">
+          <section data-teach-hero className="tw-gadget tw-fill-wide flex shrink-0 items-end gap-3 p-3">
             <div className="min-w-0 flex-1">
               <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold">
                 Tech Club Agenda
@@ -283,7 +283,9 @@ export function ClubBoard({
                 <h1 className="tw-fill-hero mt-1 font-display font-semibold tracking-tight">{liveAgenda}</h1>
               )}
             </div>
-            <Berty pose="waving" size="lg" />
+            <span className="berty-seat-pad">
+              <Berty pose="waving" size="lg" />
+            </span>
           </section>
           <ol data-teach-slots>
             {liveSlots.map((s) => {

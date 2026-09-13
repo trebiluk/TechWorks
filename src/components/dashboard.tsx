@@ -10,7 +10,7 @@ import { XpBit, PerkBit } from "@/components/marks";
 import { PeriodRewardChip, RewardBar } from "@/components/reward-bar";
 import { DayStrip } from "@/components/day-strip";
 import { WeatherChip } from "@/components/weather-chip";
-import { Berty, BertyPeek } from "@/components/berty";
+import { Berty } from "@/components/berty";
 import { Fold } from "@/components/fold";
 import { agendaFor, periodPaceLine, phaseIndex, prettyStage } from "@/lib/projects";
 import { JobCard } from "@/components/job-card";
@@ -24,7 +24,7 @@ import { ClubPulseCard } from "@/components/club-pulse";
 import { clubPulse, loadClub } from "@/lib/club";
 import { pollForPeriod } from "@/lib/polls";
 import { featureOn } from "@/lib/features";
-import { bertyPose, showBerty } from "@/lib/berty";
+import { showBerty } from "@/lib/berty";
 import { procedureStep } from "@/lib/procedure";
 import { teachJob, laySlots } from "@/lib/teach";
 import { hideDashRow, loadDashLayout, moveDashRow, moveDashTo, pairMate, patchDash, rowOn, saveDashLayout, DASH_ROWS, DEFAULT_LAYOUT, type DashLayout, type DashRowId } from "@/lib/dash-layout";
@@ -494,9 +494,6 @@ export const Dashboard = memo(function Dashboard({
           })}
         </SortableList>
       </div>
-      {!arrange && bertyOn && !clock?.cleanup ? (
-        <Berty pose="standing" size="md" className="pointer-events-none absolute bottom-1 left-2 z-10 opacity-90" />
-      ) : null}
     </div>
   );
 });
@@ -617,8 +614,11 @@ function GoalsCard({
   );
   return (
     <div data-goals className="relative flex min-h-0 flex-1 flex-col">
-      {cleanup ? <Berty pose="point" size="sm" alert className="absolute -top-1 right-0 z-10" /> : null}
-      {berty && edit ? <BertyPeek pose={bertyPose({ live: true, slot: "work" })} className="absolute -top-1 right-0 z-10" /> : null}
+      {cleanup ? (
+        <span className="berty-seat-pad pointer-events-none absolute bottom-0 right-3 z-10">
+          <Berty pose="point" size="md" alert />
+        </span>
+      ) : null}
       <JobCard
         job={job}
         period={shown}

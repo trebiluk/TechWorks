@@ -39,7 +39,11 @@ export function ProcedureCue({
       data-proc-cue
       className={cn("tw-gadget tw-hud flex items-center gap-3 p-3", compact ? "" : "tw-live tw-fill-wide")}
     >
-      {bot ? <Berty pose={pose} size={compact ? "sm" : "lg"} className="tw-proc-bot shrink-0" /> : null}
+      {bot ? (
+        <span className="berty-seat-pad tw-proc-bot">
+          <Berty pose={pose} size={compact ? "sm" : "lg"} />
+        </span>
+      ) : null}
       <div className="min-w-0 flex-1">
         <p className={cn("font-semibold uppercase tracking-wider text-accent", compact ? "text-[11px]" : "tw-fill-label")}>
           {passing ? t("Between classes") : cleanup ? t("Cleanup") : t("Do this now")}

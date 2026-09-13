@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.35 — 2026-09-13
+
+- Brand lockup is T + TECHWORKS, not a PNG in a second plate. Berty sits on the hour plate (correct ratio, drop shadow). Chrome peek is a badge.
+
 ## 1.92.34 — 2026-09-13
 
 - One directive: Tech Club Agenda fills brief/work plates and the wall. Study Hall Today fills the hall wall. Same pattern as Teach.

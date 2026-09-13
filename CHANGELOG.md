@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.34. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.35. -->
 
 # TechWorks changelog
 
-App version **1.92.34**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.35**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.35 — 2026-09-13
+
+- Brand lockup is T + TECHWORKS, not a PNG in a second plate. Berty sits on the hour plate (correct ratio, drop shadow). Chrome peek is a badge.
 
 ## 1.92.34 — 2026-09-13
 

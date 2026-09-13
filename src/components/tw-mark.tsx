@@ -2,7 +2,7 @@ import { LEGAL_TITLE } from "@/lib/copy";
 import { cn } from "@/lib/utils";
 
 /** Brand T. Immune to theme. */
-export function TwMark({ className, size = 32 }: { className?: string; size?: number }) {
+export function TwMark({ className, size = 28 }: { className?: string; size?: number }) {
   return (
     <img
       src="/mark.png"
@@ -15,19 +15,15 @@ export function TwMark({ className, size = 32 }: { className?: string; size?: nu
   );
 }
 
-/** Full TECHWORKS lockup. Navy / cyan / violet plate. Never follows theme. */
-export function TwWordmark({ className }: { className?: string; mark?: number; compact?: boolean }) {
+/** T + TECHWORKS. Navy plate is the lockup — not a PNG dropped in a second box. */
+export function TwWordmark({ className, compact }: { className?: string; compact?: boolean }) {
   return (
-    <span className={cn("tw-lockup", className)} title={LEGAL_TITLE} aria-label="TechWorks">
-      <img
-        src="/brand/techworks.png"
-        alt="TechWorks"
-        width={180}
-        height={44}
-        className="tw-lockup-img h-11 w-auto max-w-[13.75rem]"
-        style={{ display: "block" }}
-        draggable={false}
-      />
+    <span className={cn("tw-lockup", compact && "tw-lockup-compact", className)} title={LEGAL_TITLE} aria-label="TechWorks">
+      <TwMark size={28} />
+      <span className="tw-lockup-word">
+        <span className="tw-lockup-tech">TECH</span>
+        <span className="tw-lockup-works">WORKS</span>
+      </span>
     </span>
   );
 }

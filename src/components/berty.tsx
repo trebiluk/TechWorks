@@ -1,12 +1,12 @@
 import { BERTY_LABEL, BERTY_SRC, bertyPose, showBerty, type BertyCue, type BertyPose } from "@/lib/berty";
 import { cn } from "@/lib/utils";
 
-const PX: Record<"icon" | "sm" | "md" | "lg" | "xl", number> = {
-  icon: 24,
-  sm: 44,
-  md: 64,
-  lg: 88,
-  xl: 148,
+const H: Record<"icon" | "sm" | "md" | "lg" | "xl", string> = {
+  icon: "1.5rem",
+  sm: "2.75rem",
+  md: "4.25rem",
+  lg: "5.75rem",
+  xl: "8.25rem",
 };
 
 export function Berty({
@@ -24,44 +24,45 @@ export function Berty({
   alert?: boolean;
   className?: string;
 }) {
-  const px = PX[size];
-  const h = size === "icon" ? px : Math.round(px * 1.15);
   const src = BERTY_SRC[alert ? "point" : pose];
   const img = (
     <img
       src={src}
       alt=""
       title={alert ? "Berty · Cleanup" : `Berty · ${BERTY_LABEL[pose]}`}
-      width={px}
-      height={h}
       decoding="async"
       fetchPriority={alert ? "high" : "low"}
       draggable={false}
-      className={cn("pointer-events-none select-none object-contain", float && "berty-float-img", className)}
+      className={cn("berty-seat", className)}
+      style={{ ["--berty-h" as string]: H[size] }}
     />
   );
   if (!float) return img;
   const pin =
     corner === "bl"
-      ? "bottom-1 left-1"
+      ? "bottom-0 left-2"
       : corner === "tr"
         ? "top-1 right-1"
         : corner === "tl"
           ? "top-1 left-1"
-          : "bottom-1 right-1";
+          : "bottom-0 right-2";
   return (
-    <div className={cn("pointer-events-none absolute z-20 berty-float", pin)} aria-hidden>
+    <div className={cn("pointer-events-none absolute z-20 berty-seat-pad", pin)} aria-hidden>
       {img}
     </div>
   );
 }
 
-/** Tiny footer / card peek. */
+/** Tiny chrome badge — not a floating PNG. */
 export function BertyPeek({ pose = "icon", className }: { pose?: BertyPose; className?: string }) {
-  return <Berty pose={pose} size="icon" className={cn("opacity-90", className)} />;
+  return (
+    <span className={cn("berty-badge", className)}>
+      <Berty pose={pose} size="icon" />
+    </span>
+  );
 }
 
-/** Module-aware Berty. Cleanup / passing always win. */
+/** Module-aware Berty. Cleanup / passing always win. Seated on the plate. */
 export function BertyCueBot({
   on,
   cue,
@@ -77,11 +78,15 @@ export function BertyCueBot({
 }) {
   if (!showBerty(on, cue)) return null;
   const pose = bertyPose(cue);
-  const bot = <Berty pose={pose} size={size} alert={Boolean(cue.cleanup || cue.slot === "clean")} className={className} />;
+  const bot = (
+    <span className="berty-seat-pad">
+      <Berty pose={pose} size={size} alert={Boolean(cue.cleanup || cue.slot === "clean")} className={className} />
+    </span>
+  );
   if (!onOpen) return bot;
   return (
-    <button type="button" title="Berty’s profile" onClick={onOpen} className="tw-tap rounded-xl">
-      {bot}
+    <button type="button" title="Berty’s profile" onClick={onOpen} className="tw-tap berty-seat-pad rounded-xl">
+      <Berty pose={pose} size={size} alert={Boolean(cue.cleanup || cue.slot === "clean")} className={className} />
     </button>
   );
 }
