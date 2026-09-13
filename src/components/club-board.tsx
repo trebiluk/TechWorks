@@ -23,6 +23,8 @@ import {
   dropClubEvent,
   dropMember,
   formatClubDay,
+  clubWallKind,
+  holdClubBrief,
   isClubDay,
   layClubSlots,
   loadClub,
@@ -35,6 +37,7 @@ import {
   patchMeeting,
   patchMember,
   prevClubDay,
+  releaseClubWork,
   rowOf,
   saveClub,
   setActivity,
@@ -88,7 +91,7 @@ export function ClubBoard({
 }) {
   const [file, setFile] = useState<ClubFile>(() => loadClub());
   const today = todayIso();
-  const [date, setDate] = useState(today);
+  const [date, setDate] = useState(() => nextClubDay(loadClub(), today) ?? today);
   const clock = useClubTick();
   const rang = useRef("");
   const liveMeet = meetingOf(file, today);
@@ -151,14 +154,33 @@ export function ClubBoard({
     if (!gate()) return;
     const n = name.trim();
     if (!n) return;
-    let next = addMember(file, n, station, dismiss, desk ? clubStudentId(desk, n) : undefined);
-    const mem = next.members[next.members.length - 1];
-    if (mem) next = checkinMember(next, date, { ...mem, station, dismiss }, true);
-    commit(next);
+    const added = addMember(file, n, station, dismiss, desk ? clubStudentId(desk, n) : undefined);
+    if (!added.member) return;
+    commit(checkinMember(added.file, date, { ...added.member, station, dismiss }, true));
     setName("");
   }
 
   if (wall) {
+    const kind = clubWallKind(file, today, nowTick);
+    const nxt = nextClubDay(file, today, false);
+    if (kind === "off") {
+      return (
+        <section className="flex min-h-0 flex-1 flex-col justify-center gap-3 rounded-xl bg-surface px-6 py-8">
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold">Tech Club</p>
+          <h1 className="tw-fill-hero font-display font-semibold tracking-tight">
+            {nxt ? `Next club · ${formatClubDay(nxt)}` : "No club on the calendar"}
+          </h1>
+          <p className="tw-fill-line max-w-3xl text-muted">
+            {nxt ? "2:40–3:05 · sign in, then the posted job. Late bus names at the door." : "Set Tuesdays (or extra days) on Club."}
+          </p>
+          {unlocked && onWall ? (
+            <button type="button" onClick={onWall} className="tw-tap mt-2 min-h-11 w-fit rounded-lg bg-fg px-4 text-sm font-semibold text-bg">
+              Set dates
+            </button>
+          ) : null}
+        </section>
+      );
+    }
     const comps = upcomingEvents(file, "comp");
     const events = upcomingEvents(file, "event");
     const left = activityLeft(file.activity);
@@ -208,7 +230,7 @@ export function ClubBoard({
             </div>
             <div className="col-span-3 rounded-xl bg-black/20 px-4 py-3">
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] opacity-80">Late bus · {bus.length}</p>
-              <p className="mt-2 font-display text-2xl font-semibold leading-snug">{bus.map((r) => r.name).join(" · ") || "None"}</p>
+              <p className="mt-2 font-display text-2xl font-semibold leading-snug">{bus.map((r) => r.name).join(" · ") || "No late bus"}</p>
               <p className="mt-3 text-sm opacity-80">Pickup stays seated. Walkers wait for the all-clear.</p>
             </div>
           </div>
@@ -345,7 +367,7 @@ export function ClubBoard({
           {show("bus") ? (
             <section className="col-span-6 rounded-xl bg-surface px-4 py-3">
               <p className="text-[11px] font-semibold uppercase tracking-widest text-subtle">Late bus · {bus.length}</p>
-              <p className="mt-1 font-display text-2xl font-semibold">{bus.map((r) => r.name).join("  ·  ") || "—"}</p>
+              <p className="mt-1 font-display text-2xl font-semibold">{bus.map((r) => r.name).join("  ·  ") || "No late bus"}</p>
             </section>
           ) : null}
         </div>
@@ -454,10 +476,7 @@ export function ClubBoard({
                   onClick={() => {
                     if (!gate()) return;
                     if (d.date === date) cal(setDayClub(file, d.date, !d.club));
-                    else {
-                      setDate(d.date);
-                      if (!d.club) cal(setDayClub(file, d.date, true));
-                    }
+                    else setDate(d.date);
                   }}
                   className={cn(
                     "min-h-11 rounded-lg text-sm font-semibold",
@@ -490,7 +509,16 @@ export function ClubBoard({
 
           <section className="rounded-xl bg-surface p-3">
             <p className="text-[11px] font-semibold uppercase tracking-widest text-subtle">This meeting</p>
-            {!clubOn ? <p className="mt-1 text-sm font-semibold text-loss">Off this day. Tap the date again to set club.</p> : null}
+            <div className="mt-2 flex flex-wrap gap-1">
+              <button
+                type="button"
+                onClick={() => cal(setDayClub(file, date, !clubOn))}
+                className={cn("tw-tap min-h-10 rounded-md px-3 text-xs font-semibold", clubOn ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+              >
+                {clubOn ? "Skip this day" : "Set this day"}
+              </button>
+            </div>
+            {!clubOn ? <p className="mt-1 text-sm font-semibold text-loss">Off this day. Set it, or pick a Tuesday.</p> : null}
             <div className="mt-2 flex flex-wrap gap-1">
               {CLUB_PACKS.map((p) => (
                 <button
@@ -537,6 +565,22 @@ export function ClubBoard({
                 );
               })}
             </ol>
+            <div className="mt-2 flex flex-wrap gap-1">
+              <button
+                type="button"
+                onClick={() => gate() && commit(releaseClubWork(file, date))}
+                className={cn("tw-tap min-h-11 flex-1 rounded-md px-3 text-xs font-semibold", released ? "bg-elevated text-muted" : "bg-gold text-bg")}
+              >
+                Release to work
+              </button>
+              <button
+                type="button"
+                onClick={() => gate() && commit(holdClubBrief(file, date))}
+                className="tw-tap min-h-11 rounded-md bg-elevated px-3 text-xs font-semibold"
+              >
+                Hold brief
+              </button>
+            </div>
             {meet.pin ? (
               <button type="button" onClick={() => gate() && commit(setClubPin(file, date, undefined))} className="mt-1 text-xs font-semibold text-muted">
                 Auto clock
@@ -674,6 +718,9 @@ export function ClubBoard({
               Add
             </button>
           </form>
+          {!roster.length ? (
+            <p className="rounded-xl bg-elevated px-3 py-4 text-sm text-muted">No members yet. Add first + last initial. They stay for every meeting — tap IN on the day.</p>
+          ) : null}
 
           <ul className="grid min-h-0 flex-1 grid-cols-1 gap-1 overflow-auto sm:grid-cols-2">
             {roster.map((m) => {

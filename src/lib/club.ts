@@ -131,23 +131,77 @@ function empty(): ClubFile {
 
 function migrate(p: Partial<ClubFile> | null): ClubFile {
   const base = empty();
-  if (!p || p.v !== 1) return base;
+  if (!p || typeof p !== "object") return base;
+  const stations = new Set(CLUB_STATIONS.map((s) => s.id));
+  const dismiss = new Set(CLUB_DISMISS.map((s) => s.id));
+  const asStation = (v: unknown): ClubStation => (typeof v === "string" && stations.has(v as ClubStation) ? (v as ClubStation) : "workshop");
+  const asDismiss = (v: unknown): ClubDismiss => (typeof v === "string" && dismiss.has(v as ClubDismiss) ? (v as ClubDismiss) : "latebus");
+  const members: ClubMember[] = [];
+  const seen = new Set<string>();
+  for (const raw of Array.isArray(p.members) ? p.members : []) {
+    if (!raw || typeof raw !== "object") continue;
+    const m = raw as ClubMember;
+    const name = wallName(String(m.name ?? ""));
+    if (!name) continue;
+    let id = String(m.id ?? "").replace(/[^a-z0-9-]/gi, "") || `m-${members.length + 1}`;
+    if (seen.has(id)) id = `${id}-${members.length}`;
+    seen.add(id);
+    members.push({ id, name, station: asStation(m.station), dismiss: asDismiss(m.dismiss), studentId: m.studentId });
+  }
+  const meetings: Record<string, ClubMeeting> = {};
+  for (const [date, raw] of Object.entries(p.meetings ?? {})) {
+    if (!isoDay(date) || !raw || typeof raw !== "object") continue;
+    const meet = raw as ClubMeeting;
+    const rows = (Array.isArray(meet.rows) ? meet.rows : [])
+      .filter((r) => r && wallName(String(r.name ?? "")))
+      .map((r, i) => ({
+        id: String(r.id || `c-${i}`),
+        name: wallName(String(r.name)),
+        station: asStation(r.station),
+        dismiss: asDismiss(r.dismiss),
+        in: Boolean(r.in),
+      }));
+    meetings[date] = {
+      date,
+      overlay: Math.max(0, Math.min(8, Number(meet.overlay) || 0)),
+      notes: String(meet.notes ?? "").slice(0, 2000),
+      rows,
+      pack: CLUB_PACKS.some((x) => x.id === meet.pack) ? meet.pack : undefined,
+      agenda: meet.agenda?.trim().slice(0, 160) || undefined,
+      pin: meet.pin || undefined,
+    };
+  }
+  const weekdays = (Array.isArray(p.weekdays) ? p.weekdays : [])
+    .map((d) => Number(d))
+    .filter((d) => d >= 1 && d <= 5);
   const wallOn = Array.isArray(p.wallOn) && p.wallOn.length
     ? (p.wallOn.filter((id) => CLUB_WALL_CARDS.some((c) => c.id === id)) as ClubWallCard[])
     : base.wallOn;
   return {
     ...base,
-    meetings: p.meetings ?? {},
-    weekdays: Array.isArray(p.weekdays) && p.weekdays.length ? p.weekdays : [2],
-    skip: p.skip ?? [],
-    extra: p.extra ?? [],
+    meetings,
+    weekdays: weekdays.length ? [...new Set(weekdays)].sort() : [2],
+    skip: (p.skip ?? []).filter(isoDay),
+    extra: (p.extra ?? []).filter(isoDay),
     weekOverlay: p.weekOverlay ?? {},
     weekNote: p.weekNote ?? {},
-    members: Array.isArray(p.members) ? p.members : [],
-    events: Array.isArray(p.events) ? p.events : [],
-    activity: p.activity && typeof p.activity.title === "string" ? { title: p.activity.title, mins: Math.max(1, Number(p.activity.mins) || 15), startedAt: p.activity.startedAt } : base.activity,
+    members,
+    events: (Array.isArray(p.events) ? p.events : [])
+      .filter((e) => e && isoDay(e.date) && String(e.title ?? "").trim())
+      .map((e, i) => ({
+        id: String(e.id || `e-${i}`),
+        kind: e.kind === "comp" ? "comp" : "event",
+        title: String(e.title).trim().slice(0, 80),
+        date: e.date,
+        note: e.note?.trim().slice(0, 80) || undefined,
+      })),
+    activity: p.activity && typeof p.activity.title === "string" ? { title: p.activity.title.slice(0, 80), mins: Math.max(1, Math.min(40, Number(p.activity.mins) || 15)), startedAt: p.activity.startedAt } : base.activity,
     wallOn: wallOn.length ? wallOn : base.wallOn,
   };
+}
+
+function isoDay(v: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(v);
 }
 
 export function loadClub(): ClubFile {
@@ -207,14 +261,18 @@ export function isHalfDay(iso: string): boolean {
 }
 
 export function isClubDay(file: ClubFile, date: string): boolean {
+  if (!isoDay(date)) return false;
   if (file.skip.includes(date)) return false;
   if (file.extra.includes(date)) return true;
   if (!isSchoolDay(date) || isHalfDay(date)) return false;
-  return file.weekdays.includes(new Date(`${date}T12:00:00`).getDay());
+  const d = new Date(`${date}T12:00:00`);
+  if (Number.isNaN(d.getTime())) return false;
+  return file.weekdays.includes(d.getDay());
 }
 
 export function nextClubDay(file: ClubFile, from = todayIso(), inclusive = true): string | null {
-  for (let i = inclusive ? 0 : 1; i <= 40; i++) {
+  if (!isoDay(from)) return null;
+  for (let i = inclusive ? 0 : 1; i <= 180; i++) {
     const d = addDaysIso(from, i);
     if (isClubDay(file, d)) return d;
   }
@@ -412,6 +470,26 @@ export function setClubPin(file: ClubFile, date: string, pin?: string): ClubFile
   return patchMeeting(file, date, { pin: pin || undefined });
 }
 
+export function releaseClubWork(file: ClubFile, date: string): ClubFile {
+  const pack = clubPackOf(file, date);
+  const hit = pack.slots.find((s) => s.kind === "work" || s.kind === "contest");
+  return setClubPin(file, date, hit?.id);
+}
+
+export function holdClubBrief(file: ClubFile, date: string): ClubFile {
+  const hold = holdSlot(clubPackOf(file, date));
+  return setClubPin(file, date, hold?.id);
+}
+
+export function clubWallKind(file: ClubFile, date = todayIso(), now = new Date()): "off" | "brief" | "work" | "cleanup" {
+  if (!isClubDay(file, date)) return "off";
+  const cur = clubSlotNow(file, date, now);
+  const clock = clubClock(now);
+  if (clock.cleanup || cur?.clean) return "cleanup";
+  if (cur && (cur.kind === "work" || cur.kind === "contest")) return "work";
+  return "brief";
+}
+
 export function clubAgendaOf(file: ClubFile, date: string): string {
   return meetingOf(file, date).agenda?.trim() || clubPackOf(file, date).hint;
 }
@@ -554,15 +632,16 @@ export function newRow(name: string, station: ClubStation, dismiss: ClubDismiss,
   };
 }
 
-export function addMember(file: ClubFile, name: string, station: ClubStation, dismiss: ClubDismiss, studentId?: string): ClubFile {
+export function addMember(file: ClubFile, name: string, station: ClubStation, dismiss: ClubDismiss, studentId?: string): { file: ClubFile; member: ClubMember | null } {
   const n = wallName(name);
-  if (!n) return file;
+  if (!n) return { file, member: null };
   const hit = file.members.find((m) => m.name.toLowerCase() === n.toLowerCase());
-  if (hit) return { ...file, members: file.members.map((m) => (m.id === hit.id ? { ...m, station, dismiss, studentId: studentId ?? m.studentId } : m)) };
-  return {
-    ...file,
-    members: [...file.members, { id: `m-${Date.now().toString(36)}`, name: n, station, dismiss, studentId }],
-  };
+  if (hit) {
+    const member = { ...hit, station, dismiss, studentId: studentId ?? hit.studentId };
+    return { file: { ...file, members: file.members.map((m) => (m.id === hit.id ? member : m)) }, member };
+  }
+  const member: ClubMember = { id: `m-${Date.now().toString(36)}`, name: n, station, dismiss, studentId };
+  return { file: { ...file, members: [...file.members, member] }, member };
 }
 
 /** Match a club alias to a class worker. Unique first name, or an explicit id. */

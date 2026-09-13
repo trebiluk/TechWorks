@@ -1,0 +1,14 @@
+{
+  "name": "Coderized",
+  "short_name": "Coderized",
+  "description": "Solvay MS Technology — coding arena on Chromebooks. Hosted with TechWorks.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#1b365d",
+  "theme_color": "#1b365d",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

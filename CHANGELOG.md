@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.21. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.22. -->
 
 # TechWorks changelog
 
-App version **1.92.21**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.22**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.22 — 2026-09-13
+
+- Club robustness: check-in names the kid you typed. Calendar tap selects; Set / Skip is explicit. Off-day wall shows the next meeting, not a fake brief. Release to work / Hold brief. Corrupt club saves no longer wipe the roster.
 
 ## 1.92.21 — 2026-09-13
 
