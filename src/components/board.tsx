@@ -25,7 +25,7 @@ import { paintCleanup, periodNow, SCHOOLTOOL_URL } from "@/lib/bells";
 import { CleanupStage } from "@/components/cleanup-wall";
 import { NowDock } from "@/components/now-dock";
 import { NextJobChip } from "@/components/next-job";
-import { installLayoutWatch, isPhone, surfaceOf, useLayout } from "@/lib/layout";
+import { installLayoutWatch, surfaceOf, useLayout, usePhoneChrome } from "@/lib/layout";
 import { PhoneDock } from "@/components/phone-dock";
 import { applyTheme, applyVibe, paintContrast, storedContrast, storedTheme, storedVibe } from "@/lib/theme";
 import { bootLang } from "@/lib/i18n";
@@ -465,6 +465,7 @@ export function Board() {
   const liveP = periodNow(deskBellId(file));
   const mode = modeOf(view);
   const layout = useLayout();
+  const phone = usePhoneChrome();
   const surface = surfaceOf(layout, { unlocked, embed, portal: portalMode });
   const workstation = surface === "workstation";
 
@@ -550,7 +551,7 @@ export function Board() {
     { id: "deck", label: t("Deck"), on: view === "deck", onClick: () => go("deck") },
   ];
   const restTabs = v2Tabs.filter((tab) => tab.id !== "wall" && tab.id !== "teach" && tab.id !== "deck");
-  const headerTabs: NavTab[] = [...dashPins, ...restTabs];
+  const headerTabs: NavTab[] = phone ? v2Tabs : [...dashPins, ...restTabs];
 
   const appStrip = !crewOn ? (
     <AppNav
@@ -626,7 +627,7 @@ export function Board() {
         <header className="desk-chrome tw-gadget tw-hud mb-1 min-w-0">
             <div className="nav-cluster flex min-w-0 items-center gap-1">
               <button type="button" onClick={() => go("overview")} title="Shop names only" className="shrink-0">
-                <TwWordmark />
+                <TwWordmark compact={phone} />
               </button>
               <div className="min-w-0 flex-1">{appStrip}</div>
               <div className="tw-hud-row relative z-20 shrink-0">
@@ -997,7 +998,7 @@ export function Board() {
       </Suspense>
       </CleanupStage>
       </div>
-      {embed || portalMode || (crewOn && view === "crew") || !isPhone() ? null : (
+      {embed || portalMode || (crewOn && view === "crew") || !phone ? null : (
         <PhoneDock
           view={view === "skills" && learnStart === "projects" ? "projects" : view}
           pad={deskPad}

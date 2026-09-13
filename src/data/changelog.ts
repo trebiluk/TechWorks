@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.37 — 2026-09-13
+
+- Phone chrome follows the window (under 900px), not the UA. Dock on Chromebooks. No iOS zoom on fields. Keyboard uses the visual viewport. Boards scroll. Compact lockup.
+
 ## 1.92.36 — 2026-09-13
 
 - Crew tools: size packs (pairs / 3–4 / tables), Deal even, Copy look to every period, Drop, Crown. Look stays off the wall except the #1 crew stripe.

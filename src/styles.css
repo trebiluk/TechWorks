@@ -1449,9 +1449,67 @@ html[data-crew="on"] .board-main,
 .board-root[data-crew="on"] .board-main {
   overflow: hidden;
 }
-html[data-crew="on"] .phone-dock,
-html[data-crew="on"] header.desk-chrome {
-  display: none !important;
+html[data-phone="on"] {
+  --tw-dock: 4.35rem;
+}
+html[data-phone="on"] .board-root {
+  height: var(--vvh, 100svh);
+  max-height: var(--vvh, 100svh);
+  min-height: 0;
+  padding-bottom: 0;
+}
+html[data-phone="on"] .board-main,
+html[data-phone="on"] .board-root.board-score .board-main {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+html[data-phone="on"] .phone-dock {
+  position: sticky;
+  bottom: 0;
+  z-index: 50;
+  flex-shrink: 0;
+  padding-bottom: max(0.35rem, env(safe-area-inset-bottom));
+  background: var(--color-surface);
+}
+html[data-phone="on"] .board-root input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+html[data-phone="on"] .board-root textarea,
+html[data-phone="on"] .board-root select {
+  font-size: 16px;
+}
+html[data-phone="on"] .lang-chip {
+  display: none;
+}
+html[data-phone="on"] header.desk-chrome .tw-hud-row {
+  gap: 0.1rem;
+}
+html[data-phone="on"] .tw-fill-hero,
+html[data-phone="on"] .tw-fill-ask {
+  font-size: clamp(1.15rem, 6.5vw, 1.85rem);
+  line-height: 1.12;
+}
+html[data-phone="on"] [data-wall-stage="show"],
+html[data-phone="on"] [data-teach-hero],
+html[data-phone="on"] [data-teach-slots] {
+  overflow: visible;
+}
+html[data-phone="on"] .tw-web-wall,
+html[data-phone="on"] [data-wall-stage] {
+  overflow: auto;
+  min-height: 0;
+}
+html[data-phone="on"] .tw-tap {
+  min-height: 2.75rem;
+}
+html[data-phone="on"] .phone-dock .tw-tap {
+  min-height: 3.25rem;
+}
+
+@supports (height: 100dvh) {
+  html:not([data-phone="on"]) .board-root {
+    height: 100dvh;
+    max-height: 100dvh;
+  }
 }
 
 @media (max-width: 899px) {

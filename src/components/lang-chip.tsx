@@ -4,7 +4,7 @@ import { CLASS_LANGS, commitLang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n-hook";
 import { cn } from "@/lib/utils";
 
-export function LangChip() {
+export function LangChip({ className }: { className?: string }) {
   const { lang, t } = useLang();
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
@@ -27,7 +27,7 @@ export function LangChip() {
   }, [open]);
 
   return (
-    <div ref={box} className="relative">
+    <div ref={box} className={cn("relative lang-chip", className)}>
       <button
         type="button"
         title={t("Read in your language")}

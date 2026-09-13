@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 export const LAYOUT_KEY = "techworks-layout";
 export type LayoutId = "one";
 
+/** Phone / iPad portrait / Chromebook window. Not UA. */
+export const PHONE_MQ = "(max-width: 899px)";
+
 /** One desk. Portrait wraps the grid; landscape adds columns. */
 export function guessLayout(): LayoutId {
   return "one";
@@ -23,9 +26,8 @@ export function commitLayout(_id?: LayoutId) {
 }
 
 export function isPhoneScreen(): boolean {
-  if (typeof screen === "undefined") return false;
-  const sw = Math.min(screen.width || 9999, screen.height || 9999);
-  return sw <= 520;
+  if (typeof window === "undefined") return false;
+  return window.matchMedia(PHONE_MQ).matches;
 }
 
 export function isPhoneUA(): boolean {
@@ -37,6 +39,14 @@ export function isPhone(): boolean {
   return isPhoneUA() || isPhoneScreen();
 }
 
+export function paintPhoneChrome() {
+  if (typeof document === "undefined" || typeof window === "undefined") return;
+  const on = window.matchMedia(PHONE_MQ).matches;
+  document.documentElement.dataset.phone = on ? "on" : "off";
+  const vv = window.visualViewport;
+  document.documentElement.style.setProperty("--vvh", `${Math.round(vv?.height ?? window.innerHeight)}px`);
+}
+
 export function deviceLayout(): LayoutId {
   return "one";
 }
@@ -44,6 +54,11 @@ export function deviceLayout(): LayoutId {
 export function installLayoutWatch() {
   if (typeof document === "undefined") return;
   paintLayout("one");
+  paintPhoneChrome();
+  const mq = window.matchMedia(PHONE_MQ);
+  mq.addEventListener("change", paintPhoneChrome);
+  window.visualViewport?.addEventListener("resize", paintPhoneChrome);
+  window.addEventListener("orientationchange", paintPhoneChrome);
 }
 
 export type Surface = "phone" | "projector" | "workstation";
@@ -68,4 +83,20 @@ export function useLayout(): LayoutId {
     return () => window.removeEventListener("techworks-layout", on);
   }, []);
   return id;
+}
+
+/** True under 900px. Dock + compact chrome. Follows the window, not the UA. */
+export function usePhoneChrome(): boolean {
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(PHONE_MQ);
+    const go = () => {
+      paintPhoneChrome();
+      setOn(mq.matches);
+    };
+    go();
+    mq.addEventListener("change", go);
+    return () => mq.removeEventListener("change", go);
+  }, []);
+  return on;
 }

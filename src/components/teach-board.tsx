@@ -273,7 +273,7 @@ export function TeachBoard({
   }
 
   return (
-    <div className={cn("flex min-h-0 flex-1 flex-col gap-2 overflow-hidden p-1", sortOn ? "overflow-auto" : "")} data-wall-stage={sortOn ? "edit" : "show"}>
+    <div className={cn("flex min-h-0 flex-1 flex-col gap-2 overflow-auto p-1")} data-wall-stage={sortOn ? "edit" : "show"}>
       {printOn ? <LessonPlanSheet file={file} period={period} dates={weekDays} onClose={() => setPrintOn(false)} /> : null}
       <header className="flex shrink-0 flex-col gap-2">
         <div className="flex flex-wrap items-center gap-2">

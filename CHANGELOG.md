@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.36. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.37. -->
 
 # TechWorks changelog
 
-App version **1.92.36**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.37**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.37 — 2026-09-13
+
+- Phone chrome follows the window (under 900px), not the UA. Dock on Chromebooks. No iOS zoom on fields. Keyboard uses the visual viewport. Boards scroll. Compact lockup.
 
 ## 1.92.36 — 2026-09-13
 
