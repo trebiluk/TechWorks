@@ -18,7 +18,7 @@ export const FEATURES = [
   { id: "ambient", label: "Ambient Chaos", group: "Tools", hint: "neal.fun workshop-noise tab" },
   { id: "club", label: "Tech Club", group: "After school", hint: "IN pays $10 + 2 XP once a day. Not class effort." },
   { id: "studyhall", label: "Study Hall", group: "After school", hint: "P6 projector. Not in Tech effort." },
-  { id: "store", label: "Store", group: "Games", hint: "Store chips. Wallet still exists." },
+  { id: "store", label: "Rewards", group: "Games", hint: "Perk cards. Wallet still exists." },
   { id: "prints", label: "Prints", group: "Games", hint: "3D print collections, trades, gallery" },
   { id: "stocks", label: "Stocks", group: "Games", hint: "Market minigame" },
   { id: "lucky", label: "Lucky Bench", group: "Games", hint: "Die + Friday pot. Class cash only." },

@@ -17,17 +17,45 @@ import {
   pieceLabel,
   printsOf,
   printLogOf,
+  returnPrint,
   RARITY_LABEL,
   SIZE_LABEL,
   smallCount,
+  suggestCopy,
+  swapPrints,
   tradeNeed,
   tradePrints,
   upsertPiece,
+  heldPieces,
   type PrintPiece,
   type PrintRarity,
   type PrintSize,
 } from "@/lib/prints";
 import { cn } from "@/lib/utils";
+
+function PrintGlyph({ piece }: { piece: PrintPiece }) {
+  const tone =
+    piece.rarity === "rare"
+      ? "bg-accent"
+      : piece.rarity === "shiny"
+        ? "bg-gold"
+        : piece.rarity === "wild"
+          ? "bg-gain"
+          : "bg-elevated";
+  const box = piece.size === "L" ? "h-[72%] w-[72%]" : piece.size === "M" ? "h-[52%] w-[52%]" : "h-[36%] w-[36%]";
+  return (
+    <div className="relative flex size-full items-center justify-center bg-[radial-gradient(circle_at_28%_18%,color-mix(in_oklab,var(--color-gold)_22%,transparent),transparent_58%)]">
+      <span
+        className={cn(
+          "block rounded-[30%_18%_34%_22%] shadow-[7px_11px_0_color-mix(in_oklab,#000_38%,transparent)]",
+          tone,
+          box,
+        )}
+        aria-hidden
+      />
+    </div>
+  );
+}
 
 function RarityChip({ rarity }: { rarity: PrintRarity }) {
   return (
@@ -79,7 +107,7 @@ function PieceCard({
         {piece.photo ? (
           <img src={piece.photo} alt="" className="size-full object-cover" />
         ) : (
-          <div className={cn("flex size-full items-center justify-center font-display text-muted", compact ? "text-lg" : "text-3xl")}>{piece.size}</div>
+          <PrintGlyph piece={piece} />
         )}
       </div>
       <div className={cn("flex flex-1 flex-col gap-0.5", compact ? "p-1.5" : "gap-1 p-2")}>
@@ -123,7 +151,7 @@ export function PrintsBoard({
   const log = printLogOf(file);
   const bells = shopBells(file);
   const list = useMemo(() => score(file), [file]);
-  const [pane, setPane] = useState<"wall" | "desk" | "stock">(unlocked ? "stock" : "wall");
+  const [pane, setPane] = useState<"wall" | "hold" | "trade" | "archive" | "stock">(unlocked ? "hold" : "wall");
   const [period, setPeriod] = useState(bells[0]?.period ?? 1);
   const kids = list.filter((s) => s.period === period && isLiveStudent(s, file.meta.quarterName));
   const [id, setId] = useState(kids[0]?.id ?? "");
@@ -140,6 +168,9 @@ export function PrintsBoard({
     stock: 0,
   });
   const [runQty, setRunQty] = useState(4);
+  const [toId, setToId] = useState("");
+  const [prove, setProve] = useState("");
+  const [swapId, setSwapId] = useState("");
 
   const gallery = [...pieces].sort((a, b) => {
     const r = { wild: 0, rare: 1, shiny: 2, common: 3 };
@@ -178,22 +209,28 @@ export function PrintsBoard({
           <h1 className="font-display text-3xl font-semibold tracking-tight">Prints</h1>
           <p className="text-sm text-muted">
             {pieces.length
-              ? `Fidget bin · ${releasedAll} released · ${outAll} in the wild · ${binAll} in the bin.`
-              : "Bin is empty. Add a piece, then copy the line for the next size or color."}
+              ? `Fidget bin · ${releasedAll} released · ${outAll} held · ${binAll} in the bin.`
+              : "Bin is empty. Add a piece, then the next size is already drafted."}
           </p>
         </div>
         <div className="flex flex-wrap gap-1">
-          {(["wall", "desk", "stock"] as const).map((p) => (
+          {([
+            ["wall", "Gallery"],
+            ["hold", "Hold"],
+            ["trade", "Trade"],
+            ["archive", "Archive"],
+            ["stock", "Bin"],
+          ] as const).map(([p, label]) => (
             <MarkChip
               key={p}
-              mark={markOf(p === "wall" ? "gallery" : p === "desk" ? "buy" : "bin")}
+              mark={markOf(p === "wall" ? "gallery" : p)}
               on={pane === p}
               onClick={() => {
                 if (p !== "wall" && !mustPin()) return;
                 setPane(p);
               }}
             >
-              {p === "wall" ? "Gallery" : p === "desk" ? "Buy / trade" : "Bin"}
+              {label}
             </MarkChip>
           ))}
         </div>
@@ -205,11 +242,11 @@ export function PrintsBoard({
             {[...new Set(gallery.map((p) => p.series || "Prints"))].map((series) => (
               <section key={series}>
                 <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted">{series}</p>
-                <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-6 lg:grid-cols-8">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
                   {gallery
                     .filter((p) => (p.series || "Prints") === series)
                     .map((p) => (
-                      <PieceCard key={p.id} piece={p} compact />
+                      <PieceCard key={p.id} piece={p} />
                     ))}
                 </div>
               </section>
@@ -220,7 +257,7 @@ export function PrintsBoard({
         )
       ) : null}
 
-      {pane === "desk" && unlocked ? (
+      {pane === "hold" && unlocked ? (
         <>
           <div className="flex flex-wrap gap-1">
             {bells.map((b) => (
@@ -232,7 +269,7 @@ export function PrintsBoard({
                   const next = list.find((s) => s.period === b.period);
                   if (next) setId(next.id);
                 }}
-                className={cn("tw-tap min-h-10 rounded-full px-3 text-sm font-semibold", period === b.period ? "bg-fg text-bg" : "bg-elevated")}
+                className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-semibold", period === b.period ? "bg-fg text-bg" : "bg-elevated")}
               >
                 {periodTitle(b.period, bells)}
               </button>
@@ -244,7 +281,7 @@ export function PrintsBoard({
                 key={s.id}
                 type="button"
                 onClick={() => setId(s.id)}
-                className={cn("tw-tap min-h-10 rounded-full px-3 text-sm", s.id === me?.id ? "bg-accent text-accent-fg" : "bg-elevated")}
+                className={cn("tw-tap min-h-12 rounded-full px-4 text-sm font-semibold", s.id === me?.id ? "bg-accent text-accent-fg" : "bg-elevated")}
               >
                 {s.first}
                 <span className="ml-1 font-mono text-xs">{money(s.quarter)}</span>
@@ -252,11 +289,21 @@ export function PrintsBoard({
             ))}
           </div>
           {me ? (
-            <p className="text-sm text-muted">
-              {me.first} · smalls shiny {smallCount(file, me.id, "shiny")} · rare {smallCount(file, me.id, "rare")}
-            </p>
+            <section className="tw-gadget p-3">
+              <p className="text-xs font-bold uppercase tracking-wide text-gold">{me.first} holds</p>
+              <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {heldPieces(file, me.id).length ? (
+                  heldPieces(file, me.id).map(({ piece, qty }) => (
+                    <PieceCard key={piece.id} piece={piece} held={qty} />
+                  ))
+                ) : (
+                  <p className="col-span-full text-sm text-muted">Nothing yet. Tap a piece in the bin below.</p>
+                )}
+              </div>
+            </section>
           ) : null}
-          <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-6 lg:grid-cols-8">
+          <p className="text-xs font-bold uppercase tracking-wide text-muted">Bin · tap to buy for {me?.first ?? "a worker"}</p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
             {gallery.map((p) => {
               const held = ownedQty(raw, p.id);
               const gift = p.price <= 0;
@@ -270,7 +317,6 @@ export function PrintsBoard({
                   stock
                   counts={fidgetCounts(file, p)}
                   dim={(broke || empty) && !held}
-                  compact
                   onClick={() => {
                     if (!me) return;
                     if (empty) {
@@ -293,15 +339,49 @@ export function PrintsBoard({
               );
             })}
           </div>
+        </>
+      ) : null}
+
+      {pane === "trade" && unlocked ? (
+        <>
+          <div className="flex flex-wrap gap-1">
+            {bells.map((b) => (
+              <button
+                key={b.period}
+                type="button"
+                onClick={() => {
+                  setPeriod(b.period);
+                  const next = list.find((s) => s.period === b.period);
+                  if (next) setId(next.id);
+                }}
+                className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-semibold", period === b.period ? "bg-fg text-bg" : "bg-elevated")}
+              >
+                {periodTitle(b.period, bells)}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs font-bold uppercase tracking-wide text-muted">From</p>
+          <div className="flex flex-wrap gap-1">
+            {kids.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => setId(s.id)}
+                className={cn("tw-tap min-h-12 rounded-full px-4 text-sm font-semibold", s.id === me?.id ? "bg-accent text-accent-fg" : "bg-elevated")}
+              >
+                {s.first}
+              </button>
+            ))}
+          </div>
           <section className="tw-gadget p-3">
-            <p className="text-xs font-bold uppercase tracking-wide text-muted">Trade up</p>
+            <p className="text-xs font-bold uppercase tracking-wide text-gold">Official · smalls for a large</p>
             <div className="mt-2 flex flex-wrap items-center gap-2">
               {(["shiny", "rare"] as const).map((r) => (
                 <button
                   key={r}
                   type="button"
                   onClick={() => setRarity(r)}
-                  className={cn("tw-tap min-h-10 rounded-full px-3 text-sm font-semibold", rarity === r ? "bg-fg text-bg" : "bg-elevated")}
+                  className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-semibold", rarity === r ? "bg-fg text-bg" : "bg-elevated")}
                 >
                   {tradeNeed(r)} {RARITY_LABEL[r]} S
                 </button>
@@ -309,7 +389,7 @@ export function PrintsBoard({
               <select
                 value={largeId}
                 onChange={(e) => setLargeId(e.target.value)}
-                className="min-h-10 rounded-md bg-elevated px-2 text-sm"
+                className="min-h-11 rounded-md bg-elevated px-2 text-sm"
               >
                 {largesInStock(file).map((p) => (
                   <option key={p.id} value={p.id}>
@@ -325,19 +405,130 @@ export function PrintsBoard({
                   onChange(tradePrints(file, me.id, rarity, largeId));
                   onFlash?.(`${me.first} traded ${need} ${rarity} smalls`);
                 }}
-                className="tw-tap min-h-10 rounded-full bg-accent px-4 text-sm font-semibold text-accent-fg disabled:opacity-40"
+                className="tw-tap min-h-11 rounded-full bg-accent px-4 text-sm font-semibold text-accent-fg disabled:opacity-40"
               >
                 Trade · have {have}/{need}
               </button>
             </div>
           </section>
+          <section className="tw-gadget p-3">
+            <p className="text-xs font-bold uppercase tracking-wide text-gold">Unofficial · prove it</p>
+            <p className="mt-1 text-xs text-muted">Kid-to-kid, or back to the bin. Wallet does not move. Type what they proved.</p>
+            <div className="mt-2 flex flex-wrap gap-1">
+              {heldPieces(file, me?.id ?? "").map(({ piece, qty }) => (
+                <button
+                  key={piece.id}
+                  type="button"
+                  onClick={() => setSwapId(piece.id)}
+                  className={cn("tw-tap min-h-11 rounded-full px-3 text-sm", swapId === piece.id ? "bg-fg text-bg" : "bg-elevated")}
+                >
+                  {pieceLabel(piece)} · {qty}
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-xs font-bold uppercase tracking-wide text-muted">To</p>
+            <div className="mt-1 flex flex-wrap gap-1">
+              <button
+                type="button"
+                onClick={() => setToId("bin")}
+                className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-semibold", toId === "bin" ? "bg-fg text-bg" : "bg-elevated")}
+              >
+                Bin
+              </button>
+              {kids
+                .filter((s) => s.id !== me?.id)
+                .map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => setToId(s.id)}
+                    className={cn("tw-tap min-h-11 rounded-full px-3 text-sm", toId === s.id ? "bg-accent text-accent-fg" : "bg-elevated")}
+                  >
+                    {s.first}
+                  </button>
+                ))}
+            </div>
+            <input
+              className="tw-field mt-2 min-h-11 w-full text-sm"
+              placeholder="Prove: held the line / fair swap / returned"
+              value={prove}
+              onChange={(e) => setProve(e.target.value)}
+            />
+            <button
+              type="button"
+              disabled={!me || !swapId || !toId}
+              onClick={() => {
+                if (!me || !swapId || !toId) return;
+                if (toId === "bin") {
+                  onChange(returnPrint(file, me.id, swapId, prove));
+                  onFlash?.(`${me.first} returned a piece`);
+                } else {
+                  onChange(swapPrints(file, me.id, toId, swapId, 1, prove));
+                  onFlash?.("Unofficial trade logged");
+                }
+                setProve("");
+              }}
+              className="tw-tap mt-2 min-h-12 w-full rounded-full bg-gold text-sm font-semibold text-bg disabled:opacity-40"
+            >
+              Log trade
+            </button>
+          </section>
         </>
+      ) : null}
+
+      {pane === "archive" && unlocked ? (
+        <div className="grid gap-3">
+          <div className="tw-gadget overflow-auto p-2">
+            <p className="mb-1 text-xs font-bold uppercase tracking-wide text-muted">Archive · made / released / held / bin</p>
+            <table className="w-full min-w-[32rem] text-left text-xs">
+              <thead className="text-muted">
+                <tr>
+                  <th className="py-1 font-semibold">Piece</th>
+                  <th>Var</th>
+                  <th>Rarity</th>
+                  <th className="text-right">Made</th>
+                  <th className="text-right">Released</th>
+                  <th className="text-right">Held</th>
+                  <th className="text-right">Bin</th>
+                </tr>
+              </thead>
+              <tbody>
+                {census.map(({ piece, made, released, out, bin }) => (
+                  <tr key={piece.id} className="border-t border-border">
+                    <td className="py-1 font-semibold">{piece.name}</td>
+                    <td>{piece.variant || "—"}</td>
+                    <td>{RARITY_LABEL[piece.rarity]}</td>
+                    <td className="text-right font-mono">{made}</td>
+                    <td className="text-right font-mono">{released}</td>
+                    <td className="text-right font-mono">{out}</td>
+                    <td className="text-right font-mono">{bin}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <ul className="tw-gadget p-3 text-xs text-muted">
+            {log.length ? (
+              log
+                .slice()
+                .reverse()
+                .map((ev) => (
+                  <li key={ev.ts + ev.pieceId + ev.kind} className="border-t border-border py-1.5 first:border-0">
+                    {ev.kind} · {ev.note || ev.pieceId} · {ev.qty > 0 ? "+" : ""}
+                    {ev.qty}
+                  </li>
+                ))
+            ) : (
+              <li>No runs yet.</li>
+            )}
+          </ul>
+        </div>
       ) : null}
 
       {pane === "stock" && unlocked ? (
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="tw-gadget overflow-auto p-2 lg:col-span-2">
-            <p className="mb-1 text-xs font-bold uppercase tracking-wide text-muted">Released into the fidget economy</p>
+            <p className="mb-1 text-xs font-bold uppercase tracking-wide text-muted">Print run · tap + to add to the bin</p>
             <table className="w-full min-w-[32rem] text-left text-xs">
               <thead className="text-muted">
                 <tr>
@@ -398,8 +589,15 @@ export function PrintsBoard({
             onSubmit={(e) => {
               e.preventDefault();
               if (!draft.name.trim()) return;
+              const wasNew = !draft.id;
               onChange(upsertPiece(file, draft));
-              onFlash?.(`Saved ${draft.name}`);
+              if (wasNew) {
+                const next = suggestCopy({ ...draft, id: "x" });
+                setDraft({ ...next, id: "" });
+                onFlash?.(next.size !== draft.size ? `Saved ${draft.name}. Next size ${next.size} is ready.` : `Saved ${draft.name}. Next color is ready.`);
+              } else {
+                onFlash?.(`Saved ${draft.name}`);
+              }
             }}
           >
             <p className="text-xs font-bold uppercase tracking-wide text-muted">Piece</p>
@@ -428,9 +626,9 @@ export function PrintsBoard({
               In bin
               <input type="number" className="mt-1 min-h-10 w-full rounded-md bg-elevated px-2 text-sm" value={draft.stock} onChange={(e) => setDraft({ ...draft, stock: Number(e.target.value) || 0 })} />
             </label>
-            <label className="text-xs text-muted">
-              Photo
-              <input type="file" accept="image/*" className="mt-1 w-full text-xs" onChange={(e) => void onPhoto(e.target.files?.[0])} />
+            <label className="tw-tap grid min-h-14 cursor-pointer place-items-center rounded-xl bg-gold text-sm font-semibold text-bg">
+              Take photo
+              <input type="file" accept="image/*" capture="environment" className="sr-only" onChange={(e) => void onPhoto(e.target.files?.[0])} />
             </label>
             <input className="min-h-10 rounded-md bg-elevated px-2 text-sm" placeholder="or paste image URL" value={draft.photo?.startsWith("http") ? draft.photo : ""} onChange={(e) => setDraft({ ...draft, photo: e.target.value })} />
             {draft.photo ? <img src={draft.photo} alt="" className="h-24 w-full rounded-md object-cover" /> : null}

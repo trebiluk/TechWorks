@@ -1,6 +1,6 @@
-# TechWorks Help · v1.92.47
+# TechWorks Help · v1.92.49
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.47.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.49.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
@@ -86,7 +86,7 @@ Dash → Deck plays today’s Teach plan. Present is play-only (even with PIN). 
 
 ### Copyright
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.47.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.49.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
@@ -100,7 +100,7 @@ Bottom dock: Dash · Learn · Crew · Rosters · Admin (PIN on the last three). 
 
 ### Version
 
-The floating chip is v1.92.47. Same string as About, Help, and the changelog header. Product name TECHWORKS™. Workshop zips labeled 1.0 or 2.1.0 are not live.
+The floating chip is v1.92.49. Same string as About, Help, and the changelog header. Product name TECHWORKS™. Workshop zips labeled 1.0 or 2.1.0 are not live.
 
 ### Describe mode / tips
 
@@ -284,13 +284,13 @@ Crew taps INVEST? after a 3/2/1. You approve on Score (PIN). That day's pay leav
 
 Admin → Lucky. PIN. Stake $5 / $10 / $15, roll a d6. 1 bust, 2–3 half back, 4 push, 5 ×1.5, 6 double. About 8% house edge so saving usually beats rolling. 3 rolls a day. Friday pot: $5 ticket, 2/day, you draw. Class cash only — never XP or grades. Off in Modules if you don't want it.
 
-### Store and can't afford
+### Rewards and can't afford
 
-Perks = wallet. ⋯ More → Store is the catalog. Buy needs PIN. Profile chips also deduct. If the price is bigger than the wallet, the chip is struck. Teacher deducts can still go negative (penalty, not a purchase). The store never changes effort or grades.
+Rewards = wallet perks. Pick the kid, tap the perk. Buy needs PIN. If the price is bigger than the wallet, the card is dim. Teacher deducts can still go negative (penalty, not a purchase). Rewards never change effort or grades. 3D pieces are Prints → Hold, not this catalog.
 
 ### 3D print collections
 
-Unlock → Prints → Bin. The catalog starts empty — add a piece, Copy the line for the next size. Gallery tiles are small squares. Cash buys from the bin (PIN). Wallet only — not XP or grades. Hidden on the projector until something is released.
+Unlock → Prints. Gallery is the wall. Hold: pick a kid, tap a piece — it lands on that profile. Trade: official smalls-for-a-large, or unofficial kid-to-kid / back to the bin with a prove note. Archive is the census. Bin: add a piece, Take photo (iPad camera), next size drafts itself. Wallet only. Hidden on the projector until something is released.
 
 ## Schedule
 

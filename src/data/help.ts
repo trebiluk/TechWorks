@@ -424,9 +424,9 @@ export const HELP_ARTICLES: HelpArticle[] = [
   {
     id: "store-buy",
     category: "Money",
-    title: "Store and can't afford",
-    tags: ["store", "snacks", "chores", "spend", "wallet", "perks"],
-    body: "Perks = wallet. ⋯ More → Store is the catalog. Buy needs PIN. Profile chips also deduct. If the price is bigger than the wallet, the chip is struck. Teacher deducts can still go negative (penalty, not a purchase). The store never changes effort or grades.",
+    title: "Rewards and can't afford",
+    tags: ["rewards", "perks", "spend", "wallet", "store"],
+    body: "Rewards = wallet perks. Pick the kid, tap the perk. Buy needs PIN. If the price is bigger than the wallet, the card is dim. Teacher deducts can still go negative (penalty, not a purchase). Rewards never change effort or grades. 3D pieces are Prints → Hold, not this catalog.",
   },
   {
     id: "prints",
@@ -434,7 +434,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "3D print collections",
     tags: ["print", "gallery", "rare", "shiny", "trade", "small", "large"],
     wall: true,
-    body: "Unlock → Prints → Bin. The catalog starts empty — add a piece, Copy the line for the next size. Gallery tiles are small squares. Cash buys from the bin (PIN). Wallet only — not XP or grades. Hidden on the projector until something is released.",
+    body: "Unlock → Prints. Gallery is the wall. Hold: pick a kid, tap a piece — it lands on that profile. Trade: official smalls-for-a-large, or unofficial kid-to-kid / back to the bin with a prove note. Archive is the census. Bin: add a piece, Take photo (iPad camera), next size drafts itself. Wallet only. Hidden on the projector until something is released.",
   },
   {
     id: "schedule",

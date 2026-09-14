@@ -25,7 +25,7 @@ export type PrintPiece = {
 
 export type PrintEvent = {
   ts: string;
-  kind: "print" | "buy" | "trade" | "adjust" | "gift";
+  kind: "print" | "buy" | "trade" | "adjust" | "gift" | "swap" | "return";
   pieceId: string;
   qty: number;
   studentId?: string;
@@ -253,6 +253,111 @@ export function tradePrints(file: EconomyFile, studentId: string, rarity: PrintR
     return { ...s, prints };
   });
   return next;
+}
+
+/** Kid-to-kid. Wallet unchanged. Prove note is the responsibility log. */
+export function swapPrints(
+  file: EconomyFile,
+  fromId: string,
+  toId: string,
+  pieceId: string,
+  qty = 1,
+  note?: string,
+): EconomyFile {
+  const n = Math.max(1, Math.round(qty));
+  if (fromId === toId) return file;
+  const from = file.students.find((s) => s.id === fromId);
+  const to = file.students.find((s) => s.id === toId);
+  const piece = printsOf(file).find((p) => p.id === pieceId);
+  if (!from || !to || !piece || ownedQty(from, pieceId) < n) return file;
+  const next = putPrints(
+    file,
+    printsOf(file),
+    pushLog(printLogOf(file), {
+      kind: "swap",
+      pieceId,
+      qty: n,
+      studentId: toId,
+      note: note?.trim() || `${from.first} → ${to.first} · ${pieceLabel(piece)}`,
+    }),
+  );
+  next.students = next.students.map((s) => {
+    if (s.id === fromId) {
+      const prints = { ...(s.prints ?? {}) };
+      prints[pieceId] = ownedQty(s, pieceId) - n;
+      if (!prints[pieceId]) delete prints[pieceId];
+      return { ...s, prints };
+    }
+    if (s.id === toId) {
+      const prints = { ...(s.prints ?? {}), [pieceId]: ownedQty(s, pieceId) + n };
+      return { ...s, prints };
+    }
+    return s;
+  });
+  return next;
+}
+
+/** Piece comes back to the bin. */
+export function returnPrint(file: EconomyFile, studentId: string, pieceId: string, note?: string): EconomyFile {
+  const row = file.students.find((s) => s.id === studentId);
+  const piece = printsOf(file).find((p) => p.id === pieceId);
+  if (!row || !piece || ownedQty(row, pieceId) < 1) return file;
+  const next = putPrints(
+    file,
+    printsOf(file).map((p) => (p.id === pieceId ? { ...p, stock: p.stock + 1 } : p)),
+    pushLog(printLogOf(file), {
+      kind: "return",
+      pieceId,
+      qty: 1,
+      studentId,
+      note: note?.trim() || `${row.first} returned ${pieceLabel(piece)}`,
+    }),
+  );
+  next.students = next.students.map((s) => {
+    if (s.id !== studentId) return s;
+    const prints = { ...(s.prints ?? {}) };
+    prints[pieceId] = ownedQty(s, pieceId) - 1;
+    if (!prints[pieceId]) delete prints[pieceId];
+    return { ...s, prints };
+  });
+  return next;
+}
+
+export function heldPieces(file: EconomyFile, studentId: string): { piece: PrintPiece; qty: number }[] {
+  const s = file.students.find((x) => x.id === studentId);
+  return printsOf(file)
+    .map((piece) => ({ piece, qty: ownedQty(s, piece.id) }))
+    .filter((x) => x.qty > 0);
+}
+
+export function nextPrintSize(size: PrintSize): PrintSize | null {
+  if (size === "S") return "M";
+  if (size === "M") return "L";
+  return null;
+}
+
+/** After you save a piece, draft the next size — or a new color if it was already Large. */
+export function suggestCopy(piece: PrintPiece): PrintPiece {
+  const size = nextPrintSize(piece.size);
+  if (size) {
+    return {
+      ...piece,
+      id: "",
+      size,
+      stock: 0,
+      made: 0,
+      released: 0,
+      price: size === "L" ? Math.max(piece.price, 12) : Math.max(piece.price, 8),
+    };
+  }
+  return {
+    ...piece,
+    id: "",
+    variant: piece.variant ? `${piece.variant} · color` : "new color",
+    stock: 0,
+    made: 0,
+    released: 0,
+  };
 }
 
 export function logPrintRun(file: EconomyFile, pieceId: string, qty: number, note?: string): EconomyFile {

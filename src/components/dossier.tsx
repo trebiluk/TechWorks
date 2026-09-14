@@ -367,7 +367,7 @@ export function Dossier({
                 ))}
               </div>
 
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-subtle">{raw.period === 6 ? "Hall store" : "Store"}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-subtle">{raw.period === 6 ? "Hall perks" : "Rewards"}</p>
               {groups.map((g) => (
                 <div key={g}>
                   <p className="text-sm text-muted">{g}</p>

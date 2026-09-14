@@ -1,8 +1,13 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.48. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.49. -->
 
 # TechWorks changelog
 
-App version **1.92.48**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.49**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.49 — 2026-09-14
+
+- Prints: Gallery / Hold / Trade / Archive / Bin. Buy lands on the kid. Official smalls-for-large plus unofficial prove trades. 3D glyph, iPad Take photo, next size drafts itself.
+- Rewards (was Tech store): pick the kid, tap a perk. Catalog edits on this page. Wallet only.
 
 ## 1.92.48 — 2026-09-14
 

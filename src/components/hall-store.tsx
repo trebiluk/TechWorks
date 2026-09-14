@@ -51,7 +51,7 @@ export function HallStore({
   return (
     <section className="rounded-xl bg-surface px-4 py-3">
       <p className="text-[11px] font-semibold uppercase tracking-wider text-subtle">Hall store · not the class store</p>
-      <p className="mt-1 text-sm text-muted">Study hall cash only. Tech store items never show here.</p>
+      <p className="mt-1 text-sm text-muted">Study hall cash only. Class rewards never show here.</p>
       {soak ? <p className={cn("mt-2 rounded-md px-3 py-2 text-sm font-semibold", soak.includes("can't") ? "bg-loss text-accent-fg" : "bg-elevated")}>{soak}</p> : null}
       <label className="mt-2 block">
         <span className="text-xs text-subtle">Who</span>

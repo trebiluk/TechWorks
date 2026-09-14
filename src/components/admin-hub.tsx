@@ -144,7 +144,7 @@ export function AdminHub({
     { id: "prints", label: "Prints", on: false, go: () => onPrints?.(), show: featureOn(file, "prints") && Boolean(onPrints) },
     { id: "lucky", label: "Lucky", on: false, go: () => onLucky?.(), show: featureOn(file, "lucky") && Boolean(onLucky) },
     { id: "stocks", label: "Stocks", on: false, go: () => onStocks(), show: featureOn(file, "stocks") },
-    { id: "store", label: "Store", on: false, go: () => onStore(), show: featureOn(file, "store") },
+    { id: "store", label: "Rewards", on: false, go: () => onStore(), show: featureOn(file, "store") },
   ];
 
   const dailyIds = new Set(["today", "day", "records", "people", "wall"]);
