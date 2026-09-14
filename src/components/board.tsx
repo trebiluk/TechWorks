@@ -38,7 +38,7 @@ import type { LearnStart } from "@/components/learning-center";
 import type { AdminPane } from "@/components/settings";
 import { modeOf } from "@/components/mode-nav";
 import { AppNav } from "@/components/app-nav";
-import { sectionOf, type AppSection, type NavTab } from "@/lib/app-nav";
+import { chromeTabs, sectionOf, type AppSection, type NavTab } from "@/lib/app-nav";
 import { lockView } from "@/lib/lock-view";
 import { ADMIN_GROUPS, defaultPane, paneInGroup } from "@/lib/admin-nav";
 import { cn } from "@/lib/utils";
@@ -543,8 +543,7 @@ export function Board() {
     { id: "teach", label: t("Teach"), on: view === "teach" || view === "polls", onClick: () => go("teach"), hidden: !featureOn(file, "teach") },
     { id: "deck", label: t("Deck"), on: view === "deck", onClick: () => go("deck") },
   ];
-  const restTabs = v2Tabs.filter((tab) => tab.id !== "wall" && tab.id !== "teach" && tab.id !== "deck");
-  const headerTabs: NavTab[] = phone ? v2Tabs : [...dashPins, ...restTabs];
+  const headerTabs: NavTab[] = chromeTabs(section, dashPins, v2Tabs, phone);
 
   const appStrip = !crewOn ? (
     <AppNav

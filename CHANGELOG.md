@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.47. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.48. -->
 
 # TechWorks changelog
 
-App version **1.92.47**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.48**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.48 — 2026-09-14
+
+- Top chrome: Admin rooms stay on the Admin rail. Wall / Teach / Deck stay on the HUD. SchoolTool is an icon until widescreen. Chromebook mid-width no longer clips the top buttons.
 
 ## 1.92.47 — 2026-09-14
 

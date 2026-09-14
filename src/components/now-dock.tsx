@@ -29,11 +29,11 @@ export function NowDock({
       )}
       title={t("Now")}
     >
-      <span className="hidden text-[10px] font-semibold uppercase tracking-widest opacity-70 sm:inline">{hot ? t("Cleanup") : t("Now")}</span>
+      <span className="hidden text-[10px] font-semibold uppercase tracking-widest opacity-70 xl:inline">{hot ? t("Cleanup") : t("Now")}</span>
       <span className="font-display text-sm font-semibold">{live != null ? `P${live}` : "—"}</span>
       {hot ? <BertyPeek pose="point" /> : null}
       <span className="font-mono text-sm tabular-nums">{clock?.live ? tick : t("idle")}</span>
-      {lunch ? <span className="hidden max-w-[9rem] truncate text-xs opacity-80 lg:inline">{lunch}</span> : null}
+      {lunch ? <span className="hidden max-w-[9rem] truncate text-xs opacity-80 xl:inline">{lunch}</span> : null}
     </button>
   );
 }

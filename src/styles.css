@@ -1439,18 +1439,34 @@ html {
 
 header.desk-chrome {
   gap: 0.35rem;
-  overflow-x: hidden;
+  overflow: visible;
 }
 header.desk-chrome .nav-cluster {
   width: 100%;
   flex-wrap: nowrap;
-  overflow: hidden;
+  overflow: visible;
+  min-width: 0;
+}
+header.desk-chrome .nav-cluster > .min-w-0.flex-1 {
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
 }
 header.desk-chrome nav {
   flex-wrap: nowrap !important;
   overflow-x: auto;
   overflow-y: hidden;
   max-width: 100%;
+}
+@media (max-width: 1279px) {
+  header.desk-chrome .nav-cluster {
+    flex-wrap: wrap;
+    row-gap: 0.2rem;
+  }
+  header.desk-chrome .tw-hud-row {
+    margin-left: auto;
+  }
 }
 
 .board-root {
@@ -1799,6 +1815,9 @@ html[data-finish="felt"] .bg-surface,
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.25rem;
 }
+@media (min-width: 640px) {
+  .tw-pad { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
 .tw-tile {
   min-height: 3.35rem;
   padding: 0.35rem 0.2rem;
@@ -1839,21 +1858,25 @@ html[data-finish="felt"] .bg-surface,
 }
 .tw-next-job {
   display: inline-flex;
-  max-width: 7.5rem;
+  max-width: 2.75rem;
   min-height: 2.75rem;
   flex: 0 0 auto;
   align-items: center;
+  justify-content: center;
   gap: 0.45rem;
   border-radius: 0.75rem;
-  padding: 0.2rem 0.55rem;
+  padding: 0.2rem 0.45rem;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
 }
-@media (min-width: 640px) {
-  .tw-next-job { max-width: 16.5rem; }
-  .tw-pad { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+@media (min-width: 1280px) {
+  .tw-next-job {
+    max-width: 14rem;
+    justify-content: flex-start;
+    padding: 0.2rem 0.55rem;
+  }
 }
 
 /* Nested plates step radius down. No white hover fills. */

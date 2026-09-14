@@ -67,3 +67,11 @@ export function sectionOf(view: string): AppSection {
 }
 
 export type NavTab = { id: string; label: string; on: boolean; onClick: () => void; hidden?: boolean };
+
+/** Top chrome: never dump Admin rooms onto the HUD row. Those live on the Admin rail. */
+export function chromeTabs(section: AppSection, dashPins: NavTab[], rest: NavTab[], phone: boolean): NavTab[] {
+  if (section === "admin" || section === "crew" || section === "roster") {
+    return phone ? [] : dashPins;
+  }
+  return phone ? rest : [...dashPins, ...rest.filter((tab) => tab.id !== "wall" && tab.id !== "teach" && tab.id !== "deck")];
+}

@@ -44,9 +44,10 @@ export const NextJobChip = memo(function NextJobChip({
       className={cn("tw-next-job tw-tap", tone)}
     >
       <Icon className="size-5 shrink-0" strokeWidth={2.3} aria-hidden />
-      <span className="min-w-0 text-left">
+      <span className="sr-only">{`${job.label} · ${job.hint}`}</span>
+      <span className="hidden min-w-0 text-left xl:block">
         <span className="block truncate leading-tight">{job.label}</span>
-        <span className="hidden truncate font-mono text-[10px] font-medium normal-case tracking-normal opacity-80 sm:block">{job.hint}</span>
+        <span className="truncate font-mono text-[10px] font-medium normal-case tracking-normal opacity-80">{job.hint}</span>
       </span>
     </button>
   );

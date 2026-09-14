@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.48 — 2026-09-14
+
+- Top chrome: Admin rooms stay on the Admin rail. Wall / Teach / Deck stay on the HUD. SchoolTool is an icon until widescreen. Chromebook mid-width no longer clips the top buttons.
+
 ## 1.92.47 — 2026-09-14
 
 - Teach Hang: paste a Drive file, Google Slides/Doc/Sheet, YouTube, or Canva on this hour. Anyone-with-the-link. Deck plays it before cleanup.
