@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.45. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.46. -->
 
 # TechWorks changelog
 
-App version **1.92.45**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.46**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.46 — 2026-09-14
+
+- Forward compat: unknown student/config fields survive compact, migrate, and unpack. Newer schema stamps are not downgraded. Cloud packs still open if the vault is there.
 
 ## 1.92.45 — 2026-09-14
 

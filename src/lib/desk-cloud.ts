@@ -3,6 +3,7 @@ import { packVault, unpackVault, persistVault, applyVaultClub, type VaultBundle 
 import { loadDeck, saveDeck, type DeckPack } from "@/lib/deck-store";
 import type { EconomyFile } from "@/lib/economy";
 import { isDemoStudentId, stripFakeDemo } from "@/lib/demo";
+import { cloudPackOpen } from "@/lib/compat";
 
 const KEY = "techworks-desk-key";
 const ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -12,11 +13,12 @@ export type CloudStatus = "off" | "this-pc" | "saving" | "saved" | "behind" | "e
 
 export type CloudPack = {
   kind: "techworks-cloud";
-  v: 1;
+  v: number;
   saved: string;
   app: string;
   vault: VaultBundle;
   deck: DeckPack;
+  [extra: string]: unknown;
 };
 
 export type CloudMeta = {
@@ -143,7 +145,7 @@ async function decryptPack(salt: string, iv: string, data: string, pass: string)
       unb64(data) as BufferSource,
     );
     const pack = JSON.parse(new TextDecoder().decode(plain)) as CloudPack;
-    if (pack?.kind !== "techworks-cloud" || !pack.vault) return null;
+    if (!cloudPackOpen(pack)) return null;
     return pack;
   } catch {
     return null;

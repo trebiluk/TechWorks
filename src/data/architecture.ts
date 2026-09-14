@@ -249,6 +249,31 @@ export const ARCH_SECTIONS: ArchSection[] = [
       "Live URL tw.kulibert.net ← Cloudflare Pages kulibert-desk ← github.com/trebiluk/TechWorks main. Public repo ships students: [].",
     ],
   },
+  {
+    id: "compat",
+    title: "Forward compatibility (this app will keep changing)",
+    lead: "New fields are additive. An older build must still open a newer desk without wiping what it does not understand. Schema never goes backwards.",
+    tables: [
+      {
+        caption: "Rules",
+        head: ["Move", "What happens"],
+        rows: [
+          ["Add a student or config field", "migrate, compact, pack, unpack, and cloud keep it"],
+          ["Bump app version", "chip + changelog. Desk schema 12 stays until the pack shape changes"],
+          ["Newer schema on this PC", "open it, keep the higher schema stamp, keep extra keys"],
+          ["Older localStorage key", "still read techworks-desk-v11 … v12"],
+          ["Cloud pack v2+", "open if kind is techworks-cloud and vault is present"],
+          ["New module", "add to FEATURES; default off if it is a game. JSON modules map is a bag"],
+          ["Rename or delete a field", "needs a real migrate step — never silent drop"],
+        ],
+      },
+    ],
+    never: [
+      "Do not whitelist-copy students in compact. Unknown keys ride.",
+      "Do not stamp schema 12 over a 13 pack.",
+      "Do not auto-push an empty PC over a named cloud roster.",
+    ],
+  },
 ];
 
 export function architectureMarkdown(): string {

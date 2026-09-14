@@ -10,6 +10,7 @@ import { ensureStudentIds } from "@/lib/ids";
 import { loadClub, saveClub, type ClubFile } from "@/lib/club";
 import { emptyRoster, pickDesk } from "@/lib/vault-core";
 import { stripFakeDemo } from "@/lib/demo";
+import { deskStorageKeys, openSchema } from "@/lib/compat";
 
 export { emptyRoster, pickDesk };
 
@@ -27,7 +28,7 @@ function downloadBlob(name: string, body: string, type = "application/json") {
 export const DESK_SCHEMA = 12;
 export const PACK_KIND = "techworks-desk";
 export const VAULT_KIND = "techworks-vault";
-export const LS_KEYS = ["techworks-desk-v12", "techworks-desk-v11"] as const;
+export const LS_KEYS = deskStorageKeys(DESK_SCHEMA);
 const CURRENT = "desk:current";
 const BACKUP_PREFIX = "desk:backup:";
 const SNAP_PREFIX = "desk:snap:";
@@ -64,14 +65,15 @@ export type SnapInfo = {
 
 export function packDesk(file: EconomyFile): DeskPack {
   const saved = new Date().toISOString();
+  const schema = openSchema(file.meta.schema, DESK_SCHEMA);
   return {
     kind: PACK_KIND,
-    schema: DESK_SCHEMA,
+    schema,
     app: APP_VERSION,
     saved,
     file: {
       ...file,
-      meta: { ...file.meta, schema: DESK_SCHEMA, savedAt: saved },
+      meta: { ...file.meta, schema, savedAt: saved },
     },
   };
 }
@@ -134,7 +136,7 @@ export function migrateDesk(file: EconomyFile): EconomyFile {
       ...(next.meta.config.cycleGoals ?? {}),
     };
   }
-  next.meta.schema = DESK_SCHEMA;
+  next.meta.schema = openSchema(next.meta.schema, DESK_SCHEMA);
   return ensureSections(ensureProjects(next));
 }
 

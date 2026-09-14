@@ -2,6 +2,7 @@ import type { EconomyFile, RawStudent } from "@/lib/economy";
 import { weekOn, todayIso } from "@/lib/calendar";
 import { packMarks, trimTape } from "@/lib/tape";
 import { compactPolls } from "@/lib/polls";
+import { STUDENT_KNOWN, withUnknown } from "@/lib/compat";
 
 function emptyMap(v: unknown): boolean {
   if (!v || typeof v !== "object") return true;
@@ -84,7 +85,7 @@ export function compactStudent(s: RawStudent): RawStudent {
   if (clubDays) next.clubDays = clubDays as RawStudent["clubDays"];
   const groups = slimMap(s.groups as Record<string, unknown> | undefined);
   if (groups) next.groups = groups as RawStudent["groups"];
-  return next;
+  return withUnknown(next, s, STUDENT_KNOWN);
 }
 
 /** Keep this week, last 10 school days, and any day you already planned. */

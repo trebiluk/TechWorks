@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.46 — 2026-09-14
+
+- Forward compat: unknown student/config fields survive compact, migrate, and unpack. Newer schema stamps are not downgraded. Cloud packs still open if the vault is there.
+
 ## 1.92.45 — 2026-09-14
 
 - Docs: Admin → Docs is the architecture map (Plan → Teach → Deck → Wall, four number systems, Club / Hall, store). Download from Docs or Help.

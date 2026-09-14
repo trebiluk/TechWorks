@@ -1,6 +1,6 @@
-# TechWorks Help · v1.92.45
+# TechWorks Help · v1.92.46
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.45.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.46.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
@@ -86,7 +86,7 @@ Dash → Deck plays today’s Teach plan. Present is play-only (even with PIN). 
 
 ### Copyright
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.45.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.46.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
@@ -100,7 +100,7 @@ Bottom dock: Dash · Learn · Crew · Rosters · Admin (PIN on the last three). 
 
 ### Version
 
-The floating chip is v1.92.45. Same string as About, Help, and the changelog header. Product name TECHWORKS™. Workshop zips labeled 1.0 or 2.1.0 are not live.
+The floating chip is v1.92.46. Same string as About, Help, and the changelog header. Product name TECHWORKS™. Workshop zips labeled 1.0 or 2.1.0 are not live.
 
 ### Describe mode / tips
 
@@ -124,7 +124,7 @@ The cog always opens Admin (Today, Day, Records, Crews, Theme, Docs). It does no
 
 ### Where the data lives
 
-Three copies, none of them is live Google Drive sync. 1) This PC — the gradebook (auto-save). 2) Cloud — encrypted blob, unlocked by the desk key you mint in Records → Cloud. Same key on the other room. 3) Drive folder — JSON + Google book you download; File → Open as a Sheet. The PIN is not a backup. The desk key is not the PIN. Losing the desk key means you cannot decrypt the cloud copy — keep the JSON.
+Three copies, none of them is live Google Drive sync. 1) This PC — the gradebook (auto-save). 2) Cloud — encrypted blob, unlocked by the desk key you mint in Records → Cloud. Same key on the other room. 3) Drive folder — JSON + Google book you download; File → Open as a Sheet. The PIN is not a backup. The desk key is not the PIN. New fields stay on the desk when the app updates — compact will not wipe what it does not know.
 
 ### App map (architecture)
 

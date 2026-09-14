@@ -562,7 +562,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "Where the data lives",
     tags: ["save", "local", "cloud", "drive", "web", "desk key", "google"],
-    body: "Three copies, none of them is live Google Drive sync. 1) This PC — the gradebook (auto-save). 2) Cloud — encrypted blob, unlocked by the desk key you mint in Records → Cloud. Same key on the other room. 3) Drive folder — JSON + Google book you download; File → Open as a Sheet. The PIN is not a backup. The desk key is not the PIN. Losing the desk key means you cannot decrypt the cloud copy — keep the JSON.",
+    body: "Three copies, none of them is live Google Drive sync. 1) This PC — the gradebook (auto-save). 2) Cloud — encrypted blob, unlocked by the desk key you mint in Records → Cloud. Same key on the other room. 3) Drive folder — JSON + Google book you download; File → Open as a Sheet. The PIN is not a backup. The desk key is not the PIN. New fields stay on the desk when the app updates — compact will not wipe what it does not know.",
   },
   {
     id: "app-map",

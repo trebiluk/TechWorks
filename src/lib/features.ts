@@ -30,7 +30,7 @@ export const FEATURES = [
 export type FeatureId = (typeof FEATURES)[number]["id"];
 export type FeatureGroup = (typeof FEATURES)[number]["group"];
 
-/** Off until you tap them. Must match the real chrome (guide, contrast, games). */
+/** Off until you tap them. Must match the real chrome (guide, contrast, games). New ids: add here, default off if it is a game. Never rename an old id. */
 const DEFAULT_OFF: FeatureId[] = ["contrast", "portal", "store", "stocks", "nytech", "ambient", "debug", "lucky", "tips"];
 
 export function featureOn(file: EconomyFile, id: FeatureId): boolean {
