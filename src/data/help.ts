@@ -555,7 +555,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "The cog is Settings",
     tags: ["settings", "gear", "cog", "admin", "arrange"],
-    body: "The cog always opens Admin (Today, Day, Records, Crews, Theme). It does not jump you off Deck or flash “this page is this page.” Arrange the projector from Wall → Arrange wall. Teach → Arrange plates. Deck → Edit slides. Unlock first if the lock is on.",
+    body: "The cog always opens Admin (Today, Day, Records, Crews, Theme, Docs). It does not jump you off Deck or flash “this page is this page.” Arrange the projector from Wall → Arrange wall. Teach → Arrange plates. Deck → Edit slides. Unlock first if the lock is on.",
   },
   {
     id: "data-copies",
@@ -563,6 +563,13 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Where the data lives",
     tags: ["save", "local", "cloud", "drive", "web", "desk key", "google"],
     body: "Three copies, none of them is live Google Drive sync. 1) This PC — the gradebook (auto-save). 2) Cloud — encrypted blob, unlocked by the desk key you mint in Records → Cloud. Same key on the other room. 3) Drive folder — JSON + Google book you download; File → Open as a Sheet. The PIN is not a backup. The desk key is not the PIN. Losing the desk key means you cannot decrypt the cloud copy — keep the JSON.",
+  },
+  {
+    id: "app-map",
+    category: "Start",
+    title: "App map (architecture)",
+    tags: ["architecture", "map", "docs", "plan book", "teach", "deck", "wall", "club", "hall", "skills", "store"],
+    body: "Admin → Docs. Plan book and Teach write the hour; Deck and Wall play it. Crew 3/2/1 is not a skill 1–4. Wallet $ never goes on the Family sheet. Club and Hall are after-school — not Tech effort. Download architecture from Docs or from this Help panel.",
   },
   {
     id: "teach-plan",
@@ -576,7 +583,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Roles",
     title: "Shop PC and second room",
     tags: ["it", "shop pc", "cloud", "desk key", "deploy", "chromebook"],
-    body: "The shop PC is the writer. A second computer is a reader until you Pull with the desk key. Empty browser will not overwrite a cloud roster. Live class URL is tw.kulibert.net (Cloudflare Pages ← GitHub trebiluk/TechWorks main). Public GitHub ships students: []. Chromebooks are the tap pad; iPad camera is prints. Do not print the teacher PIN. Crew 2222 stays off the student About card.",
+    body: "The shop PC is the writer. A second computer is a reader until you Pull with the desk key. Empty browser will not overwrite a cloud roster. Live class URL is tw.kulibert.net (Cloudflare Pages ← GitHub trebiluk/TechWorks main). Public GitHub ships students: []. Chromebooks are the tap pad; iPad camera is prints. Do not print the teacher PIN. Crew 2222 stays off the student About card. Admin → Docs is the architecture map.",
   },
 ];
 

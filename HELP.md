@@ -1,6 +1,6 @@
-# TechWorks Help · v1.92.44
+# TechWorks Help · v1.92.45
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.44.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.45.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
@@ -86,7 +86,7 @@ Dash → Deck plays today’s Teach plan. Present is play-only (even with PIN). 
 
 ### Copyright
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.44.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.45.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
@@ -100,7 +100,7 @@ Bottom dock: Dash · Learn · Crew · Rosters · Admin (PIN on the last three). 
 
 ### Version
 
-The floating chip is v1.92.44. Same string as About, Help, and the changelog header. Product name TECHWORKS™. Workshop zips labeled 1.0 or 2.1.0 are not live.
+The floating chip is v1.92.45. Same string as About, Help, and the changelog header. Product name TECHWORKS™. Workshop zips labeled 1.0 or 2.1.0 are not live.
 
 ### Describe mode / tips
 
@@ -120,11 +120,15 @@ Admin → Theme (PIN). Default stays dark (navy / cyan / violet). Never a white 
 
 ### The cog is Settings
 
-The cog always opens Admin (Today, Day, Records, Crews, Theme). It does not jump you off Deck or flash “this page is this page.” Arrange the projector from Wall → Arrange wall. Teach → Arrange plates. Deck → Edit slides. Unlock first if the lock is on.
+The cog always opens Admin (Today, Day, Records, Crews, Theme, Docs). It does not jump you off Deck or flash “this page is this page.” Arrange the projector from Wall → Arrange wall. Teach → Arrange plates. Deck → Edit slides. Unlock first if the lock is on.
 
 ### Where the data lives
 
 Three copies, none of them is live Google Drive sync. 1) This PC — the gradebook (auto-save). 2) Cloud — encrypted blob, unlocked by the desk key you mint in Records → Cloud. Same key on the other room. 3) Drive folder — JSON + Google book you download; File → Open as a Sheet. The PIN is not a backup. The desk key is not the PIN. Losing the desk key means you cannot decrypt the cloud copy — keep the JSON.
+
+### App map (architecture)
+
+Admin → Docs. Plan book and Teach write the hour; Deck and Wall play it. Crew 3/2/1 is not a skill 1–4. Wallet $ never goes on the Family sheet. Club and Hall are after-school — not Tech effort. Download architecture from Docs or from this Help panel.
 
 ## Roles
 
@@ -158,7 +162,7 @@ A sub never opens this app. You tap SUB. That date is void. The cycle does not r
 
 ### Shop PC and second room
 
-The shop PC is the writer. A second computer is a reader until you Pull with the desk key. Empty browser will not overwrite a cloud roster. Live class URL is tw.kulibert.net (Cloudflare Pages ← GitHub trebiluk/TechWorks main). Public GitHub ships students: []. Chromebooks are the tap pad; iPad camera is prints. Do not print the teacher PIN. Crew 2222 stays off the student About card.
+The shop PC is the writer. A second computer is a reader until you Pull with the desk key. Empty browser will not overwrite a cloud roster. Live class URL is tw.kulibert.net (Cloudflare Pages ← GitHub trebiluk/TechWorks main). Public GitHub ships students: []. Chromebooks are the tap pad; iPad camera is prints. Do not print the teacher PIN. Crew 2222 stays off the student About card. Admin → Docs is the architecture map.
 
 ## Dashboard
 

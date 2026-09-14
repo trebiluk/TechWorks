@@ -1,6 +1,6 @@
 # TechWorks menu tree
 
-Live desk **v1.92.44**. Bottom dock: **Dash · Learn · Crew · Rosters · Admin**.
+Live desk **v1.92.45**. Bottom dock: **Dash · Learn · Crew · Rosters · Admin**.
 
 Legend: **PIN** = teacher lock (the PIN you set — never 1111). **2222** = crew pad only. **Wall** = projector-safe.
 
@@ -56,6 +56,6 @@ Yearbook of aliases. Legal names in Admin → Records.
 
 ## 5. ADMIN  (PIN)
 
-Today · Day · Records (Backups / Names / Cloud) · Crews · Theme · About.
+Today · Day · Records (Backups / Names / Cloud) · Crews · Theme · About · **Docs** (architecture map).
 
 Shop PC is the writer. Cloud desk key is not the PIN. Public GitHub ships `students: []`.

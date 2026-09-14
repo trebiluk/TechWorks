@@ -22,6 +22,7 @@ import { ADMIN_GROUPS, PANE_LABEL, groupOfPane } from "@/lib/admin-nav";
 import { cloudStatus } from "@/lib/desk-cloud";
 import { markSchooltoolOpened } from "@/lib/workflow";
 import { VisitDesk } from "@/components/visit-chip";
+import { DocsBoard } from "@/components/docs-board";
 
 type Jump = (period: number, crewKey?: string, date?: string) => void;
 
@@ -203,6 +204,8 @@ export function AdminHub({
           <CloudBoard file={file} unlocked={unlocked} onNeedPin={() => onNeedPin?.()} onLoad={onChange} />
         ) : pane === "wall" ? (
           wallDesk ?? <p className="p-3 text-sm text-muted">Unlock to edit the wall. Dash → Wall stays the projector.</p>
+        ) : pane === "docs" ? (
+          <DocsBoard />
         ) : pane !== "today" ? (
           <SettingsBody
             file={file}

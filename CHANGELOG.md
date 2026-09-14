@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.44. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.45. -->
 
 # TechWorks changelog
 
-App version **1.92.44**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.45**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.45 — 2026-09-14
+
+- Docs: Admin → Docs is the architecture map (Plan → Teach → Deck → Wall, four number systems, Club / Hall, store). Download from Docs or Help.
 
 ## 1.92.44 — 2026-09-14
 

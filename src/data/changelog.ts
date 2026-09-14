@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.45 — 2026-09-14
+
+- Docs: Admin → Docs is the architecture map (Plan → Teach → Deck → Wall, four number systems, Club / Hall, store). Download from Docs or Help.
+
 ## 1.92.44 — 2026-09-14
 
 - Help and technical manual catch up: every role (students, crew leads, families, teacher, sub, IT), honest PINs, Teach → Deck → Wall, three copies, cog = Settings. Download both from **?**.
