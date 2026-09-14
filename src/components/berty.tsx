@@ -1,6 +1,7 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import { BERTY_LABEL, BERTY_SRC, bertyPose, showBerty, type BertyCue, type BertyPose } from "@/lib/berty";
-import { BERTY_LOOK_EVENT, bertyLookVars, loadBertyLook, type BertyLook } from "@/lib/berty-look";
+import { BERTY_LOOK_EVENT, bertyBodyHex, bertyLookVars, loadBertyLook, type BertyLook } from "@/lib/berty-look";
+import { paintBertySvg } from "@/lib/berty-paint";
 import { BertyGear } from "@/components/berty-gear";
 import { cn } from "@/lib/utils";
 
@@ -11,6 +12,36 @@ const H: Record<"icon" | "sm" | "md" | "lg" | "xl", string> = {
   lg: "5.75rem",
   xl: "8.25rem",
 };
+
+const RAW = new Map<string, string>();
+
+function useBertySvg(pose: BertyPose, alert: boolean | undefined, body: string): string {
+  const src = BERTY_SRC[alert ? "point" : pose];
+  const [svg, setSvg] = useState("");
+  useEffect(() => {
+    let live = true;
+    const paint = (raw: string) => {
+      if (live) setSvg(paintBertySvg(raw, body));
+    };
+    const hit = RAW.get(src);
+    if (hit) {
+      paint(hit);
+      return () => {
+        live = false;
+      };
+    }
+    void fetch(src)
+      .then((r) => r.text())
+      .then((t) => {
+        RAW.set(src, t);
+        paint(t);
+      });
+    return () => {
+      live = false;
+    };
+  }, [src, body]);
+  return svg;
+}
 
 function useBertyLook(): BertyLook {
   const [look, setLook] = useState<BertyLook>(loadBertyLook);
@@ -45,7 +76,8 @@ export function Berty({
 }) {
   const saved = useBertyLook();
   const look = lookIn ?? saved;
-  const src = BERTY_SRC[alert ? "point" : pose];
+  const body = bertyBodyHex(look);
+  const svg = useBertySvg(pose, alert, body);
   const vars = bertyLookVars(look) as CSSProperties;
   const figure = (
     <span
@@ -54,15 +86,18 @@ export function Berty({
       data-size={size}
       style={{ ...vars, ["--berty-h" as string]: H[size] }}
     >
-      <img
-        src={src}
-        alt=""
-        title={alert ? "Berty · Cleanup" : `Berty · ${BERTY_LABEL[pose]}`}
-        decoding="async"
-        fetchPriority={alert ? "high" : "low"}
-        draggable={false}
-        className="berty-seat"
-      />
+      {svg ? (
+        <span className="berty-seat" aria-hidden dangerouslySetInnerHTML={{ __html: svg }} />
+      ) : (
+        <img
+          src={BERTY_SRC[alert ? "point" : pose]}
+          alt=""
+          title={alert ? "Berty · Cleanup" : `Berty · ${BERTY_LABEL[pose]}`}
+          decoding="async"
+          draggable={false}
+          className="berty-seat"
+        />
+      )}
       {size === "icon" ? null : <BertyGear look={look} />}
     </span>
   );

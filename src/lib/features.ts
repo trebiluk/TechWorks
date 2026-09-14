@@ -22,7 +22,7 @@ export const FEATURES = [
   { id: "prints", label: "Prints", group: "Games", hint: "3D print collections, trades, gallery" },
   { id: "stocks", label: "Stocks", group: "Games", hint: "Market minigame" },
   { id: "lucky", label: "Lucky Bench", group: "Games", hint: "Die + Friday pot. Class cash only." },
-  { id: "portal", label: "Worker portal", group: "Games", hint: "Off. Wall is the FERPA view." },
+  { id: "portal", label: "Family web", group: "Games", hint: "Globe · ?web=1. Off is fine — the globe still opens it." },
   { id: "achievements", label: "Achievements", group: "Extra", hint: "Crew-lead XP lines" },
   { id: "debug", label: "Fake data", group: "Extra", hint: "Paints every crew board. Not saved." },
 ] as const;

@@ -34,7 +34,7 @@ export const BERTY_HATS = [
 ] as const;
 
 export const BERTY_HANDS = [
-  { id: "none", label: "Empty" },
+  { id: "none", label: "Bare" },
   { id: "wrench", label: "Wrench" },
   { id: "broom", label: "Broom" },
   { id: "clip", label: "Clipboard" },
@@ -107,11 +107,18 @@ export function saveBertyLook(next: BertyLook) {
 
 export function bertyLookVars(look: BertyLook): Record<string, string> {
   const ink = pick(BERTY_INKS, look.ink, BERTY_INKS[0]);
+  const body = look.finish === "gild" ? "#FDAE3F" : ink.swatch;
   return {
     "--berty-hue": `${ink.hue}deg`,
     "--berty-sat": String(ink.sat),
     "--berty-bright": String(ink.bright),
+    "--berty-body": body,
   };
+}
+
+export function bertyBodyHex(look: BertyLook): string {
+  if (look.finish === "gild") return "#FDAE3F";
+  return pick(BERTY_INKS, look.ink, BERTY_INKS[0]).swatch;
 }
 
 export function lookCounts(): { inks: number; kits: number; hats: number; hands: number; finishes: number; combos: number } {

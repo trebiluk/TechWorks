@@ -6,6 +6,11 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.50 — 2026-09-14
+
+- Family web: globe on the HUD, ?web=1. Parents, crew leaders, students. Aliases, skill charts, family sheet. No wallet.
+- Berty HAND LAW: two claws on every full-body pose, overflow visible, point pose had a missing arm. Colors are the swatch, not a hue-rotate guess. Bare means no tool — the hands stay.
+
 ## 1.92.49 — 2026-09-14
 
 - Prints: Gallery / Hold / Trade / Archive / Bin. Buy lands on the kid. Official smalls-for-large plus unofficial prove trades. 3D glyph, iPad Take photo, next size drafts itself.

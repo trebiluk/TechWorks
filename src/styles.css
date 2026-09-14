@@ -79,37 +79,27 @@ html[data-edit="on"] .edit-field {
   aspect-ratio: 200 / 260;
   align-items: flex-end;
   justify-content: center;
+  overflow: visible;
 }
 .berty-figure .berty-seat {
   height: 100%;
   width: auto;
-  filter:
-    hue-rotate(var(--berty-hue, 0deg))
-    saturate(var(--berty-sat, 1))
-    brightness(var(--berty-bright, 1))
-    drop-shadow(0 8px 12px color-mix(in oklab, #000 42%, transparent));
+  overflow: visible;
+}
+.berty-figure .berty-seat svg {
+  display: block;
+  height: 100%;
+  width: auto;
+  overflow: visible;
 }
 .berty-figure[data-finish="matte"] .berty-seat {
-  filter:
-    hue-rotate(var(--berty-hue, 0deg))
-    saturate(calc(var(--berty-sat, 1) * 0.5))
-    brightness(var(--berty-bright, 1))
-    contrast(0.92)
-    drop-shadow(0 6px 10px color-mix(in oklab, #000 35%, transparent));
+  filter: saturate(0.7) brightness(0.96) drop-shadow(0 6px 10px color-mix(in oklab, #000 35%, transparent));
 }
 .berty-figure[data-finish="gild"] .berty-seat {
-  filter:
-    hue-rotate(195deg)
-    saturate(1.35)
-    brightness(1.12)
-    drop-shadow(0 0 10px #FDAE3F);
+  filter: drop-shadow(0 0 10px #FDAE3F);
 }
 .berty-figure[data-finish="outline"] .berty-seat {
-  filter:
-    hue-rotate(var(--berty-hue, 0deg))
-    saturate(var(--berty-sat, 1))
-    contrast(1.28)
-    drop-shadow(0 0 0 2px #f7f9ff);
+  filter: contrast(1.15) drop-shadow(0 0 0 2px #f7f9ff);
 }
 .berty-gear {
   position: absolute;
@@ -126,6 +116,7 @@ html[data-edit="on"] .edit-field {
   flex-shrink: 0;
   min-width: 3.5rem;
   padding-bottom: 0;
+  overflow: visible;
 }
 .berty-badge {
   display: grid;

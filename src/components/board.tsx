@@ -1,7 +1,7 @@
 "use client";
 
 import { lazy, startTransition, Suspense, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { CircleHelp, Search, Settings } from "lucide-react";
+import { CircleHelp, Globe, Search, Settings } from "lucide-react";
 import { TwWordmark } from "@/components/tw-mark";
 import snapshot from "@/data/economy.json";
 import type { EconomyFile } from "@/lib/economy";
@@ -56,7 +56,7 @@ const Dossier = lazy(() => import("@/components/dossier").then((m) => ({ default
 const HelpPanel = lazy(() => import("@/components/help").then((m) => ({ default: m.HelpPanel })));
 const StoreBoard = lazy(() => import("@/components/store-board").then((m) => ({ default: m.StoreBoard })));
 const PrintsBoard = lazy(() => import("@/components/prints-board").then((m) => ({ default: m.PrintsBoard })));
-const WorkerPortal = lazy(() => import("@/components/portal").then((m) => ({ default: m.WorkerPortal })));
+const FamilyWeb = lazy(() => import("@/components/family-web").then((m) => ({ default: m.FamilyWeb })));
 const StudyHallBoard = lazy(() => import("@/components/study-hall-board").then((m) => ({ default: m.StudyHallBoard })));
 const StudyHallDash = lazy(() => import("@/components/study-hall-dash").then((m) => ({ default: m.StudyHallDash })));
 const ClubBoard = lazy(() => import("@/components/club-board").then((m) => ({ default: m.ClubBoard })));
@@ -196,8 +196,10 @@ export function Board() {
         flashMsg("Prints is off · Admin");
         return;
       }
-      if (next === "portal" && !featureOn(file, "portal")) {
-        flashMsg("Portal is off · Admin");
+      if (next === "portal") {
+        const u = new URL(window.location.href);
+        u.searchParams.set("web", "1");
+        window.location.assign(u.toString());
         return;
       }
       if (next === "polls" && !featureOn(file, "polls")) {
@@ -311,7 +313,7 @@ export function Board() {
     try {
       const q = new URLSearchParams(window.location.search);
       setEmbed(q.get("embed") === "1");
-      setPortalMode(q.get("portal") === "1");
+      setPortalMode(q.get("portal") === "1" || q.get("web") === "1");
       setDemoId(storedDemo());
       setDescribeOn(storedDescribe());
       setRankBoard(window.localStorage.getItem(RANK_KEY) === "perk" ? "perk" : "skill");
@@ -712,6 +714,13 @@ export function Board() {
                 <button type="button" title={t("How this class works")} aria-label={t("Help")} onClick={() => setHelpOpen(true)} className="tw-hud-btn tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-xl text-fg hover:bg-elevated">
                   <CircleHelp className="size-5" />
                 </button>
+                <button type="button" title="Family web" aria-label="Family web" onClick={() => {
+                  const u = new URL(window.location.href);
+                  u.searchParams.set("web", "1");
+                  window.location.assign(u.toString());
+                }} className="tw-hud-btn tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-xl text-fg hover:bg-elevated">
+                  <Globe className="size-5" />
+                </button>
                 <LangChip />
                 {unlocked ? (
                 <CloudChip
@@ -866,7 +875,7 @@ export function Board() {
           }}
         />
       ) : view === "portal" || portalMode ? (
-        <WorkerPortal file={wallFile} />
+        <FamilyWeb file={wallFile} />
       ) : view === "skills" || view === "projects" || view === "grades" ? (
         <SkillsBoard
           file={wallFile}

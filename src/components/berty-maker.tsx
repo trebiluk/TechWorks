@@ -45,7 +45,7 @@ export function BertyMaker({ unlocked }: { unlocked: boolean }) {
   return (
     <section className="mt-4 space-y-3" data-berty-maker>
       <div className="flex flex-wrap items-end gap-4">
-        <figure className="flex min-h-[12rem] min-w-[8rem] items-end justify-center rounded-2xl bg-elevated p-3">
+        <figure className="flex min-h-[12rem] min-w-[8rem] items-end justify-center overflow-visible rounded-2xl bg-elevated p-3">
           <Berty pose={pose} size="xl" look={look} />
         </figure>
         <div className="min-w-0 flex-1">

@@ -150,7 +150,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "BertyBot",
     tags: ["berty", "pose", "cleanup", "teach"],
     wall: true,
-    body: "Berty is the workshop mascot. He waves at ENTER, thinks at LISTEN, stands for CREW WORK, points at CLEAN UP and between classes, and celebrates SHARE / class reward. Cleanup and passing always show him, even if the Berty module is off. Open Berty from the version chip: color, kit, hat, hands, finish — unlock to hang that look on the wall.",
+    body: "Berty is the workshop mascot. He waves at ENTER, thinks at LISTEN, stands for CREW WORK, points at CLEAN UP and between classes, and celebrates SHARE / class reward. Both claws stay on every pose — Bare means no tool, not no hands. Color chips paint the metal, they do not hue-rotate. Cleanup and passing always show him. Open Berty from the version chip.",
   },
   {
     id: "dash-teach",
@@ -224,7 +224,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Family path",
     tags: ["parent", "family"],
     wall: true,
-    body: "Tap an alias on the wall or Find. Family sheet: one project mark, skills in words, time in class listed but not averaged. No wallet, stock, or Lucky Bench. Legal name only after the teacher unlocks. Google Site embed never shows last names.",
+    body: "The globe is Family web (?web=1). Parents, crew leaders, and students enter with the class web code (Settings → Worker portal PIN, default 2627 — not the teacher PIN). Aliases only. Charts are skills in words. Family sheet has the project mark. Wallet and Lucky stay off. Copy link from that page.",
   },
   {
     id: "roles-sub",
@@ -497,9 +497,9 @@ export const HELP_ARTICLES: HelpArticle[] = [
   {
     id: "portal",
     category: "Privacy",
-    title: "Worker portal PIN",
-    tags: ["portal", "student", "pin", "2627", "class id"],
-    body: "Students open the class with a class PIN (default 2627, change in Settings). Then they tap their alias. The badge shows XP, perks, week codes, and a Class ID — not a legal name. Google Site page: same URL with ?portal=1. This is a privacy gate and a bit of theater: names were already off the wall.",
+    title: "Family web code",
+    tags: ["web", "portal", "family", "crew", "student", "pin", "2627"],
+    body: "Globe on the HUD, or ?web=1. Class web code is the portal PIN (default 2627 — change in Settings). Not the teacher PIN. Aliases, skill charts, family sheet. No wallet. Crew tab is aliases in that crew.",
   },
   {
     id: "ferpa",

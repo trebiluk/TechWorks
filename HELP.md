@@ -1,6 +1,6 @@
-# TechWorks Help · v1.92.49
+# TechWorks Help · v1.92.50
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.49.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.50.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
@@ -68,7 +68,7 @@ Open a worker (tap a name) → Family. One project mark. Skills in plain words. 
 
 ### BertyBot
 
-Berty is the workshop mascot. He waves at ENTER, thinks at LISTEN, stands for CREW WORK, points at CLEAN UP and between classes, and celebrates SHARE / class reward. Cleanup and passing always show him, even if the Berty module is off. Open Berty from the version chip: color, kit, hat, hands, finish — unlock to hang that look on the wall.
+Berty is the workshop mascot. He waves at ENTER, thinks at LISTEN, stands for CREW WORK, points at CLEAN UP and between classes, and celebrates SHARE / class reward. Both claws stay on every pose — Bare means no tool, not no hands. Color chips paint the metal, they do not hue-rotate. Cleanup and passing always show him. Open Berty from the version chip.
 
 ### Cleanup
 
@@ -86,7 +86,7 @@ Dash → Deck plays today’s Teach plan. Present is play-only (even with PIN). 
 
 ### Copyright
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.49.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.50.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
@@ -100,7 +100,7 @@ Bottom dock: Dash · Learn · Crew · Rosters · Admin (PIN on the last three). 
 
 ### Version
 
-The floating chip is v1.92.49. Same string as About, Help, and the changelog header. Product name TECHWORKS™. Workshop zips labeled 1.0 or 2.1.0 are not live.
+The floating chip is v1.92.50. Same string as About, Help, and the changelog header. Product name TECHWORKS™. Workshop zips labeled 1.0 or 2.1.0 are not live.
 
 ### Describe mode / tips
 
@@ -154,7 +154,7 @@ IN once a day = +$10 and +2 XP. Activities on the club board. Never mixes into c
 
 ### Family path
 
-Tap an alias on the wall or Find. Family sheet: one project mark, skills in words, time in class listed but not averaged. No wallet, stock, or Lucky Bench. Legal name only after the teacher unlocks. Google Site embed never shows last names.
+The globe is Family web (?web=1). Parents, crew leaders, and students enter with the class web code (Settings → Worker portal PIN, default 2627 — not the teacher PIN). Aliases only. Charts are skills in words. Family sheet has the project mark. Wallet and Lucky stay off. Copy link from that page.
 
 ### Sub day
 
@@ -332,9 +332,9 @@ BertyBot is the workshop mascot — cleanup, enter/listen/work, never a grade or
 
 ## Privacy
 
-### Worker portal PIN
+### Family web code
 
-Students open the class with a class PIN (default 2627, change in Settings). Then they tap their alias. The badge shows XP, perks, week codes, and a Class ID — not a legal name. Google Site page: same URL with ?portal=1. This is a privacy gate and a bit of theater: names were already off the wall.
+Globe on the HUD, or ?web=1. Class web code is the portal PIN (default 2627 — change in Settings). Not the teacher PIN. Aliases, skill charts, family sheet. No wallet. Crew tab is aliases in that crew.
 
 ### FERPA / what gets published
 
