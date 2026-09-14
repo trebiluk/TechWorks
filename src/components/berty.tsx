@@ -1,4 +1,7 @@
+import { useEffect, useState, type CSSProperties } from "react";
 import { BERTY_LABEL, BERTY_SRC, bertyPose, showBerty, type BertyCue, type BertyPose } from "@/lib/berty";
+import { BERTY_LOOK_EVENT, bertyLookVars, loadBertyLook, type BertyLook } from "@/lib/berty-look";
+import { BertyGear } from "@/components/berty-gear";
 import { cn } from "@/lib/utils";
 
 const H: Record<"icon" | "sm" | "md" | "lg" | "xl", string> = {
@@ -9,6 +12,20 @@ const H: Record<"icon" | "sm" | "md" | "lg" | "xl", string> = {
   xl: "8.25rem",
 };
 
+function useBertyLook(): BertyLook {
+  const [look, setLook] = useState<BertyLook>(loadBertyLook);
+  useEffect(() => {
+    const go = () => setLook(loadBertyLook());
+    window.addEventListener(BERTY_LOOK_EVENT, go);
+    window.addEventListener("storage", go);
+    return () => {
+      window.removeEventListener(BERTY_LOOK_EVENT, go);
+      window.removeEventListener("storage", go);
+    };
+  }, []);
+  return look;
+}
+
 export function Berty({
   pose,
   size = "md",
@@ -16,6 +33,7 @@ export function Berty({
   corner = "br",
   alert,
   className,
+  look: lookIn,
 }: {
   pose: BertyPose;
   size?: "icon" | "sm" | "md" | "lg" | "xl";
@@ -23,21 +41,32 @@ export function Berty({
   corner?: "br" | "bl" | "tr" | "tl";
   alert?: boolean;
   className?: string;
+  look?: BertyLook;
 }) {
+  const saved = useBertyLook();
+  const look = lookIn ?? saved;
   const src = BERTY_SRC[alert ? "point" : pose];
-  const img = (
-    <img
-      src={src}
-      alt=""
-      title={alert ? "Berty · Cleanup" : `Berty · ${BERTY_LABEL[pose]}`}
-      decoding="async"
-      fetchPriority={alert ? "high" : "low"}
-      draggable={false}
-      className={cn("berty-seat", className)}
-      style={{ ["--berty-h" as string]: H[size] }}
-    />
+  const vars = bertyLookVars(look) as CSSProperties;
+  const figure = (
+    <span
+      className={cn("berty-figure", className)}
+      data-finish={look.finish}
+      data-size={size}
+      style={{ ...vars, ["--berty-h" as string]: H[size] }}
+    >
+      <img
+        src={src}
+        alt=""
+        title={alert ? "Berty · Cleanup" : `Berty · ${BERTY_LABEL[pose]}`}
+        decoding="async"
+        fetchPriority={alert ? "high" : "low"}
+        draggable={false}
+        className="berty-seat"
+      />
+      {size === "icon" ? null : <BertyGear look={look} />}
+    </span>
   );
-  if (!float) return img;
+  if (!float) return figure;
   const pin =
     corner === "bl"
       ? "bottom-0 left-2"
@@ -48,7 +77,7 @@ export function Berty({
           : "bottom-0 right-2";
   return (
     <div className={cn("pointer-events-none absolute z-20 berty-seat-pad", pin)} aria-hidden>
-      {img}
+      {figure}
     </div>
   );
 }

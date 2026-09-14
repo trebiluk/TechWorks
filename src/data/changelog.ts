@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.39 — 2026-09-14
+
+- Bertybot maker: 10 colors, 7 kits, 6 hats, 5 hands, 4 finishes on the metal poses. Unlock → version chip → Berty. npm test runs the real lib tests.
+
 ## 1.92.38 — 2026-09-14
 
 - Wall customize: kits (Wall / Work / Score / Club), every plate on/off, pair Now+Goals, up/down on a phone. Gear → Edit this screen.

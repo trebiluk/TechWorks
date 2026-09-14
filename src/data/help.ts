@@ -142,7 +142,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "BertyBot",
     tags: ["berty", "pose", "cleanup", "teach"],
     wall: true,
-    body: "Berty is the workshop mascot. He waves at ENTER, thinks at LISTEN, stands for CREW WORK, points at CLEAN UP and between classes, and celebrates SHARE / class reward. Cleanup and passing always show him, even if the Berty module is off. Teach mode uses the same poses.",
+    body: "Berty is the workshop mascot. He waves at ENTER, thinks at LISTEN, stands for CREW WORK, points at CLEAN UP and between classes, and celebrates SHARE / class reward. Cleanup and passing always show him, even if the Berty module is off. Open Berty from the version chip: color, kit, hat, hands, finish — unlock to hang that look on the wall.",
   },
   {
     id: "dash-teach",

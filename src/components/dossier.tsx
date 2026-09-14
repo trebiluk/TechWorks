@@ -67,7 +67,7 @@ export function Dossier({
   const [openInfo, setOpenInfo] = useState(false);
   const [pickIcon, setPickIcon] = useState(false);
   const [pane, setPane] = useState<Pane>("overview");
-  if (isHouseId(id)) return <HouseCard id={id} onClose={onClose} />;
+  if (isHouseId(id)) return <HouseCard id={id} onClose={onClose} unlocked={unlocked} />;
   if (!raw || !row || !card) return null;
   const shop = catalogOf(file, raw.period);
   const groups = [...new Set(shop.map((x) => x.category))];

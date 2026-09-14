@@ -1,9 +1,10 @@
 import { X } from "lucide-react";
 import { Berty } from "@/components/berty";
-import { BERTY_POSES, HOUSE_BERTY, HOUSE_MRK, houseOf, type HouseId } from "@/lib/house";
+import { BertyMaker } from "@/components/berty-maker";
+import { HOUSE_BERTY, HOUSE_MRK, houseOf, type HouseId } from "@/lib/house";
 import { COPYRIGHT_LINE } from "@/lib/copy";
 
-export function HouseCard({ id, onClose }: { id: HouseId; onClose: () => void }) {
+export function HouseCard({ id, onClose, unlocked = false }: { id: HouseId; onClose: () => void; unlocked?: boolean }) {
   const h = houseOf(id);
   if (!h) return null;
   const berty = id === HOUSE_BERTY;
@@ -41,17 +42,7 @@ export function HouseCard({ id, onClose }: { id: HouseId; onClose: () => void })
             ))}
           </ul>
           {berty ? (
-            <section className="mt-4">
-              <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Poses</p>
-              <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-6">
-                {BERTY_POSES.map((p) => (
-                  <figure key={p.pose} className="flex flex-col items-center rounded-xl bg-elevated p-2">
-                    <Berty pose={p.pose} size="sm" />
-                    <figcaption className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-muted">{p.label}</figcaption>
-                  </figure>
-                ))}
-              </div>
-            </section>
+            <BertyMaker unlocked={unlocked} />
           ) : (
             <section className="mt-4 rounded-xl bg-elevated p-3">
               <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Public card</p>
