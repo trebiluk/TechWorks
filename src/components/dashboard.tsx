@@ -27,7 +27,7 @@ import { featureOn } from "@/lib/features";
 import { showBerty } from "@/lib/berty";
 import { procedureStep } from "@/lib/procedure";
 import { teachJob, laySlots } from "@/lib/teach";
-import { hideDashRow, loadDashLayout, moveDashRow, moveDashTo, pairMate, patchDash, rowOn, saveDashLayout, DASH_ROWS, DEFAULT_LAYOUT, type DashLayout, type DashRowId } from "@/lib/dash-layout";
+import { hideDashRow, loadDashLayout, moveDashRow, moveDashTo, pairMate, pairNowGoals, nowGoalPaired, applyDashKit, DASH_KITS, patchDash, rowOn, saveDashLayout, DASH_ROWS, DEFAULT_LAYOUT, type DashLayout, type DashRowId } from "@/lib/dash-layout";
 import { SortableItem, SortableList } from "@/components/sortable";
 import { useShopClock } from "@/lib/use-clock";
 import { ProcedureCue } from "@/components/procedure-cue";
@@ -56,7 +56,10 @@ function useDashLayout() {
     setSchoolN: (n: 5 | 10) => commit(patchDash(layout, { schoolN: n })),
     setFlag: (key: keyof DashLayout, value: boolean | 5 | 10) => commit(patchDash(layout, { [key]: value } as Partial<DashLayout>)),
     reset: () => commit(DEFAULT_LAYOUT),
+    kit: (id: Parameters<typeof applyDashKit>[1]) => commit(applyDashKit(layout, id)),
+    pair: (on: boolean) => commit(pairNowGoals(layout, on)),
     on: (id: string) => rowOn(layout, id),
+    paired: nowGoalPaired(layout),
   };
 }
 
@@ -487,7 +490,15 @@ export const Dashboard = memo(function Dashboard({
             if (!body) return null;
             const row = DASH_ROWS.find((r) => r.id === id);
             return (
-              <SortableItem key={paired ? "now-class" : id} id={id} label={row ? t(row.label) : undefined} className={fill ? "tw-fill-row" : "shrink-0"} onHide={() => dash.setOn(id, false)}>
+              <SortableItem
+                key={paired ? "now-class" : id}
+                id={id}
+                label={row ? t(row.label) : undefined}
+                className={fill ? "tw-fill-row" : "shrink-0"}
+                onHide={() => dash.setOn(id, false)}
+                onUp={() => dash.move(id, -1)}
+                onDown={() => dash.move(id, 1)}
+              >
                 {body}
               </SortableItem>
             );
@@ -510,15 +521,44 @@ function LayoutBar({
   onSeeWall?: () => void;
 }) {
   const { layout } = dash;
-  const hidden = layout.order.filter((id) => !dash.on(id));
   return (
-    <section className="shrink-0 space-y-1.5">
+    <section className="tw-gadget shrink-0 space-y-2 p-3">
+      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gold">Customize this wall</p>
+      <p className="text-sm text-muted">Pick a kit, then hide plates or drag the grip. Up/down works on a phone.</p>
       <div className="flex flex-wrap items-center gap-1">
+        {DASH_KITS.map((k) => (
+          <MarkChip key={k.id} mark={markOf("wall")} title={k.hint} onClick={() => dash.kit(k.id)}>
+            {k.label}
+          </MarkChip>
+        ))}
         {onSeeWall ? (
           <MarkChip mark={markOf("wall")} title="Hang the projector" onClick={onSeeWall} className="bg-fg text-bg hover:text-bg">
             See wall
           </MarkChip>
         ) : null}
+        <MarkChip mark={RotateCcw} title="Reset wall" onClick={() => dash.reset()}>
+          Reset
+        </MarkChip>
+      </div>
+      <div className="flex flex-wrap items-center gap-1">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Plates</span>
+        {DASH_ROWS.map((row) => (
+          <MarkChip
+            key={row.id}
+            mark={markOf(row.id)}
+            title={dash.on(row.id) ? `Hide ${row.label}` : `Show ${row.label}`}
+            on={dash.on(row.id)}
+            onClick={() => dash.setOn(row.id, !dash.on(row.id))}
+          >
+            {row.label}
+          </MarkChip>
+        ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-1">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Look</span>
+        <MarkChip mark={Trophy} title="Keep Now and Goals on one row" on={dash.paired} onClick={() => dash.pair(!dash.paired)}>
+          Pair job
+        </MarkChip>
         <ToolsToggle on={dash.on("tools")} onClick={() => dash.setOn("tools", !dash.on("tools"))} />
         <MarkChip mark={rankBoard === "skill" ? Trophy : Coins} title="Rank" onClick={() => onRankBoard(rankBoard === "skill" ? "perk" : "skill")}>
           Rank {rankBoard === "skill" ? "XP" : "$"}
@@ -529,24 +569,7 @@ function LayoutBar({
         <MarkChip mark={Trophy} title="Rock-star cards" on={layout.rankCards} onClick={() => dash.setFlag("rankCards", !layout.rankCards)}>
           Cards
         </MarkChip>
-        <MarkChip mark={RotateCcw} title="Reset wall" onClick={() => dash.reset()}>
-          Reset
-        </MarkChip>
       </div>
-      {hidden.length ? (
-        <div className="flex flex-wrap items-center gap-1">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Show</span>
-          {hidden.map((id) => {
-            const row = DASH_ROWS.find((r) => r.id === id);
-            if (!row) return null;
-            return (
-              <MarkChip key={id} mark={markOf(id)} title={`Show ${row.label}`} onClick={() => dash.setOn(id, true)}>
-                {row.label}
-              </MarkChip>
-            );
-          })}
-        </div>
-      ) : null}
     </section>
   );
 }

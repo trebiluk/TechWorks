@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.37. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.38. -->
 
 # TechWorks changelog
 
-App version **1.92.37**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.38**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.38 — 2026-09-14
+
+- Wall customize: kits (Wall / Work / Score / Club), every plate on/off, pair Now+Goals, up/down on a phone. Gear → Edit this screen.
 
 ## 1.92.37 — 2026-09-13
 

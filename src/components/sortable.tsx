@@ -1,5 +1,5 @@
 import { createContext, useContext, useRef, useState, type PointerEvent, type ReactNode } from "react";
-import { EyeOff, GripVertical } from "lucide-react";
+import { ChevronDown, ChevronUp, EyeOff, GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const SLOP = 8;
@@ -121,12 +121,16 @@ export function SortableItem({
   label,
   children,
   onHide,
+  onUp,
+  onDown,
 }: {
   id: string;
   className?: string;
   label?: string;
   children: ReactNode;
   onHide?: () => void;
+  onUp?: () => void;
+  onDown?: () => void;
 }) {
   const ctx = useContext(Ctx);
   const enabled = Boolean(ctx?.enabled);
@@ -154,6 +158,7 @@ export function SortableItem({
       onPointerCancel={enabled ? (e) => ctx?.end(e) : undefined}
     >
       {enabled ? (
+        <span className="tw-sort-tools">
         <button
           type="button"
           className="tw-sort-grip"
@@ -166,6 +171,17 @@ export function SortableItem({
         >
           <GripVertical className="size-4" />
         </button>
+        {onUp ? (
+          <button type="button" className="tw-sort-nudge" aria-label={label ? `Move ${label} up` : "Move up"} onClick={(e) => { e.stopPropagation(); onUp(); }}>
+            <ChevronUp className="size-4" />
+          </button>
+        ) : null}
+        {onDown ? (
+          <button type="button" className="tw-sort-nudge" aria-label={label ? `Move ${label} down` : "Move down"} onClick={(e) => { e.stopPropagation(); onDown(); }}>
+            <ChevronDown className="size-4" />
+          </button>
+        ) : null}
+        </span>
       ) : null}
       {enabled && onHide ? (
         <button

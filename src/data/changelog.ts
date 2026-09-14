@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.38 — 2026-09-14
+
+- Wall customize: kits (Wall / Work / Score / Club), every plate on/off, pair Now+Goals, up/down on a phone. Gear → Edit this screen.
+
 ## 1.92.37 — 2026-09-13
 
 - Phone chrome follows the window (under 900px), not the UA. Dock on Chromebooks. No iOS zoom on fields. Keyboard uses the visual viewport. Boards scroll. Compact lockup.

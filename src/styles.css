@@ -1291,6 +1291,27 @@ html[data-look] [data-teach-hero] {
   touch-action: none;
   cursor: grab;
 }
+.tw-sort-tools {
+  position: absolute;
+  top: 0.35rem;
+  left: 0.35rem;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.tw-sort-tools .tw-sort-grip {
+  position: static;
+}
+.tw-sort-nudge {
+  display: grid;
+  width: 2.75rem;
+  height: 2.25rem;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--color-muted);
+  background: color-mix(in oklab, var(--color-elevated) 88%, transparent);
+}
 .tw-sort-grip:active {
   cursor: grabbing;
 }
@@ -1335,7 +1356,7 @@ html[data-look] [data-teach-hero] {
   padding-left: 3.15rem;
   padding-right: 3.15rem;
 }
-[data-wall-edit="on"] .tw-sort-item button:not(.tw-sort-grip):not(.tw-visit):not(.tw-plate-hide),
+[data-wall-edit="on"] .tw-sort-item button:not(.tw-sort-grip):not(.tw-sort-nudge):not(.tw-visit):not(.tw-plate-hide),
 [data-wall-edit="on"] .tw-sort-item a,
 [data-wall-edit="on"] .tw-sort-item input,
 [data-wall-edit="on"] .tw-sort-item select {
@@ -1343,7 +1364,8 @@ html[data-look] [data-teach-hero] {
 }
 [data-wall-edit="on"] .tw-sort-item .tw-visit,
 [data-wall-edit="on"] .tw-sort-item .tw-visit-desk button,
-[data-wall-edit="on"] .tw-sort-item .tw-plate-hide {
+[data-wall-edit="on"] .tw-sort-item .tw-plate-hide,
+[data-wall-edit="on"] .tw-sort-item .tw-sort-nudge {
   pointer-events: auto;
 }
 @media (prefers-reduced-motion: no-preference) {

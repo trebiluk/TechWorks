@@ -240,3 +240,81 @@ export function isSoftRow(id: string): boolean {
 export function patchDash(layout: DashLayout, patch: Partial<DashLayout>): DashLayout {
   return { ...layout, ...patch };
 }
+
+export const DASH_KITS = [
+  { id: "wall", label: "Wall", hint: "Job + Do this now. Back row." },
+  { id: "work", label: "Work", hint: "Timer and draw sit with the job." },
+  { id: "score", label: "Score", hint: "Hold the lead. Top cards." },
+  { id: "club", label: "Club", hint: "Agenda pulse, then the hour." },
+] as const;
+
+export type DashKitId = (typeof DASH_KITS)[number]["id"];
+
+const REST: DashRowId[] = ["strip", "club", "specials", "notes", "kpis", "poll", "mods", "tools"];
+
+function kitOrder(head: DashRowId[]): DashRowId[] {
+  const seen = new Set(head);
+  return [...head, ...REST.filter((id) => !seen.has(id)), ...IDS.filter((id) => !head.includes(id) && !REST.includes(id))];
+}
+
+export function applyDashKit(layout: DashLayout, id: DashKitId): DashLayout {
+  const keep = { layoutOpen: layout.layoutOpen, schoolN: layout.schoolN };
+  if (id === "work") {
+    return {
+      ...DEFAULT_LAYOUT,
+      ...keep,
+      order: kitOrder(["class", "proc", "tools", "now"]),
+      hidden: ["mods", "notes", "poll", "specials", "kpis"],
+      rankCards: false,
+    };
+  }
+  if (id === "score") {
+    return {
+      ...DEFAULT_LAYOUT,
+      ...keep,
+      order: kitOrder(["kpis", "class", "proc", "now"]),
+      hidden: ["tools", "mods", "notes", "poll", "specials"],
+      rankCards: true,
+      rankBtns: true,
+      schoolN: 10,
+    };
+  }
+  if (id === "club") {
+    return {
+      ...DEFAULT_LAYOUT,
+      ...keep,
+      order: kitOrder(["club", "class", "proc", "now"]),
+      hidden: ["tools", "mods", "kpis", "poll", "specials", "notes"],
+      rankCards: false,
+    };
+  }
+  return {
+    ...DEFAULT_LAYOUT,
+    ...keep,
+    order: kitOrder(["class", "proc", "now"]),
+    hidden: ["tools", "mods", "notes", "poll", "specials"],
+    rankCards: false,
+    nowWeather: false,
+    nowVisit: false,
+  };
+}
+
+export function nowGoalPaired(layout: DashLayout): boolean {
+  return pairMate(layout, "now") === "first" || pairMate(layout, "class") === "first";
+}
+
+/** Keep Now + Goals on one row, or split them. */
+export function pairNowGoals(layout: DashLayout, together: boolean): DashLayout {
+  const rest: DashRowId[] = layout.order.filter((id) => id !== "now" && id !== "class");
+  if (together) {
+    const proc = rest.indexOf("proc");
+    const at = proc >= 0 ? proc + 1 : 0;
+    rest.splice(at, 0, "now", "class");
+    return { ...layout, order: rest, hidden: layout.hidden.filter((id) => id !== "now" && id !== "class") };
+  }
+  const strip = rest.indexOf("strip");
+  rest.splice(0, 0, "now");
+  const s = rest.indexOf("strip");
+  rest.splice(s >= 0 ? s + 1 : rest.length, 0, "class");
+  return { ...layout, order: rest };
+}
