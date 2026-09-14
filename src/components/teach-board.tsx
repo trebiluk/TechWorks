@@ -31,7 +31,6 @@ import {
   laySlots,
   minClock,
   packOf,
-  setTeachLine,
   setTeachPack,
   setTeachPin,
   slotNow,
@@ -40,7 +39,7 @@ import {
   teachJob,
   teachObjective,
 } from "@/lib/teach";
-import { saveTeachAsk, saveTeachDo, saveTeachObjective } from "@/lib/plan-sync";
+import { saveTeachAsk, saveTeachDo, saveTeachLine, saveTeachObjective } from "@/lib/plan-sync";
 import { cn } from "@/lib/utils";
 import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
 
@@ -245,7 +244,7 @@ export function TeachBoard({
                       <input
                         key={`line-${date}-${period}-${s.id}`}
                         defaultValue={s.line}
-                        onBlur={(e) => edit(setTeachLine(file, date, period, s.id, e.target.value))}
+                        onBlur={(e) => edit(saveTeachLine(file, date, period, s.id, e.target.value))}
                         className="tw-field mt-1 min-h-10"
                         aria-label={`${s.title} line`}
                       />

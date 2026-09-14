@@ -10,7 +10,7 @@ import { shopBells } from "@/lib/economy";
 import { formatSchoolDate, todayIso } from "@/lib/calendar";
 import { useShopClock } from "@/lib/use-clock";
 import { deskBellId } from "@/lib/store";
-import { teachDeckOf } from "@/lib/teach-deck";
+import { teachDeckOf, patchTeachFromDeck } from "@/lib/teach-deck";
 import { teachFocusPeriod } from "@/lib/teach";
 import { cn } from "@/lib/utils";
 import { isTypingTarget } from "@/lib/keys";
@@ -360,12 +360,14 @@ export function DeckBoard({
   date: dateProp,
   onNeedPin,
   onTeach,
+  onChange,
 }: {
   file: EconomyFile;
   unlocked?: boolean;
   date?: string;
   onNeedPin?: () => void;
   onTeach?: () => void;
+  onChange?: (next: EconomyFile) => void;
 }) {
   const today = todayIso();
   const date = dateProp || today;
@@ -429,11 +431,19 @@ export function DeckBoard({
     onTeach?.();
   }
 
+  function patchSlide(next: Partial<DeckSlide>) {
+    if (!unlocked) {
+      onNeedPin?.();
+      return;
+    }
+    onChange?.(patchTeachFromDeck(file, period, date, slide.id, next));
+  }
+
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-2">
       <div className="flex flex-wrap items-center gap-2">
         <p className="text-sm font-medium uppercase tracking-wider text-subtle">{pack.title}</p>
-        <span className="text-sm font-semibold text-gold">{formatSchoolDate(date)} · from Teach</span>
+        <span className="text-sm font-semibold text-gold">{formatSchoolDate(date)} · same as Teach</span>
         <span className="font-mono text-xs text-muted">
           {Math.min(i + 1, slides.length)} / {slides.length}
         </span>
@@ -481,11 +491,13 @@ export function DeckBoard({
         ref={stage}
         className="relative mx-auto min-h-0 w-full max-w-6xl flex-1 overflow-hidden rounded-xl bg-bg ring-1 ring-border"
         style={{ aspectRatio: "16 / 9" }}
-        onClick={() => go(1)}
+        onClick={() => {
+          if (!unlocked) go(1);
+        }}
         role="img"
         aria-label={slide.title}
       >
-        <Stage slide={slide} editing={false} onPatch={() => {}} />
+        <Stage slide={slide} editing={unlocked} onPatch={patchSlide} />
         {full ? <span className="sr-only">Presenting</span> : null}
       </div>
       <ol className="flex flex-wrap gap-1">

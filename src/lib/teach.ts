@@ -277,7 +277,7 @@ export function setTeachDo(file: EconomyFile, date: string, period: number, line
 export function setTeachLine(file: EconomyFile, date: string, period: number, slotId: string, line: string): EconomyFile {
   const day = teachDay(file, date, period);
   const lines = { ...(day.lines ?? {}) };
-  const next = line.trim().slice(0, 80);
+  const next = line.trim().slice(0, 160);
   if (next) lines[slotId] = next;
   else delete lines[slotId];
   return putDay(file, date, period, { lines });

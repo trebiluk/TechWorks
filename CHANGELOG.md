@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.39. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.40. -->
 
 # TechWorks changelog
 
-App version **1.92.39**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.40**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.40 — 2026-09-14
+
+- Teach and Deck are one write. Edit the slide or the Teach plates — Ask / Do / hour lines / rules land in both. No second deck copy.
 
 ## 1.92.39 — 2026-09-14
 

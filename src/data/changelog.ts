@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.40 — 2026-09-14
+
+- Teach and Deck are one write. Edit the slide or the Teach plates — Ask / Do / hour lines / rules land in both. No second deck copy.
+
 ## 1.92.39 — 2026-09-14
 
 - Bertybot maker: 10 colors, 7 kits, 6 hats, 5 hands, 4 finishes on the metal poses. Unlock → version chip → Berty. npm test runs the real lib tests.

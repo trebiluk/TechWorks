@@ -9,7 +9,7 @@ import {
   slotsOf,
   upsertProject,
 } from "@/lib/projects";
-import { setTeachAsk, setTeachDo, setTeachObjective, teachDay } from "@/lib/teach";
+import { setTeachAsk, setTeachDo, setTeachObjective, setTeachLine, packOf, teachDay } from "@/lib/teach";
 
 /** Teach blur → same unit/activity the Plan book shows. */
 export function upsertPlanFromTeach(file: EconomyFile, date: string, period: number): EconomyFile {
@@ -71,4 +71,12 @@ export function saveTeachDo(file: EconomyFile, date: string, period: number, lin
 
 export function saveTeachObjective(file: EconomyFile, date: string, period: number, objective: string): EconomyFile {
   return upsertPlanFromTeach(setTeachObjective(file, date, period, objective), date, period);
+}
+
+export function saveTeachLine(file: EconomyFile, date: string, period: number, slotId: string, line: string): EconomyFile {
+  let next = setTeachLine(file, date, period, slotId, line);
+  const slot = packOf(next, date, period).slots.find((s) => s.id === slotId);
+  if (slot?.kind === "listen") next = saveTeachAsk(next, date, period, line);
+  if (slot?.kind === "work") next = saveTeachDo(next, date, period, line);
+  return next;
 }
