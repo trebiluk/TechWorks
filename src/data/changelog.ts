@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.42 — 2026-09-14
+
+- Teach / Deck robustness: typing survives period and day changes; Deck commits on leave not every key; Present is play-only while PIN is open; same period chip on both screens.
+
 ## 1.92.41 — 2026-09-14
 
 - Score pad: name + 3/2/1 on one row so a crew of 14 fits without pinch-zoom. Names stay a fat tap. Codes stay on a slim row. Cards no longer clip the pads.

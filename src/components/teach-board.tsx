@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { RotateCcw } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
@@ -29,8 +29,10 @@ import { markOf } from "@/lib/nav-marks";
 import {
   TEACH_PACKS,
   laySlots,
+  loadHourPick,
   minClock,
   packOf,
+  saveHourPick,
   setTeachPack,
   setTeachPin,
   slotNow,
@@ -42,6 +44,7 @@ import {
 import { saveTeachAsk, saveTeachDo, saveTeachLine, saveTeachObjective } from "@/lib/plan-sync";
 import { cn } from "@/lib/utils";
 import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
+import { DraftField } from "@/components/draft-field";
 
 export function TeachBoard({
   file,
@@ -78,7 +81,7 @@ export function TeachBoard({
   const now = useShopClock(deskBellId(file, today), "beat");
   const shop = shopBells(file).map((b) => b.period);
   const live = date === today ? periodNow(deskBellId(file, today), now) : null;
-  const [pick, setPick] = useState<number | null>(null);
+  const [pick, setPick] = useState<number | null>(() => loadHourPick());
   const period = date === today ? teachFocusPeriod(file, today, now, pick) : (pick && shop.includes(pick) ? pick : shop[0] ?? 1);
   const clock = date === today ? periodClock(period, deskBellId(file, today), now) : null;
   const pack = packOf(file, date, period);
@@ -104,6 +107,19 @@ export function TeachBoard({
   const [layout, setLayout] = useState<TeachLayout>(() => loadTeachLayout());
   const [printOn, setPrintOn] = useState(false);
   const sortOn = unlocked && editing !== false;
+  const fileRef = useRef(file);
+  fileRef.current = file;
+
+  const editNow = useCallback(
+    (fn: (f: EconomyFile) => EconomyFile) => {
+      if (!unlocked) {
+        onNeedPin();
+        return;
+      }
+      onChange(fn(fileRef.current));
+    },
+    [unlocked, onChange, onNeedPin],
+  );
 
   function commitLayout(next: TeachLayout) {
     setLayout(next);
@@ -116,6 +132,11 @@ export function TeachBoard({
       return;
     }
     onChange(next);
+  }
+
+  function choose(p: number) {
+    setPick(p);
+    saveHourPick(p);
   }
 
   function goDate(iso: string) {
@@ -142,38 +163,38 @@ export function TeachBoard({
             </p>
             {unlocked ? (
               <div className="mt-2 grid gap-2">
-                <p className="text-sm font-semibold text-gold">Type here. Leave a field to save.</p>
+                <p className="text-sm font-semibold text-gold">Type here. Changing period or day still keeps it.</p>
                 <label className="grid gap-1">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Ask</span>
-                  <input
+                  <DraftField
                     key={`ask-${date}-${period}`}
-                    defaultValue={job.question}
+                    value={job.question}
                     placeholder="How can a small force move a bigger load?"
-                    onBlur={(e) => edit(saveTeachAsk(file, date, period, e.target.value))}
-                    className="tw-field tw-fill-hero min-h-12 w-full font-display text-2xl font-semibold tracking-tight"
                     aria-label="Ask the class"
+                    className="tw-field tw-fill-hero min-h-12 w-full font-display text-2xl font-semibold tracking-tight"
+                    onCommit={(v) => editNow((f) => saveTeachAsk(f, date, period, v))}
                   />
                 </label>
                 <label className="grid gap-1">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Do this now</span>
-                  <input
+                  <DraftField
                     key={`do-${date}-${period}`}
-                    defaultValue={job.today}
+                    value={job.today}
                     placeholder="Name the load. Sketch one machine."
-                    onBlur={(e) => edit(saveTeachDo(file, date, period, e.target.value))}
-                    className="tw-field"
                     aria-label="Do this now"
+                    className="tw-field"
+                    onCommit={(v) => editNow((f) => saveTeachDo(f, date, period, v))}
                   />
                 </label>
                 <label className="grid gap-1">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Objective</span>
-                  <input
+                  <DraftField
                     key={`obj-${date}-${period}`}
-                    defaultValue={day.objective ?? ""}
+                    value={day.objective ?? ""}
                     placeholder={obj}
-                    onBlur={(e) => edit(saveTeachObjective(file, date, period, e.target.value))}
-                    className="tw-field"
                     aria-label="Today's objective"
+                    className="tw-field"
+                    onCommit={(v) => editNow((f) => saveTeachObjective(f, date, period, v))}
                   />
                 </label>
               </div>
@@ -241,12 +262,12 @@ export function TeachBoard({
                     </p>
                     <p className="tw-fill-hero font-display font-semibold">{s.title}</p>
                     {unlocked ? (
-                      <input
+                      <DraftField
                         key={`line-${date}-${period}-${s.id}`}
-                        defaultValue={s.line}
-                        onBlur={(e) => edit(saveTeachLine(file, date, period, s.id, e.target.value))}
-                        className="tw-field mt-1 min-h-10"
+                        value={s.line}
                         aria-label={`${s.title} line`}
+                        className="tw-field mt-1 min-h-10"
+                        onCommit={(v) => editNow((f) => saveTeachLine(f, date, period, s.id, v))}
                       />
                     ) : (
                       <p className="tw-fill-line opacity-80">{s.line}</p>
@@ -276,17 +297,21 @@ export function TeachBoard({
       {printOn ? <LessonPlanSheet file={file} period={period} dates={weekDays} onClose={() => setPrintOn(false)} /> : null}
       <header className="flex shrink-0 flex-col gap-2">
         <div className="flex flex-wrap items-center gap-2">
-          {shop.map((p) => (
+          {shop.length ? (
+            shop.map((p) => (
             <button
               key={p}
               type="button"
-              onClick={() => setPick(p)}
+              onClick={() => choose(p)}
               className={cn("tw-tap min-h-10 rounded-full px-3 text-xs font-semibold", period === p ? "bg-fg text-bg" : "bg-elevated text-muted")}
             >
               P{p}
               {live === p ? <span className="ml-1 text-[10px]">now</span> : null}
             </button>
-          ))}
+            ))
+          ) : (
+            <p className="text-sm text-muted">No shop periods. Admin → Day.</p>
+          )}
           <span className="ml-auto flex flex-wrap items-center gap-1 font-mono text-sm text-muted">
             {clock ? `${formatBell(clock.start)}-${formatBell(clock.end)}` : formatSchoolDate(date)}
             {clock?.cleanup ? (
@@ -389,7 +414,7 @@ export function TeachBoard({
 
       <SortableList
         enabled={sortOn}
-        className={cn("flex min-h-0 flex-1 flex-col gap-2", sortOn ? "" : "overflow-hidden")}
+        className={cn("flex min-h-0 flex-1 flex-col gap-2 overflow-auto")}
         onMove={(grab, onto) => commitLayout(moveTeachTo(layout, grab, onto))}
       >
         {layout.order.map((id) => {

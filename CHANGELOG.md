@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.41. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.42. -->
 
 # TechWorks changelog
 
-App version **1.92.41**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.42**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.42 — 2026-09-14
+
+- Teach / Deck robustness: typing survives period and day changes; Deck commits on leave not every key; Present is play-only while PIN is open; same period chip on both screens.
 
 ## 1.92.41 — 2026-09-14
 

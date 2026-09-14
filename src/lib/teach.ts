@@ -208,7 +208,7 @@ export function teachFocusPeriod(file: EconomyFile, date: string, now = new Date
     });
     if (after) return after;
   }
-  return shop[0] ?? 1;
+  return shop[shop.length - 1] ?? shop[0] ?? 1;
 }
 
 export function slotNow(file: EconomyFile, date: string, period: number, now = new Date()): LaidSlot | null {
@@ -263,21 +263,21 @@ export function setTeachPack(file: EconomyFile, date: string, period: number, pa
 }
 
 export function setTeachObjective(file: EconomyFile, date: string, period: number, objective: string): EconomyFile {
-  return putDay(file, date, period, { objective: objective.trim().slice(0, 120) });
+  return putDay(file, date, period, { objective: objective.trim().slice(0, 160) });
 }
 
 export function setTeachAsk(file: EconomyFile, date: string, period: number, ask: string): EconomyFile {
-  return putDay(file, date, period, { ask: ask.trim().slice(0, 120) || undefined });
+  return putDay(file, date, period, { ask: ask.trim().slice(0, 200) || undefined });
 }
 
 export function setTeachDo(file: EconomyFile, date: string, period: number, line: string): EconomyFile {
-  return putDay(file, date, period, { do: line.trim().slice(0, 160) || undefined });
+  return putDay(file, date, period, { do: line.trim().slice(0, 200) || undefined });
 }
 
 export function setTeachLine(file: EconomyFile, date: string, period: number, slotId: string, line: string): EconomyFile {
   const day = teachDay(file, date, period);
   const lines = { ...(day.lines ?? {}) };
-  const next = line.trim().slice(0, 160);
+  const next = line.trim().slice(0, 200);
   if (next) lines[slotId] = next;
   else delete lines[slotId];
   return putDay(file, date, period, { lines });
@@ -297,4 +297,26 @@ export function minClock(m: number): string {
   const am = h >= 12;
   const hr = ((h + 11) % 12) + 1;
   return `${hr}:${String(mm).padStart(2, "0")} ${am ? "PM" : "AM"}`;
+}
+
+const HOUR_KEY = "techworks-hour-pick";
+
+/** Teach and Deck share the period chip for this tab. */
+export function loadHourPick(): number | null {
+  if (typeof sessionStorage === "undefined") return null;
+  try {
+    const n = Number(sessionStorage.getItem(HOUR_KEY));
+    return Number.isFinite(n) && n > 0 ? n : null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveHourPick(period: number) {
+  if (typeof sessionStorage === "undefined") return;
+  try {
+    sessionStorage.setItem(HOUR_KEY, String(period));
+  } catch {
+    /* private mode */
+  }
 }

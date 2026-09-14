@@ -3,7 +3,7 @@ import { todayIso } from "@/lib/calendar";
 import type { DeckSlide } from "@/data/deck";
 import type { DeckPack } from "@/lib/deck-store";
 import { slotsOf, upsertProject } from "@/lib/projects";
-import { laySlots, packOf, teachJob, teachObjective } from "@/lib/teach";
+import { laySlots, packOf, setTeachNotes, teachDay, teachJob, teachObjective } from "@/lib/teach";
 import { saveTeachAsk, saveTeachDo, saveTeachLine, saveTeachObjective } from "@/lib/plan-sync";
 
 /** Deck plays this period’s Teach plan. One write. */
@@ -20,6 +20,7 @@ export function teachDeckOf(file: EconomyFile, period: number, date = todayIso()
       kicker: [`P${period}`, job.grade ? `G${job.grade}` : "", job.stage].filter(Boolean).join(" · "),
       title: job.question || job.title || "Today",
       line: obj || job.stemLine,
+      note: teachDay(file, date, period).notes,
       berty: "think",
     },
   ];
@@ -106,6 +107,7 @@ export function patchTeachFromDeck(
   if (slideId === "job") {
     if (patch.title != null) next = saveTeachAsk(next, date, period, patch.title);
     if (patch.line != null) next = saveTeachObjective(next, date, period, patch.line);
+    if (patch.note != null) next = setTeachNotes(next, date, period, patch.note);
     return next;
   }
   if (slideId === "beats") {
@@ -133,6 +135,10 @@ export function patchTeachFromDeck(
     return saveTeachLine(next, date, period, "clean", patch.line);
   }
   if (slideId === "rules" && patch.cards) {
+    if (!slotsOf(next, period, date)[0]) {
+      const seed = patch.cards[0]?.title?.trim() || "How we win";
+      next = saveTeachAsk(next, date, period, seed);
+    }
     return patchRules(next, period, date, patch.cards.map((c) => c.title));
   }
   return next;

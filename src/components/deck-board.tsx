@@ -7,13 +7,14 @@ import { COPYRIGHT_LINE } from "@/lib/copy";
 import type { DeckCard, DeckSlide } from "@/data/deck";
 import type { EconomyFile } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
-import { formatSchoolDate, todayIso } from "@/lib/calendar";
+import { formatSchoolDate, nextOpenDay, todayIso } from "@/lib/calendar";
 import { useShopClock } from "@/lib/use-clock";
 import { deskBellId } from "@/lib/store";
 import { teachDeckOf, patchTeachFromDeck } from "@/lib/teach-deck";
-import { teachFocusPeriod } from "@/lib/teach";
+import { loadHourPick, saveHourPick, teachFocusPeriod } from "@/lib/teach";
 import { cn } from "@/lib/utils";
 import { isTypingTarget } from "@/lib/keys";
+import { DraftField } from "@/components/draft-field";
 
 function Field({
   value,
@@ -23,6 +24,7 @@ function Field({
   style,
   multiline,
   placeholder,
+  locked,
 }: {
   value: string;
   onChange: (v: string) => void;
@@ -31,43 +33,18 @@ function Field({
   style?: CSSProperties;
   multiline?: boolean;
   placeholder?: string;
+  locked?: boolean;
 }) {
-  if (!editing) {
-    if (!value) return null;
-    const Tag = multiline ? "p" : "span";
-    return (
-      <Tag className={className} style={style}>
-        {value}
-      </Tag>
-    );
-  }
-  const box = cn(
-    className,
-    "w-full rounded-md bg-white/5 ring-1 ring-[#2ee6ff]/40 outline-none placeholder:text-white/30",
-  );
-  if (multiline) {
-    return (
-      <textarea
-        value={value}
-        placeholder={placeholder}
-        rows={2}
-        className={cn(box, "resize-none")}
-        style={style}
-        onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => e.stopPropagation()}
-        onChange={(e) => onChange(e.target.value)}
-      />
-    );
-  }
+  const paint = editing && !locked;
   return (
-    <input
+    <DraftField
       value={value}
+      onCommit={onChange}
+      editing={paint}
+      multiline={multiline}
       placeholder={placeholder}
-      className={box}
+      className={cn(className, paint && "w-full rounded-md bg-white/5 ring-1 ring-[#2ee6ff]/40")}
       style={style}
-      onClick={(e) => e.stopPropagation()}
-      onKeyDown={(e) => e.stopPropagation()}
-      onChange={(e) => onChange(e.target.value)}
     />
   );
 }
@@ -101,10 +78,11 @@ function Stage({
         <img src="/brand/techworks.png" alt="TechWorks" className="h-7 w-auto shrink-0" draggable={false} />
         <Field
           editing={editing}
+          locked
           value={slide.kicker ?? ""}
           placeholder="Kicker"
           className="max-w-sm text-right font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#f0d48a]"
-          onChange={(kicker) => onPatch({ kicker })}
+          onChange={() => {}}
         />
       </header>
 
@@ -112,6 +90,7 @@ function Stage({
         <div className="flex min-h-0 flex-1 flex-col justify-center overflow-hidden px-12 py-3 pr-36 pb-6">
           <Field
             editing={editing}
+            locked={slide.id === "clean"}
             value={slide.title}
             placeholder="Title"
             className={cn(
@@ -194,12 +173,14 @@ function Stage({
               <li key={n} className="flex flex-col rounded-2xl bg-[#141c42] px-5 py-6 ring-1 ring-white/10">
                 <Field
                   editing={editing}
+                  locked
                   value={c.n ?? String(n + 1)}
                   className="font-mono text-4xl font-bold text-[#8b6cff]"
-                  onChange={(nn) => patchCard(n, { n: nn })}
+                  onChange={() => {}}
                 />
                 <Field
                   editing={editing}
+                  locked={slide.id === "beats"}
                   value={c.title}
                   className="mt-4 font-mono text-sm font-bold uppercase tracking-[0.16em] text-[#2ee6ff]"
                   onChange={(title) => patchCard(n, { title })}
@@ -370,22 +351,26 @@ export function DeckBoard({
   onChange?: (next: EconomyFile) => void;
 }) {
   const today = todayIso();
-  const date = dateProp || today;
+  const date = dateProp || nextOpenDay(today);
   const bellsId = deskBellId(file, today);
   const now = useShopClock(bellsId, "beat");
   const shop = shopBells(file).map((b) => b.period);
-  const [pick, setPick] = useState<number | null>(null);
+  const [pick, setPick] = useState<number | null>(() => loadHourPick());
   const period = date === today ? teachFocusPeriod(file, today, now, pick) : (pick && shop.includes(pick) ? pick : shop[0] ?? 1);
   const pack = useMemo(() => teachDeckOf(file, period, date), [file, period, date]);
   const [i, setI] = useState(0);
   const [full, setFull] = useState(false);
+  const [paint, setPaint] = useState(false);
   const stage = useRef<HTMLDivElement>(null);
+  const fileRef = useRef(file);
+  fileRef.current = file;
   const slides = pack.slides;
-  const slide = slides[Math.min(i, slides.length - 1)] ?? slides[0]!;
+  const slide = slides[Math.min(i, Math.max(0, slides.length - 1))] ?? slides[0];
+  const editing = Boolean(unlocked && paint && !full && slide);
 
   useEffect(() => {
     setI(0);
-  }, [period, pack.title]);
+  }, [period, date]);
 
   const go = useCallback(
     (d: number) => {
@@ -407,13 +392,13 @@ export function DeckBoard({
       else if (e.key === "End") setI(slides.length - 1);
       else if (e.key === "f" || e.key === "F") void stage.current?.requestFullscreen?.();
       else if (e.key === "e" || e.key === "E") {
-        if (unlocked) onTeach?.();
-        else onNeedPin?.();
+        if (!unlocked) onNeedPin?.();
+        else setPaint((on) => !on);
       }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [go, onNeedPin, onTeach, slides.length, unlocked]);
+  }, [go, onNeedPin, slides.length, unlocked]);
 
   useEffect(() => {
     function onFs() {
@@ -422,6 +407,11 @@ export function DeckBoard({
     document.addEventListener("fullscreenchange", onFs);
     return () => document.removeEventListener("fullscreenchange", onFs);
   }, []);
+
+  function choose(p: number) {
+    setPick(p);
+    saveHourPick(p);
+  }
 
   function askTeach() {
     if (!unlocked) {
@@ -432,11 +422,12 @@ export function DeckBoard({
   }
 
   function patchSlide(next: Partial<DeckSlide>) {
+    if (!slide) return;
     if (!unlocked) {
       onNeedPin?.();
       return;
     }
-    onChange?.(patchTeachFromDeck(file, period, date, slide.id, next));
+    onChange?.(patchTeachFromDeck(fileRef.current, period, date, slide.id, next));
   }
 
   return (
@@ -448,11 +439,11 @@ export function DeckBoard({
           {Math.min(i + 1, slides.length)} / {slides.length}
         </span>
         <div className="flex flex-wrap gap-1">
-          {shop.map((p) => (
+          {shop.length ? shop.map((p) => (
             <button
               key={p}
               type="button"
-              onClick={() => setPick(p)}
+              onClick={() => choose(p)}
               className={cn(
                 "tw-tap min-h-9 rounded-md px-2.5 font-mono text-xs font-bold",
                 p === period ? "bg-accent text-accent-fg" : "bg-elevated text-muted",
@@ -460,7 +451,9 @@ export function DeckBoard({
             >
               P{p}
             </button>
-          ))}
+          )) : (
+            <p className="text-sm text-muted">No shop periods. Admin → Day.</p>
+          )}
         </div>
         <div className="ml-auto flex flex-wrap gap-1">
           <button type="button" onClick={() => go(-1)} className="tw-tap inline-flex size-11 items-center justify-center rounded-md bg-elevated" aria-label="Previous slide">
@@ -471,18 +464,34 @@ export function DeckBoard({
           </button>
           <button
             type="button"
-            onClick={() => void stage.current?.requestFullscreen?.()}
+            onClick={() => {
+              setPaint(false);
+              void stage.current?.requestFullscreen?.();
+            }}
             className="tw-tap inline-flex min-h-11 items-center gap-2 rounded-md bg-elevated px-3 text-sm font-semibold"
           >
             <Maximize2 className="size-4" /> Present
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (!unlocked) {
+                onNeedPin?.();
+                return;
+              }
+              setPaint((on) => !on);
+            }}
+            className={cn("tw-tap inline-flex min-h-11 items-center gap-2 rounded-md px-3 text-sm font-semibold", paint ? "bg-gold text-bg" : "bg-elevated")}
+          >
+            <Pencil className="size-4" /> {paint ? "Done" : "Edit slides"}
           </button>
           {onTeach ? (
             <button
               type="button"
               onClick={askTeach}
-              className="tw-tap inline-flex min-h-11 items-center gap-2 rounded-md bg-gold px-3 text-sm font-semibold text-bg"
+              className="tw-tap inline-flex min-h-11 items-center gap-2 rounded-md bg-elevated px-3 text-sm font-semibold"
             >
-              <Pencil className="size-4" /> Edit on Teach
+              Hour on Teach
             </button>
           ) : null}
         </div>
@@ -492,12 +501,12 @@ export function DeckBoard({
         className="relative mx-auto min-h-0 w-full max-w-6xl flex-1 overflow-hidden rounded-xl bg-bg ring-1 ring-border"
         style={{ aspectRatio: "16 / 9" }}
         onClick={() => {
-          if (!unlocked) go(1);
+          if (!editing) go(1);
         }}
         role="img"
-        aria-label={slide.title}
+        aria-label={slide?.title ?? "Deck"}
       >
-        <Stage slide={slide} editing={unlocked} onPatch={patchSlide} />
+        {slide ? <Stage key={slide.id} slide={slide} editing={editing} onPatch={patchSlide} /> : <p className="grid h-full place-items-center text-muted">No slides for this hour.</p>}
         {full ? <span className="sr-only">Presenting</span> : null}
       </div>
       <ol className="flex flex-wrap gap-1">

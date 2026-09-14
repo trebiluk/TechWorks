@@ -40,4 +40,22 @@ describe("teach deck spine", () => {
     const work = beats?.cards?.find((c) => c.title === "CREW WORK");
     assert.equal(work?.line, "Build the model.");
   });
+
+  it("empty desk still plays job, beats, and cleanup", () => {
+    const pack = teachDeckOf(desk(), 1, "2026-09-14");
+    assert.deepEqual(pack.slides.map((s) => s.id), ["job", "beats", "clean"]);
+  });
+
+  it("unknown slide patch is a no-op", () => {
+    const file = desk();
+    assert.equal(patchTeachFromDeck(file, 1, "2026-09-14", "nope", { title: "X" }), file);
+  });
+
+  it("rules write parks a unit when the hour was empty", () => {
+    const next = patchTeachFromDeck(desk(), 1, "2026-09-14", "rules", {
+      cards: [{ title: "Goggles on", line: "" }],
+    });
+    const rules = teachDeckOf(next, 1, "2026-09-14").slides.find((s) => s.id === "rules");
+    assert.equal(rules?.cards?.[0]?.title, "Goggles on");
+  });
 });

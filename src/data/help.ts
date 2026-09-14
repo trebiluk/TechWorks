@@ -469,7 +469,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Default deck",
     tags: ["deck", "slides", "projector", "theme", "navy", "violet", "powerpoint", "edit"],
     wall: true,
-    body: "Dash → Deck plays today’s Teach plan. Unlock and type on the slide — Ask, Do, hour lines, and rules write to Teach and the Plan book. Same date and period. Present is play-only. Hour pack still lives on Teach.",
+    body: "Dash → Deck plays today’s Teach plan. Present is play-only (even with PIN). Edit slides, then leave a field — Ask / Do / hour lines write to Teach. Same date and period chip. E toggles edit. Hour pack still lives on Teach.",
   },
   {
     id: "roster-ids",
