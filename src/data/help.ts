@@ -319,7 +319,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Score",
     title: "Teacher Verify / Score",
     tags: ["score", "verify", "bonus", "deduct", "clutch", "sub", "assist"],
-    body: "Red ring on fields = you are editing. Date, A/B, cycle day, lunch, SchoolTool + ST. Daily goal → Observed → Happened. Period chips show crews scored. Dashboard period tap opens this class.",
+    body: "Name sits next to 3 / 2 / 1 on one row — tap the alias for the profile. Codes (Abs / Exc / PTO / Nurse) sit on a slim row. More is Assist / Clean / cash. Period chips show crews scored.",
   },
   {
     id: "schooltool",

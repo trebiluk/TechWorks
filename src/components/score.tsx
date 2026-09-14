@@ -676,7 +676,7 @@ export function ScoreDesk({
                     setCrewKey(c.key);
                     setAllCrewsDone(false);
                   }}
-                  className={cn("inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-sm font-semibold", crew?.key === c.key ? "bg-gold text-bg" : "bg-surface text-muted")}
+                  className={cn("inline-flex min-h-11 items-center gap-2 rounded-full px-3 text-base font-semibold", crew?.key === c.key ? "bg-gold text-bg" : "bg-surface text-muted")}
                 >
                   {c.name}
                   <span className="font-mono text-[11px] opacity-80">{marked}/{c.kids.length}</span>
@@ -697,37 +697,35 @@ export function ScoreDesk({
 
           <PollPad file={file} kids={crew?.kids ?? []} onChange={commit} />
 
-          <div data-score-grid className="grid min-h-0 flex-1 grid-cols-1 gap-1.5 overflow-auto sm:grid-cols-2">
+          <div data-score-grid className="grid min-h-0 flex-1 content-start grid-cols-1 gap-1 overflow-auto sm:grid-cols-2">
             {(crew?.kids ?? []).map((s) => (
-                <article key={s.id} className="flex min-h-0 flex-col gap-1 overflow-hidden rounded-xl bg-surface p-2">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <button type="button" onClick={() => onOpenId(s.id)} className="truncate text-left font-display text-lg font-semibold sm:text-xl">
-                      {s.first}
+                <article key={s.id} className="rounded-xl bg-surface p-1">
+                  <div className="grid grid-cols-[minmax(6.5rem,1.15fr)_repeat(3,minmax(2.75rem,1fr))] items-stretch gap-1">
+                    <button type="button" onClick={() => onOpenId(s.id)} className="tw-tap flex min-h-14 min-w-0 items-center justify-between gap-1 rounded-lg px-2 text-left">
+                      <span className="truncate font-display text-xl font-semibold leading-tight">{s.first}</span>
+                      <span className="shrink-0 font-mono text-xs tabular-nums text-muted">
+                        {money(dayPay(markOn(s, date) === "Assist" ? "" : markOn(s, date), file.meta.codes) + (studentAssist(s, date) ? Number(file.meta.codes.Assist ?? 10) : 0))}
+                      </span>
                     </button>
-                    <span className="shrink-0 font-mono text-sm tabular-nums text-muted">
-                      {money(dayPay(markOn(s, date) === "Assist" ? "" : markOn(s, date), file.meta.codes) + (studentAssist(s, date) ? Number(file.meta.codes.Assist ?? 10) : 0))}
-                    </span>
-                  </div>
-                  <>
-                  <div className="grid h-16 shrink-0 grid-cols-3 gap-1 sm:h-20">
                     {(["3", "2", "1"] as const).map((code) => (
                       <button
                         key={code}
                         type="button"
                         onClick={() => tap(s.id, code)}
-                        className={cn("tw-tap flex items-center justify-center rounded-lg font-display text-4xl font-semibold", tone(code), markOn(s, date) === code ? "ring-2 ring-fg" : "")}
+                        className={cn("tw-tap flex min-h-14 items-center justify-center rounded-lg font-display text-3xl font-semibold", tone(code), markOn(s, date) === code ? "ring-2 ring-fg" : "")}
                       >
                         {code}
                       </button>
                     ))}
                   </div>
-                  <div className="grid shrink-0 grid-cols-4 gap-1">
+                  <div className="mt-1 flex items-center gap-1">
+                    <div className="grid min-w-0 flex-1 grid-cols-4 gap-1">
                     {(["A", "E", "P"] as const).map((code) => (
                       <button
                         key={code}
                         type="button"
                         onClick={() => tap(s.id, code)}
-                        className={cn("tw-tap min-h-9 rounded-md text-[11px] font-semibold uppercase", tone(code), markOn(s, date) === code ? "ring-2 ring-fg" : "")}
+                        className={cn("tw-tap min-h-8 rounded-md text-[11px] font-semibold uppercase", tone(code), markOn(s, date) === code ? "ring-2 ring-fg" : "")}
                       >
                         {code === "A" ? "Abs" : code === "E" ? "Exc" : "PTO"}
                       </button>
@@ -739,22 +737,23 @@ export function ScoreDesk({
                         commit(setStudentAttend(file, s.id, date, here ? "" : "nurse"));
                       }}
                       className={cn(
-                        "tw-tap min-h-9 rounded-md text-[10px] font-semibold uppercase leading-tight",
+                        "tw-tap min-h-8 rounded-md text-[10px] font-semibold uppercase leading-tight",
                         attendOn(s, date) === "nurse" ? "bg-loss text-accent-fg" : "bg-elevated text-muted",
                       )}
                     >
                       {attendOn(s, date) === "nurse" ? `Back ${passOpen(s, date)?.out ?? ""}` : "Nurse"}
                     </button>
-                  </div>
+                    </div>
                   <button
                     type="button"
                     onClick={() => setMoreId((id) => (id === s.id ? null : s.id))}
-                    className="tw-tap self-start text-[10px] font-semibold uppercase tracking-wide text-muted"
+                    className="tw-tap min-h-8 shrink-0 rounded-md px-2 text-[10px] font-semibold uppercase tracking-wide text-muted"
                   >
                     {moreId === s.id ? "Less" : "More"}
                   </button>
+                  </div>
                   {moreId === s.id ? (
-                    <div className="grid shrink-0 grid-cols-4 gap-1">
+                    <div className="mt-1 grid shrink-0 grid-cols-4 gap-1">
                       <button
                         type="button"
                         onClick={() => {
@@ -833,7 +832,6 @@ export function ScoreDesk({
                       </button>
                     </div>
                   ) : null}
-                  </>
                 </article>
             ))}
           </div>

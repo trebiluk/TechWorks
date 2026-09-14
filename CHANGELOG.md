@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.40. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.41. -->
 
 # TechWorks changelog
 
-App version **1.92.40**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.41**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.41 — 2026-09-14
+
+- Score pad: name + 3/2/1 on one row so a crew of 14 fits without pinch-zoom. Names stay a fat tap. Codes stay on a slim row. Cards no longer clip the pads.
 
 ## 1.92.40 — 2026-09-14
 

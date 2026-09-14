@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.41 — 2026-09-14
+
+- Score pad: name + 3/2/1 on one row so a crew of 14 fits without pinch-zoom. Names stay a fat tap. Codes stay on a slim row. Cards no longer clip the pads.
+
 ## 1.92.40 — 2026-09-14
 
 - Teach and Deck are one write. Edit the slide or the Teach plates — Ask / Do / hour lines / rules land in both. No second deck copy.
