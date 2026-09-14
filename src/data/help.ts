@@ -65,6 +65,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     body: "You: build, clean, help a crewmate. Crew lead: scores the team 3 / 2 / 1 for this period only. Teacher: the real grades, the skills, the store. Family: open a name → Family for the report card. Nobody’s legal name belongs on the projector.",
   },
   {
+    id: "welcome-help",
+    category: "Welcome",
+    title: "Who this Help is for",
+    tags: ["help", "family", "crew", "teacher", "sub", "student", "search"],
+    wall: true,
+    body: "Students: stay on Welcome and Wall. Crew leads: Roles → Crew lead, then Crew. Families: tap an alias → Family, or type Family in the search box. Teacher: Start, Teach, Deck, Score, Admin. Sub: Roles → Sub day — you do not open this app. Type a word in the search box. Teachers can Download help file for the whole book.",
+  },
+  {
     id: "wall-read",
     category: "Wall",
     title: "How to read this board",
@@ -83,10 +91,10 @@ export const HELP_ARTICLES: HelpArticle[] = [
   {
     id: "wall-menu",
     category: "Wall",
-    title: "New menu (Dash · Teach · Learn · Other)",
+    title: "Menu (Dash · Learn · Crew · Admin)",
     tags: ["menu", "nav", "tabs", "classic"],
     wall: true,
-    body: "New menu is on by default. Top row is the section. Second row is only that section. Teach has Now (the wall), Plans (reusable lessons you can apply next quarter), and Score. Learn is Book / Projects / Skills. Other is Club and Study Hall. Classic menu is Dashboard / Desk / Learn / Admin — toggle in the header or Admin → Look.",
+    body: "Bottom dock: Dash · Learn · Crew · Rosters · Admin. Dash strip: Wall · Teach · Deck · Week · Club · Hall. Teach is the lesson. Deck plays that lesson. After class, Wall is the projector. Cog is Settings (Admin). Arrange wall / Arrange plates live on those pages.",
   },
   {
     id: "wall-polls",
@@ -150,7 +158,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Teach mode",
     tags: ["teach", "lesson", "now", "slots", "objective", "demo"],
     wall: true,
-    body: "Dashboard → Teach. Big “Do this now” follows the bell: Enter, Listen, Crew work, Cleanup (or Demo / Critique / Training / Short / Sub packs). Slots stretch to the period, including delay and half-day. Unlock to pin a slot, rewrite the objective, or add a one-line job. Cleanup always wins. No names on this wall. After class, tap Wall — that hangs the scoreboard.",
+    body: "Dash → Teach. Type Ask, Do this now, and Objective — leave a field (or change period) and it saves. Same words become the Deck and the Plan book. Hour packs (Workshop / Demo / Critique / Training / Short / Sub) change the beats. Arrange plates (not the cog) to drag or hide. Deck plays this hour. After class, Wall hangs the scoreboard. No names on Teach.",
   },
   {
     id: "admin-crews",
@@ -186,7 +194,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Crew lead path",
     tags: ["crew", "kiosk", "2222", "3", "2", "1"],
     wall: true,
-    body: "PIN 2222, this period only. Hi, Team Leader {name}. Tap 3 / 2 / 1 or Absent / Excused / Personal. Optional INVEST? after a 3/2/1. Next crew auto-advances. Our crew: name, mark, and motto — not seats. You cannot touch wallet, bonus, or grades.",
+    body: "PIN 2222, this period only unless you need another class. Hi, Team Leader. Tap 3 / 2 / 1 or Absent / Excused / Personal. Optional INVEST? after a 3/2/1. Next crew auto-advances. Our crew: name, mark, and motto — not seats. You cannot touch wallet, bonus, or grades.",
   },
   {
     id: "roles-worker",
@@ -216,14 +224,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Family path",
     tags: ["parent", "family"],
     wall: true,
-    body: "Profile → Family. One project grade. Skills in words. No wallet, stock, or Lucky Bench.",
+    body: "Tap an alias on the wall or Find. Family sheet: one project mark, skills in words, time in class listed but not averaged. No wallet, stock, or Lucky Bench. Legal name only after the teacher unlocks. Google Site embed never shows last names.",
   },
   {
     id: "roles-sub",
     category: "Roles",
     title: "Sub day",
     tags: ["sub", "cycle"],
-    body: "A sub never opens this app. You tap SUB. That date is void. The cycle does not rewind. Next class day is the next cycle day.",
+    body: "A sub never opens this app. You tap SUB. That date is void. The cycle does not rewind. Next class day is the next cycle day. Leave the wall on for the sub: the job card and the hours. No scores.",
   },
   {
     id: "wall-cleanup",
@@ -268,14 +276,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "PINs and who can tap what",
     tags: ["pin", "1111", "2222", "lock", "unlock", "teacher", "crew"],
-    body: "Teacher PIN is the one you set (never 1111). It unlocks scoring, Store, roster, and legal names. Crew override PIN 2222 opens other periods on the crew pad. Locked chrome: Wall, Teach, Deck, Week, Club, Hall, Learn Words, Help. Embed ?embed=1 is Wall only.",
+    body: "Teacher PIN is the one you set on Lock → Set teacher PIN (never 1111 — that code is rejected). It unlocks scoring, Store, roster, and legal names. Crew override 2222 opens other periods on the crew pad only — it is not printed on the student wall. Locked chrome: Wall, Teach, Deck, Week, Club, Hall, Learn Words, Help. Embed ?embed=1 is Wall only.",
   },
   {
     id: "nav",
     category: "Start",
     title: "Menu map",
     tags: ["menu", "dashboard", "crew", "stocks", "skills", "desk", "data"],
-    body: "Bottom dock: Dash · Learn · Crew · Rosters · Admin (PIN on the last three). Dash strip: Wall · Teach · Deck · Week · Club · Hall. Year and Data sit on Week. Polls sit on Teach and on the wall when a vote is live. Dash Club is the projector. Admin Club is the desk.",
+    body: "Bottom dock: Dash · Learn · Crew · Rosters · Admin (PIN on the last three). Dash strip: Wall · Teach · Deck · Week · Club · Hall. Year and Data sit on Week. Polls sit on Teach and on the wall when a vote is live. Cog is Settings (Admin). Arrange wall is on Wall. Arrange plates is on Teach. Edit slides is on Deck. Dash Club is the projector. Admin Club is the desk.",
   },
   {
     id: "rank",
@@ -305,7 +313,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Crew",
     title: "Crew leader pad",
     tags: ["crew", "3", "2", "1", "absent", "excused", "personal", "invest"],
-    body: "Teal screen. Only the live period unless you enter 2222. 2×2 kid cells: 3 / 2 / 1 and ABSENT / EXCUSED / PERSONAL. INVEST? only after a 3/2/1. Faces and notes do not change pay. A sub never uses this pad.",
+    body: "Teal screen. Live period only unless you enter 2222. 3 / 2 / 1 and ABSENT / EXCUSED / PERSONAL. INVEST? only after a 3/2/1. Faces and notes do not change pay. A sub never uses this pad. Teacher Score is a different page: name + 3/2/1 on one row.",
   },
   {
     id: "effort",
@@ -354,7 +362,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Skills",
     title: "Projects",
     tags: ["project", "agenda", "activity", "plan book", "cycle", "gradebook", "stem", "driving question", "unit"],
-    body: "Learn → Projects opens on Plan: fill the week for this period. Tap a day, pick the task, then Skill / Deliverable / Both. Crews can differ. Tasks last 1–5 days — no 4- or 8-day lock. Floor parks the unit on a period. Write the job is the wall lines. Teach still authors today.",
+    body: "Learn → Projects. The desk starts empty — you type the unit. New Activity asks: part of a project, independent, or sub work? Dates and default grade fill the Plan book. Teach for that day is the author; Deck only plays it. Print lesson from Teach makes the PDF (skills × objectives). Floor parks the unit on a period.",
   },
   {
     id: "studyhall",
@@ -466,7 +474,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
   {
     id: "deck",
     category: "Wall",
-    title: "Default deck",
+    title: "Deck plays Teach",
     tags: ["deck", "slides", "projector", "theme", "navy", "violet", "powerpoint", "edit"],
     wall: true,
     body: "Dash → Deck plays today’s Teach plan. Present is play-only (even with PIN). Edit slides, then leave a field — Ask / Do / hour lines write to Teach. Same date and period chip. E toggles edit. Hour pack still lives on Teach.",
@@ -526,14 +534,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "One desk",
     tags: ["web", "mobile", "ipad", "projector", "layout", "dock"],
-    body: "One layout. Bottom dock is Dash · Learn · Crew · Rosters · Admin — pictogram plus the word. Dash strip is Wall · Teach · Deck · Week · Club · Hall. Teach during class. After class, Dash → Wall is the projector — cards fill leftover space, no grips. Admin → Wall is the editor: drag plates, Show to bring a hidden one back. Do this now stays off the live Dash (Teach still has the beats). Rosters is the class yearbook (aliases, gold if you lead). Legal names stay in Admin → Records. Google Site embed still hides the dock so the projector stays a wall.",
+    body: "One layout. Bottom dock is Dash · Learn · Crew · Rosters · Admin. Dash strip is Wall · Teach · Deck · Week · Club · Hall. Teach during class. After class, Wall is the projector — no grips. Unlocked: Wall → Arrange wall (kits, hide, drag). Teach → Arrange plates. Cog always opens Admin. Rosters is the yearbook (aliases). Legal names stay in Admin → Records. Google Site embed hides the dock.",
   },
   {
     id: "themes",
     category: "Start",
     title: "Stylesheets",
     tags: ["theme", "bearcat", "night", "holiday", "contrast"],
-    body: "Admin → Theme (PIN). Size: Scale is the whole desk. Fill makes Now, Goals, Do this now, and Teach eat empty plate. Titles, pad, and corners ride those plates. Default is THEME-PURPLE-BLUE: cyan #22D3EE CTA, royal #3B82F6, indigo, violet. Paw orange is Bearcat only. Paper and Projector stay options. Cleanup coral. Due red.",
+    body: "Admin → Theme (PIN). Default stays dark (navy / cyan / violet). Never a white wall — Kulibert is light-sensitive. Oswego is a dark homage (hunter #235937, sunset gold #FDAE3F) with no official marks. Bearcat, Paper, Projector, and holiday overlays stay options. Cleanup coral. Due red.",
   },
   {
     id: "legal",
@@ -541,6 +549,34 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Copyright and trademark",
     tags: ["copyright", "trademark", "kulibert", "license", "legal"],
     body: "© 2026 Richard Kulibert. All rights reserved. TECHWORKS™ is a trademark of Richard Kulibert. You may use this copy in your own classroom. Do not sell, sublicense, or republish the source without written permission. ™ is a claim of trademark; ® would require a registration. Hover the version chip or the logo for the notice.",
+  },
+  {
+    id: "settings-cog",
+    category: "Start",
+    title: "The cog is Settings",
+    tags: ["settings", "gear", "cog", "admin", "arrange"],
+    body: "The cog always opens Admin (Today, Day, Records, Crews, Theme). It does not jump you off Deck or flash “this page is this page.” Arrange the projector from Wall → Arrange wall. Teach → Arrange plates. Deck → Edit slides. Unlock first if the lock is on.",
+  },
+  {
+    id: "data-copies",
+    category: "Start",
+    title: "Where the data lives",
+    tags: ["save", "local", "cloud", "drive", "web", "desk key", "google"],
+    body: "Three copies, none of them is live Google Drive sync. 1) This PC — the gradebook (auto-save). 2) Cloud — encrypted blob, unlocked by the desk key you mint in Records → Cloud. Same key on the other room. 3) Drive folder — JSON + Google book you download; File → Open as a Sheet. The PIN is not a backup. The desk key is not the PIN. Losing the desk key means you cannot decrypt the cloud copy — keep the JSON.",
+  },
+  {
+    id: "teach-plan",
+    category: "Dashboard",
+    title: "Plan book → Teach → Deck → Wall",
+    tags: ["plan", "teach", "deck", "wall", "activity", "unit"],
+    body: "One write. Create the activity (or type Ask / Do on Teach). Dates and grade land it on the Plan book. Teach for that day is the only author. Deck plays that plan (Present for the class, Edit slides if you must type on the glass). Wall hangs the job after class. Changing period or day still keeps the draft.",
+  },
+  {
+    id: "roles-it",
+    category: "Roles",
+    title: "Shop PC and second room",
+    tags: ["it", "shop pc", "cloud", "desk key", "deploy", "chromebook"],
+    body: "The shop PC is the writer. A second computer is a reader until you Pull with the desk key. Empty browser will not overwrite a cloud roster. Live class URL is tw.kulibert.net (Cloudflare Pages ← GitHub trebiluk/TechWorks main). Public GitHub ships students: []. Chromebooks are the tap pad; iPad camera is prints. Do not print the teacher PIN. Crew 2222 stays off the student About card.",
   },
 ];
 
@@ -552,6 +588,57 @@ export function helpMarkdown(): string {
     return `## ${cat}\n\n${bits}`;
   }).join("\n\n");
   return `# TechWorks Help · v${APP_VERSION}\n\n${COPYRIGHT_LONG}\n\nSearch in the app Help panel. Categories below.\n\n${groups}\n`;
+}
+
+/** IT / teacher print. Twin of docs/TECHWORKS-TECHNICAL-DETAILS-v8.0.html */
+export function techMarkdown(): string {
+  return `# TechWorks technical manual · v${APP_VERSION}
+
+${COPYRIGHT_LONG}
+
+Live class: https://tw.kulibert.net
+Help in the app: tap **?**. This file is the IT / teacher print.
+
+## Who this is for
+
+- **Students** — Wall, Teach (locked), Deck Present, Help Welcome / Wall. No legal names.
+- **Crew leads** — Crew pad, 3 / 2 / 1. PIN 2222 for another period. No wallet, bonus, or grades.
+- **Families** — Tap alias → Family. One project mark, skills in words. No wallet on that sheet.
+- **Teacher** — Set teacher PIN (never 1111). Teach → Deck → Wall. Score one-row pad. Cog = Admin.
+- **Sub** — Do not open this app. Teacher taps SUB. Wall stays up.
+- **IT / second room** — Same desk key, Pull. Public GitHub ships students: []. Do not print the teacher PIN.
+
+## Three copies (not live Drive sync)
+
+1. **This PC** — the gradebook (auto-save).
+2. **Cloud** — encrypted blob, desk key from Records → Cloud. Same key on the other room.
+3. **Drive folder** — JSON + Google book you download, then File → Open as a Sheet.
+
+The PIN is not a backup. The desk key is not the PIN.
+
+## PINs
+
+- Teacher unlock = Lock → Set teacher PIN. 1111 is rejected. Never print the real PIN.
+- Crew 2222 = crew pad only. Off the student About card.
+- Portal default 2627, off unless you turn it on.
+
+## Plan book → Teach → Deck → Wall
+
+One write. Type Ask / Do on Teach (or Edit slides on Deck). Leave the field or change period — the draft still saves. Present is play-only. The cog is Settings, not “edit this screen.”
+
+## Monday
+
+Shop PC only. Fake data Off. Snapshot. Mint desk key. Push if this PC has names; Pull if this PC is empty. Paste Last, First, Period. Wall shows aliases.
+
+## Deploy
+
+tw.kulibert.net ← Cloudflare Pages kulibert-desk ← github.com/trebiluk/TechWorks main.
+Grok Publish hits Orbit only. Do not commit legal names.
+
+## Privacy
+
+Projector and ?embed=1 are aliases only. IEP / 504 / legal names: vault, PIN, Google book VAULT tab.
+`;
 }
 
 export function searchHelp(q: string, wallOnly = false): HelpArticle[] {

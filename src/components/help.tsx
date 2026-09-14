@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import { APP_VERSION, VERSION_LABEL } from "@/lib/version";
 import { COPYRIGHT_LINE, TRADEMARK_NOTICE } from "@/lib/copy";
 import { BertyPeek } from "@/components/berty";
-import { HELP_CATEGORIES, helpMarkdown, searchHelp } from "@/data/help";
+import { HELP_CATEGORIES, helpMarkdown, searchHelp, techMarkdown } from "@/data/help";
 import { useLang } from "@/lib/i18n-hook";
 import { downloadText } from "@/lib/live";
 import { cn } from "@/lib/utils";
@@ -121,6 +121,7 @@ export function HelpPanel({ onClose, wallOnly }: { onClose: () => void; wallOnly
             {TRADEMARK_NOTICE}
           </p>
           {wallOnly ? null : (
+          <div className="grid gap-2 sm:grid-cols-2">
           <button
             type="button"
             onClick={() => downloadText(`TECHWORKS-HELP-v${APP_VERSION}.md`, helpMarkdown(), "text/markdown")}
@@ -128,6 +129,14 @@ export function HelpPanel({ onClose, wallOnly }: { onClose: () => void; wallOnly
           >
             Download help file
           </button>
+          <button
+            type="button"
+            onClick={() => downloadText(`TECHWORKS-TECHNICAL-v${APP_VERSION}.md`, techMarkdown(), "text/markdown")}
+            className="min-h-11 w-full rounded-md bg-elevated text-sm font-semibold"
+          >
+            Download technical manual
+          </button>
+          </div>
           )}
         </footer>
       </div>

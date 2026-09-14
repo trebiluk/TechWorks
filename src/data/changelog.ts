@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.44 — 2026-09-14
+
+- Help and technical manual catch up: every role (students, crew leads, families, teacher, sub, IT), honest PINs, Teach → Deck → Wall, three copies, cog = Settings. Download both from **?**.
+
 ## 1.92.43 — 2026-09-14
 
 - The cog is Settings (Admin). It no longer jumps screens or flashes “this page is this page.” Arrange wall / Arrange plates live on those pages.
