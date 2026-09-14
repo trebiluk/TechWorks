@@ -3,7 +3,7 @@
 export const DECK_TITLE = "TechWorks · Default Deck";
 
 export type DeckCard = { n?: string; title: string; line: string };
-export type DeckKind = "title" | "cards" | "steps" | "ladder" | "letters" | "now" | "blank" | "close";
+export type DeckKind = "title" | "cards" | "steps" | "ladder" | "letters" | "now" | "blank" | "close" | "embed";
 
 export type DeckSlide = {
   id: string;
@@ -14,6 +14,7 @@ export type DeckSlide = {
   berty?: "waving" | "standing" | "point" | "think";
   cards?: DeckCard[];
   note?: string;
+  src?: string;
 };
 
 export const DECK: DeckSlide[] = [

@@ -4,6 +4,8 @@ import { cloneFile } from "@/lib/clone";
 import { agendaFor, jobCardOf, prettyStage, type ShopJob } from "@/lib/projects";
 import { bellForPeriod, cleanupMinsNow, periodNext, periodNow } from "@/lib/bells";
 import { deskBellId, isSubDay } from "@/lib/store";
+import type { HangItem } from "@/lib/hang";
+import { parseHang } from "@/lib/hang";
 
 export type TeachSlotKind = "enter" | "listen" | "work" | "clean" | "demo" | "share";
 
@@ -98,6 +100,7 @@ export type TeachDay = {
   ask?: string;
   do?: string;
   lines?: Record<string, string>;
+  media?: HangItem[];
 };
 
 export type LaidSlot = TeachSlot & { startMin: number; endMin: number; mins: number };
@@ -289,6 +292,23 @@ export function setTeachPin(file: EconomyFile, date: string, period: number, pin
 
 export function setTeachNotes(file: EconomyFile, date: string, period: number, notes: string): EconomyFile {
   return putDay(file, date, period, { notes: notes.trim().slice(0, 200) });
+}
+
+export function hangOf(file: EconomyFile, date: string, period: number): HangItem[] {
+  return teachDay(file, date, period).media ?? [];
+}
+
+export function addTeachHang(file: EconomyFile, date: string, period: number, raw: string): EconomyFile {
+  const item = parseHang(raw);
+  if (!item) return file;
+  const cur = hangOf(file, date, period);
+  if (cur.some((h) => h.id === item.id || h.url === item.url)) return file;
+  return putDay(file, date, period, { media: [...cur, item].slice(0, 6) });
+}
+
+export function dropTeachHang(file: EconomyFile, date: string, period: number, id: string): EconomyFile {
+  const next = hangOf(file, date, period).filter((h) => h.id !== id);
+  return putDay(file, date, period, { media: next.length ? next : undefined });
 }
 
 export function minClock(m: number): string {

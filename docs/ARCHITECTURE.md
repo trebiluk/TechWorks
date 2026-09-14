@@ -1,6 +1,6 @@
-# TechWorks architecture · v1.92.46
+# TechWorks architecture · v1.92.47
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.46.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.47.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
@@ -79,6 +79,7 @@ Wall Goals plate  —jobCardOf + teach override→  Question, rules, today, done
 | Rules / goggles | Project constraints | Listen beat | Rules slide | Rules | Write the job | No |
 | Hour pack (Workshop…) | Teach only | Chips | Beat kicker | No | No | No |
 | STEM sentence | Project stemLine | Objective fallback | Title line | Under question | Unit | No |
+| Hang (Drive / Slides / YouTube) | Teach Hang paste | Yes | Embed slide | No | No | No |
 | Skill 1–4 expected | Activity.expect | No | No | Look-for n = | Activity | Words after you score |
 
 **Do not**

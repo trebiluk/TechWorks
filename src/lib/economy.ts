@@ -1,6 +1,7 @@
 import { todayIso, weekOn } from "@/lib/calendar";
 import { basketFactor } from "@/lib/tickers";
 import { tapeMark } from "@/lib/tape";
+import type { HangItem } from "@/lib/hang";
 
 export type DayCode = "3" | "2" | "1" | "A" | "E" | "P" | "Assist" | "";
 
@@ -149,7 +150,7 @@ export type EconomyFile = {
       crewExceptions?: { a: string; b: string; date: string; note: string }[];
       crewRules?: { min?: number; max?: number; crewsMax?: number };
       teachPack?: string;
-      teachDays?: Record<string, Record<string, { pack?: string; objective?: string; pin?: string; notes?: string; ask?: string; do?: string; lines?: Record<string, string> }>>;
+      teachDays?: Record<string, Record<string, { pack?: string; objective?: string; pin?: string; notes?: string; ask?: string; do?: string; lines?: Record<string, string>; media?: HangItem[] }>>;
       lessons?: { id: string; title: string; cat: string; grade?: number; pack?: string; objective?: string; notes?: string; used?: { date: string; period: number; q?: string }[] }[];
       studyHall?: {
         showNotes?: boolean;

@@ -40,11 +40,15 @@ import {
   teachFocusPeriod,
   teachJob,
   teachObjective,
+  hangOf,
+  addTeachHang,
+  dropTeachHang,
 } from "@/lib/teach";
 import { saveTeachAsk, saveTeachDo, saveTeachLine, saveTeachObjective } from "@/lib/plan-sync";
 import { cn } from "@/lib/utils";
 import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
 import { DraftField } from "@/components/draft-field";
+import { HangFrame } from "@/components/hang-frame";
 
 export function TeachBoard({
   file,
@@ -291,6 +295,18 @@ export function TeachBoard({
     }
     if (id === "tools") return <DashTools file={file} period={period} />;
     if (id === "poll") return <PollWall file={file} period={period} />;
+    if (id === "hang") {
+      const hangs = hangOf(file, date, period);
+      if (!hangs.length && !unlocked && !sortOn) return null;
+      return (
+        <HangFrame
+          items={hangs}
+          unlocked={unlocked}
+          onHang={(raw) => editNow((f) => addTeachHang(f, date, period, raw))}
+          onDrop={(hid) => editNow((f) => dropTeachHang(f, date, period, hid))}
+        />
+      );
+    }
     return null;
   }
 
@@ -434,7 +450,7 @@ export function TeachBoard({
               key={id}
               id={id}
               label={row?.label}
-              className={id === "hero" || id === "slots" ? "tw-fill-row" : "shrink-0"}
+              className={id === "hero" || id === "slots" || id === "hang" ? "tw-fill-row" : "shrink-0"}
               onHide={id === "hero" ? undefined : () => commitLayout(hideTeachRow(layout, id, false))}
             >
               {body}

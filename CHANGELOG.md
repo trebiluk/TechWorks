@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.46. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.47. -->
 
 # TechWorks changelog
 
-App version **1.92.46**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.47**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.47 — 2026-09-14
+
+- Teach Hang: paste a Drive file, Google Slides/Doc/Sheet, YouTube, or Canva on this hour. Anyone-with-the-link. Deck plays it before cleanup.
 
 ## 1.92.46 — 2026-09-14
 

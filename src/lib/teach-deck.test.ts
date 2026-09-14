@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { EconomyFile } from "./economy.ts";
 import { saveTeachAsk, saveTeachDo, saveTeachLine } from "./plan-sync.ts";
-import { teachDay } from "./teach.ts";
+import { addTeachHang, teachDay } from "./teach.ts";
 import { patchTeachFromDeck, teachDeckOf } from "./teach-deck.ts";
 
 function desk(): EconomyFile {
@@ -44,6 +44,14 @@ describe("teach deck spine", () => {
   it("empty desk still plays job, beats, and cleanup", () => {
     const pack = teachDeckOf(desk(), 1, "2026-09-14");
     assert.deepEqual(pack.slides.map((s) => s.id), ["job", "beats", "clean"]);
+  });
+
+  it("Drive hang becomes a deck embed slide before cleanup", () => {
+    const file = addTeachHang(desk(), "2026-09-14", 1, "https://drive.google.com/file/d/abc123XYZ/view");
+    const pack = teachDeckOf(file, 1, "2026-09-14");
+    const hang = pack.slides.find((s) => s.kind === "embed");
+    assert.ok(hang?.src?.includes("/preview"));
+    assert.equal(pack.slides.at(-1)?.id, "clean");
   });
 
   it("unknown slide patch is a no-op", () => {

@@ -3,7 +3,8 @@ import { todayIso } from "@/lib/calendar";
 import type { DeckSlide } from "@/data/deck";
 import type { DeckPack } from "@/lib/deck-store";
 import { slotsOf, upsertProject } from "@/lib/projects";
-import { laySlots, packOf, setTeachNotes, teachDay, teachJob, teachObjective } from "@/lib/teach";
+import { laySlots, packOf, setTeachNotes, teachDay, teachJob, teachObjective, hangOf } from "@/lib/teach";
+import { hangKindLabel, hangSrc } from "@/lib/hang";
 import { saveTeachAsk, saveTeachDo, saveTeachLine, saveTeachObjective } from "@/lib/plan-sync";
 
 /** Deck plays this period’s Teach plan. One write. */
@@ -61,6 +62,17 @@ export function teachDeckOf(file: EconomyFile, period: number, date = todayIso()
     });
   }
   const clean = beats.find((s) => s.clean || s.kind === "clean");
+  for (const h of hangOf(file, date, period)) {
+    slides.push({
+      id: `hang-${h.id}`,
+      kind: "embed",
+      kicker: hangKindLabel(h.kind),
+      title: h.title || hangKindLabel(h.kind),
+      line: h.url,
+      src: hangSrc(h) ?? undefined,
+      berty: "think",
+    });
+  }
   slides.push({
     id: "clean",
     kind: "close",

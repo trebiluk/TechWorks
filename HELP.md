@@ -1,6 +1,6 @@
-# TechWorks Help · v1.92.46
+# TechWorks Help · v1.92.47
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.46.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.47.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
@@ -86,7 +86,7 @@ Dash → Deck plays today’s Teach plan. Present is play-only (even with PIN). 
 
 ### Copyright
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.46.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.47.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
@@ -100,7 +100,7 @@ Bottom dock: Dash · Learn · Crew · Rosters · Admin (PIN on the last three). 
 
 ### Version
 
-The floating chip is v1.92.46. Same string as About, Help, and the changelog header. Product name TECHWORKS™. Workshop zips labeled 1.0 or 2.1.0 are not live.
+The floating chip is v1.92.47. Same string as About, Help, and the changelog header. Product name TECHWORKS™. Workshop zips labeled 1.0 or 2.1.0 are not live.
 
 ### Describe mode / tips
 
@@ -168,7 +168,7 @@ The shop PC is the writer. A second computer is a reader until you Pull with the
 
 ### Teach mode
 
-Dash → Teach. Type Ask, Do this now, and Objective — leave a field (or change period) and it saves. Same words become the Deck and the Plan book. Hour packs (Workshop / Demo / Critique / Training / Short / Sub) change the beats. Arrange plates (not the cog) to drag or hide. Deck plays this hour. After class, Wall hangs the scoreboard. No names on Teach.
+Dash → Teach. Type Ask, Do this now, and Objective — leave a field (or change period) and it saves. Same words become the Deck and the Plan book. Hang a Drive file, Slides, Doc, YouTube, or Canva on this hour (Share → Anyone with the link). Deck plays the hang as a slide. Hour packs change the beats. Arrange plates (not the cog) to drag or hide. After class, Wall hangs the scoreboard. No names on Teach.
 
 ### Skills board vs Perks board
 

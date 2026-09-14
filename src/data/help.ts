@@ -158,7 +158,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Teach mode",
     tags: ["teach", "lesson", "now", "slots", "objective", "demo"],
     wall: true,
-    body: "Dash → Teach. Type Ask, Do this now, and Objective — leave a field (or change period) and it saves. Same words become the Deck and the Plan book. Hour packs (Workshop / Demo / Critique / Training / Short / Sub) change the beats. Arrange plates (not the cog) to drag or hide. Deck plays this hour. After class, Wall hangs the scoreboard. No names on Teach.",
+    body: "Dash → Teach. Type Ask, Do this now, and Objective — leave a field (or change period) and it saves. Same words become the Deck and the Plan book. Hang a Drive file, Slides, Doc, YouTube, or Canva on this hour (Share → Anyone with the link). Deck plays the hang as a slide. Hour packs change the beats. Arrange plates (not the cog) to drag or hide. After class, Wall hangs the scoreboard. No names on Teach.",
   },
   {
     id: "admin-crews",

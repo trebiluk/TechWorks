@@ -86,6 +86,27 @@ function Stage({
         />
       </header>
 
+      {slide.kind === "embed" ? (
+        <div className="relative min-h-0 flex-1 overflow-hidden px-12 pb-8 pl-12 pr-12">
+          {slide.src ? (
+            <iframe
+              title={slide.title}
+              src={slide.src}
+              className="h-full min-h-[18rem] w-full rounded-xl border-0 bg-black/40"
+              allow="fullscreen; encrypted-media"
+              allowFullScreen
+              referrerPolicy="no-referrer"
+            />
+          ) : slide.line ? (
+            <a href={slide.line} target="_blank" rel="noreferrer" className="grid h-full place-items-center text-2xl font-semibold text-[#2ee6ff]">
+              Open {slide.title}
+            </a>
+          ) : (
+            <p className="grid h-full place-items-center text-muted">Nothing hung on this hour.</p>
+          )}
+        </div>
+      ) : null}
+
       {slide.kind === "title" || slide.kind === "close" ? (
         <div className="flex min-h-0 flex-1 flex-col justify-center overflow-hidden px-12 py-3 pr-36 pb-6">
           <Field

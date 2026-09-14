@@ -5,6 +5,7 @@ const V2 = "techworks-teach-look-v2";
 
 export const TEACH_ROWS = [
   { id: "hero", label: "Now" },
+  { id: "hang", label: "Hang" },
   { id: "slots", label: "Slots" },
   { id: "packs", label: "Pack" },
   { id: "tools", label: "Tools" },
@@ -21,7 +22,7 @@ export type TeachLayout = {
 const IDS = TEACH_ROWS.map((r) => r.id);
 
 export const DEFAULT_TEACH_LAYOUT: TeachLayout = {
-  order: ["hero", "slots", "packs", "tools", "poll"],
+  order: ["hero", "hang", "slots", "packs", "tools", "poll"],
   hidden: ["packs", "tools"],
 };
 
