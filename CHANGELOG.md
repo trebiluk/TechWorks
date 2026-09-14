@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.42. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.43. -->
 
 # TechWorks changelog
 
-App version **1.92.42**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.43**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.43 — 2026-09-14
+
+- The cog is Settings (Admin). It no longer jumps screens or flashes “this page is this page.” Arrange wall / Arrange plates live on those pages.
 
 ## 1.92.42 — 2026-09-14
 

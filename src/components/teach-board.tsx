@@ -60,6 +60,7 @@ export function TeachBoard({
   onWords,
   onWall,
   onDeck,
+  onArrange,
 }: {
   file: EconomyFile;
   unlocked: boolean;
@@ -74,6 +75,7 @@ export function TeachBoard({
   onWords?: () => void;
   onWall?: () => void;
   onDeck?: () => void;
+  onArrange?: () => void;
 }) {
   const today = todayIso();
   const date = dateProp || nextOpenDay(today);
@@ -322,6 +324,11 @@ export function TeachBoard({
             {onDeck ? (
               <button type="button" onClick={onDeck} className="tw-tap min-h-8 rounded-full bg-gold px-3 text-[12px] font-semibold text-bg">
                 Deck
+              </button>
+            ) : null}
+            {onArrange ? (
+              <button type="button" onClick={onArrange} className={cn("tw-tap min-h-8 rounded-full px-3 text-[12px] font-semibold", sortOn ? "bg-gold text-bg" : "tw-btn-2")}>
+                {sortOn ? "Done arranging" : "Arrange plates"}
               </button>
             ) : null}
             <button type="button" onClick={() => setPrintOn(true)} className="tw-tap min-h-8 rounded-full px-3 text-[12px] font-medium tw-btn-2">

@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.43 — 2026-09-14
+
+- The cog is Settings (Admin). It no longer jumps screens or flashes “this page is this page.” Arrange wall / Arrange plates live on those pages.
+
 ## 1.92.42 — 2026-09-14
 
 - Teach / Deck robustness: typing survives period and day changes; Deck commits on leave not every key; Present is play-only while PIN is open; same period chip on both screens.

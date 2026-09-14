@@ -74,17 +74,9 @@ type View = "crew" | "score" | "overview" | "week" | "year" | "data" | "wallet" 
 type DeskPanel = "score" | "schedule" | "config";
 
 function gearHint(view: string): string {
-  if (view === "teach" || view === "polls") return "Drag plates. Hide with the eye. Objective is on Today.";
-  if (view === "week" || view === "year") return "Week race is this page. Data is the look-back.";
-  if (view === "data") return "Presets and the spreadsheet are on this page.";
-  if (view === "skills" || view === "grades") return "Watch, Sit-down, and Book are this page.";
-  if (view === "projects") return "Plan the week on this page. Floor parks the unit.";
-  if (view === "club") return "Club desk. Dates, signup, stations, brief, late bus.";
-  if (view === "studyhall") return "Hall desk is this page.";
-  if (view === "prints") return "Prints is this page.";
-  if (view === "score" || view === "crew") return "Crew score is this page.";
-  if (view === "wallet" || view === "lucky" || view === "store") return "Pay tools are on this page.";
-  return "Tools for this screen are on the page. Admin is the orange key.";
+  if (view === "teach") return "Drag plates. Hide with the eye. Typing Ask / Do is always on.";
+  if (view === "overview") return "Pick a kit, hide plates, drag the grip.";
+  return "";
 }
 
 export function Board() {
@@ -119,7 +111,7 @@ export function Board() {
   const [planDate, setPlanDate] = useState(() => nextOpenDay(todayIso()));
   const [deskPad, setDeskPad] = useState<"effort" | "skill">("effort");
   const [adminPane, setAdminPane] = useState<AdminPane>("today");
-  const [gearOpen, setGearOpen] = useState(false);
+  const [arrangeOn, setArrangeOn] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [describeOn, setDescribeOn] = useState(false);
   const [query, setQuery] = useState("");
@@ -173,6 +165,7 @@ export function Board() {
     if (crewOn && next !== "crew") {
       return;
     }
+    if (next !== "overview" && next !== "teach") setArrangeOn(false);
     startTransition(() => {
       if (next === "grades" || next === "projects") {
         setLearnStart(next === "grades" ? "grades" : "projects");
@@ -570,7 +563,14 @@ export function Board() {
           file={wallFile}
           unlocked={unlocked}
           arrange={arrange}
-          onSeeWall={arrange ? () => go("overview") : undefined}
+          onArrange={() => {
+            if (!unlocked) {
+              askPin();
+              return;
+            }
+            setArrangeOn(true);
+          }}
+          onSeeWall={() => setArrangeOn(false)}
           rankBoard={rankBoard}
           onRankBoard={toggleRank}
           onPeriod={(p) => {
@@ -687,45 +687,25 @@ export function Board() {
                   onLock={() => {
                     setUnlocked(false);
                     setCrewOn(false);
-                    setGearOpen(false);
+                    setArrangeOn(false);
                     const stay = lockView(view);
                     if (stay !== view) setView(stay as View);
                   }}
                 />
                 <button
                   type="button"
-                  title="Edit this screen"
-                  aria-label="Edit this screen"
+                  title="Settings"
+                  aria-label="Settings"
                   onClick={() => {
                     if (!unlocked) {
-                      askPin();
-                      setGearOpen(true);
+                      askPin("admin");
                       return;
                     }
-                    if (view === "deck") {
-                      go("teach");
-                      setGearOpen(true);
-                      return;
-                    }
-                    if (view === "clubwall") {
-                      go("club");
-                      setGearOpen(true);
-                      return;
-                    }
-                    if (view === "hallwall") {
-                      go("studyhall");
-                      setGearOpen(true);
-                      return;
-                    }
-                    if (view === "admin") {
-                      setGearOpen(false);
-                      return;
-                    }
-                    setGearOpen((v) => !v);
+                    go("admin");
                   }}
                   className={cn(
                     "tw-hud-btn tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-xl text-fg hover:bg-elevated",
-                    gearOpen ? "bg-gold text-bg" : "",
+                    view === "admin" ? "bg-gold text-bg" : "",
                   )}
                 >
                   <Settings className="size-5" />
@@ -797,7 +777,7 @@ export function Board() {
         </button>
       ) : null}
       <div className="board-main flex min-h-0 flex-1 flex-col overflow-hidden">
-      {unlocked && gearOpen && view !== "overview" && view !== "admin" ? (
+      {unlocked && arrangeOn && (view === "overview" || view === "teach") && gearHint(view) ? (
         <p className="shrink-0 px-3 py-1.5 text-sm font-semibold text-gold" data-gear-hint>
           {gearHint(view)}
         </p>
@@ -869,7 +849,7 @@ export function Board() {
           jumpPeriod={jumpPeriod}
           jumpCrew={jumpCrew}
           jumpDate={jumpDate}
-          onOpenSettings={() => setGearOpen(true)}
+          onOpenSettings={() => go("admin")}
           mode="teacher"
           panel="score"
           startPad={deskPad}
@@ -906,7 +886,7 @@ export function Board() {
           jumpPeriod={jumpPeriod}
           jumpCrew={jumpCrew}
           jumpDate={jumpDate}
-          onOpenSettings={() => setGearOpen(true)}
+          onOpenSettings={() => go("admin")}
           onRankUp={rankUp}
           onTeachDay={(iso, p) => {
             setPlanDate(iso);
@@ -959,7 +939,13 @@ export function Board() {
             }}
           />
         ) : (
-        <TeachBoard file={wallFile} unlocked={unlocked} editing={unlocked && gearOpen} date={planDate} onDate={setPlanDate} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onBerty={() => setOpenId(HOUSE_BERTY)} onPlan={() => { setLearnStart("projects"); go("skills"); }} onWords={() => { setLearnStart("words"); go("skills"); }} onWall={() => go("overview")} onDeck={() => go("deck")} />
+        <TeachBoard file={wallFile} unlocked={unlocked} editing={unlocked && arrangeOn} onArrange={() => {
+          if (!unlocked) {
+            askPin();
+            return;
+          }
+          setArrangeOn((v) => !v);
+        }} date={planDate} onDate={setPlanDate} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onBerty={() => setOpenId(HOUSE_BERTY)} onPlan={() => { setLearnStart("projects"); go("skills"); }} onWords={() => { setLearnStart("words"); go("skills"); }} onWall={() => go("overview")} onDeck={() => go("deck")} />
         )
       ) : view === "polls" ? (
         <PollBoard file={file} unlocked={unlocked} onChange={commitDesk} onNeedPin={() => askPin()} />
@@ -981,7 +967,7 @@ export function Board() {
         <DataBoard file={wallFile} onOpenProfile={(id) => setOpenId(id)} onWeek={() => go("week")} onYear={() => go("year")} />
       ) : (
         <ErrorGate label="wall">
-        {wallDash(unlocked && gearOpen)}
+        {wallDash(unlocked && arrangeOn)}
         </ErrorGate>
       )}
       {helpOpen && !crewOn ? <HelpPanel onClose={() => setHelpOpen(false)} wallOnly={!unlocked} /> : null}

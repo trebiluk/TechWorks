@@ -254,7 +254,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Admin",
     title: "Unlock is Admin",
     tags: ["admin", "pin", "lock", "score", "unlock"],
-    body: "Lock stays top-right. Unlock with the PIN you set. Stay on this screen and edit. Admin is Today (SchoolTool, scoring, cloud), Day (year planner), Records (Backups / Names / Cloud), Crews, Theme, and Wall. Admin → Wall is the only editor — drag plates, Show to bring one back. Dash → Wall is the projector after Teach. Kids never see Admin.",
+    body: "The cog is Settings — it opens Admin (Today, Day, Records, Crews, Theme). Unlock with the PIN you set. Arrange the projector from Wall → Arrange wall, or Teach → Arrange plates. Kids never see Admin.",
   },
   {
     id: "admin-year",

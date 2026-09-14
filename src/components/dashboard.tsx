@@ -101,6 +101,7 @@ export const Dashboard = memo(function Dashboard({
   onOpenMod,
   arrange = false,
   onSeeWall,
+  onArrange,
 }: {
   list: ScoredStudent[];
   bells: Bell[];
@@ -117,6 +118,7 @@ export const Dashboard = memo(function Dashboard({
   onOpenMod?: (id: string) => void;
   arrange?: boolean;
   onSeeWall?: () => void;
+  onArrange?: () => void;
 }) {
   const { t } = useLang();
   const fold = useDashFold();
@@ -447,6 +449,13 @@ export const Dashboard = memo(function Dashboard({
 
   return (
     <div className={cn("tw-web-wall relative flex w-full flex-1 flex-col gap-1.5", arrange ? "overflow-auto" : "min-h-0 overflow-hidden")} data-wall-stage={arrange ? "edit" : "show"}>
+      {unlocked && !arrange && onArrange ? (
+        <div className="flex shrink-0 justify-end">
+          <button type="button" onClick={onArrange} className="tw-tap min-h-9 rounded-full bg-elevated px-3 text-xs font-semibold">
+            Arrange wall
+          </button>
+        </div>
+      ) : null}
       {arrange ? <LayoutBar dash={dash} rankBoard={rankBoard} onRankBoard={onRankBoard} onSeeWall={onSeeWall} /> : null}
       {arrange && stOpen ? (
         <div className="flex min-w-0 shrink-0 flex-wrap items-center gap-1.5">
