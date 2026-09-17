@@ -1,0 +1,15 @@
+{
+  "name": "Coderized",
+  "short_name": "Coderized",
+  "id": "https://coderized.kulibert.net/",
+  "description": "Chromebook coding arena for middle school CTE/STEM. Stop the robot. Version CZ 1.4.0.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1b365d",
+  "theme_color": "#1b365d",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
