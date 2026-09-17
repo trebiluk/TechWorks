@@ -16,20 +16,13 @@ import {
 } from "@/lib/teach";
 import { saveTeachAsk, saveTeachDo, saveTeachObjective } from "@/lib/plan-sync";
 import {
-  copyHourThroughWeek,
-  copyHourToSameGrade,
-  copyPrevWeek,
-  copyWeekForward,
-  copyYesterday,
-  nextWeekDays,
   planWeek,
-  prevWeekDays,
-  sameGradePeriods,
   weekFillCount,
   type PlanCell,
 } from "@/lib/planbook";
 import { DraftField } from "@/components/draft-field";
 import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
+import { SendHour } from "@/components/send-hour";
 import { cn } from "@/lib/utils";
 
 export function WeekPlan({
@@ -82,10 +75,6 @@ export function WeekPlan({
     onChange(next);
   }
 
-  const sameN = cell ? sameGradePeriods(file, cell.period).length : 0;
-  const hasPrev = prevWeekDays(weekDate).length > 0;
-  const hasNext = nextWeekDays(weekDate).length > 0;
-
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3 pb-8" data-week-plan>
       {printOn ? <LessonPlanSheet file={file} period={cell?.period ?? bells[0]?.period ?? 1} dates={days} onClose={() => setPrintOn(false)} /> : null}
@@ -96,7 +85,7 @@ export function WeekPlan({
             <h1 className="font-display text-2xl font-semibold tracking-tight">This week</h1>
           </div>
           <p className="text-sm text-muted">
-            {fill.set} of {fill.total} hours set. One grid. Same grade copies in one tap.
+            {fill.set} of {fill.total} hours set. Type the job. Send one hour at a time.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-1">
@@ -120,30 +109,6 @@ export function WeekPlan({
             {days[0] ? formatSchoolDate(days[0]) : ""}
             {days.length > 1 ? ` – ${formatSchoolDate(days[days.length - 1]!)}` : ""}
           </span>
-          <button
-            type="button"
-            disabled={!hasPrev}
-            onClick={() => {
-              if (!gate()) return;
-              onChange(copyPrevWeek(file, weekDate));
-              note("Last week is on this week.");
-            }}
-            className="tw-tap min-h-11 rounded-xl bg-gold px-3 text-sm font-semibold text-bg disabled:opacity-40"
-          >
-            Last week → this week
-          </button>
-          <button
-            type="button"
-            disabled={!hasNext}
-            onClick={() => {
-              if (!gate()) return;
-              onChange(copyWeekForward(file, weekDate));
-              note("This week is on next week.");
-            }}
-            className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold disabled:opacity-40"
-          >
-            This week → next
-          </button>
           <button type="button" onClick={() => setPrintOn(true)} className="tw-tap ml-auto min-h-11 rounded-xl bg-elevated px-3 text-xs font-semibold">
             Print week
           </button>
@@ -178,7 +143,7 @@ export function WeekPlan({
           file={file}
           cell={cell}
           unlocked={unlocked}
-          sameN={sameN}
+          days={days}
           onEdit={edit}
           onTeach={onTeach}
           onClear={() => {
@@ -187,6 +152,7 @@ export function WeekPlan({
             next = pinDayActivity(next, cell.date, cell.period, "");
             onChange(next);
           }}
+          onNote={note}
         />
       ) : null}
     </div>
@@ -237,18 +203,20 @@ function HourEditor({
   file,
   cell,
   unlocked,
-  sameN,
+  days,
   onEdit,
   onTeach,
   onClear,
+  onNote,
 }: {
   file: EconomyFile;
   cell: PlanCell;
   unlocked: boolean;
-  sameN: number;
+  days: string[];
   onEdit: (next: EconomyFile) => void;
   onTeach?: (date: string, period: number) => void;
   onClear: () => void;
+  onNote: (msg: string) => void;
 }) {
   const project = slotsOf(file, cell.period, cell.date)[0];
   const acts = project ? activitiesOf(project) : [];
@@ -409,34 +377,17 @@ function HourEditor({
         </label>
       </div>
 
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-wide text-subtle">Copy this hour</p>
-        <div className="mt-1 flex flex-wrap gap-1">
-          <button
-            type="button"
-            onClick={() => onEdit(copyYesterday(file, d, p))}
-            className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold"
-          >
-            Same as last class day
-          </button>
-          <button
-            type="button"
-            onClick={() => onEdit(copyHourThroughWeek(file, d, p))}
-            className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold"
-          >
-            Repeat through this week
-          </button>
-          {sameN ? (
-            <button
-              type="button"
-              onClick={() => onEdit(copyHourToSameGrade(file, d, p))}
-              className="tw-tap min-h-11 rounded-xl bg-gold px-3 text-sm font-semibold text-bg"
-            >
-              Copy to other G{cell.grade}
-            </button>
-          ) : null}
-        </div>
-      </div>
+      <SendHour
+        file={file}
+        date={d}
+        period={p}
+        unlocked={unlocked}
+        days={days}
+        onSend={(next, msg) => {
+          onEdit(next);
+          onNote(msg);
+        }}
+      />
     </section>
   );
 }

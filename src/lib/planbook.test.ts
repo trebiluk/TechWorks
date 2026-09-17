@@ -11,8 +11,10 @@ import {
   copyHourToEmptySameGrade,
   copyPrevWeek,
   hourIsSet,
+  hourTargets,
   planCell,
   sameGradePeriods,
+  sendHour,
 } from "./planbook.ts";
 
 function desk(): EconomyFile {
@@ -95,5 +97,24 @@ describe("planbook week", () => {
     let file = setTeachDo(desk(), "2026-09-15", 1, "Keep me.");
     file = copyHour(file, "2026-09-14", 1, "2026-09-15", 1);
     assert.equal(teachDay(file, "2026-09-15", 1).do, "Keep me.");
+  });
+
+  it("sends one hour to picked empty slots and skips a filled hour", () => {
+    let file = setTeachDo(desk(), "2026-09-14", 1, "Cut the blanks.");
+    file = setTeachDo(file, "2026-09-14", 3, "Keep me.");
+    const hit = sendHour(file, "2026-09-14", 1, hourTargets("2026-09-14", 1, [2, 3], ["2026-09-15"]));
+    assert.equal(teachDay(hit.file, "2026-09-14", 2).do, "Cut the blanks.");
+    assert.equal(teachDay(hit.file, "2026-09-14", 3).do, "Keep me.");
+    assert.equal(teachDay(hit.file, "2026-09-15", 1).do, "Cut the blanks.");
+    assert.equal(teachDay(hit.file, "2026-09-15", 2).do, undefined);
+    assert.deepEqual(hit.sent.map((t) => `${t.period}@${t.date}`), ["2@2026-09-14", "1@2026-09-15"]);
+    assert.deepEqual(hit.skipped.map((t) => t.period), [3]);
+  });
+
+  it("does not send a empty source onto a filled dest", () => {
+    let file = setTeachDo(desk(), "2026-09-14", 3, "Keep me.");
+    const hit = sendHour(file, "2026-09-14", 1, [{ date: "2026-09-14", period: 3 }]);
+    assert.equal(teachDay(hit.file, "2026-09-14", 3).do, "Keep me.");
+    assert.equal(hit.sent.length, 0);
   });
 });

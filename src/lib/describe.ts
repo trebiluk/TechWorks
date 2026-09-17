@@ -124,7 +124,7 @@ const CARDS: Record<string, DescribeCard> = {
   },
   teach: {
     title: "Teach",
-    purpose: "Arrive here. Green dots = that hour is set. Agenda 01–04 + Need write Wall, Deck, and Plan. Hang a Drive or Canva file — Wall plays it. See wall to check. Fill P8 copies onto the other same-grade class if it is empty.",
+    purpose: "Arrive here. Green dots = that hour is set. Agenda 01–04 + Need write Wall, Deck, and Plan. Hang a Drive or Canva file — Wall plays it. See wall to check. Send this hour copies onto empty periods or days you pick.",
     links: [{ label: "Help", href: "#help" }],
   },
   deck: {

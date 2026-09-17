@@ -173,14 +173,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Dashboard",
     title: "PlanIt",
     tags: ["plan", "planit", "planbook", "week", "copy", "materials", "homework", "closure", "sub", "objective"],
-    body: "Dash or Learn → PlanIt is the week grid (periods × days). Tap a cell. Type Do this — that line is the Wall, Teach, and Deck. Need (goggles / stock) is the kit chip kids see. Process chips are tags, not titles. New unit is a name plus an optional driving question. Last week → this week copies by weekday. Fill other G7 only writes empty hours. Repeat through this week fills Mon–Fri for that period. Same as last class day. Wall preview is the Agenda 2×2 for that hour. This week on the Wall is Mon–Fri for the live period. Teach this hour jumps to the live plates. See wall hangs the projector. Units still live on Learn → Projects. Admin → Day is lunch / sub / meetings — not the lesson.",
+    body: "Dash or Learn → PlanIt is the week grid (periods × days). Tap a cell. Type Do this — that line is the Wall, Teach, and Deck. Need (goggles / stock) is the kit chip kids see. Process chips are tags, not titles. New unit is a name plus an optional driving question. Send this hour: pick other periods today and/or this period on other days, then Send. It never overwrites an hour that already has a plan. Put last class day here writes the hour you are looking at. Wall preview is the Agenda 2×2 for that hour. This week on the Wall is Mon–Fri for the live period. Teach this hour jumps to the live plates. See wall hangs the projector. Units still live on Learn → Projects. Admin → Day is lunch / sub / meetings — not the lesson.",
   },
   {
     id: "dash-loop",
     category: "Dashboard",
     title: "The class loop",
     tags: ["agenda", "enter", "cleanup", "teach", "wall", "hang", "crew", "bell"],
-    body: "Arrive → Teach. Green dots + “n of 8 hours set” mean that hour is planned. Type Agenda 01–04 and Need (goggles / stock); it is the Wall, the Deck, and PlanIt. Paste a Drive or Canva link on Hang — it plays on the Wall under Agenda. See wall is next to Deck. Fill P8 copies this hour onto the other same-grade class only if it is empty. Wall: Enter is sit / need / in a minute, then a chime into Agenda 2×2 with This week under it, coral Cleanup in the last minutes. After the last bell the Agenda stays. Crew lead PIN: today’s make, last marks, Buy if the catalog has perks.",
+    body: "Arrive → Teach. Green dots + “n of 8 hours set” mean that hour is planned. Type Agenda 01–04 and Need (goggles / stock); it is the Wall, the Deck, and PlanIt. Paste a Drive or Canva link on Hang — it plays on the Wall under Agenda. See wall is next to Deck. Send this hour copies the agenda onto other empty periods or days you pick — never a week blast. Wall: Enter is sit / need / in a minute, then a chime into Agenda 2×2 with This week under it, coral Cleanup in the last minutes. After the last bell the Agenda stays. Crew lead PIN: today’s make, last marks, Buy if the catalog has perks.",
   },
   {
     id: "admin-crews",
@@ -528,7 +528,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Privacy",
     title: "FERPA / what gets published",
     tags: ["ferpa", "alias", "names", "iep", "export", "first"],
-    body: "Live export is encoded and has no last names. Names vault is a separate private download (alias, last, period, IEP/504). Every worker has a locked unique id; the wall alias is generated after that id exists. IEP is a blue deco dot and 504 orange, only inside Show full info, mixed with fake dots. Google Site embed never gets the vault. Teacher pads can show legal first names when you turn on Show first real names — last names stay vault, and the wall never follows.",
+    body: "Live export is encoded and has no last names. Names vault is a separate private download (alias, last, period, IEP/504). Every worker has a locked unique id; the wall alias is generated after that id exists. Shop ID is the 5-letter tag from that id. Print codebook (Records → Names or Backups) is the paper map of Shop ID + alias → legal name — drawer only. IEP is a blue deco dot and 504 orange, only inside Show full info, mixed with fake dots. Google Site embed never gets the vault. Teacher pads can show legal first names when you turn on Show first real names — last names stay vault, and the wall never follows.",
+  },
+  {
+    id: "codebook",
+    category: "Privacy",
+    title: "Codebook / who’s who",
+    tags: ["codebook", "ferpa", "alias", "shop", "id", "print", "names"],
+    body: "The wall only knows Rivet. You know who Rivet is from the codebook. Admin → Records → Names or Backups → Print codebook (paper) or Download codebook (CSV on USB). Columns: Period, Shop ID, Alias, Last, First. IEP/504 are not on that paper — they stay in Names vault. Print to the teacher printer. Keep the sheet in the drawer. Do not leave it on the shop tray.",
   },
   {
     id: "first-names",

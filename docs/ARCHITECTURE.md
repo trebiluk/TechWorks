@@ -116,7 +116,9 @@ A worker is a locked id. The wall shows an alias minted from that id, never from
 | Bit | Where it lives | Wall | Profile (locked) | Family | Export |
 | --- | --- | --- | --- | --- | --- |
 | Locked id | students[].id | Hidden | Hidden | Hidden | Encoded live export |
+| Shop ID | publicHandle(id) | Never as a name | Roster / dossier / codebook | Portal tag | Live export code |
 | Alias (first) | students[].first | Yes | Yes | Yes | Yes |
+| Codebook | paper / CSV | Never | Print after PIN | Never | Teacher drawer only |
 | Desk first names | config.showFirstReal | Never | Teacher toggle · first only | Never | Never |
 | Legal name | vault legalFirst/Last | Never | Show full info | After PIN | VAULT tab only |
 | IEP / 504 | flags | Never (deco dots inside Show full) | Show full info | No | VAULT |
@@ -124,7 +126,7 @@ A worker is a locked id. The wall shows an alias minted from that id, never from
 | Period / grade | period, grade | P chips | Yes | Yes | Yes |
 
 - Admin → Crews: size, deal, look, crown. Separate rules live on Roster.
-- Rosters page is the yearbook of aliases. Legal names stay in Admin → Records.
+- Rosters page is the yearbook of aliases. Legal names stay in Admin → Records. Print codebook is the paper map.
 - Show first real names (Settings → Privacy) puts legal first names on teacher pads only. The wall never follows.
 
 ## Score, Week, Year, Data

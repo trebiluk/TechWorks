@@ -47,8 +47,8 @@ import {
 } from "@/lib/teach";
 import { saveTeachAsk, saveTeachDo, saveTeachLine, saveTeachObjective } from "@/lib/plan-sync";
 import { dayHourStatus, hourAgenda, saveAgendaLine } from "@/lib/hour-flow";
-import { copyHourToEmptySameGrade, sameGradePeriods } from "@/lib/planbook";
 import { DraftField } from "@/components/draft-field";
+import { SendHour } from "@/components/send-hour";
 import { cn } from "@/lib/utils";
 import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
 import { HangFrame } from "@/components/hang-frame";
@@ -116,6 +116,7 @@ export function TeachBoard({
         : cur?.line ?? "Sit with your crew.";
   const [layout, setLayout] = useState<TeachLayout>(() => loadTeachLayout());
   const [printOn, setPrintOn] = useState(false);
+  const [sendNote, setSendNote] = useState("");
   const sortOn = unlocked && editing !== false;
   const fileRef = useRef(file);
   fileRef.current = file;
@@ -157,9 +158,6 @@ export function TeachBoard({
   const weekDays = week?.days ?? [date];
   const hourRows = dayHourStatus(file, date, shop);
   const hoursSet = hourRows.filter((r) => r.set).length;
-  const thisSet = Boolean(hourRows.find((r) => r.period === period)?.set);
-  const twinEmpty = sameGradePeriods(file, period).filter((p) => hourRows.some((r) => r.period === p && !r.set));
-
   const hidden = layout.order.filter((id) => !teachRowOn(layout, id));
 
   function plateOf(id: TeachRowId) {
@@ -211,6 +209,22 @@ export function TeachBoard({
                     onCommit={(v) => editNow((f) => setTeachMaterials(f, date, period, v))}
                   />
                 </label>
+                {unlocked ? (
+                  <>
+                    <SendHour
+                      file={file}
+                      date={date}
+                      period={period}
+                      unlocked={unlocked}
+                      days={weekDays}
+                      onSend={(next, note) => {
+                        edit(next);
+                        setSendNote(note);
+                      }}
+                    />
+                    {sendNote ? <p className="text-sm font-semibold text-gain">{sendNote}</p> : null}
+                  </>
+                ) : null}
                 <label className="grid gap-1">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Ask · driving question</span>
                   <DraftField
@@ -380,16 +394,6 @@ export function TeachBoard({
             {onWall ? (
               <button type="button" onClick={onWall} className="tw-tap min-h-8 rounded-full bg-accent px-3 text-[12px] font-semibold text-accent-fg">
                 See wall
-              </button>
-            ) : null}
-            {unlocked && thisSet && twinEmpty.length ? (
-              <button
-                type="button"
-                onClick={() => editNow((f) => copyHourToEmptySameGrade(f, date, period))}
-                className="tw-tap min-h-8 rounded-full px-3 text-[12px] font-medium tw-btn-2"
-                title="Copy this hour onto the other class of the same grade, only if that hour is empty"
-              >
-                Fill P{twinEmpty.join(" · P")}
               </button>
             ) : null}
             {onArrange ? (

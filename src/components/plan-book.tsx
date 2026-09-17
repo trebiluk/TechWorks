@@ -20,7 +20,7 @@ import { formatSchoolDate, instructionalWeeks, isSchoolDay, todayIso, weekOn } f
 import { SortableItem, SortableList } from "@/components/sortable";
 import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
 import { hydrateWeekFromTeach } from "@/lib/plan-sync";
-import { copyHourThroughWeek, copyHourToSameGrade, copyYesterday } from "@/lib/planbook";
+import { SendHour } from "@/components/send-hour";
 import { cn } from "@/lib/utils";
 
 const PROVE = [
@@ -178,33 +178,20 @@ export function PlanBook({
                 Teach this day
               </button>
             ) : null}
-            <button
-              type="button"
-              onClick={() => gate() && onChange(copyYesterday(file, open, period))}
-              className="tw-tap min-h-9 rounded-xl bg-elevated px-3 text-xs font-semibold"
-            >
-              Same as last class day
-            </button>
-            <button
-              type="button"
-              onClick={() => gate() && onChange(copyHourThroughWeek(file, open, period))}
-              className="tw-tap min-h-9 rounded-xl bg-elevated px-3 text-xs font-semibold"
-            >
-              Repeat through week
-            </button>
-            <button
-              type="button"
-              onClick={() => gate() && onChange(copyHourToSameGrade(file, open, period))}
-              className="tw-tap min-h-9 rounded-xl bg-elevated px-3 text-xs font-semibold"
-            >
-              Copy to same grade
-            </button>
             {openCell.activity ? (
               <button type="button" onClick={() => park(open, "")} className="ml-auto text-xs font-semibold text-muted">
                 Clear day
               </button>
             ) : null}
           </div>
+          <SendHour
+            file={file}
+            date={open}
+            period={period}
+            unlocked={unlocked}
+            days={days}
+            onSend={(next) => gate() && onChange(next)}
+          />
           <div className="flex flex-wrap gap-1">
             {acts.map((a) => {
               const on = openCell.activity?.id === a.id;

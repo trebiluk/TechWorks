@@ -40,7 +40,7 @@ export const ARCH_SECTIONS: ArchSection[] = [
       {
         title: "How a class hour is born",
         steps: [
-          { from: "PlanIt week grid", arrow: "tap cell · type Do this · copy last week / fill same grade", to: "teachDays for every P × day" },
+          { from: "PlanIt week grid", arrow: "tap cell · type Do this · send this hour to empty slots", to: "teachDays for every P × day" },
           { from: "PlanIt New unit", arrow: "name + optional question", to: "Parked unit on that period" },
           { from: "Teach Ask / Do / Objective", arrow: "leave field or change P", to: "teachDays + the same unit" },
           { from: "Teach Agenda 01–04", arrow: "saveAgendaLine", to: "Wall plate · Deck This hour · Plan Do/close/notes" },
@@ -109,7 +109,9 @@ export const ARCH_SECTIONS: ArchSection[] = [
         head: ["Bit", "Where it lives", "Wall", "Profile (locked)", "Family", "Export"],
         rows: [
           ["Locked id", "students[].id", "Hidden", "Hidden", "Hidden", "Encoded live export"],
+          ["Shop ID", "publicHandle(id)", "Never as a name", "Roster / dossier / codebook", "Portal tag", "Live export code"],
           ["Alias (first)", "students[].first", "Yes", "Yes", "Yes", "Yes"],
+          ["Codebook", "paper / CSV", "Never", "Print after PIN", "Never", "Teacher drawer only"],
           ["Desk first names", "config.showFirstReal", "Never", "Teacher toggle · first only", "Never", "Never"],
           ["Legal name", "vault legalFirst/Last", "Never", "Show full info", "After PIN", "VAULT tab only"],
           ["IEP / 504", "flags", "Never (deco dots inside Show full)", "Show full info", "No", "VAULT"],
@@ -120,7 +122,7 @@ export const ARCH_SECTIONS: ArchSection[] = [
     ],
     notes: [
       "Admin → Crews: size, deal, look, crown. Separate rules live on Roster.",
-      "Rosters page is the yearbook of aliases. Legal names stay in Admin → Records.",
+      "Rosters page is the yearbook of aliases. Legal names stay in Admin → Records. Print codebook is the paper map.",
       "Show first real names (Settings → Privacy) puts legal first names on teacher pads only. The wall never follows.",
     ],
   },

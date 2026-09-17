@@ -21,6 +21,7 @@ import {
 import { loadClub } from "@/lib/club";
 import { cn } from "@/lib/utils";
 import { stripFakeDemo } from "@/lib/demo";
+import { CodebookActions } from "@/components/codebook-actions";
 
 export function VaultBoard({
   file,
@@ -97,7 +98,7 @@ export function VaultBoard({
       <header>
         <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Records · this device</h2>
         <p className="mt-1 text-sm text-muted">
-          This computer is the gradebook. Cloud (Records → Cloud) copies it to the internet for the other room. Google book is the year archive. VAULT has legal names; everything else is aliases.
+          This computer is the gradebook. Cloud (Records → Cloud) copies it to the internet for the other room. Google book is the year archive. The codebook is the paper map (Shop ID + alias → legal name). VAULT still has IEP/504.
         </p>
       </header>
 
@@ -236,6 +237,7 @@ export function VaultBoard({
           <button type="button" onClick={onExportNames} className="tw-tap min-h-11 rounded-md bg-elevated px-3 text-sm font-semibold">
             Names vault
           </button>
+          <CodebookActions file={file} />
           <button
             type="button"
             onClick={() => {

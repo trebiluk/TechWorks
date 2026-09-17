@@ -97,6 +97,64 @@ export function copyHour(
   return next;
 }
 
+export type HourTarget = { date: string; period: number };
+
+/** Other periods on this date, plus this period on other dates. Never a full-week blast. */
+export function hourTargets(fromDate: string, fromPeriod: number, periods: number[], days: string[]): HourTarget[] {
+  const out: HourTarget[] = [];
+  const seen = new Set<string>();
+  const add = (date: string, period: number) => {
+    if (date === fromDate && period === fromPeriod) return;
+    if (!isSchoolDay(date)) return;
+    const k = `${date}|${period}`;
+    if (seen.has(k)) return;
+    seen.add(k);
+    out.push({ date, period });
+  };
+  for (const p of periods) add(fromDate, p);
+  for (const d of days) add(d, fromPeriod);
+  return out;
+}
+
+export function hourLabel(t: HourTarget): string {
+  return `P${t.period} ${formatSchoolDate(t.date).replace(/,.*/, "")}`;
+}
+
+/** One planned hour onto the slots you pick. Skips any hour that already has a plan. */
+export function sendHour(
+  file: EconomyFile,
+  fromDate: string,
+  fromPeriod: number,
+  targets: HourTarget[],
+): { file: EconomyFile; sent: HourTarget[]; skipped: HourTarget[] } {
+  const sent: HourTarget[] = [];
+  const skipped: HourTarget[] = [];
+  if (!hourIsSet(file, fromDate, fromPeriod)) return { file, sent, skipped };
+  let next = file;
+  const seen = new Set<string>();
+  for (const t of targets) {
+    if (t.date === fromDate && t.period === fromPeriod) continue;
+    const k = `${t.date}|${t.period}`;
+    if (seen.has(k)) continue;
+    seen.add(k);
+    if (hourIsSet(next, t.date, t.period)) {
+      skipped.push(t);
+      continue;
+    }
+    next = copyHour(next, fromDate, fromPeriod, t.date, t.period);
+    sent.push(t);
+  }
+  return { file: next, sent, skipped };
+}
+
+export function sendHourNote(sent: HourTarget[], skipped: HourTarget[]): string {
+  if (!sent.length && !skipped.length) return "Pick an empty hour first.";
+  const bits: string[] = [];
+  if (sent.length) bits.push(`Sent to ${sent.map(hourLabel).join(", ")}.`);
+  if (skipped.length) bits.push(`Kept ${skipped.map(hourLabel).join(", ")} — already planned.`);
+  return bits.join(" ");
+}
+
 export function copyHourToSameGrade(file: EconomyFile, date: string, period: number): EconomyFile {
   let next = file;
   for (const p of sameGradePeriods(file, period)) next = copyHour(next, date, period, date, p);

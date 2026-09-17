@@ -6,6 +6,14 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.63 — 2026-09-17
+
+- Codebook: Admin → Records → Names (or Backups) → Print codebook / Download codebook. Paper and private CSV map Shop ID + alias → last, first. Wall stays aliases. IEP/504 stay in the names vault, not on the paper. Confirm before print — teacher drawer, not the shop tray.
+
+## 1.92.62 — 2026-09-17
+
+- Send this hour: pick other periods today and/or this period on other days, then Send. Empty hours only — a planned hour stays. Last week → this week and This week → next are gone (those could wipe a week). Fill P8 / Repeat through the week are gone as one-tap blasts. Put last class day here still writes the hour you are on.
+
 ## 1.92.61 — 2026-09-17
 
 - PlanIt is the week planner. Periods down, days across. Type Do this — that is the Wall, Teach, and Deck. Process chips (Ask / Imagine / Plan / Create / Improve / Share / Safety) are tags, never the hour’s name. New unit is a name plus an optional question. Copy: last week, same as yesterday, through the week, fill the other same-grade class only if it is empty. Wall preview sits on the hour. This week plate on the Wall shows Mon–Fri for the live period. New Activity no longer pastes lever sample text or parks a unit named Ask.

@@ -27,6 +27,7 @@ import { emptyRoster, snapshotNow } from "@/lib/vault";
 import { publicHandle } from "@/lib/live";
 import { todayIso } from "@/lib/calendar";
 import { bansOf, dropCrewBan, placeBlock, rosterLabel, separatePair, setStudentCrew, whoOf } from "@/lib/crew-desk";
+import { CodebookActions } from "@/components/codebook-actions";
 import { MarkChip } from "@/components/ui";
 import { markOf } from "@/lib/nav-marks";
 import { cn } from "@/lib/utils";
@@ -100,7 +101,7 @@ export function YearRoster({
             Rm 13 shop · Rm 136 hall · A,B days · {counts.year} on file · {counts.live} live {counts.liveQ}
             {counts.hold ? ` · ${counts.hold} club hold` : ""} · {ids.unique} locked ids
           </p>
-          <p className="mt-1 text-xs text-subtle">Type Last, First → Add. Id is minted first, then the wall alias. Scores, XP, and $ stay on that id.</p>
+          <p className="mt-1 text-xs text-subtle">Wall = alias. Shop ID is the 5-letter tag. Who is who lives on the codebook paper / file — not the projector.</p>
         </div>
         <div className="flex flex-wrap items-center gap-1">
           <SaveChip savedAt={file.meta.savedAt} pending={pending} onSave={saveNow} />
@@ -131,6 +132,7 @@ export function YearRoster({
             SchoolTool
           </MarkChip>
         </div>
+        {file.students.length ? <CodebookActions file={file} /> : null}
       </header>
 
       {!ids.ok ? (

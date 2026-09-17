@@ -51,6 +51,7 @@ PINs: teacher is the PIN they set (1111 is rejected). Crew override `2222`.
 
 - Walls and projector: **first / alias only**.
 - Real last names, IEP, 504: profile, behind PIN, hide/show.
+- Who-is-who paper: **codebook** (Shop ID + alias → last, first). Drawer only. Not the wall.
 - IEP = blue dot, 504 = orange dot, mixed with decoy dots on profile only.
 - Never log the confidential roster PDF. Never paste real names into changelog, Help, or Drive dumps.
 

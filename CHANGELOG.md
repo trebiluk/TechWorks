@@ -1,8 +1,16 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.61. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.63. -->
 
 # TechWorks changelog
 
-App version **1.92.61**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.63**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.63 — 2026-09-17
+
+- Codebook: Admin → Records → Names (or Backups) → Print codebook / Download codebook. Paper and private CSV map Shop ID + alias → last, first. Wall stays aliases. IEP/504 stay in the names vault, not on the paper. Confirm before print — teacher drawer, not the shop tray.
+
+## 1.92.62 — 2026-09-17
+
+- Send this hour: pick other periods today and/or this period on other days, then Send. Empty hours only — a planned hour stays. Last week → this week and This week → next are gone (those could wipe a week). Fill P8 / Repeat through the week are gone as one-tap blasts. Put last class day here still writes the hour you are on.
 
 ## 1.92.61 — 2026-09-17
 
