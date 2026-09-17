@@ -62,3 +62,21 @@ export function eachTapeMark(tape: string | undefined, fn: (date: string, code: 
     if (c && c !== EMPTY) fn(days[i], c);
   }
 }
+
+/** Last n dated marks before `before` (school-year tape + marks dict). Empty days skipped. */
+export function recentMarks(
+  s: { marks?: Record<string, string>; markTape?: string },
+  before: string,
+  n = 5,
+): { date: string; code: string }[] {
+  const days = yearDates();
+  const end = dayPos(before);
+  const last = end < 0 ? days.length : end;
+  const out: { date: string; code: string }[] = [];
+  for (let i = last - 1; i >= 0 && out.length < n; i--) {
+    const date = days[i]!;
+    const code = String(s.marks?.[date] || tapeMark(s.markTape, date) || "").trim();
+    if (code) out.push({ date, code });
+  }
+  return out;
+}

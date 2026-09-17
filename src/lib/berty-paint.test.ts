@@ -1,9 +1,8 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { describe, it } from "node:test";
-import { readdirSync } from "node:fs";
 import { join } from "node:path";
-import { countBertyHands, paintBertySvg } from "./berty-paint.ts";
+import { countBertyHands, paintBertySvg, stampSvgIds } from "./berty-paint.ts";
 import { bertyBodyHex, DEFAULT_BERTY_LOOK } from "./berty-look.ts";
 
 const DIR = join(process.cwd(), "public/berty/brand");
@@ -22,8 +21,33 @@ describe("berty hands and color", () => {
   it("paints the swatch onto the body, not a hue guess", () => {
     const raw = readFileSync(join(DIR, "bertybot_waving.svg"), "utf8");
     const look = { ...DEFAULT_BERTY_LOOK, ink: "cleanup" as const };
-    const painted = paintBertySvg(raw, bertyBodyHex(look));
+    const painted = paintBertySvg(raw, bertyBodyHex(look), "maker");
     assert.match(painted, /#f97316/i);
     assert.equal(painted.includes("#2ee6ff"), false);
+  });
+
+  it("stamps gradient ids so two Bertys on one page cannot steal each other's color", () => {
+    const raw = readFileSync(join(DIR, "bertybot_waving.svg"), "utf8");
+    const a = paintBertySvg(raw, "#f97316", "head");
+    const b = paintBertySvg(raw, "#f97316", "maker");
+    assert.match(a, /id="twwavingBody-head"/);
+    assert.match(b, /url\(#twwavingBody-maker\)/);
+    assert.equal(a.includes('id="twwavingBody"'), false);
+    assert.equal(b.includes("twwavingBody-head"), false);
+  });
+
+  it("pads the point pose so the claws sit inside the box", () => {
+    const raw = readFileSync(join(DIR, "bertybot_point.svg"), "utf8");
+    const painted = paintBertySvg(raw, "#2ee6ff", "pt");
+    assert.match(painted, /viewBox="-40 -40 280 340"/);
+    assert.equal(countBertyHands(painted), 2);
+  });
+
+  it("stampSvgIds rewrites url(#) and id=", () => {
+    const src = `<svg><defs><linearGradient id="g"><stop stop-color="#2ee6ff"/></linearGradient></defs><rect fill="url(#g)"/></svg>`;
+    const out = stampSvgIds(src, "x");
+    assert.match(out, /id="g-x"/);
+    assert.match(out, /url\(#g-x\)/);
+    assert.equal(out.includes('id="g"'), false);
   });
 });

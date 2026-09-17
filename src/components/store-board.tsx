@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
-import { isLiveStudent, money, periodTitle, score, shopBells } from "@/lib/economy";
+import { isLiveStudent, money, padFirst, periodTitle, score, shopBells, showFirstReal } from "@/lib/economy";
 import { buyShop, catalogOf, setHallShop, setShop, type ShopItem } from "@/lib/store";
 import { QuarterChip } from "@/components/quarter-chip";
 import { applySort, decorateRank, type SortKey } from "@/lib/rank";
@@ -26,6 +26,7 @@ export function StoreBoard({
 }) {
   const bells = shopBells(file);
   const list = useMemo(() => score(file), [file]);
+  const real = showFirstReal(file);
   const [period, setPeriod] = useState(bells[0]?.period ?? 1);
   const [sort, setSort] = useState<SortKey>("wallet");
   const kids = applySort(
@@ -50,6 +51,7 @@ export function StoreBoard({
   }, [focusId, list]);
 
   const me = kids.find((s) => s.id === id) ?? kids[0] ?? null;
+  const who = me ? padFirst(me, real) : "";
   const raw = me ? file.students.find((s) => s.id === me.id) : null;
   const hall = period === 6;
   const shop = catalogOf(file, period);
@@ -58,7 +60,7 @@ export function StoreBoard({
   function buy(item: ShopItem) {
     if (!me) return;
     if (me.quarter < item.price) {
-      onFlash?.(`${me.first} can't afford ${item.name}`);
+      onFlash?.(`${who} can't afford ${item.name}`);
       return;
     }
     if (!unlocked) {
@@ -66,7 +68,7 @@ export function StoreBoard({
       return;
     }
     onChange(buyShop(file, me.id, item));
-    onFlash?.(`${me.first} got ${item.name} · wallet only`);
+    onFlash?.(`${who} got ${item.name} · wallet only`);
   }
 
   function saveCatalog(next: ShopItem[]) {
@@ -117,7 +119,7 @@ export function StoreBoard({
             onClick={() => setId(s.id)}
             className={cn("tw-tap min-h-12 rounded-full px-4 text-sm font-semibold", s.id === me?.id ? "bg-accent text-accent-fg" : "bg-elevated")}
           >
-            {s.first}
+            {padFirst(s, real)}
             <span className="ml-1 font-mono text-xs">{money(s.quarter)}</span>
           </button>
         ))}
@@ -125,7 +127,7 @@ export function StoreBoard({
 
       {me ? (
         <section className="tw-gadget p-4">
-          <h2 className="font-display text-2xl font-semibold tracking-tight">{me.first}</h2>
+          <h2 className="font-display text-2xl font-semibold tracking-tight">{who}</h2>
           <p className="text-sm text-muted">{me.crewName} · P{me.period}</p>
           <p className={cn("mt-2 font-display text-3xl font-semibold tabular-nums", me.quarter < 0 ? "text-loss" : "text-gain")}>
             {money(me.quarter)}

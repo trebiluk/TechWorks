@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Undo2, Users } from "lucide-react";
 import { PeriodRewardChip } from "@/components/reward-bar";
 import { BertyCueBot } from "@/components/berty";
 import type { DayCode, EconomyFile } from "@/lib/economy";
-import { dayPay, money, shopBells } from "@/lib/economy";
+import { dayPay, money, padFirst, setShowFirstReal, shopBells, showFirstReal } from "@/lib/economy";
 import { cycleDayLabel, cycleProgress, daySlot, formatSchoolDate, isSchoolDay, quarterNow, quarterProgress, scoreDate as nearestScoreDate, stepSchoolDay, todayIso, yearProgress } from "@/lib/calendar";
 import {
   abOn,
@@ -34,7 +34,7 @@ import {
   schooltoolDone,
   studentCleanup,
 } from "@/lib/store";
-import { attendLate, beep, bellForPeriod, formatBell, periodClock, periodNow, periodPast, ringBell, SCHOOLTOOL_URL } from "@/lib/bells";
+import { attendLate, beep, bellForPeriod, formatBell, periodClock, periodNow, periodPast, SCHOOLTOOL_URL } from "@/lib/bells";
 import { WeatherChip } from "@/components/weather-chip";
 import { DayFacts } from "@/components/day-facts";
 import { cn } from "@/lib/utils";
@@ -42,6 +42,8 @@ import { useShopClock } from "@/lib/use-clock";
 import { PollPad } from "@/components/polls";
 import { crewDone, crewPulse, crewsOf } from "@/lib/crews";
 import { featureOn } from "@/lib/features";
+import { recentMarks } from "@/lib/tape";
+import { agendaFor } from "@/lib/projects";
 
 const PERIOD_CLASS: Record<number, string> = {
   1: "bg-period-1",
@@ -158,7 +160,6 @@ export function ScoreDesk({
   const [crewKey, setCrewKey] = useState(periodCrews[0]?.key ?? "Crew A");
   const skipAdvance = useRef(false);
   const undoRef = useRef<EconomyFile | null>(null);
-  const warnKey = useRef("");
   const [canUndo, setCanUndo] = useState(false);
   const bellsId = deskBellId(file, date);
   const now = useShopClock(bellsId, "beat");
@@ -242,19 +243,12 @@ export function ScoreDesk({
   const letter = abOn(file, date);
   const bell = bellForPeriod(period, bellsId);
   const clock = periodClock(period, bellsId, now);
-
-  useEffect(() => {
-    if (!clock?.cleanup) return;
-    const key = `${period}-${clock.end}`;
-    if (warnKey.current === key) return;
-    warnKey.current = key;
-    ringBell();
-  }, [clock?.cleanup, clock?.end, period]);
   const leadId = crew ? crewLeaderId(file, period, crew.key) : "";
   const lead = crew?.kids.find((s) => s.id === leadId);
   const stDone = schooltoolDone(file, date, period);
   const allDone = periodCrews.length > 0 && periodCrews.every((c) => crewDone(c.kids, date));
   const verified = periodVerified(file, date, period);
+  const real = showFirstReal(file);
   const p1Alarm =
     school &&
     !sub &&
@@ -333,6 +327,9 @@ export function ScoreDesk({
   if (crewMode) {
     const kids = crew?.kids ?? [];
     const liveTech = livePeriod != null && livePeriod !== 6 && period === livePeriod;
+    const unit = agendaFor(file, period, date, crew?.key);
+    const look = unit.activity?.lookFor?.trim() || "";
+    const unitLine = [unit.title, unit.activityName].filter(Boolean).join(" · ");
     return (
       <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden bg-crew p-1 text-fg">
         <p className="flex shrink-0 flex-wrap items-center gap-2 font-display text-xl font-semibold tracking-tight sm:text-2xl">
@@ -340,8 +337,9 @@ export function ScoreDesk({
           Hi, Team Leader {lead?.first ?? "friend"}
           <span className="ml-2 text-crew-hi">score your crew.</span>
         </p>
+        {unitLine ? <p className="shrink-0 truncate text-sm font-semibold">{unitLine}{look ? ` · a 3 looks like: ${look}` : ""}</p> : null}
         {crew?.motto ? <p className="shrink-0 text-sm text-muted">{crew.icon ? `${crew.icon} ` : ""}{crew.motto}</p> : null}
-        <p className="shrink-0 text-xs font-semibold uppercase tracking-wide text-muted">3 · 2 · 1 or Absent / Excused / Personal → next crew. No wallet.</p>
+        <p className="shrink-0 text-xs font-semibold uppercase tracking-wide text-muted">3 · 2 · 1 or Absent / Excused / Personal → next crew. Last marks sit under each name. No wallet.</p>
         {clock && liveTech ? (
           <div className="shrink-0">
             <PeriodMeter clock={clock} period={period} file={file} />
@@ -406,7 +404,15 @@ export function ScoreDesk({
               {Array.from({ length: 4 }, (_, i) => kids[i] ?? null).map((s, i) =>
                 s ? (
                   <div key={s.id} className="flex min-h-0 flex-col gap-1 overflow-hidden rounded-2xl bg-crew-card p-2">
-                    <p className="truncate font-display text-xl font-semibold">{s.first}</p>
+                    <p className="truncate font-display text-xl font-semibold">{padFirst(s, real)}</p>
+                    {(() => {
+                      const hist = recentMarks(s, date, 5);
+                      return hist.length ? (
+                        <p className="truncate font-mono text-[11px] text-muted" title={hist.map((h) => `${h.date} ${h.code}`).join(" · ")}>
+                          {hist.map((h) => h.code).join(" · ")}
+                        </p>
+                      ) : null;
+                    })()}
                     <div className="grid min-h-0 flex-1 grid-cols-3 gap-1">
                       {(["3", "2", "1"] as const).map((code) => (
                         <button
@@ -518,6 +524,16 @@ export function ScoreDesk({
         <a href={SCHOOLTOOL_URL} target="_blank" rel="noreferrer" className={cn("min-h-9 rounded-lg px-2 py-1 text-xs font-semibold", stDone ? "bg-gain text-bg" : p1Alarm ? "bg-loss text-accent-fg" : "bg-elevated text-muted")}>
           {stDone ? "ST in" : p1Alarm ? "ST due" : "ST"}
         </a>
+        {unlocked ? (
+          <button
+            type="button"
+            title="Legal first names on this pad. Wall stays aliases."
+            onClick={() => commit(setShowFirstReal(file, !real))}
+            className={cn("min-h-9 rounded-lg px-2 text-xs font-semibold", real ? "bg-gold text-bg" : "bg-elevated text-muted")}
+          >
+            First names
+          </button>
+        ) : null}
         <button
           type="button"
           onClick={() => {
@@ -602,7 +618,7 @@ export function ScoreDesk({
                 <option value="">Leader</option>
                 {crew.kids.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.first}
+                    {padFirst(s, real)}
                   </option>
                 ))}
               </select>
@@ -702,7 +718,7 @@ export function ScoreDesk({
                 <article key={s.id} className="rounded-xl bg-surface p-1">
                   <div className="grid grid-cols-[minmax(6.5rem,1.15fr)_repeat(3,minmax(2.75rem,1fr))] items-stretch gap-1">
                     <button type="button" onClick={() => onOpenId(s.id)} className="tw-tap flex min-h-14 min-w-0 items-center justify-between gap-1 rounded-lg px-2 text-left">
-                      <span className="truncate font-display text-xl font-semibold leading-tight">{s.first}</span>
+                      <span className="truncate font-display text-xl font-semibold leading-tight">{padFirst(s, real)}</span>
                       <span className="shrink-0 font-mono text-xs tabular-nums text-muted">
                         {money(dayPay(markOn(s, date) === "Assist" ? "" : markOn(s, date), file.meta.codes) + (studentAssist(s, date) ? Number(file.meta.codes.Assist ?? 10) : 0))}
                       </span>

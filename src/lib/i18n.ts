@@ -22,6 +22,8 @@ const EXTRA_ES: Record<string, string> = {
   Themes: "Temas",
   Dashboard: "Pizarra",
   Week: "Semana",
+  PlanIt: "PlanIt",
+  "This week": "Esta semana",
   Admin: "Admin",
   Lunch: "Almuerzo",
   Now: "Ahora",

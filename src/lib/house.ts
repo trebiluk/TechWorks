@@ -30,6 +30,7 @@ export const HOUSE: Record<HouseId, HouseProfile> = {
     jobs: DAILY_PROCEDURE.map((s) => ({ title: s.title, line: s.line })),
     notes: [
       "Cleanup and passing always show Berty, even if the Berty module is off.",
+      "HAND LAW: two claws on every full-body pose. Bare means no tool, not no hands.",
       "Caught helping extra at cleanup can earn class cash — not XP.",
       "Not a student. Not in the gradebook.",
     ],

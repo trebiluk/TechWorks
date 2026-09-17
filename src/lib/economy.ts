@@ -79,6 +79,12 @@ export function legalFirstOf(s: Pick<RawStudent, "legalFirst">): string {
   return String(s.legalFirst ?? "").trim();
 }
 
+/** Legal first name when the teacher toggle is on. Alias if the vault is empty. */
+export function padFirst(s: Pick<RawStudent, "first" | "legalFirst">, on: boolean): string {
+  if (!on) return s.first;
+  return legalFirstOf(s) || s.first;
+}
+
 export type Bell = { period: number; grade: number };
 
 export type Market = {
@@ -150,7 +156,7 @@ export type EconomyFile = {
       crewExceptions?: { a: string; b: string; date: string; note: string }[];
       crewRules?: { min?: number; max?: number; crewsMax?: number };
       teachPack?: string;
-      teachDays?: Record<string, Record<string, { pack?: string; objective?: string; pin?: string; notes?: string; ask?: string; do?: string; lines?: Record<string, string>; media?: HangItem[] }>>;
+      teachDays?: Record<string, Record<string, { pack?: string; objective?: string; pin?: string; notes?: string; ask?: string; do?: string; lines?: Record<string, string>; media?: HangItem[]; materials?: string; homework?: string; close?: string; mods?: string; reflect?: string; move?: string; agenda?: { now?: string; goal?: string; next?: string; behave?: string } }>>;
       lessons?: { id: string; title: string; cat: string; grade?: number; pack?: string; objective?: string; notes?: string; used?: { date: string; period: number; q?: string }[] }[];
       studyHall?: {
         showNotes?: boolean;
@@ -195,6 +201,9 @@ export type EconomyFile = {
         stemLine?: string;
       }[];
       modules?: Record<string, boolean>;
+      cleanupJobs?: { shop?: string[]; room?: string[]; hall?: string[]; extra?: string };
+      /** Teacher pads only. Legal first names. Never the wall. */
+      showFirstReal?: boolean;
       lucky?: {
         pot?: number;
         tickets?: { id: string; n: number }[];
@@ -301,6 +310,21 @@ export type EconomyFile = {
   crews: { period: number; key: string; name: string; motto?: string; icon?: string; color?: string; logo?: string }[];
   students: RawStudent[];
 };
+
+/** Teacher desk pads. Off by default. Wall / Teach / Family web never read this. */
+export function showFirstReal(file: EconomyFile): boolean {
+  return file.meta.config?.showFirstReal === true;
+}
+
+export function setShowFirstReal(file: EconomyFile, on: boolean): EconomyFile {
+  return {
+    ...file,
+    meta: {
+      ...file.meta,
+      config: { ...(file.meta.config ?? {}), showFirstReal: on },
+    },
+  };
+}
 
 export type ScoredStudent = RawStudent & {
   crewName: string;

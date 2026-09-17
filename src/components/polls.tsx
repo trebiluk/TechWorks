@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { EconomyFile, RawStudent } from "@/lib/economy";
-import { shopBells } from "@/lib/economy";
+import { padFirst, shopBells, showFirstReal } from "@/lib/economy";
 import { todayIso } from "@/lib/calendar";
 import { periodNow } from "@/lib/bells";
 import { deskBellId } from "@/lib/store";
@@ -71,6 +71,7 @@ export function PollPad({
 }) {
   const period = kids[0]?.period ?? 0;
   const poll = pollForPeriod(file, period);
+  const real = showFirstReal(file);
   if (!poll || !kids.length) return null;
   return (
     <section className="tw-gadget shrink-0 space-y-2 p-2">
@@ -78,7 +79,7 @@ export function PollPad({
       <div className="grid grid-cols-2 gap-1">
         {kids.map((s) => (
           <div key={s.id} className="rounded-xl bg-elevated p-2">
-            <p className="truncate text-sm font-semibold">{s.first}</p>
+            <p className="truncate text-sm font-semibold">{padFirst(s, real)}</p>
             <div className={cn("mt-1 grid gap-1", poll.options.length > 3 ? "grid-cols-4" : poll.options.length === 3 ? "grid-cols-3" : "grid-cols-2")}>
               {poll.options.map((o) => (
                 <button

@@ -4,7 +4,7 @@ import type { BertyLook } from "@/lib/berty-look";
 export function BertyGear({ look }: { look: BertyLook }) {
   if (look.kit === "plain" && look.hat === "none" && look.hand === "none") return null;
   return (
-    <svg className="berty-gear" viewBox="0 0 200 260" aria-hidden>
+    <svg className="berty-gear" viewBox="-40 -40 280 340" overflow="visible" aria-hidden>
       {look.kit === "cape" ? (
         <path d="M48 92 C28 130 24 190 40 230 L70 210 C60 170 62 120 78 96 Z M152 92 C172 130 176 190 160 230 L130 210 C140 170 138 120 122 96 Z" fill="#7c3aed" stroke="#1a1a1a" strokeWidth="2.2" />
       ) : null}

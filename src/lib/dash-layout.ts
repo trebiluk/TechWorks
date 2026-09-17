@@ -1,6 +1,7 @@
 import { moveId } from "./sort.ts";
 
-const KEY = "techworks-dash-layout-v12";
+const KEY = "techworks-dash-layout-v13";
+const V12 = "techworks-dash-layout-v12";
 const V11 = "techworks-dash-layout-v11";
 const V10 = "techworks-dash-layout-v10";
 const V9 = "techworks-dash-layout-v9";
@@ -17,7 +18,7 @@ const LEGACY = [
 
 export const DASH_ROWS = [
   { id: "now", label: "Now" },
-  { id: "class", label: "Goals" },
+  { id: "class", label: "Hour" },
   { id: "proc", label: "Do this now" },
   { id: "strip", label: "Schedule" },
   { id: "club", label: "Club" },
@@ -34,8 +35,18 @@ export type DashRowId = (typeof DASH_ROWS)[number]["id"];
 /** Hide when empty unless Wall arrange is open. */
 export const SOFT_ROWS: DashRowId[] = ["club", "specials", "notes", "poll"];
 
+/** Hour + Do this + the shop ribbon stay on the left unless you drag them. */
+export const LEFT_BIAS: DashRowId[] = ["class", "proc", "strip", "club", "specials", "notes"];
+
+export const COL_LEFT = "col:left";
+export const COL_RIGHT = "col:right";
+
+export type DashCol = "left" | "right";
+
 export type DashLayout = {
   order: DashRowId[];
+  left: DashRowId[];
+  right: DashRowId[];
   hidden: DashRowId[];
   schoolN: 5 | 10;
   liveProc: boolean;
@@ -49,9 +60,12 @@ export type DashLayout = {
 };
 
 const IDS = DASH_ROWS.map((r) => r.id);
+const LEFT_SET = new Set<string>(LEFT_BIAS);
 
 export const DEFAULT_LAYOUT: DashLayout = {
-  order: ["class", "proc", "now", "strip", "club", "specials", "notes", "kpis", "poll", "mods", "tools"],
+  left: ["class", "proc", "strip", "club", "specials", "notes"],
+  right: ["now", "kpis", "poll", "mods", "tools"],
+  order: ["class", "proc", "strip", "club", "specials", "notes", "now", "kpis", "poll", "mods", "tools"],
   hidden: ["tools", "mods"],
   schoolN: 10,
   liveProc: true,
@@ -72,6 +86,24 @@ function flag(v: unknown, fallback: boolean): boolean {
   if (v === true) return true;
   if (v === false) return false;
   return fallback;
+}
+
+function uniqueIds(raw: unknown): DashRowId[] {
+  const seen = new Set<DashRowId>();
+  const out: DashRowId[] = [];
+  if (!Array.isArray(raw)) return out;
+  for (const id of raw) {
+    const ok = asId(id);
+    if (ok && !seen.has(ok)) {
+      seen.add(ok);
+      out.push(ok);
+    }
+  }
+  return out;
+}
+
+function withCols(layout: DashLayout, left: DashRowId[], right: DashRowId[]): DashLayout {
+  return { ...layout, left, right, order: [...left, ...right] };
 }
 
 /** Drop unknown ids, then park new plates next to their default neighbors. */
@@ -104,23 +136,42 @@ export function graftDashOrder(saved: DashRowId[]): DashRowId[] {
   return next;
 }
 
-function normalize(raw: Partial<DashLayout> | null, flagsFromSave: boolean): DashLayout {
-  const seen = new Set<DashRowId>();
-  const saved: DashRowId[] = [];
-  for (const id of raw?.order ?? []) {
-    const ok = asId(id);
-    if (ok && !seen.has(ok)) {
-      seen.add(ok);
-      saved.push(ok);
-    }
+function splitOrder(order: DashRowId[]): { left: DashRowId[]; right: DashRowId[] } {
+  const left: DashRowId[] = [];
+  const right: DashRowId[] = [];
+  for (const id of order) {
+    if (id === "now") right.push(id);
+    else if (LEFT_SET.has(id)) left.push(id);
+    else right.push(id);
   }
-  const order = graftDashOrder(saved);
+  return graftCols(left, right);
+}
+
+function graftCols(left: DashRowId[], right: DashRowId[]): { left: DashRowId[]; right: DashRowId[] } {
+  const nextL = left.filter((id, i) => left.indexOf(id) === i);
+  const nextR = right.filter((id, i) => right.indexOf(id) === i && !nextL.includes(id));
+  for (const id of IDS) {
+    if (nextL.includes(id) || nextR.includes(id)) continue;
+    if (id === "now" || !LEFT_SET.has(id)) nextR.push(id);
+    else nextL.push(id);
+  }
+  return { left: nextL, right: nextR };
+}
+
+function normalize(raw: Partial<DashLayout> | null, flagsFromSave: boolean): DashLayout {
+  const savedOrder = uniqueIds(raw?.order);
+  const order = graftDashOrder(savedOrder);
+  const hasCols = Array.isArray(raw?.left) || Array.isArray(raw?.right);
+  const cols = hasCols ? graftCols(uniqueIds(raw?.left), uniqueIds(raw?.right)) : splitOrder(order);
   const hidden = [...new Set((raw?.hidden ?? []).map(asId).filter((x): x is DashRowId => Boolean(x)))].filter((id) => id !== "proc");
-  const savedOrder = Array.isArray(raw?.order) ? raw!.order : [];
-  if (!savedOrder.includes("tools") && !hidden.includes("tools")) hidden.push("tools");
+  if (!savedOrder.includes("tools") && !uniqueIds(raw?.left).includes("tools") && !uniqueIds(raw?.right).includes("tools") && !hidden.includes("tools")) {
+    hidden.push("tools");
+  }
   const schoolN = raw?.schoolN === 5 ? 5 : 10;
   return {
-    order,
+    order: [...cols.left, ...cols.right],
+    left: cols.left,
+    right: cols.right,
     hidden,
     schoolN,
     liveProc: flagsFromSave ? flag(raw?.liveProc, true) : true,
@@ -148,6 +199,8 @@ export function loadDashLayout(): DashLayout {
   try {
     const cur = window.localStorage.getItem(KEY);
     if (cur) return normalize(JSON.parse(cur) as Partial<DashLayout>, true);
+    const v12 = window.localStorage.getItem(V12);
+    if (v12) return normalize(JSON.parse(v12) as Partial<DashLayout>, true);
     const v11 = window.localStorage.getItem(V11);
     if (v11) return normalize(JSON.parse(v11) as Partial<DashLayout>, true);
     const v10 = window.localStorage.getItem(V10);
@@ -186,39 +239,50 @@ export function saveDashLayout(next: DashLayout) {
   }
 }
 
-export function moveDashRow(layout: DashLayout, id: string, dir: -1 | 1): DashLayout {
-  const i = layout.order.indexOf(id as DashRowId);
-  const j = i + dir;
-  if (i < 0 || j < 0 || j >= layout.order.length) return layout;
-  const order = layout.order.slice();
-  const [row] = order.splice(i, 1);
-  order.splice(j, 0, row);
-  return { ...layout, order };
+export function dashCol(layout: DashLayout, id: string): DashCol | null {
+  const row = asId(id);
+  if (!row) return null;
+  if (layout.left.includes(row)) return "left";
+  if (layout.right.includes(row)) return "right";
+  return null;
 }
 
+export function moveDashRow(layout: DashLayout, id: string, dir: -1 | 1): DashLayout {
+  const row = asId(id);
+  if (!row) return layout;
+  const col = dashCol(layout, row);
+  if (!col) return layout;
+  const list = layout[col].slice();
+  const i = list.indexOf(row);
+  const j = i + dir;
+  if (i < 0 || j < 0 || j >= list.length) return layout;
+  const [grab] = list.splice(i, 1);
+  list.splice(j, 0, grab);
+  return withCols(layout, col === "left" ? list : layout.left, col === "right" ? list : layout.right);
+}
+
+/** Drop onto a plate, or onto col:left / col:right. */
 export function moveDashTo(layout: DashLayout, id: string, onto: string): DashLayout {
   const grab = asId(id);
-  const dest = asId(onto);
-  if (!grab || !dest) return layout;
-  const order = moveId(layout.order, grab, dest);
-  if (order === layout.order) return layout;
-  return { ...layout, order };
-}
+  if (!grab) return layout;
+  const left0 = layout.left.filter((x) => x !== grab);
+  const right0 = layout.right.filter((x) => x !== grab);
 
-/** Adjacent Now + Goals share one widescreen row. Either order. */
-export function pairMate(layout: DashLayout, id: string): "first" | "second" | null {
-  const row = asId(id);
-  if (!row || layout.hidden.includes(row)) return null;
-  const vis = layout.order.filter((x) => !layout.hidden.includes(x));
-  const i = vis.indexOf(row);
-  if (i < 0) return null;
-  const prev = vis[i - 1];
-  const next = vis[i + 1];
-  const duo = (a?: DashRowId, b?: DashRowId) =>
-    Boolean(a && b && ((a === "now" && b === "class") || (a === "class" && b === "now")));
-  if (duo(row, next)) return "first";
-  if (duo(prev, row)) return "second";
-  return null;
+  if (onto === COL_LEFT || onto === COL_RIGHT) {
+    const dest: DashCol = onto === COL_LEFT ? "left" : "right";
+    if (layout[dest].includes(grab)) return layout;
+    return withCols(layout, dest === "left" ? [...left0, grab] : left0, dest === "right" ? [...right0, grab] : right0);
+  }
+
+  const dest = asId(onto);
+  if (!dest) return layout;
+  const destCol = dashCol(layout, dest);
+  if (!destCol) return layout;
+  const list = (destCol === "left" ? left0 : right0).slice();
+  const at = list.indexOf(dest);
+  if (at < 0) return layout;
+  list.splice(at, 0, grab);
+  return withCols(layout, destCol === "left" ? list : left0, destCol === "right" ? list : right0);
 }
 
 export function hideDashRow(layout: DashLayout, id: string, on: boolean): DashLayout {
@@ -238,41 +302,47 @@ export function isSoftRow(id: string): boolean {
 }
 
 export function patchDash(layout: DashLayout, patch: Partial<DashLayout>): DashLayout {
-  return { ...layout, ...patch };
+  const next = { ...layout, ...patch };
+  if (patch.left || patch.right) return withCols(next, next.left, next.right);
+  return next;
 }
 
 export const DASH_KITS = [
-  { id: "wall", label: "Wall", hint: "Job + Do this now. Back row." },
-  { id: "work", label: "Work", hint: "Timer and draw sit with the job." },
-  { id: "score", label: "Score", hint: "Hold the lead. Top cards." },
-  { id: "club", label: "Club", hint: "Agenda pulse, then the hour." },
+  { id: "wall", label: "Wall", hint: "Hour left. Clock right. Back row." },
+  { id: "work", label: "Work", hint: "Hour + Do this. Timer on the right." },
+  { id: "score", label: "Score", hint: "Lead board left. Hour under it." },
+  { id: "club", label: "Club", hint: "Club pulse left, then the hour." },
 ] as const;
 
 export type DashKitId = (typeof DASH_KITS)[number]["id"];
 
-const REST: DashRowId[] = ["strip", "club", "specials", "notes", "kpis", "poll", "mods", "tools"];
-
-function kitOrder(head: DashRowId[]): DashRowId[] {
-  const seen = new Set(head);
-  return [...head, ...REST.filter((id) => !seen.has(id)), ...IDS.filter((id) => !head.includes(id) && !REST.includes(id))];
+function kitCols(leftHead: DashRowId[], rightHead: DashRowId[]): { left: DashRowId[]; right: DashRowId[] } {
+  const used = new Set<string>([...leftHead, ...rightHead]);
+  const left = [...leftHead, ...LEFT_BIAS.filter((id) => !used.has(id))];
+  const right = [...rightHead, ...IDS.filter((id) => !used.has(id) && !left.includes(id))];
+  return { left, right };
 }
 
 export function applyDashKit(layout: DashLayout, id: DashKitId): DashLayout {
   const keep = { layoutOpen: layout.layoutOpen, schoolN: layout.schoolN };
   if (id === "work") {
+    const cols = kitCols(["class", "proc"], ["tools", "now"]);
     return {
       ...DEFAULT_LAYOUT,
       ...keep,
-      order: kitOrder(["class", "proc", "tools", "now"]),
+      ...cols,
+      order: [...cols.left, ...cols.right],
       hidden: ["mods", "notes", "poll", "specials", "kpis"],
       rankCards: false,
     };
   }
   if (id === "score") {
+    const cols = kitCols(["kpis", "class"], ["proc", "now"]);
     return {
       ...DEFAULT_LAYOUT,
       ...keep,
-      order: kitOrder(["kpis", "class", "proc", "now"]),
+      ...cols,
+      order: [...cols.left, ...cols.right],
       hidden: ["tools", "mods", "notes", "poll", "specials"],
       rankCards: true,
       rankBtns: true,
@@ -280,41 +350,25 @@ export function applyDashKit(layout: DashLayout, id: DashKitId): DashLayout {
     };
   }
   if (id === "club") {
+    const cols = kitCols(["club", "class"], ["proc", "now"]);
     return {
       ...DEFAULT_LAYOUT,
       ...keep,
-      order: kitOrder(["club", "class", "proc", "now"]),
+      ...cols,
+      order: [...cols.left, ...cols.right],
       hidden: ["tools", "mods", "kpis", "poll", "specials", "notes"],
       rankCards: false,
     };
   }
+  const cols = kitCols(["class", "proc"], ["now", "strip", "club", "kpis"]);
   return {
     ...DEFAULT_LAYOUT,
     ...keep,
-    order: kitOrder(["class", "proc", "now"]),
+    ...cols,
+    order: [...cols.left, ...cols.right],
     hidden: ["tools", "mods", "notes", "poll", "specials"],
     rankCards: false,
     nowWeather: false,
     nowVisit: false,
   };
-}
-
-export function nowGoalPaired(layout: DashLayout): boolean {
-  return pairMate(layout, "now") === "first" || pairMate(layout, "class") === "first";
-}
-
-/** Keep Now + Goals on one row, or split them. */
-export function pairNowGoals(layout: DashLayout, together: boolean): DashLayout {
-  const rest: DashRowId[] = layout.order.filter((id) => id !== "now" && id !== "class");
-  if (together) {
-    const proc = rest.indexOf("proc");
-    const at = proc >= 0 ? proc + 1 : 0;
-    rest.splice(at, 0, "now", "class");
-    return { ...layout, order: rest, hidden: layout.hidden.filter((id) => id !== "now" && id !== "class") };
-  }
-  const strip = rest.indexOf("strip");
-  rest.splice(0, 0, "now");
-  const s = rest.indexOf("strip");
-  rest.splice(s >= 0 ? s + 1 : rest.length, 0, "class");
-  return { ...layout, order: rest };
 }

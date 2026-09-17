@@ -147,6 +147,30 @@ export function LessonPlanSheet({
                   {d.lookFor}
                 </p>
               ) : null}
+              {d.close ? (
+                <p className="mt-1 text-sm">
+                  <span className="font-bold">Closure. </span>
+                  {d.close}
+                </p>
+              ) : null}
+              {d.materials ? (
+                <p className="mt-1 text-sm">
+                  <span className="font-bold">Materials. </span>
+                  {d.materials}
+                </p>
+              ) : null}
+              {d.homework ? (
+                <p className="mt-1 text-sm">
+                  <span className="font-bold">Homework. </span>
+                  {d.homework}
+                </p>
+              ) : null}
+              {d.mods ? (
+                <p className="mt-1 text-sm">
+                  <span className="font-bold">Mods. </span>
+                  {d.mods}
+                </p>
+              ) : null}
               <p className="mt-2 text-xs text-muted print:text-neutral-600">
                 Objective · {d.objective || "—"}
                 {d.prove ? ` · Score ${d.prove === "both" ? "skill + deliverable" : d.prove}` : ""}

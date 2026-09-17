@@ -23,6 +23,7 @@ import { loadDjia, type DjiaQuote } from "@/lib/djia";
 import { downloadText, periodPulses, publicHandle, publishLive, splitExport } from "@/lib/live";
 import { paintCleanup, periodNow, SCHOOLTOOL_URL } from "@/lib/bells";
 import { CleanupStage } from "@/components/cleanup-wall";
+import { CleanupAlarm } from "@/components/cleanup-bar";
 import { NowDock } from "@/components/now-dock";
 import { NextJobChip } from "@/components/next-job";
 import { installLayoutWatch, surfaceOf, useLayout, usePhoneChrome } from "@/lib/layout";
@@ -45,6 +46,7 @@ import { cn } from "@/lib/utils";
 import { HOUSE_BERTY, HOUSE_MRK, houseHits } from "@/lib/house";
 import type { NextJob } from "@/lib/workflow";
 import { markSchooltoolOpened, saveCloudHint } from "@/lib/workflow";
+import { saveHourPick } from "@/lib/teach";
 
 const RosterWall = lazy(() => import("@/components/roster-wall").then((m) => ({ default: m.RosterWall })));
 const ScoreDesk = lazy(() => import("@/components/score").then((m) => ({ default: m.ScoreDesk })));
@@ -250,6 +252,7 @@ export function Board() {
       return;
     }
     if (job.go === "teach") {
+      if (job.period) saveHourPick(job.period);
       go("teach");
       return;
     }
@@ -481,7 +484,7 @@ export function Board() {
     if (crewOn) return;
     if (next === "dash") go("overview");
     else if (next === "learn") {
-      setLearnStart(unlocked ? "projects" : "words");
+      setLearnStart(unlocked ? "plan" : "words");
       go("skills");
     } else if (next === "crew") {
       if (unlocked) {
@@ -507,12 +510,14 @@ export function Board() {
           { id: "wall", label: t("Wall"), on: view === "overview", onClick: () => go("overview") },
           { id: "teach", label: t("Teach"), on: view === "teach" || view === "polls", onClick: () => go("teach"), hidden: !featureOn(file, "teach") },
           { id: "deck", label: t("Deck"), on: view === "deck", onClick: () => go("deck") },
+          { id: "plan", label: t("PlanIt"), on: view === "skills" && learnStart === "plan", onClick: () => { setLearnStart("plan"); go("skills"); }, hidden: !unlocked },
           { id: "week", label: t("Week"), on: view === "week" || view === "year" || view === "data", onClick: () => go("week") },
           { id: "clubwall", label: t("Club"), on: view === "clubwall", onClick: () => go("clubwall"), hidden: !featureOn(file, "club") },
           { id: "hallwall", label: t("Hall"), on: view === "hallwall", onClick: () => go("hallwall"), hidden: !featureOn(file, "studyhall") },
         ]
       : section === "learn"
         ? [
+            { id: "plan", label: t("PlanIt"), on: learnStart === "plan", onClick: () => { setLearnStart("plan"); go("skills"); }, hidden: !unlocked },
             { id: "projects", label: t("Projects"), on: learnStart === "projects", onClick: () => { setLearnStart("projects"); go("skills"); }, hidden: !unlocked },
             { id: "skills", label: t("Skills"), on: learnStart === "skills", onClick: () => { setLearnStart("skills"); go("skills"); }, hidden: !unlocked },
             { id: "book", label: t("Book"), on: learnStart === "grades" || learnStart === "book", onClick: () => { setLearnStart("grades"); go("skills"); }, hidden: !unlocked },
@@ -618,6 +623,7 @@ export function Board() {
       view === "score" || view === "crew" || view === "skills" || view === "grades" || view === "projects" ? "board-score" : "",
       crewOn ? "p-0" : "",
     )} data-surface={surface} data-crew={crewOn ? "on" : "off"} data-view={view}>
+      <CleanupAlarm file={file} schedule={deskBellId(file)} />
       {embed || portalMode ? (
         <div className="mb-1 flex items-center gap-2">
           <TwWordmark />
@@ -714,12 +720,13 @@ export function Board() {
                 <button type="button" title={t("How this class works")} aria-label={t("Help")} onClick={() => setHelpOpen(true)} className="tw-hud-btn tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-xl text-fg hover:bg-elevated">
                   <CircleHelp className="size-5" />
                 </button>
-                <button type="button" title="Family web" aria-label="Family web" onClick={() => {
+                <button type="button" title="Family web — progress and profiles" aria-label="Web" data-web-btn onClick={() => {
                   const u = new URL(window.location.href);
                   u.searchParams.set("web", "1");
                   window.location.assign(u.toString());
-                }} className="tw-hud-btn tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-xl text-fg hover:bg-elevated">
+                }} className="tw-hud-btn tw-tap relative z-30 inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl px-2.5 text-fg hover:bg-elevated">
                   <Globe className="size-5" />
+                  <span className="text-xs font-bold uppercase tracking-wide">Web</span>
                 </button>
                 <LangChip />
                 {unlocked ? (
@@ -790,7 +797,7 @@ export function Board() {
           {gearHint(view)}
         </p>
       ) : null}
-      <CleanupStage file={wallFile} unlocked={unlocked} onChange={commitDesk} off={unlocked && view === "admin"}>
+      <CleanupStage file={wallFile} unlocked={unlocked} onChange={commitDesk} off={unlocked && view === "admin"} cover={view === "overview" || view === "hallwall"}>
       <Suspense fallback={null}>
       {view === "roster" && unlocked ? (
         <RosterWall
@@ -901,6 +908,7 @@ export function Board() {
             setJumpPeriod(p);
             go("teach");
           }}
+          onSeeWall={() => go("overview")}
         />
       ) : view === "wallet" ? (
         <WalletBoard file={wallFile} quote={quote} unlocked={unlocked} onNeedPin={() => askPin()} onChange={commitDesk} />
@@ -1006,7 +1014,7 @@ export function Board() {
           onOther={() => goSection("admin")}
           onRoster={() => goSection("roster")}
           onSkills={() => {
-            setLearnStart(unlocked ? "projects" : "words");
+            setLearnStart(unlocked ? "plan" : "words");
             go("skills");
           }}
           onProjects={() => {

@@ -9,7 +9,8 @@ import {
   slotsOf,
   upsertProject,
 } from "@/lib/projects";
-import { setTeachAsk, setTeachDo, setTeachObjective, setTeachLine, packOf, teachDay } from "@/lib/teach";
+import { planitUnitName } from "@/lib/planbook";
+import { packOf, setTeachAsk, setTeachDo, setTeachLine, setTeachObjective, teachDay } from "@/lib/teach";
 
 /** Teach blur → same unit/activity the Plan book shows. */
 export function upsertPlanFromTeach(file: EconomyFile, date: string, period: number): EconomyFile {
@@ -30,7 +31,7 @@ export function upsertPlanFromTeach(file: EconomyFile, date: string, period: num
     return next;
   }
   return createActivityPlan(file, {
-    name: doit.slice(0, 42) || ask.slice(0, 42) || "This class",
+    name: planitUnitName(doit, ask),
     belong: "project",
     period,
     grades: [gradeOfPeriod(file, period)],

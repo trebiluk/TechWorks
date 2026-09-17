@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import type { EconomyFile } from "./economy.ts";
 import { saveTeachAsk, saveTeachDo, saveTeachLine } from "./plan-sync.ts";
 import { addTeachHang, teachDay } from "./teach.ts";
+import { hourAgenda, saveAgendaLine } from "./hour-flow.ts";
 import { patchTeachFromDeck, teachDeckOf } from "./teach-deck.ts";
 
 function desk(): EconomyFile {
@@ -41,9 +42,26 @@ describe("teach deck spine", () => {
     assert.equal(work?.line, "Build the model.");
   });
 
-  it("empty desk still plays job, beats, and cleanup", () => {
+  it("empty desk still plays job, agenda, beats, and cleanup", () => {
     const pack = teachDeckOf(desk(), 1, "2026-09-14");
-    assert.deepEqual(pack.slides.map((s) => s.id), ["job", "beats", "clean"]);
+    assert.deepEqual(pack.slides.map((s) => s.id), ["job", "agenda", "beats", "clean"]);
+  });
+
+  it("Agenda 01–04 is a deck slide, and a Deck write lands on Teach", () => {
+    let file = saveAgendaLine(desk(), "2026-09-14", 1, "now", "Sit at a regular table.");
+    file = saveAgendaLine(file, "2026-09-14", 1, "goal", "Sketch seven logo marks.");
+    const pack = teachDeckOf(file, 1, "2026-09-14");
+    const slide = pack.slides.find((s) => s.id === "agenda");
+    assert.equal(slide?.cards?.[0]?.line, "Sit at a regular table.");
+    assert.equal(slide?.cards?.[1]?.line, "Sketch seven logo marks.");
+    const next = patchTeachFromDeck(file, 1, "2026-09-14", "agenda", {
+      cards: [
+        { n: "01", title: "01 Now", line: "Goggles. Sit." },
+        { n: "02", title: "02 Do this", line: "Cut the template." },
+      ],
+    });
+    assert.equal(hourAgenda(next, "2026-09-14", 1).find((c) => c.id === "now")?.body, "Goggles. Sit.");
+    assert.equal(hourAgenda(next, "2026-09-14", 1).find((c) => c.id === "goal")?.body, "Cut the template.");
   });
 
   it("Drive hang becomes a deck embed slide before cleanup", () => {

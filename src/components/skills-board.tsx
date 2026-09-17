@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
-import { isLiveStudent, periodTitle, score, shopBells } from "@/lib/economy";
+import { isLiveStudent, padFirst, periodTitle, score, shopBells, showFirstReal } from "@/lib/economy";
 import { PORTRAIT, SKILL_MARKS, SKILL_WHY, ALL_TRACK, crossedBand, setSkillScore, skillForGoal, skillScore, skillTrackOf, skillXp, skillsOfFamily, workerLevel, xpIntoLevel, type SkillFamily } from "@/lib/skills";
 import { STEM_LABEL, stemLettersOf, stemOf, stemsOf } from "@/lib/stems";
 import { abOn, deskBellId, onAbRoster, periodGoal } from "@/lib/store";
@@ -119,6 +119,7 @@ export function SkillsBoard({
   const bells = shopBells(file);
   const today = todayIso();
   const letter = abOn(file, today);
+  const real = unlocked && showFirstReal(file);
   const skills = skillsOfFamily(file, family);
   const live = periodNow(deskBellId(file));
   const [period, setPeriod] = useState(() =>
@@ -275,7 +276,7 @@ export function SkillsBoard({
               <span className="text-subtle">Goal: {goal || "—"}</span>
               <span className="text-subtle">
                 {seen}/{kids.length} seen
-                {need.length ? ` · look first: ${need.map((s) => s.first).join(", ")}` : " · everyone has a mark"}
+                {need.length ? ` · look first: ${need.map((s) => padFirst(s, real)).join(", ")}` : " · everyone has a mark"}
               </span>
               <button type="button" onClick={() => setMore((v) => !v)} className="min-h-9 text-sm font-semibold text-gold">
                 {more ? "Hide skills" : "Other skill"}
@@ -347,7 +348,7 @@ export function SkillsBoard({
               return (
                 <article key={s.id} className={cn("flex min-h-0 flex-col gap-2 rounded-2xl bg-surface p-3", cur === 0 ? "ring-1 ring-gold/60" : "")}>
                   <button type="button" onClick={() => onOpenId(s.id)} className="truncate text-left font-display text-2xl font-semibold">
-                    {s.first}
+                    {padFirst(s, real)}
                   </button>
                   <div className="grid min-h-20 flex-1 grid-cols-4 gap-1.5">
                     {MARKS.map((m) => (
@@ -426,7 +427,7 @@ export function SkillsBoard({
                 <tr key={s.id} className="border-t border-border">
                   <td className="sticky left-0 bg-bg py-1 pr-2">
                     <button type="button" onClick={() => onOpenId(s.id)} className="font-medium">
-                      {s.first}
+                      {padFirst(s, real)}
                     </button>
                     <LevelMark level={workerLevel(file, s.id)} xp={xpIntoLevel(file, s.id).xp} className="ml-1 text-xs" />
                   </td>
@@ -480,6 +481,7 @@ function StandardGrid({
   const scope = inScope(project);
   const cols = MST_SKILLS.filter((s) => scope.includes(s.id));
   const [title, setTitle] = useState("");
+  const real = unlocked && showFirstReal(file);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
@@ -547,7 +549,7 @@ function StandardGrid({
               <tr key={s.id} className="border-t border-border">
                 <td className="sticky left-0 bg-bg py-1 pr-2">
                   <button type="button" onClick={() => onOpenId(s.id)} className="font-medium">
-                    {s.first}
+                    {padFirst(s, real)}
                   </button>
                 </td>
                 {cols.map((sk) => {

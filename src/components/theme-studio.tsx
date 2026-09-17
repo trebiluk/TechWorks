@@ -121,7 +121,7 @@ export function ThemeStudio({
 
           {tab === "size" ? (
             <div className="mt-3 grid gap-2">
-              <p className="text-xs text-muted">Scale is the whole desk. Fill makes Now, Goals, Do this now, and Teach eat empty plate so the back row can read it. Pad and corners ride the plates.</p>
+              <p className="text-xs text-muted">Scale is the whole desk. Fill makes Now, Hour, Do this now, and Teach eat empty plate so the back row can read it. Pad and corners ride the plates.</p>
               {LOOK_FIELDS.map((f) => (
                 <label key={f.key} className="rounded-md bg-elevated px-3 py-2">
                   <span className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider">

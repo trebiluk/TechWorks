@@ -5,7 +5,15 @@ import type { DeckPack } from "@/lib/deck-store";
 import { slotsOf, upsertProject } from "@/lib/projects";
 import { laySlots, packOf, setTeachNotes, teachDay, teachJob, teachObjective, hangOf } from "@/lib/teach";
 import { hangKindLabel, hangSrc } from "@/lib/hang";
+import { hourAgendaDraft, saveAgendaLine, type AgendaCard } from "@/lib/hour-flow";
 import { saveTeachAsk, saveTeachDo, saveTeachLine, saveTeachObjective } from "@/lib/plan-sync";
+
+const AGENDA_N: Record<string, AgendaCard["id"]> = {
+  "01": "now",
+  "02": "goal",
+  "03": "next",
+  "04": "behave",
+};
 
 /** Deck plays this period’s Teach plan. One write. */
 export function teachDeckOf(file: EconomyFile, period: number, date = todayIso()): DeckPack {
@@ -14,6 +22,7 @@ export function teachDeckOf(file: EconomyFile, period: number, date = todayIso()
   const pack = packOf(file, date, period);
   const slots = laySlots(file, date, period);
   const beats = slots.length ? slots : pack.slots;
+  const agenda = hourAgendaDraft(file, date, period);
   const slides: DeckSlide[] = [
     {
       id: "job",
@@ -23,6 +32,14 @@ export function teachDeckOf(file: EconomyFile, period: number, date = todayIso()
       line: obj || job.stemLine,
       note: teachDay(file, date, period).notes,
       berty: "think",
+    },
+    {
+      id: "agenda",
+      kind: "cards",
+      kicker: "Agenda",
+      title: "This hour",
+      berty: "point",
+      cards: agenda.map((c) => ({ n: c.n, title: `${c.n} ${c.kicker}`, line: c.body })),
     },
   ];
   if (job.rules.length) {
@@ -107,6 +124,14 @@ function patchDone(file: EconomyFile, period: number, date: string, done: string
   return upsertProject(file, { ...parked, activities: (parked.activities ?? []).map((a, i) => (i === 0 ? { ...a, done: done.trim() } : a)) });
 }
 
+function agendaIdOf(card: { n?: string; title?: string }): AgendaCard["id"] | null {
+  const n = String(card.n ?? "").trim();
+  if (AGENDA_N[n]) return AGENDA_N[n];
+  const title = String(card.title ?? "");
+  const hit = title.match(/^(01|02|03|04)\b/);
+  return hit ? AGENDA_N[hit[1]!] ?? null : null;
+}
+
 /** Deck field → same Teach / Plan fields. Next paint of either screen matches. */
 export function patchTeachFromDeck(
   file: EconomyFile,
@@ -120,6 +145,13 @@ export function patchTeachFromDeck(
     if (patch.title != null) next = saveTeachAsk(next, date, period, patch.title);
     if (patch.line != null) next = saveTeachObjective(next, date, period, patch.line);
     if (patch.note != null) next = setTeachNotes(next, date, period, patch.note);
+    return next;
+  }
+  if (slideId === "agenda" && patch.cards) {
+    for (const c of patch.cards) {
+      const id = agendaIdOf(c);
+      if (id && c.line != null) next = saveAgendaLine(next, date, period, id, c.line);
+    }
     return next;
   }
   if (slideId === "beats") {

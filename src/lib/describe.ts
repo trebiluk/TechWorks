@@ -14,7 +14,7 @@ const SITE = "https://www.solvayschools.org/";
 const CARDS: Record<string, DescribeCard> = {
   overview: {
     title: "Dashboard",
-    purpose: "Class projector after Teach. Cards fill the screen. Aliases only.",
+    purpose: "Class projector after Teach. Enter = sit / need / coming up. Agenda 2×2 once the hour starts, hung Drive/Canva under it. Coral Cleanup in the last minutes. Aliases only.",
     links: [{ label: "Help", href: "#help" }, { label: "District", href: SITE }],
   },
   week: {
@@ -44,7 +44,7 @@ const CARDS: Record<string, DescribeCard> = {
   },
   crew: {
     title: "Crew",
-    purpose: "Kiosk. Crew lead PIN opens Daily scoring + Our crew only. Gold signed-in bar. Projector stays the wall.",
+    purpose: "Kiosk. Crew lead PIN opens Daily scoring, Our crew, and Buy. Gold signed-in bar. Last marks + today’s make. Projector stays the wall.",
     links: [{ label: "Help", href: "#help" }],
   },
   score: {
@@ -104,7 +104,12 @@ const CARDS: Record<string, DescribeCard> = {
   },
   projects: {
     title: "Projects",
-    purpose: "Activities + plan book. Today’s activity hits the dashboard and the gradebook.",
+    purpose: "Units, activities, job card. The week grid lives on PlanIt.",
+    links: [{ label: "Help", href: "#help" }],
+  },
+  plan: {
+    title: "PlanIt",
+    purpose: "Week grid. Type Do this. Copy last week or fill the other same-grade class. Wall preview on the hour.",
     links: [{ label: "Help", href: "#help" }],
   },
   admin: {
@@ -119,12 +124,12 @@ const CARDS: Record<string, DescribeCard> = {
   },
   teach: {
     title: "Teach",
-    purpose: "Do this now. Lesson cards fill the screen. Tap Wall when class is done.",
+    purpose: "Arrive here. Green dots = that hour is set. Agenda 01–04 + Need write Wall, Deck, and Plan. Hang a Drive or Canva file — Wall plays it. See wall to check. Fill P8 copies onto the other same-grade class if it is empty.",
     links: [{ label: "Help", href: "#help" }],
   },
   deck: {
     title: "Deck",
-    purpose: "Navy + violet slides. Edit and Save on this desk. Present from here.",
+    purpose: "This hour’s slides. Agenda 01–04 plus Hang embeds. Edit here and Teach matches. Present from here.",
     links: [{ label: "Help", href: "#help" }],
   },
 };

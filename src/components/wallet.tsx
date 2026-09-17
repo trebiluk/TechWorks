@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { EconomyFile } from "@/lib/economy";
-import { isLiveStudent, money, periodTitle, score, shopBells } from "@/lib/economy";
+import { isLiveStudent, money, padFirst, periodTitle, score, shopBells, showFirstReal } from "@/lib/economy";
 import { MarketTape } from "@/components/market-tape";
 import { QuarterChip } from "@/components/quarter-chip";
 import type { DjiaQuote } from "@/lib/djia";
@@ -27,6 +27,7 @@ export function WalletBoard({
 }) {
   const bells = shopBells(file);
   const list = useMemo(() => score(file), [file]);
+  const real = showFirstReal(file);
   const [period, setPeriod] = useState(bells[0]?.period ?? 1);
   const [sort, setSort] = useState<SortKey>("stock");
   const [openId, setOpenId] = useState<string | null>(null);
@@ -107,7 +108,7 @@ export function WalletBoard({
                   onClick={() => setOpenId(open ? null : s.id)}
                   className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 py-2 text-left"
                 >
-                  <span className="min-w-0 truncate font-semibold">{s.first}
+                  <span className="min-w-0 truncate font-semibold">{padFirst(s, real)}
                     <span className="ml-2 text-xs font-normal text-subtle">{s.crewName}</span>
                   </span>
                   <span className="flex gap-1">

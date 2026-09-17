@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
-import { money, score } from "@/lib/economy";
+import { money, padFirst, score, showFirstReal } from "@/lib/economy";
 import { buyShop, hallShopOf, setHallShop, type ShopItem } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -15,15 +15,17 @@ export function HallStore({
 }: {
   file: EconomyFile;
   unlocked: boolean;
-  kids: { id: string; first: string }[];
+  kids: { id: string; first: string; legalFirst?: string }[];
   onNeedPin: () => void;
   onChange: (next: EconomyFile) => void;
 }) {
   const wallets = score(file);
   const shop = hallShopOf(file);
+  const real = showFirstReal(file);
   const [id, setId] = useState(kids[0]?.id ?? "");
   const [soak, setSoak] = useState("");
   const me = wallets.find((s) => s.id === id) ?? wallets.find((s) => kids.some((k) => k.id === s.id)) ?? null;
+  const who = me ? padFirst(me, real) : "";
   const groups = [...new Set([...CATS, ...shop.map((x) => x.category)])];
 
   function gate(): boolean {
@@ -40,12 +42,12 @@ export function HallStore({
   function buy(item: ShopItem) {
     if (!me || !item.name.trim()) return;
     if (me.quarter < item.price) {
-      setSoak(`${me.first} can't afford ${item.name}`);
+      setSoak(`${who} can't afford ${item.name}`);
       return;
     }
     if (!gate()) return;
     onChange(buyShop(file, me.id, item));
-    setSoak(`${me.first} bought ${item.name} · hall wallet only`);
+    setSoak(`${who} bought ${item.name} · hall wallet only`);
   }
 
   return (
@@ -64,7 +66,7 @@ export function HallStore({
             const w = wallets.find((x) => x.id === s.id);
             return (
               <option key={s.id} value={s.id}>
-                {s.first} · {money(w?.quarter ?? 0)}
+                {padFirst(s, real)} · {money(w?.quarter ?? 0)}
               </option>
             );
           })}

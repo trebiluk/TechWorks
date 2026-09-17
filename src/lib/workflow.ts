@@ -6,6 +6,7 @@ import { todayIso } from "@/lib/calendar";
 import { printLogOf } from "@/lib/prints";
 import { attendLate, formatBell, periodClock, periodNext, periodNow } from "@/lib/bells";
 import { cloudStatus } from "@/lib/desk-cloud";
+import { dayHourStatus } from "@/lib/hour-flow";
 
 const ST_OPEN = "techworks-st-open";
 const JOB_EVT = "techworks-job";
@@ -259,6 +260,20 @@ export function nextJob(file: EconomyFile, now = new Date()): NextJob {
     if (!exportedThisPeriod(file, date, live)) {
       return { id: "export", label: `Save P${live}`, hint: saveCloudHint(), tone: "due", go: "export", period: live };
     }
+  }
+
+  const shop = shopBells(file).map((b) => b.period).filter((p) => p !== 6);
+  const unset = dayHourStatus(file, date, shop).find((r) => !r.set);
+  if (unset) {
+    return {
+      id: "plan",
+      label: `Plan P${unset.period}`,
+      hint: unset.title || "no Do this yet",
+      tone: "due",
+      go: "teach",
+      period: unset.period,
+      date,
+    };
   }
 
   const late = due.find((d) => d.kind === "late");

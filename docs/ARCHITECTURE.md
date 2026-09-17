@@ -9,7 +9,7 @@ How the shop is wired. In-app: **Admin → Docs**. Help **?** is the role book.
 ```mermaid
 flowchart LR
   subgraph author [Author]
-    Plan[Plan book / Activity]
+    Plan[PlanIt]
     Teach[Teach Ask / Do / pack]
   end
   subgraph play [Play]
@@ -45,7 +45,7 @@ TechWorks is one shop PC gradebook with four kinds of number. They never average
 
 **Lanes**
 
-- **Author:** Plan book · Teach · Projects / Activity
+- **Author:** PlanIt · Teach · Projects / Activity
 - **Play:** Deck · Wall · Club wall · Hall wall
 - **Score:** Crew pad 3/2/1 · Teacher Score · Skills 1–4
 - **Perk / after:** Wallet $ · Store · Prints · Lucky · Club IN · Hall HERE
@@ -53,7 +53,7 @@ TechWorks is one shop PC gradebook with four kinds of number. They never average
 - Cog = Settings (Admin). Arrange wall / Arrange plates live on those pages.
 - Shop PC writes. Cloud is a locked copy. Drive is a download, not a live sync.
 
-## Plan book → Teach → Deck → Wall
+## PlanIt → Teach → Deck → Wall
 
 One write. You type the hour once. Every play surface reads that hour. Deck is not a second copy.
 
@@ -117,6 +117,7 @@ A worker is a locked id. The wall shows an alias minted from that id, never from
 | --- | --- | --- | --- | --- | --- |
 | Locked id | students[].id | Hidden | Hidden | Hidden | Encoded live export |
 | Alias (first) | students[].first | Yes | Yes | Yes | Yes |
+| Desk first names | config.showFirstReal | Never | Teacher toggle · first only | Never | Never |
 | Legal name | vault legalFirst/Last | Never | Show full info | After PIN | VAULT tab only |
 | IEP / 504 | flags | Never (deco dots inside Show full) | Show full info | No | VAULT |
 | Crew key | crewKey + crewDays | Crew plates | Yes | No | Class tabs |
@@ -124,6 +125,7 @@ A worker is a locked id. The wall shows an alias minted from that id, never from
 
 - Admin → Crews: size, deal, look, crown. Separate rules live on Roster.
 - Rosters page is the yearbook of aliases. Legal names stay in Admin → Records.
+- Show first real names (Settings → Privacy) puts legal first names on teacher pads only. The wall never follows.
 
 ## Score, Week, Year, Data
 

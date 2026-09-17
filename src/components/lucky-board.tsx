@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
-import { isLiveStudent, money, periodTitle, score, shopBells } from "@/lib/economy";
+import { isLiveStudent, money, padFirst, periodTitle, score, shopBells, showFirstReal } from "@/lib/economy";
 import {
   buyRaffle,
   drawRaffle,
@@ -36,8 +36,10 @@ export function LuckyBoard({
   const list = useMemo(() => score(file), [file]);
   const [period, setPeriod] = useState(bells[0]?.period ?? 1);
   const kids = list.filter((s) => s.period === period && isLiveStudent(s, file.meta.quarterName));
+  const real = showFirstReal(file);
   const [id, setId] = useState(kids[0]?.id ?? "");
   const me = kids.find((s) => s.id === id) ?? kids[0];
+  const who = me ? padFirst(me, real) : "";
   const raw = me ? file.students.find((s) => s.id === me.id) : undefined;
   const house = luckyOf(file);
   const [face, setFace] = useState<number | null>(null);
@@ -54,13 +56,13 @@ export function LuckyBoard({
     if (!me || !gate()) return;
     const hit = playLucky(file, me.id, stake);
     if (!hit) {
-      onFlash?.(used >= LUCKY_ROLLS_DAY ? "3 rolls today" : `${me.first} needs $${stake}`);
+      onFlash?.(used >= LUCKY_ROLLS_DAY ? "3 rolls today" : `${who} needs $${stake}`);
       return;
     }
     setFace(hit.face);
     onChange(hit.file);
     const net = hit.payout - stake;
-    onFlash?.(net > 0 ? `${me.first} d${hit.face} · +$${net}` : net < 0 ? `${me.first} d${hit.face} · −$${Math.abs(net)}` : `${me.first} d${hit.face} · push`);
+    onFlash?.(net > 0 ? `${who} d${hit.face} · +$${net}` : net < 0 ? `${who} d${hit.face} · −$${Math.abs(net)}` : `${who} d${hit.face} · push`);
   }
 
   return (
@@ -106,7 +108,7 @@ export function LuckyBoard({
             onClick={() => setId(s.id)}
             className={cn("tw-tap min-h-10 rounded-full px-3 text-sm", s.id === me?.id ? "bg-accent text-accent-fg" : "bg-elevated")}
           >
-            {s.first}
+            {padFirst(s, real)}
             <span className="ml-1 font-mono text-xs">{money(s.quarter)}</span>
           </button>
         ))}
@@ -115,7 +117,7 @@ export function LuckyBoard({
       {me ? (
         <section className="tw-gadget flex flex-col gap-3 p-3">
           <p className="text-sm text-muted">
-            {me.first} · {used}/{LUCKY_ROLLS_DAY} rolls · {tickets}/{RAFFLE_TICKETS_DAY} tickets
+            {who} · {used}/{LUCKY_ROLLS_DAY} rolls · {tickets}/{RAFFLE_TICKETS_DAY} tickets
           </p>
           <div className="flex items-center gap-4">
             <p className="font-display text-6xl font-semibold tabular-nums">{face ? FACE[face] : "·"}</p>
@@ -140,7 +142,7 @@ export function LuckyBoard({
               onClick={() => {
                 if (!me || !gate()) return;
                 onChange(buyRaffle(file, me.id));
-                onFlash?.(`${me.first} bought a Friday ticket`);
+                onFlash?.(`${who} bought a Friday ticket`);
               }}
               className="tw-tap min-h-11 rounded-full bg-gold px-4 text-sm font-semibold text-bg disabled:opacity-40"
             >

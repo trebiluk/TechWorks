@@ -10,11 +10,14 @@ export function HangFrame({
   unlocked,
   onHang,
   onDrop,
+  play,
 }: {
   items: HangItem[];
   unlocked: boolean;
   onHang: (raw: string) => void;
   onDrop: (id: string) => void;
+  /** Projector: the hung file, no paste bar. */
+  play?: boolean;
 }) {
   const [draft, setDraft] = useState("");
   const [pick, setPick] = useState(0);
@@ -28,10 +31,14 @@ export function HangFrame({
     setDraft("");
   }
 
+  if (play && !items.length) return null;
+
   return (
-    <section className="tw-gadget flex min-h-0 flex-col gap-2 p-3">
-      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gold">Hang on this hour</p>
-      {unlocked ? (
+    <section className={cn("tw-gadget flex min-h-0 flex-col gap-2 p-3", play && "tw-hang-play")}>
+      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gold">
+        {play ? (item ? item.title || hangKindLabel(item.kind) : "Hung on this hour") : "Hang on this hour"}
+      </p>
+      {unlocked && !play ? (
         <form
           className="flex flex-wrap gap-2"
           onSubmit={(e) => {
@@ -53,7 +60,7 @@ export function HangFrame({
           </button>
         </form>
       ) : null}
-      {unlocked ? (
+      {unlocked && !play ? (
         <p className="text-xs text-muted">Share → Anyone with the link can view. Folders open as a link, not an embed.</p>
       ) : null}
       {items.length > 1 ? (
@@ -71,7 +78,7 @@ export function HangFrame({
         </div>
       ) : null}
       {item && src ? (
-        <div className="relative min-h-[14rem] w-full overflow-hidden rounded-xl bg-elevated sm:min-h-[22rem]">
+        <div className={cn("relative w-full overflow-hidden rounded-xl bg-elevated", play ? "min-h-0 flex-1" : "min-h-[14rem] sm:min-h-[22rem]")}>
           <iframe
             title={item.title || hangKindLabel(item.kind)}
             src={src}
@@ -90,10 +97,10 @@ export function HangFrame({
         >
           Open {item.title || hangKindLabel(item.kind)}
         </a>
-      ) : unlocked ? (
+      ) : unlocked && !play ? (
         <p className="text-sm text-muted">Paste a Drive file, Google Slides, a Doc, YouTube, or Canva.</p>
       ) : null}
-      {unlocked && item ? (
+      {unlocked && item && !play ? (
         <div className="flex flex-wrap gap-2">
           <a href={item.url} target="_blank" rel="noreferrer" className="tw-tap min-h-9 rounded-full bg-elevated px-3 text-xs font-semibold">
             Open original

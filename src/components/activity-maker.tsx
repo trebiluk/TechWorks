@@ -7,6 +7,7 @@ import {
   type ActivityPlanKind,
 } from "@/lib/projects";
 import { periodUnits } from "@/lib/plan-sync";
+import { planitUnitName } from "@/lib/planbook";
 import { formatSchoolDate, isSchoolDay, nextOpenDay, todayIso, weekOn } from "@/lib/calendar";
 import { cn } from "@/lib/utils";
 
@@ -71,10 +72,10 @@ export function ActivityMaker({
   const [belong, setBelong] = useState<ActivityPlanKind>("project");
   const [stepId, setStepId] = useState<(typeof STEPS)[number]["id"]>("ask");
   const step = STEPS.find((s) => s.id === stepId) ?? STEPS[0];
-  const [name, setName] = useState<string>(STEPS[0].label);
-  const [ask, setAsk] = useState<string>(STEPS[0].ask);
-  const [doit, setDoit] = useState<string>(STEPS[0].do);
-  const [done, setDone] = useState<string>(STEPS[0].done);
+  const [name, setName] = useState("");
+  const [ask, setAsk] = useState("");
+  const [doit, setDoit] = useState("");
+  const [done, setDone] = useState("");
   const [skillId, setSkillId] = useState<string>(step.skillId);
   const [goggles, setGoggles] = useState(false);
   const [grades, setGrades] = useState<number[]>([grade]);
@@ -89,9 +90,6 @@ export function ActivityMaker({
     setStepId(id);
     setSkillId(next.skillId);
     setGoggles(id === "build" || id === "test" || id === "safety");
-    if (!ask.trim()) setAsk(next.ask);
-    if (!doit.trim()) setDoit(next.do);
-    if (!done.trim()) setDone(next.done);
     if (!name.trim()) setName(next.label);
   }
 
@@ -116,7 +114,7 @@ export function ActivityMaker({
     if (!ready) return;
     const dates = picked.length ? picked : [start];
     const made = createActivityPlan(file, {
-      name: name.trim() || doit.trim() || ask.trim() || step.label,
+      name: planitUnitName(name.trim() || doit.trim() || ask.trim(), ask),
       belong,
       period,
       grades: grades.length ? grades : [grade],
@@ -141,7 +139,7 @@ export function ActivityMaker({
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-wider text-gold">New activity</p>
-          <p className="mt-0.5 text-sm text-muted">Ask the problem. Name the move. Park the days.</p>
+          <p className="mt-0.5 text-sm text-muted">Name the job. Pick the days. PlanIt, Teach, and the Wall play it.</p>
         </div>
         <button
           type="button"
@@ -149,7 +147,7 @@ export function ActivityMaker({
           disabled={!ready}
           className="tw-tap min-h-10 rounded-full bg-gold px-4 text-sm font-bold text-bg disabled:opacity-40"
         >
-          {parked ? "Update plan" : "Park on plan book"}
+          {parked ? "Update plan" : "Save on PlanIt"}
         </button>
       </div>
       {parked ? (

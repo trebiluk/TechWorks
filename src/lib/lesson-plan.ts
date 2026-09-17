@@ -9,7 +9,7 @@ import {
   slotsOf,
   type ProjectActivity,
 } from "@/lib/projects";
-import { packOf, teachJob, teachObjective } from "@/lib/teach";
+import { packOf, teachDay, teachJob, teachObjective } from "@/lib/teach";
 import { skillTrackOf } from "@/lib/skills";
 import { MST_SKILLS, MST_STANDARD } from "@/lib/mst";
 
@@ -27,6 +27,10 @@ export type LessonDay = {
   objective: string;
   pack: string;
   lookFor: string;
+  materials: string;
+  homework: string;
+  close: string;
+  mods: string;
 };
 
 export type LessonMatrixRow = {
@@ -63,6 +67,7 @@ export function lessonPlanOf(file: EconomyFile, period: number, dates: string[])
   const days: LessonDay[] = school.map((date) => {
     const pin = pinnedActivityId(file, period, date);
     const act: ProjectActivity | undefined = pin ? acts.find((a) => a.id === pin) : undefined;
+    const day = teachDay(file, date, period);
     const job = teachJob(file, period, date);
     const track = skillTrackOf(act?.skillId || job.skillId);
     const mst = track?.mst ?? [];
@@ -80,6 +85,10 @@ export function lessonPlanOf(file: EconomyFile, period: number, dates: string[])
       objective: teachObjective(file, date, period),
       pack: packOf(file, date, period).label,
       lookFor: act?.lookFor || job.lookFor || "",
+      materials: day.materials?.trim() ?? "",
+      homework: day.homework?.trim() ?? "",
+      close: day.close?.trim() ?? "",
+      mods: day.mods?.trim() ?? "",
     };
   });
   const skillIds = [...new Set(days.map((d) => d.skillId).filter(Boolean))];

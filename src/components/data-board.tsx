@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Bar, BarChart, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Copy, Search } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
-import { bellFor, money, periodTitle, shopBells } from "@/lib/economy";
+import { bellFor, money, padFirst, periodTitle, shopBells, showFirstReal } from "@/lib/economy";
 import { MarkChip, TogglePair } from "@/components/ui";
 import { markOf } from "@/lib/nav-marks";
 import { formatSchoolDate } from "@/lib/calendar";
@@ -72,6 +72,7 @@ export function DataBoard({
   }, [shelf]);
   const src = shelf === "archive" && arch ? arch : file;
   const archived = shelf === "archive";
+  const real = showFirstReal(src);
   const bells = mixSh ? bellFor(src) : shopBells(src);
   const cards = useMemo(
     () => workerCards(src).filter((s) => mixSh || s.period !== 6),
@@ -88,7 +89,13 @@ export function DataBoard({
   const [bookBusy, setBookBusy] = useState(false);
   const [q, setQ] = useState("");
   const card = cards.find((c) => c.id === id) ?? cards[0] ?? null;
-  const shown = ranked.filter((s) => !q.trim() || s.first.toLowerCase().includes(q.trim().toLowerCase()) || String(s.period) === q.trim());
+  const shown = ranked.filter((s) => {
+    if (!q.trim()) return true;
+    const needle = q.trim().toLowerCase();
+    if (String(s.period) === q.trim()) return true;
+    if (s.first.toLowerCase().includes(needle)) return true;
+    return padFirst(s, real).toLowerCase().includes(needle);
+  });
 
   const presets = useMemo(() => {
     const kids = cards;
@@ -118,7 +125,7 @@ export function DataBoard({
             const n = kids.reduce((sum, s) => sum + valueOf(s, metric), 0);
             return { name: periodTitle(b.period, bells), value: n };
           })
-        : ranked.slice(0, 24).map((s) => ({ name: s.first, value: valueOf(s, metric) }));
+        : ranked.slice(0, 24).map((s) => ({ name: padFirst(s, real), value: valueOf(s, metric) }));
 
   async function copy(kind: "log" | "master" | "ledger") {
     const text =
@@ -400,7 +407,7 @@ export function DataBoard({
                 className={cn("cursor-pointer border-t border-border", s.id === id ? "bg-elevated" : "hover:bg-elevated/60")}
                 onClick={() => setId(s.id)}
               >
-                <td className="px-3 py-2 font-medium">{s.first}</td>
+                <td className="px-3 py-2 font-medium">{padFirst(s, real)}</td>
                 <td className="py-2 text-muted">{s.period}</td>
                 <td className="py-2 text-muted">{s.crewName}</td>
                 <td className="py-2 text-right">

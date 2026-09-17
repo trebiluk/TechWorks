@@ -1,6 +1,6 @@
 import { AVATARS } from "@/lib/avatars";
 import { setCrewProfile } from "@/lib/crew-desk";
-import type { EconomyFile, RawStudent } from "@/lib/economy";
+import { padFirst, showFirstReal, type EconomyFile, type RawStudent } from "@/lib/economy";
 import { cn } from "@/lib/utils";
 import { CrewBanner, WorkerCard } from "@/components/shop-cards";
 
@@ -20,6 +20,7 @@ export function CrewProfilePad({
   onDone: () => void;
 }) {
   const rec = file.crews.find((c) => c.period === period && c.key === crewKey);
+  const real = showFirstReal(file);
   const name = rec?.name ?? crewKey;
   const motto = rec?.motto ?? "";
   const icon = rec?.icon ?? "";
@@ -77,7 +78,7 @@ export function CrewProfilePad({
       <ul className="grid grid-cols-2 gap-1.5">
         {kids.map((s) => (
           <li key={s.id}>
-            <WorkerCard id={s.id} name={s.first} icon={s.icon} />
+            <WorkerCard id={s.id} name={padFirst(s, real)} icon={s.icon} />
           </li>
         ))}
       </ul>

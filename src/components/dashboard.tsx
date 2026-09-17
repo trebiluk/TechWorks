@@ -1,4 +1,4 @@
-import { memo, startTransition, useMemo, useState } from "react";
+import { memo, startTransition, useEffect, useMemo, useState } from "react";
 import { ClipboardList, Coins, RotateCcw, Trophy } from "lucide-react";
 import { markOf } from "@/lib/nav-marks";
 import { MarkChip } from "@/components/ui";
@@ -26,9 +26,13 @@ import { pollForPeriod } from "@/lib/polls";
 import { featureOn } from "@/lib/features";
 import { showBerty } from "@/lib/berty";
 import { procedureStep } from "@/lib/procedure";
-import { teachJob, laySlots } from "@/lib/teach";
-import { hideDashRow, loadDashLayout, moveDashRow, moveDashTo, pairMate, pairNowGoals, nowGoalPaired, applyDashKit, DASH_KITS, patchDash, rowOn, saveDashLayout, DASH_ROWS, DEFAULT_LAYOUT, type DashLayout, type DashRowId } from "@/lib/dash-layout";
-import { SortableItem, SortableList } from "@/components/sortable";
+import { teachJob, laySlots, teachFocusPeriod, hangOf } from "@/lib/teach";
+import { hourAgenda, hourKit, wallMode } from "@/lib/hour-flow";
+import { AgendaWall, EnterWall, KitChip } from "@/components/agenda-wall";
+import { hideDashRow, loadDashLayout, moveDashRow, moveDashTo, applyDashKit, DASH_KITS, patchDash, rowOn, saveDashLayout, DASH_ROWS, DEFAULT_LAYOUT, type DashLayout, type DashRowId } from "@/lib/dash-layout";
+import { WALL_PRESET_EVENT } from "@/lib/wall-presets";
+import { WallLookChips } from "@/components/wall-looks";
+import { SortableItem, SortableList, SortableWell } from "@/components/sortable";
 import { useShopClock } from "@/lib/use-clock";
 import { ProcedureCue } from "@/components/procedure-cue";
 import { DashTools, ToolsToggle } from "@/components/dash-tools";
@@ -38,6 +42,8 @@ import { FeatureCards } from "@/components/feature-cards";
 import { PollWall } from "@/components/polls";
 import { useLang } from "@/lib/i18n-hook";
 import { avatarOf } from "@/lib/avatars";
+import { HangFrame } from "@/components/hang-frame";
+import { PlanitWeek } from "@/components/planit-week";
 
 const FOLD_KEY = "techworks-dash-fold-v2";
 const DEFAULT_CLOSED: Record<string, boolean> = { spark: true, notes: true };
@@ -48,6 +54,11 @@ function useDashLayout() {
     setLayout(next);
     saveDashLayout(next);
   }
+  useEffect(() => {
+    const sync = () => setLayout(loadDashLayout());
+    window.addEventListener(WALL_PRESET_EVENT, sync);
+    return () => window.removeEventListener(WALL_PRESET_EVENT, sync);
+  }, []);
   return {
     layout,
     move: (id: string, dir: -1 | 1) => commit(moveDashRow(layout, id, dir)),
@@ -57,9 +68,7 @@ function useDashLayout() {
     setFlag: (key: keyof DashLayout, value: boolean | 5 | 10) => commit(patchDash(layout, { [key]: value } as Partial<DashLayout>)),
     reset: () => commit(DEFAULT_LAYOUT),
     kit: (id: Parameters<typeof applyDashKit>[1]) => commit(applyDashKit(layout, id)),
-    pair: (on: boolean) => commit(pairNowGoals(layout, on)),
     on: (id: string) => rowOn(layout, id),
-    paired: nowGoalPaired(layout),
   };
 }
 
@@ -139,19 +148,20 @@ export const Dashboard = memo(function Dashboard({
         ? live
         : nxt && shop.includes(nxt.period)
           ? nxt.period
-          : (shop[0] ?? 1);
+          : teachFocusPeriod(file, today, now);
   const peeking = viewP != null && viewP !== live;
   const viewMine = shop.includes(shown);
   const clock = live != null ? periodClock(live, bellsId, now) : null;
   const shopLive = Boolean(clock?.live);
   const afterBell = isSchoolDay(today) && live == null && nxt == null;
   const openDay = nextOpenDay(today, afterBell);
-  const wallDate = shopLive ? today : openDay;
+  const wallDate = shopLive || afterBell ? today : openDay;
   const agenda = agendaFor(file, shown, wallDate);
   const goal = agenda.goal;
   const wallJob = teachJob(file, shown, wallDate);
   const wallSlots = laySlots(file, wallDate, shown);
   const passing = isSchoolDay(today) && !shopLive && Boolean(nxt);
+  const mode = wallMode(file, today, now);
   const step = procedureStep({
     live: shopLive,
     cleanup: Boolean(clock?.cleanup),
@@ -256,8 +266,32 @@ export const Dashboard = memo(function Dashboard({
   );
 
   const classCard = (
-    <article data-job-plate className="tw-gadget tw-hud tw-fill-wide flex min-h-[10rem] flex-col p-3">
-      {viewMine ? (
+    <article data-job-plate className="tw-gadget tw-hud tw-fill-wide flex min-h-[10rem] flex-col gap-2 p-3">
+      {viewMine && mode === "enter" && !peeking ? (
+        <>
+        <EnterWall
+          line={hourAgenda(file, today, shown).find((c) => c.id === "now")?.body || wallSlots.find((s) => s.kind === "enter")?.line || "Sit with your crew."}
+          next={nxt ? `Next P${nxt.period} · ${formatBell(nxt.start)}` : undefined}
+          coming={hourAgenda(file, wallDate, shown).find((c) => c.id === "goal")?.body}
+          kit={hourKit(file, wallDate, shown)}
+        />
+        <PlanitWeek file={file} period={shown} date={wallDate} />
+        </>
+      ) : viewMine && (mode === "agenda" || (arrange && unlocked)) ? (
+        <>
+          <AgendaWall file={file} date={wallDate} period={shown} unlocked={unlocked} editing={arrange} onChange={onChange} />
+          <KitChip kit={hourKit(file, wallDate, shown)} />
+          <HangFrame
+            items={hangOf(file, wallDate, shown)}
+            unlocked={false}
+            play
+            onHang={() => {}}
+            onDrop={() => {}}
+          />
+          <PlanitWeek file={file} period={shown} date={wallDate} />
+        </>
+      ) : viewMine ? (
+        <>
         <GoalsCard
           file={file}
           shown={shown}
@@ -279,6 +313,8 @@ export const Dashboard = memo(function Dashboard({
           onChange={onChange}
           date={wallDate}
         />
+        <PlanitWeek file={file} period={shown} date={wallDate} />
+        </>
       ) : (
         <p className="text-sm text-muted">{t("Tap a Tech period on the strip.")}</p>
       )}
@@ -476,42 +512,36 @@ export const Dashboard = memo(function Dashboard({
           </button>
         </div>
       ) : null}
-      <div className={cn("flex flex-col gap-1.5", arrange ? "" : "min-h-0 flex-1 overflow-auto")}>
+      <div className={cn(arrange ? "" : "flex min-h-0 flex-1 flex-col overflow-hidden")}>
         <SortableList
           enabled={sortOn}
-          className={cn("flex flex-col gap-1.5", arrange ? "" : "min-h-0 flex-1")}
+          className={cn("tw-wall-grid", arrange ? "" : "min-h-0 h-full")}
           onMove={(grab, onto) => dash.moveTo(grab, onto)}
         >
-          {layout.order.map((id) => {
-            if (!dash.on(id)) return null;
-            const mate = sortOn ? null : pairMate(layout, id);
-            if (mate === "second") return null;
-            const paired = mate === "first";
-            const fill = paired || id === "now" || id === "class" || (!sortOn && id === "proc");
-            const body = paired ? (
-              <section data-dash-pair className={cn(clock?.cleanup ? "rounded-xl ring-2 ring-cleanup" : "")}>
-                {nowCard}
-                {classCard}
-              </section>
-            ) : (
-              plateOf(id)
-            );
-            if (!body) return null;
-            const row = DASH_ROWS.find((r) => r.id === id);
-            return (
-              <SortableItem
-                key={paired ? "now-class" : id}
-                id={id}
-                label={row ? t(row.label) : undefined}
-                className={fill ? "tw-fill-row" : "shrink-0"}
-                onHide={() => dash.setOn(id, false)}
-                onUp={() => dash.move(id, -1)}
-                onDown={() => dash.move(id, 1)}
-              >
-                {body}
-              </SortableItem>
-            );
-          })}
+          {(["left", "right"] as const).map((col) => (
+            <SortableWell key={col} id={col === "left" ? "col:left" : "col:right"} label={col === "left" ? "Drop left" : "Drop right"}>
+              {layout[col].map((id) => {
+                if (!dash.on(id)) return null;
+                const body = plateOf(id);
+                if (!body) return null;
+                const fill = id === "now" || id === "class";
+                const row = DASH_ROWS.find((r) => r.id === id);
+                return (
+                  <SortableItem
+                    key={id}
+                    id={id}
+                    label={row ? t(row.label) : undefined}
+                    className={fill ? "tw-fill-row" : "shrink-0"}
+                    onHide={() => dash.setOn(id, false)}
+                    onUp={() => dash.move(id, -1)}
+                    onDown={() => dash.move(id, 1)}
+                  >
+                    {body}
+                  </SortableItem>
+                );
+              })}
+            </SortableWell>
+          ))}
         </SortableList>
       </div>
     </div>
@@ -533,8 +563,11 @@ function LayoutBar({
   return (
     <section className="tw-gadget shrink-0 space-y-2 p-3">
       <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gold">Customize this wall</p>
-      <p className="text-sm text-muted">Pick a kit, then hide plates or drag the grip. Up/down works on a phone.</p>
+      <p className="text-sm text-muted">Looks paint color, type, and scale. Kits park plates in two columns. Drag a plate to the other column.</p>
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">Looks</p>
+      <WallLookChips />
       <div className="flex flex-wrap items-center gap-1">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Kits</span>
         {DASH_KITS.map((k) => (
           <MarkChip key={k.id} mark={markOf("wall")} title={k.hint} onClick={() => dash.kit(k.id)}>
             {k.label}
@@ -565,9 +598,6 @@ function LayoutBar({
       </div>
       <div className="flex flex-wrap items-center gap-1">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Look</span>
-        <MarkChip mark={Trophy} title="Keep Now and Goals on one row" on={dash.paired} onClick={() => dash.pair(!dash.paired)}>
-          Pair job
-        </MarkChip>
         <ToolsToggle on={dash.on("tools")} onClick={() => dash.setOn("tools", !dash.on("tools"))} />
         <MarkChip mark={rankBoard === "skill" ? Trophy : Coins} title="Rank" onClick={() => onRankBoard(rankBoard === "skill" ? "perk" : "skill")}>
           Rank {rankBoard === "skill" ? "XP" : "$"}

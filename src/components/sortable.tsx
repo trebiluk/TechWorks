@@ -200,3 +200,32 @@ export function SortableItem({
     </div>
   );
 }
+
+export function SortableWell({
+  id,
+  className,
+  label,
+  children,
+}: {
+  id: string;
+  className?: string;
+  label?: string;
+  children: ReactNode;
+}) {
+  const ctx = useContext(Ctx);
+  const hovering = Boolean(ctx?.over === id && ctx.grab);
+  const col = id === "col:left" ? "left" : id === "col:right" ? "right" : undefined;
+  return (
+    <div
+      data-sort-id={id}
+      data-wall-col={col}
+      className={cn("tw-wall-col", hovering && "tw-sort-over", className)}
+    >
+      {ctx?.enabled ? (
+        <p className="tw-wall-col-label">{col === "left" ? "Left" : col === "right" ? "Right" : label}</p>
+      ) : null}
+      {children}
+      {ctx?.enabled ? <p className="tw-wall-drop">{label ?? "Drop here"}</p> : null}
+    </div>
+  );
+}

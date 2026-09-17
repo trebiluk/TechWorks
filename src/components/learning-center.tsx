@@ -8,6 +8,7 @@ import { abOn, onAbRoster } from "@/lib/store";
 import { todayIso } from "@/lib/calendar";
 import { SkillsBoard } from "@/components/skills-board";
 import { ProjectsBoard } from "@/components/projects-board";
+import { PlanIt } from "@/components/planit";
 import { GlossaryDesk } from "@/components/glossary";
 import { Chip } from "@/components/ui";
 import { Hammer, Heart } from "lucide-react";
@@ -16,10 +17,11 @@ import { cn } from "@/lib/utils";
 
 const GradeBoard = lazy(() => import("@/components/grade-board").then((m) => ({ default: m.GradeBoard })));
 
-export type LearnPane = "book" | "skills" | "projects" | "guide" | "words";
+export type LearnPane = "book" | "skills" | "projects" | "guide" | "words" | "plan";
 export type LearnStart = LearnPane | "eval" | "score" | "grades" | "soft" | "bench" | "data";
 
 function splitStart(start: LearnStart): { pane: LearnPane; family: "shop" | "soft" } {
+  if (start === "plan") return { pane: "plan", family: "shop" };
   if (start === "projects") return { pane: "projects", family: "shop" };
   if (start === "skills" || start === "soft") return { pane: "skills", family: start === "soft" ? "soft" : "shop" };
   if (start === "guide" || start === "bench" || start === "data") return { pane: "guide", family: "shop" };
@@ -40,6 +42,7 @@ export function LearningCenter({
   onOpenSettings: _onOpenSettings,
   onRankUp,
   onTeachDay,
+  onSeeWall,
 }: {
   file: EconomyFile;
   onChange: (next: EconomyFile) => void;
@@ -53,6 +56,7 @@ export function LearningCenter({
   onOpenSettings?: () => void;
   onRankUp?: (alias: string, band: string) => void;
   onTeachDay?: (date: string, period: number) => void;
+  onSeeWall?: () => void;
 }) {
   const first = splitStart(start);
   const [pane, setPane] = useState<LearnPane>(first.pane);
@@ -63,7 +67,7 @@ export function LearningCenter({
     setFamily(next.family);
   }, [start]);
   useEffect(() => {
-    if (!unlocked && (pane === "book" || pane === "projects" || pane === "skills")) setPane("words");
+    if (!unlocked && (pane === "book" || pane === "projects" || pane === "skills" || pane === "plan")) setPane("words");
   }, [unlocked, pane]);
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
@@ -90,6 +94,11 @@ export function LearningCenter({
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
               <SkillsBoard file={file} onChange={onChange} unlocked={unlocked} onNeedPin={onNeedPin} onOpenId={onOpenId} family={family} onRankUp={onRankUp} />
             </div>
+          </div>
+        ) : null}
+        {pane === "plan" ? (
+          <div className="h-full overflow-auto p-1">
+            <PlanIt file={file} unlocked={unlocked} onNeedPin={onNeedPin} onChange={onChange} onTeach={onTeachDay} onWall={onSeeWall} />
           </div>
         ) : null}
         {pane === "projects" ? (

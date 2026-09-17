@@ -4,7 +4,7 @@ import { SettingsBody, type AdminPane, type SettingsTab } from "@/components/set
 import { traceToday } from "@/lib/workflow";
 import { cycleDayLabel, daySlot, formatSchoolDate, isSchoolDay, todayIso } from "@/lib/calendar";
 import { currentCycleOf } from "@/lib/roles";
-import { periodTitle, shopBells } from "@/lib/economy";
+import { padFirst, periodTitle, shopBells, showFirstReal } from "@/lib/economy";
 import { dueCrews, scoredToday } from "@/lib/crews";
 import { agendaFor, skillName } from "@/lib/projects";
 import { periodClock, periodNow, periodNext, SCHOOLTOOL_URL } from "@/lib/bells";
@@ -126,6 +126,7 @@ export function AdminHub({
   const lunch = lunchOn(file, today);
   const sent = live != null ? exportedThisPeriod(file, today, live) : true;
   const away = outNow(file, today);
+  const real = showFirstReal(file);
   const group = groupOfPane(pane);
   const inner = group.panes.filter((id) => id !== "cloud");
   const rooms: { id: string; label: string; on: boolean; go: () => void; show: boolean }[] = [
@@ -338,7 +339,7 @@ export function AdminHub({
               <p className="text-[11px] font-bold uppercase tracking-wide text-cleanup">Out of room</p>
               {away.map(({ student, where, pass }) => (
                 <p key={student.id} className="text-sm font-semibold">
-                  {student.first}
+                  {padFirst(student, real)}
                   <span className="ml-2 font-mono text-muted">
                     {where}
                     {pass?.out ? ` · left ${pass.out}` : ""}

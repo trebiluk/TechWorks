@@ -17,7 +17,8 @@ export type Look = {
   finish: FinishId;
 };
 
-export const LOOK_KEY = "techworks-look-v2";
+export const LOOK_KEY = "techworks-look-v4";
+const LOOK_V3 = "techworks-look-v3";
 
 export const FINISHES: {
   id: FinishId;
@@ -28,7 +29,7 @@ export const FINISHES: {
   corners: number;
   wallpaper: number;
 }[] = [
-  { id: "plate", label: "Plate", hint: "Industrial default", lift: 82, stroke: 1, corners: 12, wallpaper: 80 },
+  { id: "plate", label: "Plate", hint: "Glass edge. Cyan lamp.", lift: 68, stroke: 0, corners: 12, wallpaper: 52 },
   { id: "steel", label: "Brushed steel", hint: "Tighter, cooler", lift: 40, stroke: 1, corners: 6, wallpaper: 25 },
   { id: "cast", label: "Cast iron", hint: "Heavy drop", lift: 95, stroke: 2, corners: 18, wallpaper: 55 },
   { id: "paper", label: "Chipboard", hint: "Flat paper", lift: 18, stroke: 0, corners: 2, wallpaper: 8 },
@@ -36,15 +37,15 @@ export const FINISHES: {
 ];
 
 export const SOLVAY_LOOK: Look = {
-  scale: 16,
-  titles: 100,
+  scale: 18,
+  titles: 120,
   fill: 100,
   chips: 44,
   corners: 12,
-  stroke: 1,
-  pad: 12,
-  lift: 82,
-  wallpaper: 80,
+  stroke: 0,
+  pad: 14,
+  lift: 68,
+  wallpaper: 52,
   caps: "off",
   finish: "plate",
 };
@@ -52,7 +53,7 @@ export const SOLVAY_LOOK: Look = {
 export const LOOK_FIELDS: { key: Exclude<keyof Look, "caps" | "finish">; label: string; min: number; max: number; step: number; hint: string }[] = [
   { key: "scale", label: "Scale", min: 13, max: 22, step: 1, hint: "Whole desk" },
   { key: "titles", label: "Titles", min: 80, max: 160, step: 5, hint: "% display" },
-  { key: "fill", label: "Fill", min: 0, max: 100, step: 5, hint: "Now, job card, Teach" },
+  { key: "fill", label: "Fill", min: 0, max: 100, step: 5, hint: "Now, Hour, Teach" },
   { key: "chips", label: "Chips", min: 36, max: 56, step: 2, hint: "px tap" },
   { key: "corners", label: "Corners", min: 0, max: 28, step: 1, hint: "px" },
   { key: "stroke", label: "Stroke", min: 0, max: 4, step: 1, hint: "px line" },
@@ -65,8 +66,10 @@ export function storedLook(): Look | null {
   try {
     if (typeof window === "undefined") return null;
     const raw = window.localStorage.getItem(LOOK_KEY);
-    if (!raw) return null;
-    return { ...SOLVAY_LOOK, ...(JSON.parse(raw) as Look) };
+    if (raw) return { ...SOLVAY_LOOK, ...(JSON.parse(raw) as Look) };
+    /* v3 kept industrial lift. Fresh desk uses glass plate. */
+    if (window.localStorage.getItem(LOOK_V3)) return SOLVAY_LOOK;
+    return null;
   } catch {
     return null;
   }

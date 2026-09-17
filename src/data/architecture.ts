@@ -22,7 +22,7 @@ export const ARCH_SECTIONS: ArchSection[] = [
     title: "One desk, four jobs",
     lead: "TechWorks is one shop PC gradebook with four kinds of number. They never average into each other. The wall is a projector of aliases. Admin is the writer.",
     lanes: [
-      { name: "Author", color: "gold", items: ["Plan book", "Teach", "Projects / Activity"] },
+      { name: "Author", color: "gold", items: ["PlanIt", "Teach", "Projects / Activity"] },
       { name: "Play", color: "accent", items: ["Deck", "Wall", "Club wall", "Hall wall"] },
       { name: "Score", color: "crew", items: ["Crew pad 3/2/1", "Teacher Score", "Skills 1–4"] },
       { name: "Perk / after", color: "muted", items: ["Wallet $", "Store", "Prints", "Lucky", "Club IN", "Hall HERE"] },
@@ -34,34 +34,39 @@ export const ARCH_SECTIONS: ArchSection[] = [
   },
   {
     id: "lesson-spine",
-    title: "Plan book → Teach → Deck → Wall",
+    title: "PlanIt → Teach → Deck → Wall",
     lead: "One write. You type the hour once. Every play surface reads that hour. Deck is not a second copy.",
     flows: [
       {
         title: "How a class hour is born",
         steps: [
-          { from: "New Activity / Plan book", arrow: "dates + grade + belong", to: "Parked unit on that period" },
+          { from: "PlanIt week grid", arrow: "tap cell · type Do this · copy last week / fill same grade", to: "teachDays for every P × day" },
+          { from: "PlanIt New unit", arrow: "name + optional question", to: "Parked unit on that period" },
           { from: "Teach Ask / Do / Objective", arrow: "leave field or change P", to: "teachDays + the same unit" },
+          { from: "Teach Agenda 01–04", arrow: "saveAgendaLine", to: "Wall plate · Deck This hour · Plan Do/close/notes" },
           { from: "Teach hour pack", arrow: "Workshop / Demo / …", to: "Enter · Listen · Work · Cleanup beats" },
-          { from: "Deck Present", arrow: "reads teachJob", to: "Slides for this P + date" },
-          { from: "Deck Edit slides", arrow: "same saveTeach* writes", to: "Teach + Plan book" },
-          { from: "Wall Goals plate", arrow: "jobCardOf + teach override", to: "Question, rules, today, done, look-for" },
+          { from: "Deck Present", arrow: "reads teachJob + hourAgenda", to: "Slides for this P + date" },
+          { from: "Deck Edit slides", arrow: "same saveTeach* / saveAgendaLine writes", to: "Teach + PlanIt + Wall" },
+          { from: "Wall beat", arrow: "wallMode from the bell", to: "Enter · Agenda · Cleanup · idle" },
         ],
       },
     ],
     tables: [
       {
         caption: "Lesson fields — who shows them",
-        head: ["Field", "Written on", "Teach", "Deck", "Wall", "Plan book", "Family"],
+        head: ["Field", "Written on", "Teach", "Deck", "Wall", "PlanIt", "Family"],
         rows: [
-          ["Ask / driving question", "Teach or Activity", "Yes", "Title slide", "Goals plate", "Unit prompt", "No"],
-          ["Do this now", "Teach or Activity.today", "Yes", "Prove / beats", "Today line", "Activity", "No"],
+          ["Ask / driving question", "Teach or Activity", "Yes", "Title slide", "Idle Hour", "Unit prompt", "No"],
+          ["Agenda 01–04", "Teach Agenda", "Yes", "This hour slide", "Enter / Agenda plate", "Do / close / notes", "No"],
+          ["Do this now", "Teach or Activity.today", "Yes", "Agenda 02 + Prove", "Agenda 02", "Activity", "No"],
           ["Objective / done", "Teach or Activity.done", "Yes", "Prove", "Done line", "Activity", "No"],
           ["Look-for a 3", "Activity.lookFor", "Hour line", "Prove", "Look-for", "Activity", "No"],
           ["Rules / goggles", "Project constraints", "Listen beat", "Rules slide", "Rules", "Write the job", "No"],
           ["Hour pack (Workshop…)", "Teach only", "Chips", "Beat kicker", "No", "No", "No"],
           ["STEM sentence", "Project stemLine", "Objective fallback", "Title line", "Under question", "Unit", "No"],
-          ["Hang (Drive / Slides / YouTube)", "Teach Hang paste", "Yes", "Embed slide", "No", "No", "No"],
+          ["Hang (Drive / Slides / YouTube / Canva)", "Teach Hang paste", "Yes", "Embed slide", "Under Agenda", "No", "No"],
+          ["Need / materials", "Teach Need or Plan cell", "Yes", "No", "Enter + kit chip", "Yes", "No"],
+          ["Closure / homework / mods", "Plan cell", "No", "No", "No", "Yes", "No"],
           ["Skill 1–4 expected", "Activity.expect", "No", "No", "Look-for n =", "Activity", "Words after you score"],
         ],
       },
@@ -105,6 +110,7 @@ export const ARCH_SECTIONS: ArchSection[] = [
         rows: [
           ["Locked id", "students[].id", "Hidden", "Hidden", "Hidden", "Encoded live export"],
           ["Alias (first)", "students[].first", "Yes", "Yes", "Yes", "Yes"],
+          ["Desk first names", "config.showFirstReal", "Never", "Teacher toggle · first only", "Never", "Never"],
           ["Legal name", "vault legalFirst/Last", "Never", "Show full info", "After PIN", "VAULT tab only"],
           ["IEP / 504", "flags", "Never (deco dots inside Show full)", "Show full info", "No", "VAULT"],
           ["Crew key", "crewKey + crewDays", "Crew plates", "Yes", "No", "Class tabs"],
@@ -115,6 +121,7 @@ export const ARCH_SECTIONS: ArchSection[] = [
     notes: [
       "Admin → Crews: size, deal, look, crown. Separate rules live on Roster.",
       "Rosters page is the yearbook of aliases. Legal names stay in Admin → Records.",
+      "Show first real names (Settings → Privacy) puts legal first names on teacher pads only. The wall never follows.",
     ],
   },
   {

@@ -17,6 +17,7 @@ import { commitFont, storedFont, type FontId } from "@/lib/fonts";
 import { commitLook, SOLVAY_LOOK, storedLook, type Look } from "@/lib/look";
 import { useLang } from "@/lib/i18n-hook";
 import { ThemeStudio } from "@/components/theme-studio";
+import { WallLookChips } from "@/components/wall-looks";
 import { cn } from "@/lib/utils";
 
 type Chip = { id: string; label: string; kind: string; swatch: string; fg: string; gold: string };
@@ -110,12 +111,29 @@ export function ThemePicker() {
     <div className="space-y-4 pb-8">
       <div>
         <p className="text-sm font-medium uppercase tracking-wider text-subtle">{t("Theme Tools")}</p>
-        <p className="mt-1 text-sm text-muted">{t("Hover paints the whole desk. Logo stays. Click to keep it.")}</p>
+        <p className="mt-1 text-sm text-muted">{t("Looks are full walls. Hover a color chip for paint only. Logo stays.")}</p>
         <p className="mt-2 flex items-center gap-2 text-sm">
           <Dots item={hover ? ofId(hover, chips) : current} />
           <span className="font-semibold">{hover ? ofId(hover, chips).label : current.label}</span>
           <span className="text-muted">{hovering ? "preview" : current.kind}</span>
         </p>
+      </div>
+
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">Wall looks</p>
+        <p className="mt-1 text-sm text-muted">Color, type, scale, and plates in one tap. All dark.</p>
+        <div className="mt-2">
+          <WallLookChips
+            onPick={() => {
+              const snap = snapshot(storedTheme());
+              setId(storedTheme());
+              setDraft(snap.palette);
+              setLook(snap.look);
+              setFont(snap.font);
+              setSaved(snap);
+            }}
+          />
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-1">

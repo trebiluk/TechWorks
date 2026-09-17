@@ -6,6 +6,57 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.61 — 2026-09-17
+
+- PlanIt is the week planner. Periods down, days across. Type Do this — that is the Wall, Teach, and Deck. Process chips (Ask / Imagine / Plan / Create / Improve / Share / Safety) are tags, never the hour’s name. New unit is a name plus an optional question. Copy: last week, same as yesterday, through the week, fill the other same-grade class only if it is empty. Wall preview sits on the hour. This week plate on the Wall shows Mon–Fri for the live period. New Activity no longer pastes lever sample text or parks a unit named Ask.
+
+## 1.92.60 — 2026-09-16
+
+- Default Shop wall is a glass plate: navy + cyan kept, purple wash gone. Plates have a top-edge shine and a quiet drop shadow. The TECHWORKS lockup still flashes a cyan edge. Fields sit in a well. Night shop / Oswego / Scoreboard looks are unchanged.
+
+## 1.92.59 — 2026-09-16
+
+- Wall is a two-column grid you save. Drag any plate left or right. Looks still paint color, type, and scale; kits now park Hour (Agenda / Enter) as the left hero and the clock on the right. Shop, Back row, Night shop, Oswego, Scoreboard, Club night, Projector, Harvest all write that grid. Pair job is gone — the columns are the pair.
+
+## 1.92.58 — 2026-09-15
+
+
+- Gaps the class loop was still hiding: hung Drive / Canva now plays on the Wall under Agenda. Enter is suggestions (sit, Need, in a minute) with Berty waving. Need (goggles / stock) is a Teach line that kids see. Agenda is a 2×2 plate. A chime when Enter becomes Agenda. Morning chip: Plan P3 if that hour is empty. Fill P8 copies this hour onto the other same-grade class only if it is empty. See wall sits next to Deck.
+
+## 1.92.57 — 2026-09-15
+
+- Class loop closes the remaining gaps: Deck plays Agenda 01–04 (same write as Teach / Wall / Plan). Cleanup bell rings once for the shop. Teach keeps a coral jobs pad so you can edit the list without covering the desk. Extra tidy line is editable. Crew lead pad shows the unit, a 3-looks-like, last marks under each name, and Buy when the catalog has perks.
+- Empty Then drops off the Wall so the plate flexes with the assignment. Arrive on Teach: “n of 8 hours set.”
+
+## 1.92.56 — 2026-09-15
+
+- Class loop: arrive on Teach (green dots = that period is set). Agenda 01–04 writes Wall, Deck, and Plan. Hang a Drive / Canva file on Teach. Wall follows the bell: Enter between classes, Agenda once the hour starts, Cleanup in the last minutes.
+- Cleanup is a projector wall only — Teach and Score stay open so you can still run the room. Edit jobs on the coral plate (PIN). Crew lead pad shows today’s make.
+
+## 1.92.55 — 2026-09-15
+
+- Cleanup wall at 100% scale: Workshop / Classroom cards stay inside the coral plate. Type shrinks to the leftover height so the fifth job does not spill. Berty’s two claws stay on the point pose; the box includes the hands so they do not paint over the clock.
+
+## 1.92.54 — 2026-09-15
+
+- Plan book is a week grid: periods down, days across. Learn opens on Plan. Last week → this week (Tuesday lands on Tuesday). Copy to the other class of the same grade. Repeat through the week. Same as last class day.
+- Standard hour fields that were missing: objective (SWBAT), closure, materials, homework, mods (no names), reflection. Type Ask / Do on a cell — it parks the unit. Print still has the week.
+
+## 1.92.53 — 2026-09-15
+
+
+- Show first real names: Settings → Privacy, or First names on Score. Legal first names on teacher pads (Score, Crew, Skills, Wallet, Prints, Hall, Data, Grades). Last names stay in the vault. Off by default. Wall, Teach, Family web, and a locked projector stay aliases.
+
+## 1.92.52 — 2026-09-14
+
+- Shop wall default: bigger type (18px, titles 118%), cyan glow actually paints, plates take the lift slider. No white walls.
+- Wall looks: Shop, Back row, Night shop, Oswego, Scoreboard, Club night, Projector, Harvest. Arrange wall or Theme. One tap for color, type, scale, and plates.
+
+## 1.92.51 — 2026-09-14
+
+- Web is a labeled HUD button. Parents, crew leaders, students: class code, alias profile, skill chart, family sheet. No wallet.
+- Berty color actually follows the chip: each robot gets its own paint so a second waving Berty cannot steal cyan. HAND LAW: the layout box includes both claws; Character Maker stage is padded; header avatar is the icon so a circle cannot clip a hand.
+
 ## 1.92.50 — 2026-09-14
 
 - Family web: globe on the HUD, ?web=1. Parents, crew leaders, students. Aliases, skill charts, family sheet. No wallet.

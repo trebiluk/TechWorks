@@ -1,27 +1,20 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useId, useState, type CSSProperties } from "react";
 import { BERTY_LABEL, BERTY_SRC, bertyPose, showBerty, type BertyCue, type BertyPose } from "@/lib/berty";
 import { BERTY_LOOK_EVENT, bertyBodyHex, bertyLookVars, loadBertyLook, type BertyLook } from "@/lib/berty-look";
 import { paintBertySvg } from "@/lib/berty-paint";
 import { BertyGear } from "@/components/berty-gear";
 import { cn } from "@/lib/utils";
 
-const H: Record<"icon" | "sm" | "md" | "lg" | "xl", string> = {
-  icon: "1.5rem",
-  sm: "2.75rem",
-  md: "4.25rem",
-  lg: "5.75rem",
-  xl: "8.25rem",
-};
-
 const RAW = new Map<string, string>();
 
 function useBertySvg(pose: BertyPose, alert: boolean | undefined, body: string): string {
   const src = BERTY_SRC[alert ? "point" : pose];
+  const stamp = useId().replace(/[^a-zA-Z0-9]/g, "") || "b";
   const [svg, setSvg] = useState("");
   useEffect(() => {
     let live = true;
     const paint = (raw: string) => {
-      if (live) setSvg(paintBertySvg(raw, body));
+      if (live) setSvg(paintBertySvg(raw, body, stamp));
     };
     const hit = RAW.get(src);
     if (hit) {
@@ -39,7 +32,7 @@ function useBertySvg(pose: BertyPose, alert: boolean | undefined, body: string):
     return () => {
       live = false;
     };
-  }, [src, body]);
+  }, [src, body, stamp]);
   return svg;
 }
 
@@ -84,7 +77,9 @@ export function Berty({
       className={cn("berty-figure", className)}
       data-finish={look.finish}
       data-size={size}
-      style={{ ...vars, ["--berty-h" as string]: H[size] }}
+      data-berty-ink={look.ink}
+      data-berty-body={body}
+      style={{ ...vars }}
     >
       {svg ? (
         <span className="berty-seat" aria-hidden dangerouslySetInnerHTML={{ __html: svg }} />

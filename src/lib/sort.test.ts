@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { moveId } from "./sort.ts";
-import { DEFAULT_LAYOUT, hydrateDashLayout, moveDashTo, pairMate, type DashRowId } from "./dash-layout.ts";
+import { COL_RIGHT, DEFAULT_LAYOUT, hydrateDashLayout, moveDashTo, dashCol } from "./dash-layout.ts";
 
 describe("moveId", () => {
   it("moves the first item onto the last", () => {
@@ -24,59 +24,76 @@ describe("moveId", () => {
 });
 
 describe("moveDashTo", () => {
-  it("keeps hidden rows in the list while moving visible plates", () => {
+  it("keeps hidden rows in the list while moving visible plates in a column", () => {
     const next = moveDashTo(DEFAULT_LAYOUT, "kpis", "now");
-    assert.equal(next.order[0], "kpis");
+    assert.equal(next.right[0], "kpis");
+    assert.equal(next.right[1], "now");
     assert.deepEqual(next.hidden, DEFAULT_LAYOUT.hidden);
+    assert.equal(dashCol(next, "class"), "left");
   });
 
-  it("moves Do this now onto Now", () => {
+  it("drags Do this now onto Now and parks it on the right", () => {
     const next = moveDashTo(DEFAULT_LAYOUT, "proc", "now");
-    assert.equal(next.order[0], "proc");
-    assert.ok(next.order.includes("now"));
-  });
-});
-
-describe("pairMate", () => {
-  it("pairs Now and Goals when they sit next to each other in either order", () => {
-    const rest = DEFAULT_LAYOUT.order.filter((id) => id !== "class" && id !== "now");
-    const flipped = { ...DEFAULT_LAYOUT, order: ["class", "now", ...rest] as DashRowId[] };
-    assert.equal(pairMate(flipped, "class"), "first");
-    assert.equal(pairMate(flipped, "now"), "second");
-    assert.equal(pairMate(DEFAULT_LAYOUT, "now"), "first");
-    assert.equal(pairMate(DEFAULT_LAYOUT, "class"), "second");
+    assert.equal(next.right[0], "proc");
+    assert.ok(next.right.includes("now"));
+    assert.equal(dashCol(next, "proc"), "right");
+    assert.ok(!next.left.includes("proc"));
   });
 
-  it("does not pair when a plate sits between them", () => {
-    const rest = DEFAULT_LAYOUT.order.filter((id) => id !== "now" && id !== "class" && id !== "proc");
-    const split = { ...DEFAULT_LAYOUT, hidden: ["tools"] as typeof DEFAULT_LAYOUT.hidden, order: ["now", "proc", "class", ...rest] as DashRowId[] };
-    assert.equal(pairMate(split, "now"), null);
-    assert.equal(pairMate(split, "class"), null);
+  it("drops Hour onto the right well", () => {
+    const next = moveDashTo(DEFAULT_LAYOUT, "class", COL_RIGHT);
+    assert.equal(dashCol(next, "class"), "right");
+    assert.equal(next.right.at(-1), "class");
+    assert.ok(!next.left.includes("class"));
+  });
+
+  it("is a no-op when dropping a left plate onto the left well", () => {
+    const next = moveDashTo(DEFAULT_LAYOUT, "class", "col:left");
+    assert.equal(next, DEFAULT_LAYOUT);
   });
 });
 
 describe("hydrateDashLayout", () => {
-  it("parks Do this now after Goals on an old wall", () => {
+  it("splits an old one-column wall: Hour left, clock right", () => {
     const old = hydrateDashLayout({
       order: ["now", "class", "strip", "mods", "tools", "notes", "kpis"],
       hidden: ["tools"],
     });
-    assert.deepEqual(old.order.slice(0, 4), ["now", "class", "proc", "strip"]);
-    const clubAt = old.order.indexOf("club");
-    assert.ok(clubAt > old.order.indexOf("strip"));
+    assert.equal(old.left[0], "class");
+    assert.ok(old.left.includes("proc"));
+    assert.ok(old.left.includes("strip"));
+    assert.equal(old.right[0], "now");
+    assert.ok(old.right.includes("kpis"));
+    assert.ok(old.order.includes("club"));
     assert.ok(old.order.includes("specials"));
-    assert.equal(old.order.at(-1), "poll");
+    assert.ok(old.order.includes("poll"));
     assert.ok(old.hidden.includes("tools"));
-    assert.ok(old.hidden.includes("proc"));
+    assert.ok(!old.hidden.includes("proc"));
   });
 
-  it("does not reshuffle a v9 wall that already has the new plates", () => {
+  it("keeps a saved two-column grid", () => {
+    const saved = hydrateDashLayout({
+      order: ["now", "class"],
+      left: ["now", "kpis"],
+      right: ["class", "proc"],
+      hidden: ["tools", "poll"],
+    });
+    assert.equal(saved.left[0], "now");
+    assert.ok(saved.left.includes("kpis"));
+    assert.equal(saved.right[0], "class");
+    assert.ok(saved.right.includes("proc"));
+    assert.deepEqual(saved.hidden, ["tools", "poll"]);
+  });
+
+  it("does not reshuffle plates already in a v9 order beyond the column split", () => {
     const saved = hydrateDashLayout({
       order: ["proc", "now", "class", "poll", "strip", "club", "specials", "mods", "tools", "notes", "kpis"],
       hidden: ["tools", "poll"],
     });
-    assert.equal(saved.order[0], "proc");
-    assert.equal(saved.order[3], "poll");
+    assert.equal(saved.left[0], "proc");
+    assert.ok(saved.left.indexOf("class") < saved.left.indexOf("strip"));
+    assert.equal(saved.right[0], "now");
+    assert.ok(saved.right.includes("poll"));
     assert.deepEqual(saved.hidden, ["tools", "poll"]);
   });
 });

@@ -13,9 +13,9 @@ export function HouseCard({ id, onClose, unlocked = false }: { id: HouseId; onCl
       <div className="tw-gadget tw-hud flex max-h-[94dvh] w-full max-w-3xl flex-col overflow-hidden bg-surface">
         <header className="shrink-0 border-b border-border px-4 py-3 sm:px-5">
           <div className="flex items-start gap-3">
-            <div className="flex size-16 shrink-0 items-center justify-center rounded-full bg-elevated ring-1 ring-border">
+            <div className="flex size-16 shrink-0 items-center justify-center overflow-visible rounded-full bg-elevated ring-1 ring-border">
               {berty ? (
-                <Berty pose="waving" size="md" />
+                <Berty pose="icon" size="md" />
               ) : (
                 <span className="font-display text-3xl font-semibold text-gold">K</span>
               )}

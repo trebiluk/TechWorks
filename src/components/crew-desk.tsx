@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { EconomyFile, RawStudent } from "@/lib/economy";
-import { isLiveStudent, shopBells } from "@/lib/economy";
+import { isLiveStudent, padFirst, shopBells, showFirstReal } from "@/lib/economy";
 import { xpIntoLevel } from "@/lib/skills";
 import { crewsOf } from "@/lib/crews";
 import {
@@ -62,6 +62,7 @@ export function CrewDesk({
   const bans = bansOf(file).filter((b) => kids.some((k) => k.id === b.a) && kids.some((k) => k.id === b.b));
   const picked = pick ? kids.find((s) => s.id === pick) : null;
   const packId = CREW_PACKS.find((p) => p.min === rules.min && p.max === rules.max && p.crewsMax === rules.crewsMax)?.id;
+  const real = showFirstReal(file);
 
   function place(dest: string, force = false) {
     if (!picked) return;
@@ -131,7 +132,7 @@ export function CrewDesk({
           <p className="text-[11px] font-bold uppercase">Separate · on this date</p>
           {hits.map((h) => (
             <p key={`${h.a.id}-${h.b.id}`} className="text-sm font-semibold">
-              {h.a.first} + {h.b.first} in {h.crew}
+              {padFirst(h.a, real)} + {padFirst(h.b, real)} in {h.crew}
               {h.ban.note ? ` · ${h.ban.note}` : " · roster"}
             </p>
           ))}
@@ -199,7 +200,7 @@ export function CrewDesk({
                 >
                   <option value="">No lead yet</option>
                   {c.kids.map((s) => (
-                    <option key={s.id} value={s.id}>{s.first}</option>
+                    <option key={s.id} value={s.id}>{padFirst(s, real)}</option>
                   ))}
                 </select>
               </label>
@@ -237,7 +238,7 @@ export function CrewDesk({
             return (
               <li key={`${b.a}|${b.b}`} className="flex items-center justify-between gap-2 rounded-md bg-elevated px-2 py-1 text-sm">
                 <span>
-                  <span className="font-semibold">{left.first}</span> + <span className="font-semibold">{c.first}</span>
+                  <span className="font-semibold">{padFirst(left, real)}</span> + <span className="font-semibold">{padFirst(c, real)}</span>
                   <span className="ml-2 text-muted">{b.note || "roster"}</span>
                 </span>
                 <button type="button" className="text-xs text-muted" onClick={() => onChange(dropCrewBan(file, b.a, b.b))}>
@@ -313,7 +314,7 @@ function Kid({ s, file, xp, lead, on, onPick }: { s: RawStudent; file: EconomyFi
     <li className={on ? "rounded-xl ring-2 ring-accent" : ""}>
       <WorkerCard
         id={s.id}
-        name={s.first}
+        name={padFirst(s, showFirstReal(file))}
         icon={s.icon}
         title={lead ? "Crew lead" : titleOf(xp)}
         xp={xp}

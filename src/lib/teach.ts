@@ -101,7 +101,21 @@ export type TeachDay = {
   do?: string;
   lines?: Record<string, string>;
   media?: HangItem[];
+  /** Tools, PPE, stock on the bench. */
+  materials?: string;
+  homework?: string;
+  /** Closure / exit ticket. */
+  close?: string;
+  /** Differentiation. No student names. */
+  mods?: string;
+  /** After-class note. */
+  reflect?: string;
+  /** Four wall cards. Empty lines fall back to the hour pack. */
+  agenda?: { now?: string; goal?: string; next?: string; behave?: string };
+  /** PlanIt process tag. Never used as the hour title. */
+  move?: string;
 };
+
 
 export type LaidSlot = TeachSlot & { startMin: number; endMin: number; mins: number };
 
@@ -291,7 +305,121 @@ export function setTeachPin(file: EconomyFile, date: string, period: number, pin
 }
 
 export function setTeachNotes(file: EconomyFile, date: string, period: number, notes: string): EconomyFile {
-  return putDay(file, date, period, { notes: notes.trim().slice(0, 200) });
+  return putDay(file, date, period, { notes: notes.trim().slice(0, 400) || undefined });
+}
+
+export function setTeachMaterials(file: EconomyFile, date: string, period: number, materials: string): EconomyFile {
+  return putDay(file, date, period, { materials: materials.trim().slice(0, 200) || undefined });
+}
+
+export function setTeachHomework(file: EconomyFile, date: string, period: number, homework: string): EconomyFile {
+  return putDay(file, date, period, { homework: homework.trim().slice(0, 160) || undefined });
+}
+
+export function setTeachClose(file: EconomyFile, date: string, period: number, close: string): EconomyFile {
+  return putDay(file, date, period, { close: close.trim().slice(0, 200) || undefined });
+}
+
+export function setTeachMods(file: EconomyFile, date: string, period: number, mods: string): EconomyFile {
+  return putDay(file, date, period, { mods: mods.trim().slice(0, 200) || undefined });
+}
+
+export function setTeachReflect(file: EconomyFile, date: string, period: number, reflect: string): EconomyFile {
+  return putDay(file, date, period, { reflect: reflect.trim().slice(0, 400) || undefined });
+}
+
+export function setTeachMove(file: EconomyFile, date: string, period: number, move: string): EconomyFile {
+  return putDay(file, date, period, { move: move.trim().slice(0, 24) || undefined });
+}
+
+export function setTeachAgenda(
+  file: EconomyFile,
+  date: string,
+  period: number,
+  patch: NonNullable<TeachDay["agenda"]>,
+): EconomyFile {
+  const cur = teachDay(file, date, period).agenda ?? {};
+  const agenda = {
+    now: (patch.now !== undefined ? patch.now : cur.now)?.trim().slice(0, 220) || undefined,
+    goal: (patch.goal !== undefined ? patch.goal : cur.goal)?.trim().slice(0, 280) || undefined,
+    next: (patch.next !== undefined ? patch.next : cur.next)?.trim().slice(0, 280) || undefined,
+    behave: (patch.behave !== undefined ? patch.behave : cur.behave)?.trim().slice(0, 220) || undefined,
+  };
+  const slim = agenda.now || agenda.goal || agenda.next || agenda.behave ? agenda : undefined;
+  return putDay(file, date, period, { agenda: slim });
+}
+
+function slimTeach(day: TeachDay): TeachDay {
+  const out: TeachDay = {};
+  if (day.pack) out.pack = day.pack;
+  if (day.objective?.trim()) out.objective = day.objective.trim().slice(0, 160);
+  if (day.notes?.trim()) out.notes = day.notes.trim().slice(0, 400);
+  if (day.ask?.trim()) out.ask = day.ask.trim().slice(0, 200);
+  if (day.do?.trim()) out.do = day.do.trim().slice(0, 200);
+  if (day.materials?.trim()) out.materials = day.materials.trim().slice(0, 200);
+  if (day.homework?.trim()) out.homework = day.homework.trim().slice(0, 160);
+  if (day.close?.trim()) out.close = day.close.trim().slice(0, 200);
+  if (day.mods?.trim()) out.mods = day.mods.trim().slice(0, 200);
+  if (day.reflect?.trim()) out.reflect = day.reflect.trim().slice(0, 400);
+  if (day.move?.trim()) out.move = day.move.trim().slice(0, 24);
+  if (day.agenda) {
+    const agenda = {
+      now: day.agenda.now?.trim().slice(0, 220) || undefined,
+      goal: day.agenda.goal?.trim().slice(0, 280) || undefined,
+      next: day.agenda.next?.trim().slice(0, 280) || undefined,
+      behave: day.agenda.behave?.trim().slice(0, 220) || undefined,
+    };
+    if (agenda.now || agenda.goal || agenda.next || agenda.behave) out.agenda = agenda;
+  }
+  if (day.lines && Object.keys(day.lines).length) out.lines = day.lines;
+  if (day.media?.length) out.media = day.media;
+  return out;
+}
+
+/** Replace the hour. Live pin (which beat is on) stays off the copy. */
+export function replaceTeachDay(file: EconomyFile, date: string, period: number, day: TeachDay): EconomyFile {
+  const next = cloneFile(file);
+  const days = { ...(next.meta.config?.teachDays ?? {}) };
+  const row = { ...(days[date] ?? {}) };
+  const slim = slimTeach(day);
+  if (Object.keys(slim).length) row[String(period)] = slim;
+  else delete row[String(period)];
+  if (Object.keys(row).length) days[date] = row;
+  else delete days[date];
+  next.meta.config = { ...(next.meta.config ?? {}), teachDays: days };
+  return next;
+}
+
+export function teachHourFilled(day: TeachDay): boolean {
+  return Boolean(
+    day.pack ||
+      day.objective?.trim() ||
+      day.ask?.trim() ||
+      day.do?.trim() ||
+      day.notes?.trim() ||
+      day.materials?.trim() ||
+      day.homework?.trim() ||
+      day.close?.trim() ||
+      day.mods?.trim() ||
+      day.reflect?.trim() ||
+      (day.media && day.media.length) ||
+      (day.lines && Object.keys(day.lines).length),
+  );
+}
+
+/** One class hour onto another date/period. Skips empty sources. Does not copy the live beat pin. */
+export function copyTeachHour(
+  file: EconomyFile,
+  fromDate: string,
+  fromPeriod: number,
+  toDate: string,
+  toPeriod: number,
+): EconomyFile {
+  if (fromDate === toDate && fromPeriod === toPeriod) return file;
+  const src = teachDay(file, fromDate, fromPeriod);
+  if (!teachHourFilled(src)) return file;
+  const { pin: _pin, ...rest } = src;
+  return replaceTeachDay(file, toDate, toPeriod, rest);
 }
 
 export function hangOf(file: EconomyFile, date: string, period: number): HangItem[] {

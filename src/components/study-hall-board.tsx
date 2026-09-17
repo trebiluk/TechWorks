@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Presentation, X } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
-import { isLiveStudent } from "@/lib/economy";
+import { isLiveStudent, padFirst, showFirstReal } from "@/lib/economy";
 import {
   abOn,
   attendOn,
@@ -77,11 +77,12 @@ export function StudyHallBoard({
   const [oweItem, setOweItem] = useState("");
   const hall = hallOf(file);
   const letter = abOn(file, date);
+  const real = showFirstReal(file);
   const kids = useMemo(
     () =>
       file.students
         .filter((s) => s.period === P6 && isLiveStudent(s, file.meta.quarterName) && onAbRoster(s, letter))
-        .sort((a, b) => a.crewKey.localeCompare(b.crewKey) || a.first.localeCompare(b.first)),
+        .sort((a, b) => a.crewKey.localeCompare(b.crewKey) || padFirst(a, showFirstReal(file)).localeCompare(padFirst(b, showFirstReal(file)))),
     [file, letter],
   );
   const leadId = lineLeaderOn(file, date);
@@ -100,7 +101,7 @@ export function StudyHallBoard({
   function pick(mode: LinePick) {
     if (!gate()) return;
     if (mode === "draw") {
-      const names = kids.map((s) => s.first);
+      const names = kids.map((s) => padFirst(s, real));
       let i = 0;
       setSpin(names[0] ?? "—");
       const t = window.setInterval(() => {
@@ -169,7 +170,7 @@ export function StudyHallBoard({
           <TouchTimer title="Study hall timer" />
           <section className="rounded-xl bg-surface px-3 py-3">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-subtle">Line leader</p>
-            <p className="font-display text-3xl font-semibold">{spin ?? lead?.first ?? "—"}</p>
+            <p className="font-display text-3xl font-semibold">{spin ?? (lead ? padFirst(lead, real) : "—")}</p>
             <div className="mt-2 flex flex-wrap gap-1">
               {(["fair", "xp", "draw"] as const).map((m) => (
                 <button key={m} type="button" onClick={() => pick(m)} className="tw-tap min-h-11 rounded-md bg-elevated px-3 text-sm font-semibold uppercase">
@@ -204,7 +205,7 @@ export function StudyHallBoard({
             <ul className="mt-2 space-y-1">
               {hall.owes.map((o, i) => (
                 <li key={`${o.id}|${i}`} className="flex items-center gap-2 text-sm">
-                  <span className="font-semibold">{file.students.find((s) => s.id === o.id)?.first ?? o.id}</span>
+                  <span className="font-semibold">{padFirst(file.students.find((s) => s.id === o.id) ?? { first: o.id }, real)}</span>
                   <span className="min-w-0 flex-1 truncate text-muted">{o.item}</span>
                   <button type="button" onClick={() => gate() && onChange(setHallOwes(file, hall.owes.filter((_, j) => j !== i)))} className="text-xs text-muted">Done</button>
                 </li>
@@ -213,7 +214,7 @@ export function StudyHallBoard({
             <div className="mt-2 flex flex-wrap gap-2">
               <select value={oweId} onChange={(e) => setOweId(e.target.value)} className="min-h-11 rounded-md bg-elevated px-2 text-sm">
                 <option value="">Name</option>
-                {kids.map((s) => <option key={s.id} value={s.id}>{s.first}</option>)}
+                {kids.map((s) => <option key={s.id} value={s.id}>{padFirst(s, real)}</option>)}
               </select>
               <input value={oweItem} onChange={(e) => setOweItem(e.target.value)} placeholder="What they owe" className="min-h-11 min-w-[8rem] flex-1 rounded-md bg-elevated px-3 text-sm outline-none" />
               <button
@@ -246,7 +247,7 @@ export function StudyHallBoard({
               return (
                 <li key={s.id} className={cn("flex flex-col gap-1 rounded-xl p-2", gone ? "bg-bg ring-1 ring-border" : "bg-elevated")}>
                   <button type="button" onClick={() => setDrawerId(s.id)} className="truncate text-left font-display text-xl font-semibold">
-                    {s.first}
+                    {padFirst(s, real)}
                     {s.id === leadId ? <span className="ml-1 text-gold">★</span> : null}
                   </button>
                   <div className="grid grid-cols-3 gap-1">
@@ -389,7 +390,7 @@ function HallDrawer({
         <header className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
           <div>
             <p className="font-display text-lg font-semibold">
-              {s.first}
+              {padFirst(s, showFirstReal(file))}
               {lead ? <span className="ml-1 text-gold">★</span> : null}
             </p>
             <p className="text-xs text-subtle">Study Hall Manager · Day {letter}</p>

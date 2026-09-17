@@ -9,10 +9,11 @@ import { PinField } from "@/components/pin-pad";
 import { ReportCard } from "@/components/report-card";
 import { workerCards } from "@/lib/report";
 import { SKILL_MARKS } from "@/lib/skills";
+import { Spark } from "@/lib/charts";
 import { cn } from "@/lib/utils";
 
 function skillWord(n: number) {
-  return SKILL_MARKS.find((m) => m.n === n)?.name ?? "";
+  return SKILL_MARKS.find((m) => m.n === n)?.name ?? "Not yet";
 }
 
 /** Parents, crew leaders, students. Aliases only. No wallet. */
@@ -39,6 +40,7 @@ export function FamilyWeb({ file }: { file: EconomyFile }) {
   const card = me ? cards.find((c) => c.id === me.id) : null;
   const mates = me ? kids.filter((s) => s.crewKey === me.crewKey) : [];
   const link = typeof window === "undefined" ? "?web=1" : `${window.location.origin}${window.location.pathname}?web=1`;
+  const spark = (card?.stamps ?? []).slice(-10).map((st) => Math.max(0, st.pay));
 
   function enter() {
     if (unlockPortal(code)) {
@@ -53,7 +55,7 @@ export function FamilyWeb({ file }: { file: EconomyFile }) {
 
   if (inGate) {
     return (
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-4">
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-4" data-family-web>
         <div className="w-full max-w-sm rounded-2xl bg-surface p-6">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-subtle">Family web</p>
           <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight">Class code</h1>
@@ -83,7 +85,7 @@ export function FamilyWeb({ file }: { file: EconomyFile }) {
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto p-2">
+    <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto p-2" data-family-web>
       <header className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-subtle">Family web</p>
@@ -158,27 +160,32 @@ export function FamilyWeb({ file }: { file: EconomyFile }) {
           </div>
           {pane === "me" ? (
             <article className="tw-gadget p-5">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gold">Profile</p>
               <h2 className="font-display text-3xl font-semibold tracking-tight">{me.first}</h2>
               <p className="text-sm text-muted">
                 {me.crewName} · P{me.period}
               </p>
-              <p className="mt-4 text-[11px] font-bold uppercase tracking-wide text-muted">Skills in words</p>
+              <p className="mt-5 text-[11px] font-bold uppercase tracking-wide text-muted">Skill chart</p>
               <ul className="mt-2 grid gap-2">
-                {(card?.skillMarks ?? [])
-                  .filter((sk) => sk.score > 0)
-                  .map((sk) => (
-                    <li key={sk.id}>
-                      <div className="flex justify-between text-sm">
-                        <span>{sk.name}</span>
-                        <span className="text-gold">{skillWord(sk.score)}</span>
-                      </div>
-                      <div className="mt-1 h-2 overflow-hidden rounded-full bg-elevated">
-                        <span className="block h-full rounded-full bg-gold" style={{ width: `${(sk.score / 4) * 100}%` }} />
-                      </div>
-                    </li>
-                  ))}
+                {(card?.skillMarks ?? []).map((sk) => (
+                  <li key={sk.id}>
+                    <div className="flex justify-between text-sm">
+                      <span>{sk.name}</span>
+                      <span className="text-gold">{skillWord(sk.score)}</span>
+                    </div>
+                    <div className="mt-1 h-2 overflow-hidden rounded-full bg-elevated">
+                      <span className="block h-full rounded-full bg-gold" style={{ width: `${(sk.score / 4) * 100}%` }} />
+                    </div>
+                  </li>
+                ))}
               </ul>
-              {!(card?.skillMarks ?? []).some((sk) => sk.score > 0) ? <p className="mt-2 text-sm text-muted">No skill marks yet.</p> : null}
+              {!(card?.skillMarks ?? []).length ? <p className="mt-2 text-sm text-muted">No skill marks yet.</p> : null}
+              {spark.length > 1 ? (
+                <>
+                  <p className="mt-5 text-[11px] font-bold uppercase tracking-wide text-muted">Days in class</p>
+                  <Spark values={spark} className="mt-2 h-16 w-full" />
+                </>
+              ) : null}
               <p className="mt-5 text-xs text-muted">Time in class is on the family sheet. Wallet and Lucky stay off this page.</p>
             </article>
           ) : null}

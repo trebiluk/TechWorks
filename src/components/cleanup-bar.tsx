@@ -1,22 +1,52 @@
 import { useEffect, useRef } from "react";
-import { leftClock, periodClock, periodNow, ringBell } from "@/lib/bells";
+import type { EconomyFile } from "@/lib/economy";
+import { leftClock, periodClock, periodNow, previewCleanupSound, ringBell } from "@/lib/bells";
 import { useShopClock } from "@/lib/use-clock";
+import { deskBellId } from "@/lib/store";
+import { todayIso } from "@/lib/calendar";
+import { wallMode } from "@/lib/hour-flow";
 import { Berty } from "@/components/berty";
 import { cn } from "@/lib/utils";
 
+/** Cleanup bell + a soft chime when Enter becomes Agenda. Mount once. */
+export function CleanupAlarm({ file, schedule }: { file?: EconomyFile; schedule?: string }) {
+  const bellsId = schedule ?? (file ? deskBellId(file) : undefined);
+  const now = useShopClock(bellsId, "beat");
+  const rang = useRef("");
+  const prev = useRef<string>("");
+  const live = periodNow(bellsId, now);
+  const clock = live != null ? periodClock(live, bellsId, now) : null;
+  const hot = Boolean(clock?.cleanup);
+  const mode = file ? wallMode(file, todayIso(), now) : hot ? "cleanup" : "";
+  useEffect(() => {
+    if (live == null) {
+      prev.current = mode;
+      return;
+    }
+    const date = now.toISOString().slice(0, 10);
+    if (hot) {
+      const key = `c-${date}-P${live}`;
+      if (rang.current !== key) {
+        rang.current = key;
+        ringBell();
+      }
+    } else if (file && mode === "agenda" && prev.current === "enter") {
+      const key = `a-${date}-P${live}`;
+      if (rang.current !== key) {
+        rang.current = key;
+        previewCleanupSound("chime");
+      }
+    }
+    prev.current = mode;
+  }, [hot, live, now, mode, file]);
+  return null;
+}
+
 export function CleanupBar({ schedule }: { schedule?: string }) {
   const now = useShopClock(schedule, "fine");
-  const rang = useRef("");
   const live = periodNow(schedule, now);
   const clock = live != null ? periodClock(live, schedule, now) : null;
   const hot = Boolean(clock?.cleanup);
-  useEffect(() => {
-    if (!hot || live == null) return;
-    const key = `${now.toISOString().slice(0, 10)}-P${live}`;
-    if (rang.current === key) return;
-    rang.current = key;
-    ringBell();
-  }, [hot, live, now]);
   if (live == null || !clock?.live || !hot) return null;
   const tick = leftClock(clock.left);
   return (

@@ -1,15 +1,16 @@
 import { useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
-import { shopBells } from "@/lib/economy";
+import { money, padFirst, score, shopBells, showFirstReal } from "@/lib/economy";
 import { crewsOf } from "@/lib/crews";
 import { CREW_COLORS, readCrewLogo, setCrewProfile } from "@/lib/crew-desk";
 import { AVATARS, avatarOf } from "@/lib/avatars";
-import { abOn, attendOn, crewLeaderId, deskBellId, onAbRoster, setAffect, setAvatar, setCrewLeader, setStudentAttend, setStudentNote } from "@/lib/store";
+import { abOn, attendOn, buyShop, catalogOf, crewLeaderId, deskBellId, onAbRoster, setAffect, setAvatar, setCrewLeader, setStudentAttend, setStudentNote, type ShopItem } from "@/lib/store";
 import { todayIso } from "@/lib/calendar";
 import { periodNow } from "@/lib/bells";
 import { CrewBanner, WorkerCard } from "@/components/shop-cards";
 import { ScoreDesk } from "@/components/score";
-import { assignCrewProject, crewProjectId, slotsOf } from "@/lib/projects";
+import { assignCrewProject, agendaFor, crewProjectId, slotsOf } from "@/lib/projects";
+import { hourAgenda } from "@/lib/hour-flow";
 import { currentCycleOf } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 
@@ -31,12 +32,19 @@ export function CrewLead({
   const bells = shopBells(file);
   const live = periodNow(deskBellId(file, today));
   const period = live && bells.some((b) => b.period === live) ? live : (bells[0]?.period ?? 1);
-  const [pane, setPane] = useState<"score" | "crew">("score");
+  const [pane, setPane] = useState<"score" | "crew" | "buy">("score");
   const [crewKey, setCrewKey] = useState(() => crewsOf(file, period, today)[0]?.key ?? "Crew A");
   const letter = abOn(file, today);
   const crews = crewsOf(file, period, today);
   const crew = crews.find((c) => c.key === crewKey) ?? crews[0];
   const rec = file.crews.find((c) => c.period === period && c.key === (crew?.key ?? crewKey));
+  const todayJob = hourAgenda(file, today, period).find((c) => c.id === "goal")?.body
+    || slotsOf(file, period)[0]?.title
+    || "";
+  const unit = agendaFor(file, period, today, crew?.key);
+  const shop = catalogOf(file, period);
+  const buyOn = shop.length > 0;
+  const unitLine = [unit.title, unit.activityName].filter((x) => x && x !== todayJob).join(" · ");
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-crew text-fg" data-crew="on">
@@ -44,13 +52,18 @@ export function CrewLead({
         <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-gold px-3 py-3 text-bg ring-4 ring-gold/40">
           <div className="min-w-0">
             <p className="font-display text-2xl font-bold uppercase tracking-tight">Crew lead · signed in</p>
-            <p className="text-sm font-semibold opacity-80">P{period} · scoring + our crew only · not Admin</p>
+            <p className="text-sm font-semibold opacity-80">
+              P{period}
+              {todayJob ? ` · ${todayJob}` : ""}
+              {unitLine ? ` · ${unitLine}` : ""}
+              {" · scoring + our crew only · not Admin"}
+            </p>
           </div>
           <button type="button" onClick={onSignOut} className="tw-tap ml-auto min-h-11 rounded-lg bg-bg px-4 text-sm font-bold text-fg">
             Sign out
           </button>
         </div>
-        <nav className="mt-2 grid grid-cols-2 gap-1" aria-label="Crew">
+        <nav className={cn("mt-2 grid gap-1", buyOn ? "grid-cols-3" : "grid-cols-2")} aria-label="Crew">
           <button
             type="button"
             onClick={() => setPane("score")}
@@ -65,6 +78,15 @@ export function CrewLead({
           >
             2 · Our crew
           </button>
+          {buyOn ? (
+            <button
+              type="button"
+              onClick={() => setPane("buy")}
+              className={cn("tw-tap min-h-14 rounded-xl text-base font-bold", pane === "buy" ? "bg-accent text-accent-fg" : "bg-crew-card text-muted")}
+            >
+              3 · Buy
+            </button>
+          ) : null}
         </nav>
       </header>
       {pane === "score" ? (
@@ -81,6 +103,15 @@ export function CrewLead({
             onOpenSettings={() => setPane("crew")}
             mode="crew"
             panel="score"
+          />
+        </div>
+      ) : pane === "buy" ? (
+        <div className="mt-2 min-h-0 flex-1 overflow-y-auto px-2 pb-3">
+          <CrewBuy
+            file={file}
+            kids={(crew?.kids ?? []).filter((s) => onAbRoster(s, letter))}
+            shop={shop}
+            onChange={onChange}
           />
         </div>
       ) : (
@@ -146,6 +177,7 @@ function CrewEdit({
   date: string;
   onChange: (next: EconomyFile) => void;
 }) {
+  const real = showFirstReal(file);
   function patch(next: { name?: string; motto?: string; icon?: string; color?: string; logo?: string }) {
     onChange(setCrewProfile(file, period, crewKey, next));
   }
@@ -167,7 +199,7 @@ function CrewEdit({
         >
           <option value="">No lead yet</option>
           {kids.map((s) => (
-            <option key={s.id} value={s.id}>{s.first}</option>
+            <option key={s.id} value={s.id}>{padFirst(s, real)}</option>
           ))}
         </select>
       </label>
@@ -216,7 +248,7 @@ function CrewEdit({
           return (
             <li key={s.id} className="rounded-2xl bg-crew-card p-3">
               <div className="flex items-center gap-2">
-                <WorkerCard id={s.id} name={s.first} icon={s.icon} />
+                <WorkerCard id={s.id} name={padFirst(s, real)} icon={s.icon} />
               </div>
               <div className="mt-2 flex flex-wrap gap-1">
                 {AVATARS.slice(0, 12).map((a) => (
@@ -288,6 +320,77 @@ function CrewSlot({
           </button>
         ))}
       </div>
+    </div>
+  );
+}
+
+function CrewBuy({
+  file,
+  kids,
+  shop,
+  onChange,
+}: {
+  file: EconomyFile;
+  kids: EconomyFile["students"];
+  shop: ShopItem[];
+  onChange: (next: EconomyFile) => void;
+}) {
+  const real = showFirstReal(file);
+  const rows = score(file);
+  const [id, setId] = useState(kids[0]?.id ?? "");
+  const me = kids.find((s) => s.id === id) ?? kids[0] ?? null;
+  const wallet = me ? rows.find((r) => r.id === me.id)?.quarter ?? 0 : 0;
+  const groups = [...new Set(shop.map((x) => x.category))];
+
+  return (
+    <div className="flex flex-col gap-3">
+      <p className="text-xs font-bold uppercase tracking-wide text-muted">Our crew · wallet perks · not the grade</p>
+      <div className="flex flex-wrap gap-1">
+        {kids.map((s) => {
+          const cash = rows.find((r) => r.id === s.id)?.quarter ?? 0;
+          return (
+            <button
+              key={s.id}
+              type="button"
+              onClick={() => setId(s.id)}
+              className={cn("tw-tap min-h-12 rounded-xl px-3 text-sm font-bold", (me?.id ?? id) === s.id ? "bg-accent text-accent-fg" : "bg-crew-card text-muted")}
+            >
+              {padFirst(s, real)}
+              <span className="ml-2 font-mono">{money(cash)}</span>
+            </button>
+          );
+        })}
+      </div>
+      {me ? (
+        <p className="font-display text-2xl font-semibold">
+          {padFirst(me, real)}
+          <span className="ml-2 font-mono text-lg text-gold">{money(wallet)}</span>
+        </p>
+      ) : (
+        <p className="text-sm text-muted">No one in this crew this hour.</p>
+      )}
+      {groups.map((g) => (
+        <div key={g}>
+          <p className="text-xs font-bold uppercase tracking-wide text-muted">{g}</p>
+          <div className="mt-1 grid gap-1 sm:grid-cols-2">
+            {shop.filter((x) => x.category === g).map((item) => {
+              const tooMuch = !me || wallet < item.price;
+              return (
+                <button
+                  key={`${item.category}-${item.name}`}
+                  type="button"
+                  disabled={tooMuch}
+                  onClick={() => me && !tooMuch && onChange(buyShop(file, me.id, item))}
+                  className={cn("tw-tap flex min-h-12 items-center justify-between rounded-xl px-3 text-left text-sm font-bold", tooMuch ? "bg-crew-card/50 text-muted" : "bg-crew-card")}
+                >
+                  <span>{item.name}</span>
+                  <span className="font-mono">{money(item.price)}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

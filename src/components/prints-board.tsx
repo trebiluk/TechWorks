@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { MarkChip } from "@/components/ui";
 import { markOf } from "@/lib/nav-marks";
 import type { EconomyFile } from "@/lib/economy";
-import { isLiveStudent, money, periodTitle, score, shopBells } from "@/lib/economy";
+import { isLiveStudent, money, padFirst, periodTitle, score, shopBells, showFirstReal } from "@/lib/economy";
 import {
   buyPrint,
   compressPrintPhoto,
@@ -154,8 +154,10 @@ export function PrintsBoard({
   const [pane, setPane] = useState<"wall" | "hold" | "trade" | "archive" | "stock">(unlocked ? "hold" : "wall");
   const [period, setPeriod] = useState(bells[0]?.period ?? 1);
   const kids = list.filter((s) => s.period === period && isLiveStudent(s, file.meta.quarterName));
+  const real = unlocked && showFirstReal(file);
   const [id, setId] = useState(kids[0]?.id ?? "");
   const me = kids.find((s) => s.id === id) ?? kids[0];
+  const who = me ? padFirst(me, real) : "";
   const raw = me ? file.students.find((s) => s.id === me.id) : undefined;
   const [rarity, setRarity] = useState<PrintRarity>("shiny");
   const [largeId, setLargeId] = useState(largesInStock(file)[0]?.id ?? "");
@@ -283,14 +285,14 @@ export function PrintsBoard({
                 onClick={() => setId(s.id)}
                 className={cn("tw-tap min-h-12 rounded-full px-4 text-sm font-semibold", s.id === me?.id ? "bg-accent text-accent-fg" : "bg-elevated")}
               >
-                {s.first}
+                {padFirst(s, real)}
                 <span className="ml-1 font-mono text-xs">{money(s.quarter)}</span>
               </button>
             ))}
           </div>
           {me ? (
             <section className="tw-gadget p-3">
-              <p className="text-xs font-bold uppercase tracking-wide text-gold">{me.first} holds</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-gold">{who} holds</p>
               <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {heldPieces(file, me.id).length ? (
                   heldPieces(file, me.id).map(({ piece, qty }) => (
@@ -302,7 +304,7 @@ export function PrintsBoard({
               </div>
             </section>
           ) : null}
-          <p className="text-xs font-bold uppercase tracking-wide text-muted">Bin · tap to buy for {me?.first ?? "a worker"}</p>
+          <p className="text-xs font-bold uppercase tracking-wide text-muted">Bin · tap to buy for {who || "a worker"}</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
             {gallery.map((p) => {
               const held = ownedQty(raw, p.id);
@@ -325,15 +327,15 @@ export function PrintsBoard({
                     }
                     if (gift) {
                       onChange(giftPrint(file, me.id, p.id));
-                      onFlash?.(`${me.first} received ${p.name}`);
+                      onFlash?.(`${who} received ${p.name}`);
                       return;
                     }
                     if (broke) {
-                      onFlash?.(`${me.first} can't afford ${p.name}`);
+                      onFlash?.(`${who} can't afford ${p.name}`);
                       return;
                     }
                     onChange(buyPrint(file, me.id, p.id));
-                    onFlash?.(`${me.first} got ${p.name}`);
+                    onFlash?.(`${who} got ${p.name}`);
                   }}
                 />
               );
@@ -369,7 +371,7 @@ export function PrintsBoard({
                 onClick={() => setId(s.id)}
                 className={cn("tw-tap min-h-12 rounded-full px-4 text-sm font-semibold", s.id === me?.id ? "bg-accent text-accent-fg" : "bg-elevated")}
               >
-                {s.first}
+                {padFirst(s, real)}
               </button>
             ))}
           </div>
@@ -403,7 +405,7 @@ export function PrintsBoard({
                 onClick={() => {
                   if (!me || !canTrade) return;
                   onChange(tradePrints(file, me.id, rarity, largeId));
-                  onFlash?.(`${me.first} traded ${need} ${rarity} smalls`);
+                  onFlash?.(`${who} traded ${need} ${rarity} smalls`);
                 }}
                 className="tw-tap min-h-11 rounded-full bg-accent px-4 text-sm font-semibold text-accent-fg disabled:opacity-40"
               >
@@ -444,7 +446,7 @@ export function PrintsBoard({
                     onClick={() => setToId(s.id)}
                     className={cn("tw-tap min-h-11 rounded-full px-3 text-sm", toId === s.id ? "bg-accent text-accent-fg" : "bg-elevated")}
                   >
-                    {s.first}
+                    {padFirst(s, real)}
                   </button>
                 ))}
             </div>
@@ -461,7 +463,7 @@ export function PrintsBoard({
                 if (!me || !swapId || !toId) return;
                 if (toId === "bin") {
                   onChange(returnPrint(file, me.id, swapId, prove));
-                  onFlash?.(`${me.first} returned a piece`);
+                  onFlash?.(`${who} returned a piece`);
                 } else {
                   onChange(swapPrints(file, me.id, toId, swapId, 1, prove));
                   onFlash?.("Unofficial trade logged");

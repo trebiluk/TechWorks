@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Copy, Download } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
-import { isLiveStudent, periodTitle, shopBells } from "@/lib/economy";
+import { isLiveStudent, padFirst, periodTitle, shopBells, showFirstReal } from "@/lib/economy";
 import { abOn, onAbRoster, setGradeOverride } from "@/lib/store";
 import { todayIso } from "@/lib/calendar";
 import { classroomCsv, gradeSlots, letterOf, postedFor, recipeLine, sessionMark } from "@/lib/grades";
@@ -28,6 +28,7 @@ export function GradeBoard({
   const [period, setPeriod] = useState(bells[0]?.period ?? 1);
   const [showNames, setShowNames] = useState(false);
   const [flash, setFlash] = useState("");
+  const real = showFirstReal(file);
   const grade = bells.find((b) => b.period === period)?.grade ?? 6;
   const slots = useMemo(() => gradeSlots(file, grade), [file, grade]);
   const kids = file.students.filter(
@@ -128,7 +129,7 @@ export function GradeBoard({
                 <tr key={s.id} className="border-t border-border">
                   <td className="sticky left-0 bg-surface px-3 py-1">
                     <button type="button" onClick={() => onOpenId(s.id)} className="font-medium">
-                      {s.first}
+                      {padFirst(s, real)}
                     </button>
                   </td>
                   {rows.map((r) => (

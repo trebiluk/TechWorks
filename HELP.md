@@ -1,6 +1,6 @@
-# TechWorks Help · v1.92.50
+# TechWorks Help · v1.92.61
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.50.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.61.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
@@ -68,7 +68,11 @@ Open a worker (tap a name) → Family. One project mark. Skills in plain words. 
 
 ### BertyBot
 
-Berty is the workshop mascot. He waves at ENTER, thinks at LISTEN, stands for CREW WORK, points at CLEAN UP and between classes, and celebrates SHARE / class reward. Both claws stay on every pose — Bare means no tool, not no hands. Color chips paint the metal, they do not hue-rotate. Cleanup and passing always show him. Open Berty from the version chip.
+Berty is the workshop mascot. He waves at ENTER, thinks at LISTEN, stands for CREW WORK, points at CLEAN UP and between classes, and celebrates SHARE / class reward. HAND LAW: both claws stay on every pose — Bare means no tool, not no hands. Color chips paint the metal. Cleanup and passing always show him. Open Berty from the version chip.
+
+### Wall looks
+
+Arrange wall → Looks, or Admin → Theme. Shop wall is the default: navy, cyan lamp, glass plates, Hour on the left, clock on the right. Back row goes bigger. Night shop, Oswego, Scoreboard, Club night, Projector, Harvest each paint color, type, scale, and the two-column grid in one tap. Kits only move plates into those columns. Drag a plate to the other column. Glow and lift sliders now actually change the wall. Default stays dark.
 
 ### Cleanup
 
@@ -82,11 +86,15 @@ Globe next to Help. This quarter the class languages are English, Ukrainian, and
 
 Dash → Deck plays today’s Teach plan. Present is play-only (even with PIN). Edit slides, then leave a field — Ask / Do / hour lines write to Teach. Same date and period chip. E toggles edit. Hour pack still lives on Teach.
 
+### PlanIt
+
+Dash or Learn → PlanIt is the week grid (periods × days). Tap a cell. Type Do this — that line is the Wall, Teach, and Deck. Need (goggles / stock) is the kit chip kids see. Process chips are tags, not titles. New unit is a name plus an optional driving question. Last week → this week copies by weekday. Fill other G7 only writes empty hours. Repeat through this week fills Mon–Fri for that period. Same as last class day. Wall preview is the Agenda 2×2 for that hour. This week on the Wall is Mon–Fri for the live period. Teach this hour jumps to the live plates. See wall hangs the projector. Units still live on Learn → Projects. Admin → Day is lunch / sub / meetings — not the lesson.
+
 ## Start
 
 ### Copyright
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.50.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.54.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
@@ -100,7 +108,7 @@ Bottom dock: Dash · Learn · Crew · Rosters · Admin (PIN on the last three). 
 
 ### Version
 
-The floating chip is v1.92.50. Same string as About, Help, and the changelog header. Product name TECHWORKS™. Workshop zips labeled 1.0 or 2.1.0 are not live.
+The floating chip is v1.92.54. Same string as About, Help, and the changelog header. Product name TECHWORKS™. Workshop zips labeled 1.0 or 2.1.0 are not live.
 
 ### Describe mode / tips
 
@@ -154,7 +162,7 @@ IN once a day = +$10 and +2 XP. Activities on the club board. Never mixes into c
 
 ### Family path
 
-The globe is Family web (?web=1). Parents, crew leaders, and students enter with the class web code (Settings → Worker portal PIN, default 2627 — not the teacher PIN). Aliases only. Charts are skills in words. Family sheet has the project mark. Wallet and Lucky stay off. Copy link from that page.
+Web on the HUD, or ?web=1. Parents, crew leaders, and students enter with the class web code (Settings → Worker portal PIN, default 2627 — not the teacher PIN). Aliases only. Charts are skills in words. Family sheet has the project mark. Wallet and Lucky stay off. Copy link from that page.
 
 ### Sub day
 
@@ -182,9 +190,9 @@ Settings → Show embed copies an iframe with ?embed=1. That load is Dashboard o
 
 Admin → Wall. If Tools is hidden, tap Show · Tools. Timer, draw a worker (alias), draw a crew for this period. Ambient Chaos only if that module is on. Names are aliases.
 
-### Plan book → Teach → Deck → Wall
+### PlanIt → Teach → Deck → Wall
 
-One write. Create the activity (or type Ask / Do on Teach). Dates and grade land it on the Plan book. Teach for that day is the only author. Deck plays that plan (Present for the class, Edit slides if you must type on the glass). Wall hangs the job after class. Changing period or day still keeps the draft.
+One write. Type Do this on PlanIt (or Teach). Dates and grade land it on the week. Teach for that day is the only author. Deck plays that plan. Wall hangs the hour and This week. Changing period or day still keeps the draft.
 
 ## Admin
 
@@ -334,11 +342,15 @@ BertyBot is the workshop mascot — cleanup, enter/listen/work, never a grade or
 
 ### Family web code
 
-Globe on the HUD, or ?web=1. Class web code is the portal PIN (default 2627 — change in Settings). Not the teacher PIN. Aliases, skill charts, family sheet. No wallet. Crew tab is aliases in that crew.
+Web on the HUD, or ?web=1. Class web code is the portal PIN (default 2627 — change in Settings). Not the teacher PIN. Aliases, skill charts, family sheet. No wallet. Crew tab is aliases in that crew.
 
 ### FERPA / what gets published
 
-Live export is encoded and has no last names. Names vault is a separate private download (alias, last, period, IEP/504). Every worker has a locked unique id; the wall alias is generated after that id exists. IEP is a blue deco dot and 504 orange, only inside Show full info, mixed with fake dots. Google Site embed never gets the vault.
+Live export is encoded and has no last names. Names vault is a separate private download (alias, last, period, IEP/504). Every worker has a locked unique id; the wall alias is generated after that id exists. IEP is a blue deco dot and 504 orange, only inside Show full info, mixed with fake dots. Google Site embed never gets the vault. Teacher pads can show legal first names when you turn on Show first real names — last names stay vault, and the wall never follows.
+
+### Show first real names
+
+Settings → Privacy, or First names on the Score pad. Puts legal first names on teacher pads: Score, Crew, Skills, Wallet, Prints, Hall, Data, Grades. Last names stay in the vault. Off by default. Wall, Teach, Deck, Family web, and a locked projector stay aliases. Crew 2222 can see first names if you turned the switch on — they cannot change it.
 
 ## Export
 

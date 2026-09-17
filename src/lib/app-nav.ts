@@ -60,7 +60,7 @@ export function sectionOf(view: string): AppSection {
     view === "hallwall"
   )
     return "dash";
-  if (view === "skills" || view === "grades" || view === "projects") return "learn";
+  if (view === "skills" || view === "grades" || view === "projects" || view === "plan") return "learn";
   if (view === "score" || view === "crew") return "crew";
   if (view === "roster") return "roster";
   return "admin";

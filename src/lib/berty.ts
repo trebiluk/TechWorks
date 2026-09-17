@@ -1,12 +1,12 @@
 export type BertyPose = "standing" | "waving" | "celebrate" | "think" | "point" | "icon";
 
 export const BERTY_SRC: Record<BertyPose, string> = {
-  standing: "/berty/brand/bertybot_standing.svg?v=19250",
-  waving: "/berty/brand/bertybot_waving.svg?v=19250",
-  celebrate: "/berty/brand/bertybot_celebrate.svg?v=19250",
-  think: "/berty/brand/bertybot_think.svg?v=19250",
-  point: "/berty/brand/bertybot_point.svg?v=19250",
-  icon: "/berty/brand/bertybot_icon.svg?v=19250",
+  standing: "/berty/brand/bertybot_standing.svg?v=19251",
+  waving: "/berty/brand/bertybot_waving.svg?v=19251",
+  celebrate: "/berty/brand/bertybot_celebrate.svg?v=19251",
+  think: "/berty/brand/bertybot_think.svg?v=19251",
+  point: "/berty/brand/bertybot_point.svg?v=19251",
+  icon: "/berty/brand/bertybot_icon.svg?v=19251",
 };
 
 /** HAND LAW: full-body poses ship two data-berty-hand groups. Overflow visible. Icon is head-only. */
