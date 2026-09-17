@@ -1,5 +1,5 @@
 const CACHE = "koderized-kz-1-5-0";
-const FILES = ["./index.html", "./styles.css", "./origin.js", "./app.js", "./manifest.json", "./icon.svg"];
+const FILES = ["./index.html", "./origin.js", "./manifest.json", "./icon.svg", "/coderized/styles.css", "/coderized/app.js"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
   self.skipWaiting();
