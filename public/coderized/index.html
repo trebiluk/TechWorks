@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#1b365d" />
-  <meta name="description" content="Koderized — Chromebook coding arena for middle school CTE/STEM. Stop the robot. Class code + alias only." />
-  <title>Koderized — Stop the robot</title>
+  <meta name="description" content="Koderized — Chromebook coding arena. Don't wreck the bot. Class code + alias only." />
+  <title>Koderized — Don't wreck the bot</title>
   <link rel="canonical" href="https://tw.kulibert.net/koderized/" />
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
@@ -13,14 +13,17 @@
 </head>
 <body>
   <header class="top">
-    <div class="brand">KODER<em>IZED</em> <span class="pill" id="version-chip">KZ 1.5.0</span></div>
+    <div class="brand">KODER<em>IZED</em> <span class="pill" id="version-chip">KZ 1.6.0</span></div>
     <div class="meta" id="top-meta">Solvay MS · Technology · Chromebook</div>
     <button class="btn ghost" id="btn-home" type="button">Home</button>
   </header>
   <section id="screen-landing" class="wrap">
     <div class="hero">
-      <h1>Stop the robot.</h1>
-      <p class="hint">Pick a name. Hit a door. Keys: Tab · Enter · 1 2 3</p>
+      <div class="hero-bot" aria-hidden="true">
+        <canvas id="teaser" width="420" height="160"></canvas>
+      </div>
+      <h1>Don't wreck the bot.</h1>
+      <p class="hint">Guess. Watch it roll. Fix the loop. Keys: 1 2 3 · Enter · Space</p>
     </div>
     <div class="card join">
       <label for="join-code">Class code</label>
@@ -28,16 +31,23 @@
       <label for="join-alias">Name</label>
       <input id="join-alias" placeholder="Jordan" maxlength="20" autocomplete="off" />
       <div class="row" style="margin-top:16px;">
-        <button class="btn" id="btn-student" type="button">Play <span class="k">Enter</span></button>
+        <button class="btn go" id="btn-student" type="button">Roll out <span class="k">Enter</span></button>
         <button class="btn navy" id="btn-teacher" type="button">Teacher</button>
       </div>
-      <p class="hint" style="margin-top:12px;">Chrome on a Chromebook. Alias only. Data stays in this browser unless the teacher exports.</p>
+      <p class="hint" style="margin-top:12px;">Chrome on a Chromebook. Alias only.</p>
     </div>
   </section>
   <section id="screen-student" class="wrap hidden">
     <div id="freeze-banner" class="banner hidden">EYES UP</div>
     <div id="spot-banner" class="banner spot hidden"></div>
-    <h2 id="quest-title">Stop at the wall</h2>
+    <div class="quest-bar">
+      <h2 id="quest-title">Don't hit the wall</h2>
+      <div class="heat" title="Shop heat">
+        <span>HEAT</span>
+        <div class="heat-track"><i id="heat-fill"></i></div>
+        <b id="heat-num">0</b>
+      </div>
+    </div>
     <div class="chips">
       <span class="chip" id="ph-predict">Guess</span>
       <span class="chip" id="ph-run">Watch</span>
@@ -46,20 +56,23 @@
       <span class="chip" id="ph-make">Done</span>
     </div>
     <div class="split">
-      <div class="card">
-        <canvas id="world" width="640" height="320" aria-label="Robot world"></canvas>
+      <div class="card stage">
+        <div class="stage-frame">
+          <canvas id="world" width="640" height="320" aria-label="Robot world"></canvas>
+          <div id="callout" class="callout hidden"></div>
+        </div>
         <div id="tests"></div>
       </div>
       <div class="card">
         <h3 id="ask">What happens at the wall?</h3>
         <div id="choices" class="choices">
-          <button class="choice" type="button" data-p="stop">1 · It stops</button>
-          <button class="choice" type="button" data-p="through">2 · It walks through</button>
+          <button class="choice" type="button" data-p="stop">1 · It slams the brakes</button>
+          <button class="choice" type="button" data-p="through">2 · It ghosts through</button>
           <button class="choice" type="button" data-p="forever">3 · It never stops</button>
         </div>
         <div class="row">
-          <button class="btn" id="btn-predict" type="button">Lock guess <span class="k">Enter</span></button>
-          <button class="btn gold" id="btn-run-example" type="button">Watch it <span class="k">Space</span></button>
+          <button class="btn" id="btn-predict" type="button">Lock it <span class="k">Enter</span></button>
+          <button class="btn gold" id="btn-run-example" type="button">Watch <span class="k">Space</span></button>
         </div>
         <div id="probe-wrap" class="hidden">
           <h3>Where is STOP?</h3>
@@ -79,7 +92,7 @@
           </div>
           <div class="blocks" id="block-list"></div>
           <div class="row" style="margin-top:8px;">
-            <button class="btn" id="btn-run-mine" type="button">Go <span class="k">Space</span></button>
+            <button class="btn go" id="btn-run-mine" type="button">GO <span class="k">Space</span></button>
             <button class="btn gold" id="btn-restore" type="button">Undo</button>
           </div>
           <div id="trade-wrap" class="hidden">
@@ -104,11 +117,11 @@
       </div>
     </div>
     <div class="kpis">
+      <div class="kpi hot"><b id="k-heat">0</b><span>Shop heat</span></div>
       <div class="kpi"><b id="k-present">0</b><span>Present</span></div>
       <div class="kpi"><b id="k-predict">0</b><span>Guessed</span></div>
       <div class="kpi"><b id="k-stuck">0</b><span>Stuck</span></div>
       <div class="kpi"><b id="k-coach">0</b><span>Coach</span></div>
-      <div class="kpi"><b id="k-catch">0</b><span>Catch-up</span></div>
       <div class="kpi"><b id="k-trade">0</b><span>Done</span></div>
     </div>
     <div class="split">
@@ -124,7 +137,7 @@
       </div>
     </div>
   </section>
-  <p class="footer-note">Koderized KZ 1.5.0 · Chromebook Chrome · class code + alias · not a district SIS</p>
+  <p class="footer-note">Koderized KZ 1.6.0 · Chromebook Chrome · class code + alias · not a district SIS</p>
   <script src="origin.js"></script>
   <script src="app.js"></script>
 </body>
