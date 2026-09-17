@@ -1,6 +1,6 @@
 /** Google book contract. Gold headers are locked. Extra columns are yours. */
 import type { EconomyFile, RawStudent } from "./economy";
-import { bellFor, isLiveStudent, legalFirstOf, legalLastOf, periodTitle, shopBells } from "./economy";
+import { bellFor, isLiveStudent, periodTitle, shopBells } from "./economy";
 import { cycleNow, cycleRange, daySlot, isSchoolDay, quarterNow, reason, schoolDays, todayIso, yearProgress } from "./calendar";
 import { MARKING, SOLVAY_YEAR } from "../data/solvay-2026-27";
 import { eachTapeMark } from "./tape";
@@ -241,7 +241,7 @@ function readmeSheet(): BookSheet {
     ["Your fields", "extra_1 through extra_8 — rename the label row, type whatever you need. The desk never overwrites those."],
     ["Add more columns", "Add them AFTER extra_8. Keep a copy before you re-export, then paste your extra columns back."],
     ["Do not insert", "Do not insert columns between gold headers. That breaks the lock."],
-    ["FERPA", "Class, club, year, skills, master, log = aliases only. VAULT has legal names — do not share that tab."],
+    ["FERPA", "Class, club, year, skills, master, log = aliases + Shop ID. Legal names are the codebook paper, not this book. VAULT columns for last/first/IEP stay blank."],
     ["Class tabs", "One mini dashboard per period (1, 2, 3, 8, 9, 10) plus study hall and club."],
     ["YEAR MARKS", "Full year D1–D4 for cycles 1–8. Blank is not a zero. Fill as the year happens."],
     ["STEM", "Evidence stems (the 1–4 sentences). Not a second MST score. NY Tech stays on the desk."],
@@ -452,21 +452,21 @@ function vaultSheet(file: EconomyFile): BookSheet {
   const labels = ["Shop ID (locked)", "Alias", "Legal last", "Legal first", "Period", "IEP", "504", "ELL", "DHH", "Extended time", "Quiet notes", ...EXTRA_LABELS];
   const rows = file.students
     .slice()
-    .sort((a, b) => a.period - b.period || legalLastOf(a).localeCompare(legalLastOf(b)))
+    .sort((a, b) => a.period - b.period || a.first.localeCompare(b.first))
     .map((s) =>
       padExtras(
         [
-          s.id,
+          publicHandle(s.id),
           s.first,
-          legalLastOf(s),
-          legalFirstOf(s),
+          "",
+          "",
           s.period,
-          s.flags?.iep ? "Y" : "",
-          s.flags?.plan504 ? "Y" : "",
-          s.flags?.ell ? "Y" : "",
-          s.flags?.dhh ? "Y" : "",
-          s.flags?.extendedTime ? "Y" : "",
-          s.quietNotes ?? "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
         ],
         keys.length - EXTRA_N,
       ),
@@ -474,7 +474,7 @@ function vaultSheet(file: EconomyFile): BookSheet {
   return {
     name: "VAULT",
     kind: "table",
-    banner: "FERPA · legal names · do not share · do not project",
+    banner: "FERPA · last names live on the codebook paper · these columns stay blank",
     warn: true,
     keys,
     labels,

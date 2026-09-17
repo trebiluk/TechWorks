@@ -3,6 +3,7 @@ import { daySlot, sessionOn, todayIso } from "@/lib/calendar";
 import { skillScore, stemForScore } from "@/lib/skills";
 import { stemOf } from "@/lib/stems";
 import { eachTapeMark } from "@/lib/tape";
+import { publicHandle } from "@/lib/live";
 import {
   activitiesOf,
   activityById,
@@ -258,26 +259,21 @@ export function recipeLine(): string {
   return "One mark per project. Each activity averages its own 3/2/1 days (100/85/70) plus that activity’s skill (4/3/2/1 → 100/90/85/70). Hover a cell for the evidence stem — the sentence you saw. Blank is not a zero. Wallet and PTO stay out.";
 }
 
-export function classroomCsv(file: EconomyFile, opts: { names: boolean; period?: number }): string {
+export function classroomCsv(file: EconomyFile, opts: { names?: boolean; period?: number }): string {
+  void opts.names;
   const bellsGrade = (p: number) => file.meta.bell?.find((b) => b.period === p)?.grade ?? 6;
   const kids = file.students.filter((s) => (opts.period ? s.period === opts.period : true));
   const slots = gradeSlots(file, bellsGrade(opts.period ?? kids[0]?.period ?? 6));
-  const header = [
-    opts.names ? "Last Name" : "Last Name",
-    "First Name",
-    "Period",
-    ...slots.map((s) => s.title),
-    "Session mark",
-  ];
+  const header = ["Shop ID", "Alias", "Period", ...slots.map((s) => s.title), "Session mark"];
   const lines = [header.join(",")];
   for (const s of kids) {
     const rows = slots.map((slot) => postedFor(file, s, slot));
     const avg = sessionMark(rows);
-    const first = s.first.replace(/,/g, " ");
-    const last = opts.names ? (s.last || "").replace(/,/g, " ") : "";
+    const alias = s.first.replace(/,/g, " ");
+    const shop = publicHandle(s.id);
     const cells = [
-      csv(last),
-      csv(first),
+      csv(shop),
+      csv(alias),
       String(s.period),
       ...rows.map((r) => (r.posted == null ? "" : String(r.posted))),
       avg == null ? "" : String(avg),

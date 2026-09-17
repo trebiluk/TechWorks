@@ -11,6 +11,7 @@ import { loadClub, saveClub, type ClubFile } from "@/lib/club";
 import { emptyRoster, pickDesk } from "@/lib/vault-core";
 import { stripFakeDemo } from "@/lib/demo";
 import { deskStorageKeys, openSchema } from "@/lib/compat";
+import { mergeNames, readNamesVault } from "@/lib/names-vault";
 
 export { emptyRoster, pickDesk };
 
@@ -235,9 +236,9 @@ export function readLocal(): EconomyFile | null {
       const raw = window.localStorage.getItem(key);
       if (!raw) continue;
       const file = unpackDesk(raw);
-      if (file) return file;
+      if (file) return mergeNames(file, readNamesVault());
       const parsed = JSON.parse(raw) as EconomyFile;
-      if (Array.isArray(parsed?.students)) return migrateDesk(parsed);
+      if (Array.isArray(parsed?.students)) return mergeNames(migrateDesk(parsed), readNamesVault());
     } catch {
       /* next key */
     }
@@ -270,7 +271,7 @@ export async function persistPack(pack: DeskPack, json = JSON.stringify(pack)): 
 export async function hydrateVault(local: EconomyFile): Promise<EconomyFile> {
   const pack = await archiveGet<DeskPack | VaultBundle>(CURRENT);
   const idb = pack ? unpackDesk(pack) : null;
-  return pickDesk(local, idb);
+  return mergeNames(pickDesk(local, idb), readNamesVault());
 }
 
 export function downloadDeskBackup(file: EconomyFile, label?: string) {

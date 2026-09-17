@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
-import { bellFor, isLiveStudent, marketFactor, money, periodTitle, score } from "@/lib/economy";
+import { isLiveStudent, score } from "@/lib/economy";
 import { decorateRank } from "@/lib/rank";
-import { publicHandle } from "@/lib/live";
-import { abOn, markOn, onAbRoster } from "@/lib/store";
+import { findByShop, publicHandle } from "@/lib/live";
+import { markOn } from "@/lib/store";
 import { todayIso } from "@/lib/calendar";
 import { lockPortal, portalOpen, unlockPortal } from "@/lib/pin";
 import { PinField } from "@/components/pin-pad";
@@ -16,20 +16,18 @@ export function WorkerPortal({ file }: { file: EconomyFile }) {
   const [inGate, setInGate] = useState(() => !portalOpen());
   const [code, setCode] = useState("");
   const [err, setErr] = useState("");
-  const bells = bellFor(file);
-  const [period, setPeriod] = useState(bells[0]?.period ?? 1);
   const [id, setId] = useState("");
+  const [shop, setShop] = useState("");
   const today = todayIso();
-  const letter = abOn(file, today);
   const kids = useMemo(
     () =>
       decorateRank(
         file,
-        score(file).filter((s) => s.period === period && isLiveStudent(s, file.meta.quarterName) && onAbRoster(s, letter)),
+        score(file).filter((s) => isLiveStudent(s, file.meta.quarterName)),
       ),
-    [file, period, letter],
+    [file],
   );
-  const me = kids.find((s) => s.id === id) ?? null;
+  const me = (id ? kids.find((s) => s.id === id) : findByShop(kids, shop)) ?? null;
 
   function enter() {
     if (unlockPortal(code)) {
@@ -90,6 +88,7 @@ export function WorkerPortal({ file }: { file: EconomyFile }) {
               lockPortal();
               setInGate(true);
               setId("");
+              setShop("");
             }}
             className="min-h-11 rounded-md bg-surface px-3 text-sm text-muted"
           >
@@ -97,32 +96,24 @@ export function WorkerPortal({ file }: { file: EconomyFile }) {
           </button>
         </div>
       </header>
-      <div className="flex flex-wrap gap-1">
-        {bells.map((b) => (
-          <button
-            key={b.period}
-            type="button"
-            onClick={() => {
-              setPeriod(b.period);
-              setId("");
-            }}
-            className={cn("min-h-11 rounded-md px-3 text-sm", period === b.period ? "bg-fg text-bg" : "bg-surface text-muted")}
-          >
-            {periodTitle(b.period, bells)}
-          </button>
-        ))}
-      </div>
-      <div className="flex flex-wrap gap-1">
-        {kids.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            onClick={() => setId(s.id)}
-            className={cn("min-h-11 rounded-md px-3 text-sm font-semibold", id === s.id ? "bg-fg text-bg" : "bg-surface text-muted")}
-          >
-            {s.first}
-          </button>
-        ))}
+      <div className="max-w-sm">
+        <label className="text-[11px] font-semibold uppercase tracking-wider text-subtle">Shop ID</label>
+        <input
+          value={shop}
+          onChange={(e) => {
+            const v = e.target.value.toUpperCase();
+            setShop(v);
+            const hit = findByShop(kids, v);
+            setId(hit?.id ?? "");
+          }}
+          placeholder="From your teacher"
+          autoCapitalize="characters"
+          autoCorrect="off"
+          spellCheck={false}
+          className="mt-1 min-h-12 w-full rounded-lg bg-elevated px-3 font-mono text-lg tracking-[0.18em] outline-none"
+          aria-label="Shop ID"
+        />
+        <p className="mt-1 text-xs text-muted">Five letters. Not a name. The class list stays off this page.</p>
       </div>
       {me ? (
         <article className="rounded-2xl bg-surface p-5">
@@ -133,31 +124,25 @@ export function WorkerPortal({ file }: { file: EconomyFile }) {
           </p>
           <p className="mt-3 font-mono text-sm tracking-[0.3em] text-gain">{publicHandle(me.id)}</p>
           <p className="text-xs uppercase tracking-wider text-subtle">Class ID · not your name</p>
-          <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <div className="mt-5 grid grid-cols-2 gap-3">
             <Tile label="◆ XP" value={String(me.xp)} gold />
-            <Tile label="$ Perks" value={money(me.quarter)} />
-            <Tile label="▲ Stock" value={money(me.stock)} />
           </div>
           {(() => {
             const todayCode = markOn(me, today);
-            const factor = marketFactor(file);
             return (
               <div className="mt-5 rounded-xl bg-elevated p-4">
                 <p className="text-sm font-medium uppercase tracking-wider text-subtle">Today</p>
                 <p className="mt-2 font-display text-4xl font-semibold">
                   {todayCode ? `${codeGlyph(todayCode)} ${todayCode}` : "Not scored yet"}
                 </p>
-                <p className="mt-1 text-sm text-muted">
-                  Market ×{factor.toFixed(2)} · $ and ▲ are games · ◆ XP is the class story
-                </p>
               </div>
             );
           })()}
-          <p className="mt-4 text-sm text-muted">XP is the class story. $ and stock are games. Scroll for the family report — aliases only.</p>
+          <p className="mt-4 text-sm text-muted">XP is the class story. Wallet stays off this page. Family report is aliases only.</p>
           <ReportCard file={file} id={me.id} names={false} />
         </article>
       ) : (
-        <p className="text-sm text-muted">Tap your alias. If it is not here, you are on the other A/B day.</p>
+        <p className="text-sm text-muted">Enter the Shop ID from your teacher. Not a class list.</p>
       )}
     </div>
   );

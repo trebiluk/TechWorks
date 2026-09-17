@@ -4,6 +4,7 @@ import { loadDeck, saveDeck, type DeckPack } from "@/lib/deck-store";
 import type { EconomyFile } from "@/lib/economy";
 import { isDemoStudentId, stripFakeDemo } from "@/lib/demo";
 import { cloudPackOpen } from "@/lib/compat";
+import { mergeNames, persistNamesVault, readNamesVault, stripNames } from "@/lib/names-vault";
 
 const KEY = "techworks-desk-key";
 const ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -161,7 +162,7 @@ export function cloudPackCount(pack: CloudPack): number {
 }
 
 export function buildCloudPack(file: EconomyFile): CloudPack {
-  const real = stripFakeDemo(file);
+  const real = stripNames(stripFakeDemo(file));
   return {
     kind: "techworks-cloud",
     v: 1,
@@ -177,6 +178,7 @@ export async function pushCloud(file: EconomyFile): Promise<boolean> {
   const pass = ensureDeskKey();
   const token = await deskToken(pass);
   const real = stripFakeDemo(file);
+  persistNamesVault(real);
   const pack = buildCloudPack(real);
   setStatus("saving");
   try {
@@ -255,8 +257,10 @@ export async function applyCloudPack(pack: CloudPack): Promise<EconomyFile | nul
   if (!opened?.file) return null;
   applyVaultClub(opened.club);
   if (pack.deck?.slides?.length) saveDeck(pack.deck);
-  await persistVault(opened.file);
-  return opened.file;
+  const merged = mergeNames(opened.file, readNamesVault());
+  persistNamesVault(merged);
+  await persistVault(merged);
+  return merged;
 }
 
 export function localIsNewer(file: EconomyFile, cloudSaved: string): boolean {

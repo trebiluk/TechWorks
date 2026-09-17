@@ -1,10 +1,14 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.63. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.65. -->
 
 # TechWorks changelog
 
-App version **1.92.63**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.65**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
-## 1.92.63 — 2026-09-17
+## 1.92.65 — 2026-09-17
+
+- FERPA split: legal names and IEP/504 stay on this PC + the codebook. Cloud desk, live wall file, Google book VAULT, and Grades CSV are Shop ID + alias only. Family web / portal no longer list the class — type the Shop ID from the paper. Idle lock 5 minutes back on the teacher pad.
+
+## 1.92.64 — 2026-09-17
 
 - Codebook: Admin → Records → Names (or Backups) → Print codebook / Download codebook. Paper and private CSV map Shop ID + alias → last, first. Wall stays aliases. IEP/504 stay in the names vault, not on the paper. Confirm before print — teacher drawer, not the shop tray.
 

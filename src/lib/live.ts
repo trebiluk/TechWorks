@@ -60,6 +60,12 @@ export function publicHandle(id: string): string {
   return out;
 }
 
+export function findByShop<T extends { id: string }>(rows: T[], shop: string): T | undefined {
+  const q = shop.trim().toUpperCase().replace(/[^A-Z2-9]/g, "");
+  if (q.length < 4) return undefined;
+  return rows.find((s) => publicHandle(s.id) === q || s.id.toUpperCase() === q);
+}
+
 export function periodScoring(file: EconomyFile, period: number, today = todayIso()) {
   return periodPulses(file, today)[period] ?? { due: 0, overdue: 0, head: 0 };
 }

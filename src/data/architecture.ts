@@ -113,7 +113,7 @@ export const ARCH_SECTIONS: ArchSection[] = [
           ["Alias (first)", "students[].first", "Yes", "Yes", "Yes", "Yes"],
           ["Codebook", "paper / CSV", "Never", "Print after PIN", "Never", "Teacher drawer only"],
           ["Desk first names", "config.showFirstReal", "Never", "Teacher toggle · first only", "Never", "Never"],
-          ["Legal name", "vault legalFirst/Last", "Never", "Show full info", "After PIN", "VAULT tab only"],
+          ["Legal name", "vault legalFirst/Last", "Never", "Show full info", "After PIN", "Codebook / this PC only"],
           ["IEP / 504", "flags", "Never (deco dots inside Show full)", "Show full info", "No", "VAULT"],
           ["Crew key", "crewKey + crewDays", "Crew plates", "Yes", "No", "Class tabs"],
           ["Period / grade", "period, grade", "P chips", "Yes", "Yes", "Yes"],

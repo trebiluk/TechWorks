@@ -120,7 +120,7 @@ A worker is a locked id. The wall shows an alias minted from that id, never from
 | Alias (first) | students[].first | Yes | Yes | Yes | Yes |
 | Codebook | paper / CSV | Never | Print after PIN | Never | Teacher drawer only |
 | Desk first names | config.showFirstReal | Never | Teacher toggle · first only | Never | Never |
-| Legal name | vault legalFirst/Last | Never | Show full info | After PIN | VAULT tab only |
+| Legal name | vault legalFirst/Last | Never | Show full info | After PIN | Codebook / this PC only |
 | IEP / 504 | flags | Never (deco dots inside Show full) | Show full info | No | VAULT |
 | Crew key | crewKey + crewDays | Crew plates | Yes | No | Class tabs |
 | Period / grade | period, grade | P chips | Yes | Yes | Yes |
@@ -229,7 +229,7 @@ Three copies. None of them is live Google Drive sync.
 | Copy | Holds | Does not hold |
 | --- | --- | --- |
 | This PC (gradebook) | Roster, marks, skills, projects, teachDays, club, prints, vault names | Theme, layout, PIN, Fake data toggle (browser only) |
-| Cloud (desk key) | Same vault, encrypted | Theme / PIN / Fake data. Empty PC will not overwrite names |
+| Cloud (desk key) | Same desk, **no legal names** | Theme / PIN / Fake data. Names stay on this PC + codebook |
 | Drive folder | JSON + Google book you download | Live watch. VAULT tab = legal names — do not share |
 
 - Teacher PIN = Set teacher PIN. 1111 is rejected. Never print it.

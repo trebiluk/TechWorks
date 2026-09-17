@@ -17,7 +17,7 @@ import { TipsProvider } from "@/lib/tips";
 import { Dashboard } from "@/components/dashboard";
 import { featureOn } from "@/lib/features";
 import { paintDemo, SAVE_FAIL_EVENT, storedDemo, takeRealDesk, type DemoId } from "@/lib/demo";
-import { isUnlocked, lockCrew, ensureDefaultPin } from "@/lib/pin";
+import { isUnlocked, lock, lockCrew, ensureDefaultPin } from "@/lib/pin";
 import { daySlot, isSchoolDay, nextOpenDay, todayIso } from "@/lib/calendar";
 import { loadDjia, type DjiaQuote } from "@/lib/djia";
 import { downloadText, periodPulses, publicHandle, publishLive, splitExport } from "@/lib/live";
@@ -459,6 +459,29 @@ export function Board() {
       if (next !== view) setView(next as View);
     }
   }, [unlocked, view, crewOn]);
+
+  useEffect(() => {
+    if (embed || portalMode) return;
+    if (!unlocked && !crewOn) return;
+    let t = 0;
+    const bump = () => {
+      window.clearTimeout(t);
+      t = window.setTimeout(() => {
+        lock();
+        lockCrew();
+        setUnlocked(false);
+        setCrewOn(false);
+        setView((v) => lockView(v, false) as View);
+      }, 5 * 60 * 1000);
+    };
+    bump();
+    const ev = ["pointerdown", "keydown", "touchstart"] as const;
+    for (const e of ev) window.addEventListener(e, bump, { passive: true });
+    return () => {
+      window.clearTimeout(t);
+      for (const e of ev) window.removeEventListener(e, bump);
+    };
+  }, [unlocked, crewOn, embed, portalMode]);
 
   const liveP = periodNow(deskBellId(file));
   const mode = modeOf(view);

@@ -1,10 +1,9 @@
 import { useMemo, useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
-import { bellFor, isLiveStudent, periodTitle, score } from "@/lib/economy";
+import { isLiveStudent, score } from "@/lib/economy";
 import { decorateRank } from "@/lib/rank";
-import { abOn, onAbRoster } from "@/lib/store";
-import { todayIso } from "@/lib/calendar";
 import { lockPortal, portalOpen, unlockPortal } from "@/lib/pin";
+import { findByShop, publicHandle } from "@/lib/live";
 import { PinField } from "@/components/pin-pad";
 import { ReportCard } from "@/components/report-card";
 import { workerCards } from "@/lib/report";
@@ -22,21 +21,18 @@ export function FamilyWeb({ file }: { file: EconomyFile }) {
   const [code, setCode] = useState("");
   const [err, setErr] = useState("");
   const [pane, setPane] = useState<"me" | "crew" | "family">("me");
-  const bells = bellFor(file);
-  const [period, setPeriod] = useState(bells[0]?.period ?? 1);
   const [id, setId] = useState("");
-  const today = todayIso();
-  const letter = abOn(file, today);
+  const [shop, setShop] = useState("");
   const kids = useMemo(
     () =>
       decorateRank(
         file,
-        score(file).filter((s) => s.period === period && isLiveStudent(s, file.meta.quarterName) && onAbRoster(s, letter)),
+        score(file).filter((s) => isLiveStudent(s, file.meta.quarterName)),
       ),
-    [file, period, letter],
+    [file],
   );
   const cards = useMemo(() => workerCards(file), [file]);
-  const me = kids.find((s) => s.id === id) ?? null;
+  const me = (id ? kids.find((s) => s.id === id) : findByShop(kids, shop)) ?? null;
   const card = me ? cards.find((c) => c.id === me.id) : null;
   const mates = me ? kids.filter((s) => s.crewKey === me.crewKey) : [];
   const link = typeof window === "undefined" ? "?web=1" : `${window.location.origin}${window.location.pathname}?web=1`;
@@ -110,6 +106,7 @@ export function FamilyWeb({ file }: { file: EconomyFile }) {
               lockPortal();
               setInGate(true);
               setId("");
+              setShop("");
             }}
             className="tw-tap min-h-10 rounded-full bg-elevated px-3 text-xs font-semibold text-muted"
           >
@@ -117,32 +114,24 @@ export function FamilyWeb({ file }: { file: EconomyFile }) {
           </button>
         </div>
       </header>
-      <div className="flex flex-wrap gap-1">
-        {bells.map((b) => (
-          <button
-            key={b.period}
-            type="button"
-            onClick={() => {
-              setPeriod(b.period);
-              setId("");
-            }}
-            className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-semibold", period === b.period ? "bg-fg text-bg" : "bg-elevated text-muted")}
-          >
-            {periodTitle(b.period, bells)}
-          </button>
-        ))}
-      </div>
-      <div className="flex flex-wrap gap-1">
-        {kids.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            onClick={() => setId(s.id)}
-            className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-semibold", id === s.id ? "bg-accent text-accent-fg" : "bg-elevated")}
-          >
-            {s.first}
-          </button>
-        ))}
+      <div className="max-w-sm">
+        <label className="text-[11px] font-semibold uppercase tracking-wider text-subtle">Shop ID</label>
+        <input
+          value={shop}
+          onChange={(e) => {
+            const v = e.target.value.toUpperCase();
+            setShop(v);
+            const hit = findByShop(kids, v);
+            setId(hit?.id ?? "");
+          }}
+          placeholder="From the codebook / family sheet"
+          autoCapitalize="characters"
+          autoCorrect="off"
+          spellCheck={false}
+          className="mt-1 min-h-12 w-full rounded-lg bg-elevated px-3 font-mono text-lg tracking-[0.18em] outline-none"
+          aria-label="Shop ID"
+        />
+        <p className="mt-1 text-xs text-muted">Five letters from your teacher. Not a name. Not a class list.</p>
       </div>
       {me ? (
         <>
@@ -162,6 +151,7 @@ export function FamilyWeb({ file }: { file: EconomyFile }) {
             <article className="tw-gadget p-5">
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gold">Profile</p>
               <h2 className="font-display text-3xl font-semibold tracking-tight">{me.first}</h2>
+              <p className="font-mono text-sm tracking-[0.2em] text-gold">{publicHandle(me.id)}</p>
               <p className="text-sm text-muted">
                 {me.crewName} · P{me.period}
               </p>
@@ -206,7 +196,7 @@ export function FamilyWeb({ file }: { file: EconomyFile }) {
           {pane === "family" ? <ReportCard file={file} id={me.id} names={false} /> : null}
         </>
       ) : (
-        <p className="text-sm text-muted">Tap an alias. If it is not here, they are on the other A/B day.</p>
+        <p className="text-sm text-muted">Enter the Shop ID from the paper your teacher sent home. The class list is not on this page.</p>
       )}
     </div>
   );

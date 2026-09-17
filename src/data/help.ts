@@ -521,14 +521,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Privacy",
     title: "Family web code",
     tags: ["web", "portal", "family", "crew", "student", "pin", "2627"],
-    body: "Web on the HUD, or ?web=1. Class web code is the portal PIN (default 2627 — change in Settings). Not the teacher PIN. Aliases, skill charts, family sheet. No wallet. Crew tab is aliases in that crew.",
+    body: "Web on the HUD, or ?web=1. Class web code is the portal PIN (default 2627 — change in Settings). Not the teacher PIN. Then type the Shop ID from the codebook / family paper. No class list. Aliases, skill charts, family sheet. No wallet.",
   },
   {
     id: "ferpa",
     category: "Privacy",
     title: "FERPA / what gets published",
     tags: ["ferpa", "alias", "names", "iep", "export", "first"],
-    body: "Live export is encoded and has no last names. Names vault is a separate private download (alias, last, period, IEP/504). Every worker has a locked unique id; the wall alias is generated after that id exists. Shop ID is the 5-letter tag from that id. Print codebook (Records → Names or Backups) is the paper map of Shop ID + alias → legal name — drawer only. IEP is a blue deco dot and 504 orange, only inside Show full info, mixed with fake dots. Google Site embed never gets the vault. Teacher pads can show legal first names when you turn on Show first real names — last names stay vault, and the wall never follows.",
+    body: "Live export and the cloud desk have no last names. Names vault + codebook are the private map (alias, last, period, IEP/504) on this PC / paper / USB. Every worker has a locked unique id; the wall alias is generated after that id exists. Shop ID is the 5-letter tag. Family web asks for that Shop ID — it does not list the class. IEP is a blue deco dot and 504 orange, only inside Show full info, mixed with fake dots. Google book VAULT columns stay blank; print the codebook instead. Teacher pads can show legal first names when you turn on Show first real names — last names stay vault, and the wall never follows. Idle lock after 5 minutes.",
   },
   {
     id: "codebook",

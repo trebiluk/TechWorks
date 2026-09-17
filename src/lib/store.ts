@@ -8,6 +8,7 @@ import { writeTape } from "@/lib/tape";
 import type { DjiaQuote } from "@/lib/djia";
 import { afterAffectMaybeConfirm, afterCrewLeaderChange, roleHistoryOf } from "@/lib/roles";
 import { persistPack, readLocal, writePack, packDesk, migrateDesk } from "@/lib/vault";
+import { persistNamesVault } from "@/lib/names-vault";
 import { scheduleCloudPush } from "@/lib/desk-cloud";
 import { builtinPacks, type BellPack, type ScheduleId } from "@/lib/bells";
 import { SAVE_FAIL_EVENT, stripFakeDemo } from "@/lib/demo";
@@ -92,6 +93,7 @@ function flushDesk(file: EconomyFile) {
   const pack = packDesk(stripFakeDemo(file));
   const json = JSON.stringify(pack);
   const wrote = writePack(pack, json);
+  persistNamesVault(file);
   if (!wrote.ok) {
     try {
       window.dispatchEvent(new CustomEvent(SAVE_FAIL_EVENT, { detail: "This PC could not save (storage full). Download a full backup now." }));
