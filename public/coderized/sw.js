@@ -1,5 +1,5 @@
-const CACHE = "koderized-kz-1-6-0";
-const FILES = ["./index.html", "./styles.css", "./origin.js", "./app.js", "./manifest.json", "./icon.svg"];
+const CACHE = "koderized-kz-1-7-0";
+const FILES = ["./index.html", "./styles.css", "./origin.js", "./app.js", "./juice.js", "./manifest.json", "./icon.svg"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
   self.skipWaiting();
@@ -9,5 +9,5 @@ self.addEventListener("activate", e => {
   self.clients.claim();
 });
 self.addEventListener("fetch", e => {
-  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+  e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
 });

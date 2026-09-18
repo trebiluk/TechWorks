@@ -2,7 +2,7 @@
   "name": "Koderized",
   "short_name": "Koderized",
   "id": "https://tw.kulibert.net/koderized/",
-  "description": "Chromebook coding arena for middle school CTE/STEM. Don't wreck the bot. Version KZ 1.6.0.",
+  "description": "Chromebook coding arena for middle school CTE/STEM. Don't wreck the bot. Version KZ 1.7.0.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
