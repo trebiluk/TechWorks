@@ -1,15 +1,16 @@
 import type { EconomyFile } from "@/lib/economy";
-import { hourAgenda, saveAgendaLine, type AgendaCard } from "@/lib/hour-flow";
+import { hourAgendaDraft, hourAgendaWall, saveAgendaLine, type AgendaCard } from "@/lib/hour-flow";
 import { DraftField } from "@/components/draft-field";
 import { Berty } from "@/components/berty";
 import { cn } from "@/lib/utils";
+import type { ProcedureId } from "@/lib/procedure";
 
-const KICK = {
-  now: "Now",
-  goal: "Do this",
-  next: "Then",
-  behave: "How we work",
-} as const;
+const STEP_CARD: Record<ProcedureId, AgendaCard["id"]> = {
+  enter: "now",
+  listen: "goal",
+  work: "next",
+  clean: "behave",
+};
 
 export function KitChip({ kit }: { kit: string }) {
   if (!kit.trim()) return null;
@@ -27,6 +28,7 @@ export function AgendaWall({
   unlocked,
   editing,
   onChange,
+  active,
 }: {
   file: EconomyFile;
   date: string;
@@ -34,24 +36,18 @@ export function AgendaWall({
   unlocked?: boolean;
   editing?: boolean;
   onChange?: (next: EconomyFile) => void;
+  active?: ProcedureId;
 }) {
-  const cards = hourAgenda(file, date, period);
   const write = Boolean(unlocked && editing && onChange);
-  const shown: AgendaCard[] = write
-    ? [
-        { id: "now", n: "01", kicker: KICK.now, body: cards.find((c) => c.id === "now")?.body ?? "" },
-        { id: "goal", n: "02", kicker: KICK.goal, body: cards.find((c) => c.id === "goal")?.body ?? "" },
-        { id: "next", n: "03", kicker: KICK.next, body: cards.find((c) => c.id === "next")?.body ?? "" },
-        { id: "behave", n: "04", kicker: KICK.behave, body: cards.find((c) => c.id === "behave")?.body ?? "" },
-      ]
-    : cards;
+  const shown: AgendaCard[] = write ? hourAgendaDraft(file, date, period) : hourAgendaWall(file, date, period);
+  const onId = active ? STEP_CARD[active] : undefined;
 
   return (
-    <ol className="tw-agenda grid min-h-0 flex-1 gap-2" data-agenda data-n={String(shown.length)}>
+    <ol className="tw-agenda grid min-h-0 flex-1 gap-2" data-agenda data-n="4">
       {shown.map((c) => (
-        <li key={c.id} className="tw-agenda-card flex min-h-0 items-start gap-3 rounded-2xl bg-elevated px-3 py-3">
+        <li key={c.id} data-on={c.id === onId ? "on" : undefined} className={cn("tw-agenda-card tw-chamfer flex min-h-0 items-start gap-3 px-3 py-3", c.id === onId && "tw-agenda-on")}>
           <span className="tw-agenda-n grid size-11 shrink-0 place-items-center rounded-full bg-accent text-sm font-black text-accent-fg">
-            {c.n}
+            {Number(c.n)}
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gold">{c.kicker}</p>

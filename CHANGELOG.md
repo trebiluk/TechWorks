@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.72. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.73. -->
 
 # TechWorks changelog
 
-App version **1.92.72**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.73**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.73 — 2026-09-18
+
+- Wall hour plate fills the stage: locked 2×2 agenda, no empty Now slivers, Do this now is not a second plate. Oswego (and every look) keeps its paint.
 
 ## 1.92.72 — 2026-09-18
 

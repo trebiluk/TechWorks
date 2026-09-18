@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { EconomyFile } from "./economy.ts";
 import { setTeachAsk, setTeachDo, setTeachMaterials } from "./teach.ts";
-import { cleanupJobsOf, dayHourStatus, hourAgenda, hourKit, saveAgendaLine, setCleanupJobs, wallMode } from "./hour-flow.ts";
+import { cleanupJobsOf, dayHourStatus, hourAgenda, hourAgendaWall, hourKit, saveAgendaLine, setCleanupJobs, wallMode } from "./hour-flow.ts";
 
 function desk(): EconomyFile {
   return {
@@ -34,11 +34,15 @@ describe("hour flow", () => {
     assert.equal(next.find((c) => c.id === "behave")?.body.includes("cleanup"), true);
   });
 
-  it("empty Then drops so the wall plate flexes", () => {
+  it("empty Then drops from lists, but the wall still paints four cells", () => {
     const file = setTeachDo(desk(), "2026-09-15", 1, "Sketch seven logo marks.");
     const ids = hourAgenda(file, "2026-09-15", 1).map((c) => c.id);
     assert.equal(ids.includes("next"), false);
     assert.equal(ids.includes("goal"), true);
+    const wall = hourAgendaWall(file, "2026-09-15", 1);
+    assert.equal(wall.length, 4);
+    assert.equal(wall.find((c) => c.id === "goal")?.body, "Sketch seven logo marks.");
+    assert.ok((wall.find((c) => c.id === "next")?.body ?? "").length > 0);
   });
 
   it("day strip marks a period set once Ask or Do exists", () => {

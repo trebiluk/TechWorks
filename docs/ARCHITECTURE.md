@@ -1,6 +1,6 @@
-# TechWorks architecture · v1.92.72
+# TechWorks architecture · v1.92.73
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.72.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.73.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 

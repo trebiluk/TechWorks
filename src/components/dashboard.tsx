@@ -3,22 +3,18 @@ import { ClipboardList, Coins, RotateCcw, Trophy } from "lucide-react";
 import { markOf } from "@/lib/nav-marks";
 import { MarkChip } from "@/components/ui";
 import type { Bell, EconomyFile, ScoredStudent } from "@/lib/economy";
-import { isLiveStudent, periodTitle, shopBells } from "@/lib/economy";
+import { periodTitle, shopBells } from "@/lib/economy";
 import { formatBell, periodClock, periodNext, periodNow, SCHOOLTOOL_URL } from "@/lib/bells";
 import { applySort, byCombo } from "@/lib/rank";
 import { XpBit, PerkBit } from "@/components/marks";
-import { PeriodRewardChip, RewardBar } from "@/components/reward-bar";
+import { RewardBar } from "@/components/reward-bar";
 import { DayStrip } from "@/components/day-strip";
 import { WeatherChip } from "@/components/weather-chip";
 import { Berty } from "@/components/berty";
 import { Fold } from "@/components/fold";
-import { agendaFor, periodPaceLine, phaseIndex, prettyStage } from "@/lib/projects";
-import { JobCard } from "@/components/job-card";
-import { ppeOn, setPpe } from "@/lib/ppe";
-import { dayCardsOn, deskBellId, isSubDay, onAbRoster, schooltoolDone, setSchooltoolDone, specialsOn, visitOn, abOn, cycleVisit } from "@/lib/store";
+import { dayCardsOn, deskBellId, isSubDay, schooltoolDone, setSchooltoolDone, specialsOn, visitOn, cycleVisit } from "@/lib/store";
 import { VisitChip } from "@/components/visit-chip";
 import { cycleProgress, formatSchoolDate, isSchoolDay, nextOpenDay, quarterProgress, todayIso, yearProgress } from "@/lib/calendar";
-import { tapeMark } from "@/lib/tape";
 import { cn } from "@/lib/utils";
 import { ClubPulseCard } from "@/components/club-pulse";
 import { clubPulse, loadClub } from "@/lib/club";
@@ -27,8 +23,8 @@ import { featureOn } from "@/lib/features";
 import { showBerty } from "@/lib/berty";
 import { procedureStep } from "@/lib/procedure";
 import { teachJob, laySlots, teachFocusPeriod, hangOf } from "@/lib/teach";
-import { hourAgenda, hourKit, wallMode } from "@/lib/hour-flow";
-import { AgendaWall, EnterWall, KitChip } from "@/components/agenda-wall";
+import { hourKit } from "@/lib/hour-flow";
+import { AgendaWall, KitChip } from "@/components/agenda-wall";
 import { hideDashRow, loadDashLayout, moveDashRow, moveDashTo, applyDashKit, DASH_KITS, patchDash, rowOn, saveDashLayout, DASH_ROWS, DEFAULT_LAYOUT, type DashLayout, type DashRowId } from "@/lib/dash-layout";
 import { WALL_PRESET_EVENT } from "@/lib/wall-presets";
 import { WallLookChips } from "@/components/wall-looks";
@@ -41,7 +37,6 @@ import { SpecialBanner } from "@/components/special-banner";
 import { FeatureCards } from "@/components/feature-cards";
 import { PollWall } from "@/components/polls";
 import { useLang } from "@/lib/i18n-hook";
-import { avatarOf } from "@/lib/avatars";
 import { HangFrame } from "@/components/hang-frame";
 import { PlanitWeek } from "@/components/planit-week";
 
@@ -137,7 +132,6 @@ export const Dashboard = memo(function Dashboard({
   const now = useShopClock(bellsId, "beat");
   const [viewP, setViewP] = useState<number | null>(null);
   const today = todayIso();
-  const letter = abOn(file, today);
   const shop = useMemo(() => shopBells(file).map((b) => b.period), [file]);
   const live = periodNow(bellsId, now);
   const nxt = periodNext(bellsId, now);
@@ -149,19 +143,15 @@ export const Dashboard = memo(function Dashboard({
         : nxt && shop.includes(nxt.period)
           ? nxt.period
           : teachFocusPeriod(file, today, now);
-  const peeking = viewP != null && viewP !== live;
   const viewMine = shop.includes(shown);
   const clock = live != null ? periodClock(live, bellsId, now) : null;
   const shopLive = Boolean(clock?.live);
   const afterBell = isSchoolDay(today) && live == null && nxt == null;
   const openDay = nextOpenDay(today, afterBell);
   const wallDate = shopLive || afterBell ? today : openDay;
-  const agenda = agendaFor(file, shown, wallDate);
-  const goal = agenda.goal;
   const wallJob = teachJob(file, shown, wallDate);
   const wallSlots = laySlots(file, wallDate, shown);
   const passing = isSchoolDay(today) && !shopLive && Boolean(nxt);
-  const mode = wallMode(file, today, now);
   const step = procedureStep({
     live: shopLive,
     cleanup: Boolean(clock?.cleanup),
@@ -175,20 +165,6 @@ export const Dashboard = memo(function Dashboard({
   const poll = pollForPeriod(file, shown);
   const combo = useMemo(() => byCombo(file, list.filter((s) => s.period !== 6)), [file, list]);
   const ranked = useMemo(() => applySort(combo, rankBoard === "perk" ? "wallet" : "level"), [combo, rankBoard]);
-  const viewKids = useMemo(
-    () => applySort(combo.filter((s) => s.period === shown), rankBoard === "perk" ? "wallet" : "level"),
-    [combo, shown, rankBoard],
-  );
-  const todayHit = useMemo(() => {
-    const kids = file.students.filter(
-      (s) => s.period === shown && isLiveStudent(s, file.meta.quarterName) && onAbRoster(s, letter),
-    );
-    let scored = 0;
-    for (const s of kids) {
-      if (tapeMark(s.markTape, today) || s.marks?.[today]) scored += 1;
-    }
-    return { scored, blank: kids.length - scored, n: kids.length };
-  }, [file, shown, today, letter]);
   const cyc = cycleProgress(today);
   const qtr = quarterProgress(today);
   const yr = yearProgress(today);
@@ -255,6 +231,7 @@ export const Dashboard = memo(function Dashboard({
                 : wallJob.question || wallJob.today || `Opens ${formatSchoolDate(openDay)} P1`}
           </p>
         </div>
+        {bertyOn ? <Berty pose="point" size="lg" className="shrink-0" /> : null}
       </div>
       {!clock?.live && arrange ? (
         <div className="mt-auto pt-2">
@@ -266,54 +243,27 @@ export const Dashboard = memo(function Dashboard({
   );
 
   const classCard = (
-    <article data-job-plate className="tw-gadget tw-hud tw-fill-wide flex min-h-[10rem] flex-col gap-2 p-3">
-      {viewMine && mode === "enter" && !peeking ? (
+    <article data-job-plate className="tw-gadget tw-hud tw-fill-wide tw-hour-stage flex min-h-0 flex-1 flex-col gap-2 p-3">
+      {viewMine ? (
         <>
-        <EnterWall
-          line={hourAgenda(file, today, shown).find((c) => c.id === "now")?.body || wallSlots.find((s) => s.kind === "enter")?.line || "Sit with your crew."}
-          next={nxt ? `Next P${nxt.period} · ${formatBell(nxt.start)}` : undefined}
-          coming={hourAgenda(file, wallDate, shown).find((c) => c.id === "goal")?.body}
-          kit={hourKit(file, wallDate, shown)}
-        />
-        <PlanitWeek file={file} period={shown} date={wallDate} />
-        </>
-      ) : viewMine && (mode === "agenda" || (arrange && unlocked)) ? (
-        <>
-          <AgendaWall file={file} date={wallDate} period={shown} unlocked={unlocked} editing={arrange} onChange={onChange} />
+          <p className="tw-now-band tw-chamfer">
+            <span>Now</span>
+            <strong>{wallJob.today || wallJob.question || periodTitle(shown, bells)}</strong>
+          </p>
+          <AgendaWall file={file} date={wallDate} period={shown} unlocked={unlocked} editing={arrange} onChange={onChange} active={step} />
           <KitChip kit={hourKit(file, wallDate, shown)} />
-          <HangFrame
-            items={hangOf(file, wallDate, shown)}
-            unlocked={false}
-            play
-            onHang={() => {}}
-            onDrop={() => {}}
-          />
-          <PlanitWeek file={file} period={shown} date={wallDate} />
-        </>
-      ) : viewMine ? (
-        <>
-        <GoalsCard
-          file={file}
-          shown={shown}
-          bells={bells}
-          goal={goal}
-          agenda={agenda}
-          todayHit={todayHit}
-          viewKids={viewKids}
-          unlocked={unlocked}
-          edit={arrange}
-          peeking={peeking}
-          live={live}
-          onPeriod={onPeriod}
-          onOpenId={onOpenId}
-          onNow={() => setViewP(null)}
-          onTeach={onOpenMod ? () => onOpenMod("teach") : undefined}
-          cleanup={Boolean(clock?.cleanup)}
-          berty={bertyOn && shopLive && !clock?.cleanup}
-          onChange={onChange}
-          date={wallDate}
-        />
-        <PlanitWeek file={file} period={shown} date={wallDate} />
+          {arrange ? (
+            <>
+              <HangFrame
+                items={hangOf(file, wallDate, shown)}
+                unlocked={false}
+                play
+                onHang={() => {}}
+                onDrop={() => {}}
+              />
+              <PlanitWeek file={file} period={shown} date={wallDate} />
+            </>
+          ) : null}
         </>
       ) : (
         <p className="text-sm text-muted">{t("Tap a Tech period on the strip.")}</p>
@@ -426,6 +376,8 @@ export const Dashboard = memo(function Dashboard({
   );
 
   const sortOn = arrange;
+  const showLeft: DashRowId[] = arrange ? layout.left : ["class"];
+  const showRight: DashRowId[] = arrange ? layout.right : pulse ? ["now", "strip", "club", "kpis"] : ["now", "strip", "kpis"];
 
   function ghost(label: string) {
     return (
@@ -520,8 +472,9 @@ export const Dashboard = memo(function Dashboard({
         >
           {(["left", "right"] as const).map((col) => (
             <SortableWell key={col} id={col === "left" ? "col:left" : "col:right"} label={col === "left" ? "Drop left" : "Drop right"}>
-              {layout[col].map((id) => {
-                if (!dash.on(id)) return null;
+              {(col === "left" ? showLeft : showRight).map((id) => {
+                if (arrange && !dash.on(id)) return null;
+                if (!arrange && id === "club" && !pulse) return null;
                 const body = plateOf(id);
                 if (!body) return null;
                 const fill = id === "now" || id === "class";
@@ -544,9 +497,45 @@ export const Dashboard = memo(function Dashboard({
           ))}
         </SortableList>
       </div>
+      {!arrange ? (
+        <WallTicker
+          period={shown}
+          title={wallJob.today || wallJob.question || periodTitle(shown, bells)}
+          kit={hourKit(file, wallDate, shown)}
+          left={clock?.live ? (clock.cleanup ? "Cleanup" : `${Math.max(0, Math.ceil(clock.left))}m left`) : nxt ? `Next P${nxt.period}` : "Shop"}
+          next={nxt ? `P${nxt.period} ${formatBell(nxt.start)}` : "Last bell"}
+          date={formatSchoolDate(wallDate)}
+        />
+      ) : null}
     </div>
   );
 });
+
+function WallTicker({
+  period,
+  title,
+  kit,
+  left,
+  next,
+  date,
+}: {
+  period: number;
+  title: string;
+  kit: string;
+  left: string;
+  next: string;
+  date: string;
+}) {
+  const line = [`P${period}`, title, kit ? `Need ${kit}` : "Need —", left, next, date].join("  ·  ");
+  return (
+    <div className="tw-ticker" data-wall-ticker>
+      <div className="tw-ticker-track">
+        <span>{line}</span>
+        <span>{line}</span>
+      </div>
+    </div>
+  );
+}
 
 function LayoutBar({
   dash,
@@ -563,7 +552,7 @@ function LayoutBar({
   return (
     <section className="tw-gadget shrink-0 space-y-2 p-3">
       <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gold">Customize this wall</p>
-      <p className="text-sm text-muted">Looks paint color, type, and scale. Each look shows a mini wall. Kits park plates in two columns. Drag a plate to the other column.</p>
+      <p className="text-sm text-muted">Looks paint color, type, and scale. Each look shows a mini wall. Show wall still fills Hour as a 2×2. Kits park extra plates. Drag a plate to the other column.</p>
       <p className="text-[11px] font-semibold uppercase tracking-wider text-gold">Looks</p>
       <WallLookChips />
       <div className="flex flex-wrap items-center gap-1">
@@ -610,130 +599,5 @@ function LayoutBar({
         </MarkChip>
       </div>
     </section>
-  );
-}
-
-function GoalsCard({
-  file,
-  shown,
-  date,
-  todayHit,
-  viewKids,
-  unlocked,
-  edit = false,
-  peeking,
-  live,
-  onPeriod,
-  onOpenId,
-  onNow,
-  onTeach,
-  cleanup,
-  berty,
-  onChange,
-}: {
-  file: EconomyFile;
-  shown: number;
-  date?: string;
-  bells: Bell[];
-  goal: string;
-  agenda: ReturnType<typeof agendaFor>;
-  todayHit: { scored: number; blank: number; n: number };
-  viewKids: { id: string; first: string; xp: number; level: number; quarter: number; icon?: string }[];
-  unlocked: boolean;
-  edit?: boolean;
-  peeking: boolean;
-  live: number | null;
-  onPeriod: (p: number) => void;
-  onOpenId: (id: string) => void;
-  onNow: () => void;
-  onTeach?: () => void;
-  cleanup?: boolean;
-  berty?: boolean;
-  onChange?: (next: EconomyFile) => void;
-}) {
-  const { t } = useLang();
-  const today = todayIso();
-  const job = teachJob(file, shown, date ?? today);
-  const pace = periodPaceLine(file, shown);
-  const lanes = [...pace.rows].sort((a, b) => phaseIndex(b.current) - phaseIndex(a.current));
-  const sameStage = lanes.length > 0 && lanes.every((c) => prettyStage(c.current) === prettyStage(lanes[0].current));
-  const hasRanks = viewKids.some((s) => s.xp > 0 || s.quarter > 0);
-  const gogglesOn = ppeOn(file, shown);
-  const desk = unlocked && edit;
-  const actions = (
-    <>
-      {peeking && live != null ? (
-        <button type="button" onClick={onNow} className="min-h-11 shrink-0 rounded-md bg-accent px-3 text-sm font-semibold text-accent-fg">
-          P{live}
-        </button>
-      ) : null}
-      {desk ? (
-        <button type="button" title={t("Score")} onClick={() => onPeriod(shown)} className="min-h-11 shrink-0 rounded-md bg-fg px-3 text-sm font-semibold text-bg">
-          {t("Score")}
-        </button>
-      ) : null}
-    </>
-  );
-  return (
-    <div data-goals className="relative flex min-h-0 flex-1 flex-col">
-      {cleanup ? (
-        <span className="berty-seat-pad pointer-events-none absolute bottom-0 right-3 z-10">
-          <Berty pose="point" size="md" alert />
-        </span>
-      ) : null}
-      <JobCard
-        job={job}
-        period={shown}
-        onTeach={onTeach}
-        actions={actions}
-        ppeOn={gogglesOn}
-        onPpe={desk && onChange ? () => onChange(setPpe(file, shown, !gogglesOn)) : undefined}
-      />
-      {desk && todayHit.n > 0 ? (
-        <p className="mt-2 font-mono text-xs tabular-nums text-subtle">
-          {todayHit.scored}/{todayHit.n} {t("scored")}
-          {todayHit.blank ? ` · ${todayHit.blank} ${t("left")}` : ""}
-        </p>
-      ) : desk && todayHit.n === 0 ? (
-        <p className="mt-2 text-xs text-muted">{t("Scores live on this desk.")}</p>
-      ) : null}
-      {lanes.length ? (
-        sameStage || !desk ? (
-          <p className="mt-2 truncate text-sm text-muted">{lanes.map((c) => c.name).join(" · ")}</p>
-        ) : (
-          <p className="mt-2 truncate text-sm text-muted">{lanes.map((c) => `${c.name} · ${prettyStage(c.current)}`).join(" · ")}</p>
-        )
-      ) : desk ? (
-        <p className="mt-2 text-sm text-muted">{t("No crews yet.")}</p>
-      ) : null}
-      {hasRanks ? (
-        <div className="mt-3 grid min-w-0 grid-cols-2 gap-2 sm:grid-cols-1">
-          {featureOn(file, "reward") ? (
-          <div className="rounded-lg bg-elevated px-2.5 py-2">
-            <p className="text-xs font-semibold uppercase tracking-wider text-subtle">{t("Reward")}</p>
-            <PeriodRewardChip file={file} period={shown} className="mt-1" />
-          </div>
-          ) : null}
-          <div className="rounded-lg bg-elevated px-2.5 py-2">
-            <p className="text-xs font-semibold uppercase tracking-wider text-subtle">{t("Top 3")}</p>
-            <ol className="mt-1 space-y-1">
-              {viewKids.slice(0, 3).map((s, i) => (
-                <li key={s.id}>
-                  <button type="button" disabled={!unlocked} onClick={() => onOpenId(s.id)} className="flex w-full min-h-9 items-center gap-1.5 text-left disabled:cursor-default">
-                    <span className="w-3 font-mono text-xs text-subtle">{i + 1}</span>
-                    <span className="text-base" aria-hidden>
-                      {avatarOf(s.icon, s.id)}
-                    </span>
-                    <span className={cn("min-w-0 flex-1 truncate text-sm", i === 0 ? "font-semibold text-gold" : "")}>{s.first}</span>
-                    <XpBit xp={s.xp} level={s.level} hot />
-                    {s.quarter ? <PerkBit n={s.quarter} hot /> : null}
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
-      ) : null}
-    </div>
   );
 }

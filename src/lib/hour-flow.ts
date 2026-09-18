@@ -71,9 +71,28 @@ export function hourAgendaDraft(file: EconomyFile, date: string, period: number)
   }));
 }
 
-/** Projector / student view. Empty Then (and empty Do this) drop so the plate flexes. */
+/** Projector / student view. Empty Then (and empty Do this) drop so lists stay short. The wall does not use this — it always paints four cells. */
 export function hourAgenda(file: EconomyFile, date: string, period: number): AgendaCard[] {
   return hourAgendaDraft(file, date, period).filter((r) => r.body || r.id === "now" || r.id === "behave");
+}
+
+const WALL_FALLBACK: Record<AgendaCard["id"], string> = {
+  now: "Sit with your crew.",
+  goal: "Directions first. Then questions.",
+  next: "Build the day’s activity.",
+  behave: BEHAVE,
+};
+
+/** Projector wall. Always four cells. Empty lines keep a procedure fallback so the 2×2 never collapses. */
+export function hourAgendaWall(file: EconomyFile, date: string, period: number): AgendaCard[] {
+  const job = teachJob(file, period, date);
+  return hourAgendaDraft(file, date, period).map((c) => {
+    const body =
+      c.body.trim() ||
+      (c.id === "goal" && job.today.trim() ? job.today : "") ||
+      WALL_FALLBACK[c.id];
+    return { ...c, body };
+  });
 }
 
 /** Goggles + the Need line. Kids see this on Enter and Agenda. */

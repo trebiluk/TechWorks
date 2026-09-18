@@ -72,7 +72,7 @@ Berty is the workshop mascot. He waves at ENTER, thinks at LISTEN, stands for CR
 
 ### Wall looks
 
-Looks change the wall paint. Shop wall is the usual navy. Back row is bigger type so the back of the room can read it. Holiday looks are for fun days. Your scores stay. Gold is still XP. Coral is still cleanup. The top buttons (Help, Lock, Web) still work.
+Show wall fills Hour as a 2×2. Empty cells keep Enter / Listen / Crew work / Clean up — no empty Now slivers, no second Do this now plate. Looks change the wall paint. Oswego stays hunter + sunset gold. Shop wall is the usual navy. Back row is bigger type so the back of the room can read it. Holiday looks are for fun days. Your scores stay. Gold is still XP. Coral is still cleanup. The top buttons (Help, Lock, Web) still work.
 
 ### Jobs on the wall
 

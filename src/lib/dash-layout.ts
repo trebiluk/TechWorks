@@ -1,6 +1,6 @@
 import { moveId } from "./sort.ts";
 
-const KEY = "techworks-dash-layout-v13";
+const KEY = "techworks-dash-layout-v15";
 const V12 = "techworks-dash-layout-v12";
 const V11 = "techworks-dash-layout-v11";
 const V10 = "techworks-dash-layout-v10";
@@ -63,14 +63,14 @@ const IDS = DASH_ROWS.map((r) => r.id);
 const LEFT_SET = new Set<string>(LEFT_BIAS);
 
 export const DEFAULT_LAYOUT: DashLayout = {
-  left: ["class", "proc", "strip", "club", "specials", "notes"],
-  right: ["now", "kpis", "poll", "mods", "tools"],
-  order: ["class", "proc", "strip", "club", "specials", "notes", "now", "kpis", "poll", "mods", "tools"],
-  hidden: ["tools", "mods"],
+  left: ["class"],
+  right: ["now", "strip", "kpis"],
+  order: ["class", "now", "strip", "kpis", "proc", "club", "specials", "notes", "poll", "mods", "tools"],
+  hidden: ["proc", "tools", "mods", "club", "specials", "notes", "poll"],
   schoolN: 10,
   liveProc: true,
   nowGoal: true,
-  nowBars: true,
+  nowBars: false,
   nowVisit: false,
   nowWeather: false,
   rankBtns: false,
@@ -163,7 +163,7 @@ function normalize(raw: Partial<DashLayout> | null, flagsFromSave: boolean): Das
   const order = graftDashOrder(savedOrder);
   const hasCols = Array.isArray(raw?.left) || Array.isArray(raw?.right);
   const cols = hasCols ? graftCols(uniqueIds(raw?.left), uniqueIds(raw?.right)) : splitOrder(order);
-  const hidden = [...new Set((raw?.hidden ?? []).map(asId).filter((x): x is DashRowId => Boolean(x)))].filter((id) => id !== "proc");
+  const hidden = [...new Set((raw?.hidden ?? []).map(asId).filter((x): x is DashRowId => Boolean(x)))];
   if (!savedOrder.includes("tools") && !uniqueIds(raw?.left).includes("tools") && !uniqueIds(raw?.right).includes("tools") && !hidden.includes("tools")) {
     hidden.push("tools");
   }
@@ -199,31 +199,7 @@ export function loadDashLayout(): DashLayout {
   try {
     const cur = window.localStorage.getItem(KEY);
     if (cur) return normalize(JSON.parse(cur) as Partial<DashLayout>, true);
-    const v12 = window.localStorage.getItem(V12);
-    if (v12) return normalize(JSON.parse(v12) as Partial<DashLayout>, true);
-    const v11 = window.localStorage.getItem(V11);
-    if (v11) return normalize(JSON.parse(v11) as Partial<DashLayout>, true);
-    const v10 = window.localStorage.getItem(V10);
-    if (v10) {
-      const n = normalize(JSON.parse(v10) as Partial<DashLayout>, true);
-      return n.hidden.includes("mods") ? n : { ...n, hidden: [...n.hidden, "mods"] };
-    }
-    const v9 = window.localStorage.getItem(V9);
-    if (v9) {
-      const n = normalize(JSON.parse(v9) as Partial<DashLayout>, true);
-      return n.hidden.includes("proc") ? n : { ...n, hidden: [...n.hidden, "proc"] };
-    }
-    const v8 = window.localStorage.getItem(V8);
-    if (v8) return normalize(JSON.parse(v8) as Partial<DashLayout>, true);
-    const v7 = window.localStorage.getItem(V7);
-    if (v7) return normalize(JSON.parse(v7) as Partial<DashLayout>, true);
-    for (const k of LEGACY) {
-      const raw = window.localStorage.getItem(k);
-      if (!raw) continue;
-      const parsed = JSON.parse(raw) as Partial<DashLayout> | DashRowId[];
-      const n = Array.isArray(parsed) ? normalize({ order: parsed }, false) : normalize(parsed, false);
-      return restoreMods(n);
-    }
+    /* v14 and older parked Hour + Do this on the left and left a void. Fresh wall eats the stage. */
   } catch {
     /* */
   }
@@ -326,49 +302,50 @@ function kitCols(leftHead: DashRowId[], rightHead: DashRowId[]): { left: DashRow
 export function applyDashKit(layout: DashLayout, id: DashKitId): DashLayout {
   const keep = { layoutOpen: layout.layoutOpen, schoolN: layout.schoolN };
   if (id === "work") {
-    const cols = kitCols(["class", "proc"], ["tools", "now"]);
+    const cols = kitCols(["class"], ["now", "tools"]);
     return {
       ...DEFAULT_LAYOUT,
       ...keep,
       ...cols,
       order: [...cols.left, ...cols.right],
-      hidden: ["mods", "notes", "poll", "specials", "kpis"],
+      hidden: ["proc", "mods", "notes", "poll", "specials", "kpis", "club", "strip"],
       rankCards: false,
     };
   }
   if (id === "score") {
-    const cols = kitCols(["kpis", "class"], ["proc", "now"]);
+    const cols = kitCols(["kpis", "class"], ["now"]);
     return {
       ...DEFAULT_LAYOUT,
       ...keep,
       ...cols,
       order: [...cols.left, ...cols.right],
-      hidden: ["tools", "mods", "notes", "poll", "specials"],
+      hidden: ["proc", "tools", "mods", "notes", "poll", "specials", "club", "strip"],
       rankCards: true,
       rankBtns: true,
       schoolN: 10,
     };
   }
   if (id === "club") {
-    const cols = kitCols(["club", "class"], ["proc", "now"]);
+    const cols = kitCols(["club", "class"], ["now"]);
     return {
       ...DEFAULT_LAYOUT,
       ...keep,
       ...cols,
       order: [...cols.left, ...cols.right],
-      hidden: ["tools", "mods", "kpis", "poll", "specials", "notes"],
+      hidden: ["proc", "tools", "mods", "kpis", "poll", "specials", "notes", "strip"],
       rankCards: false,
     };
   }
-  const cols = kitCols(["class", "proc"], ["now", "strip", "club", "kpis"]);
+  const cols = kitCols(["class"], ["now", "strip", "kpis"]);
   return {
     ...DEFAULT_LAYOUT,
     ...keep,
     ...cols,
     order: [...cols.left, ...cols.right],
-    hidden: ["tools", "mods", "notes", "poll", "specials"],
+    hidden: ["proc", "tools", "mods", "notes", "poll", "specials", "club"],
     rankCards: false,
     nowWeather: false,
     nowVisit: false,
+    nowBars: false,
   };
 }
