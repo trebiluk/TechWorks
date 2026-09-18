@@ -102,7 +102,7 @@ export function SettingsBody({
             {tab === "room" ? (
               <section>
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Theme</h2>
-                <p className="mt-1 text-sm text-muted">One desk. Bottom dock is Dash · Learn · Crew · Admin. Widescreen adds columns; portrait wraps the same cards. Hover a chip to paint the whole desk (logo stays). Click to keep it.</p>
+                <p className="mt-1 text-sm text-muted">Wall looks paint the projector in one tap. Color chips preview on hover; tap to keep. Logo stays. HUD buttons stay the same size.</p>
                 <div className="mt-6">
                   <ThemePicker />
                 </div>

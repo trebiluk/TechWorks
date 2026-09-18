@@ -1,6 +1,6 @@
-# TechWorks Help · v1.92.71
+# TechWorks Help · v1.92.72
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.71.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.72.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
@@ -10,7 +10,7 @@ Search in the app Help panel. Categories below.
 
 ### What is TechWorks?
 
-TechWorks is Mr. Kulibert’s technology class, turned into a workshop you can see. You work in a small crew. You practice real skills (measure, cut, finish, share). You earn gold XP for getting better at the work — that is the point. Class cash is a perk game for showing up and doing the job. It is not your grade. The board on the wall uses shop aliases, not legal names, so it is safe to look at together.
+TechWorks is Mr. Kulibert’s shop class. You work in a small crew. You practice real skills: measure, cut, finish, share. Gold XP means you got better at the work. That is the point. Class cash is a perk game. It is not your grade. Names on the wall are shop aliases, not legal names.
 
 ### A class period in four beats
 
@@ -26,13 +26,13 @@ You: build, clean, help a crewmate. Crew lead: scores the team 3 / 2 / 1 for thi
 
 ### Who this Help is for
 
-Students: stay on Welcome and Wall. Crew leads: Roles → Crew lead, then Crew. Families: tap an alias → Family, or type Family in the search box. Teacher: Start, Teach, Deck, Score, Admin. Sub: Roles → Sub day — you do not open this app. Type a word in the search box. Teachers can Download help file for the whole book.
+Students: Welcome and Wall. Crew leads: Roles → Crew lead. Families: tap an alias → Family, or type Family in the search box. Teacher: Start, Teach, Deck, Score, Admin. Sub: do not open this app. Type a word in the search box. Teachers can Download help file for the whole book.
 
 ## Wall
 
 ### How to read this board
 
-This is the class wall. Names here are shop aliases, not legal names. Gold numbers are skill XP. $ is classroom perks, a game. The ring is minutes left in this period. Coral means cleanup — tools away, seats, floor.
+This is the class wall. Names here are shop aliases, not legal names. Gold numbers are skill XP. $ is classroom perks, a game. The ring is minutes left. Coral means cleanup — tools away, seats, floor.
 
 ### Job card on the wall
 
@@ -72,7 +72,7 @@ Berty is the workshop mascot. He waves at ENTER, thinks at LISTEN, stands for CR
 
 ### Wall looks
 
-Arrange wall → Looks, or Admin → Theme. Shop wall is the default: navy, cyan lamp, glass plates, Hour on the left, clock on the right. Back row goes bigger. Night shop, Oswego, Scoreboard, Club night, Projector, Harvest each paint color, type, scale, and the two-column grid in one tap. Kits only move plates into those columns. Drag a plate to the other column. Glow and lift sliders now actually change the wall. Looks never cover Lock, Help, Web, or the other HUD buttons. Default stays dark.
+Looks change the wall paint. Shop wall is the usual navy. Back row is bigger type so the back of the room can read it. Holiday looks are for fun days. Your scores stay. Gold is still XP. Coral is still cleanup. The top buttons (Help, Lock, Web) still work.
 
 ### Jobs on the wall
 
@@ -94,7 +94,7 @@ Dash → Deck plays today’s Teach plan. Present is play-only (even with PIN). 
 
 ### Copyright
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.71.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.72.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
@@ -108,7 +108,7 @@ Bottom dock: Dash · Learn · Crew · Rosters · Admin (PIN on the last three). 
 
 ### Version
 
-The floating chip is v1.92.71. Same string as About, Help, and the changelog header. Product name TECHWORKS™. Workshop zips labeled 1.0 or 2.1.0 are not live.
+The floating chip is v1.92.72. Same string as About, Help, and the changelog header. Product name TECHWORKS™. Workshop zips labeled 1.0 or 2.1.0 are not live.
 
 ### Describe mode / tips
 
@@ -120,7 +120,7 @@ One layout. Bottom dock is Dash · Learn · Crew · Rosters · Admin. Dash strip
 
 ### Stylesheets
 
-Admin → Theme (PIN). Default stays dark (navy / cyan). Never a white wall — Kulibert is light-sensitive. Wall looks (Shop, Back row, Night shop, Oswego, Scoreboard, Club night, Projector, Harvest) paint color, type, scale, and plates in one tap. Brand chips include ROLL THE DICE. Holiday packs (Holly, Frost, Harvest, Spooky, Patriot, Clover, Wrapping, Valentine, Pumpkin) and Day / ADA (Daylight, Manila, Polar) are full themes. High vis / Contrast sit on top. Hover a chip to preview; click to apply. Looks may grow wall plates — HUD buttons (Web, Help, Lock, Cog, language, NOW) stay the same tap size and stay clickable. Shine overlays on the top bar cannot steal taps. Cleanup coral. Due red.
+Admin → Theme (PIN), or Wall → Arrange wall → Looks. Default stays dark (navy / cyan). Never a white wall — Kulibert is light-sensitive. Wall looks (Shop, Back row, Night shop, Oswego, Scoreboard, Club night, Projector, Harvest) each show a mini wall, then paint color, type, scale, and plates in one tap. Kits only move plates. Drag a plate to the other column. Brand chips include ROLL THE DICE. Holiday packs (Holly, Frost, Harvest, Spooky, Patriot, Clover, Wrapping, Valentine, Pumpkin) and Day / ADA (Daylight, Manila, Polar) are full themes. High vis / Contrast sit on top. Hover a chip to preview (mouse). Tap to apply (Chromebook). Looks may grow wall plates — HUD buttons (Web, Help, Lock, Cog, language, NOW) stay the same tap size and stay clickable. Shine overlays on the top bar cannot steal taps. Cleanup coral. Due red.
 
 ### Top chrome (Lock, Help, Web, language)
 

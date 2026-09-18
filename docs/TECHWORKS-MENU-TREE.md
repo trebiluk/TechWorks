@@ -1,6 +1,6 @@
 # TechWorks menu tree
 
-Live desk **v1.92.71**. Bottom dock: **Dash · Learn · Crew · Rosters · Admin**.
+Live desk **v1.92.72**. Bottom dock: **Dash · Learn · Crew · Rosters · Admin**.
 
 Twin of `docs/MENU-TREE.md`. Teacher unlock = Set teacher PIN (never 1111). Crew pad 2222. Family web portal default 2627.
 

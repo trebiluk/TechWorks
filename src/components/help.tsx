@@ -1,13 +1,23 @@
 import { useMemo, useState } from "react";
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { APP_VERSION, VERSION_LABEL } from "@/lib/version";
 import { COPYRIGHT_LINE, TRADEMARK_NOTICE } from "@/lib/copy";
 import { BertyPeek } from "@/components/berty";
-import { HELP_CATEGORIES, helpMarkdown, searchHelp, techMarkdown } from "@/data/help";
+import { HELP_CATEGORIES, HELP_JUMPS, helpMarkdown, highlightPieces, searchHelp, techMarkdown } from "@/data/help";
 import { architectureMarkdown } from "@/data/architecture";
 import { useLang } from "@/lib/i18n-hook";
 import { downloadText } from "@/lib/live";
 import { cn } from "@/lib/utils";
+
+function Marks({ text, q }: { text: string; q: string }) {
+  const bits = highlightPieces(text, q);
+  if (bits.length === 1 && !bits[0].hit) return <>{text}</>;
+  return (
+    <>
+      {bits.map((b, i) => (b.hit ? <mark key={i} className="tw-help-mark">{b.t}</mark> : <span key={i}>{b.t}</span>))}
+    </>
+  );
+}
 
 function WelcomeArea({ wallOnly }: { wallOnly?: boolean }) {
   const { t } = useLang();
@@ -63,6 +73,7 @@ export function HelpPanel({ onClose, wallOnly }: { onClose: () => void; wallOnly
     return shown;
   }, [q, cat, wallOnly, lang, article]);
   const cats = wallOnly ? ["All", "Welcome", "Wall"] : ["All", ...HELP_CATEGORIES];
+  const listed = hits.filter((a) => q.trim() || cat === "Welcome" || a.category !== "Welcome");
 
   return (
     <div className="tw-scrim fixed inset-0 z-[80] flex items-start justify-center overflow-auto p-4 pt-12">
@@ -73,13 +84,17 @@ export function HelpPanel({ onClose, wallOnly }: { onClose: () => void; wallOnly
               {wallOnly ? t("How this class works") : `Help · ${VERSION_LABEL}`}
             </p>
             <p className="mt-0.5 text-[11px] text-muted">{COPYRIGHT_LINE}</p>
-            <input
-              autoFocus
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder={wallOnly ? `${t("What is TechWorks?")} XP, ${t("Cleanup")}…` : `${t("What is TechWorks?")} PIN, ${t("Skills")}…`}
-              className="mt-2 min-h-11 w-full rounded-md bg-elevated px-3 text-sm outline-none"
-            />
+            <label className="relative mt-2 block">
+              <Search className="pointer-events-none absolute left-3 top-3 size-4 text-subtle" />
+              <input
+                autoFocus
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder={wallOnly ? `${t("What is TechWorks?")} XP, ${t("Cleanup")}…` : `${t("What is TechWorks?")} PIN, ${t("Skills")}…`}
+                className="min-h-11 w-full rounded-md bg-elevated pl-9 pr-3 text-sm outline-none"
+                aria-label="Search help"
+              />
+            </label>
           </div>
           <button type="button" aria-label="Close help" onClick={onClose} className="size-11 rounded-lg bg-elevated">
             <X className="mx-auto size-4" />
@@ -91,30 +106,56 @@ export function HelpPanel({ onClose, wallOnly }: { onClose: () => void; wallOnly
               key={c}
               type="button"
               onClick={() => setCat(c)}
-              className={cn("min-h-9 rounded-md px-2 text-sm", cat === c ? "bg-fg text-bg" : "bg-elevated text-muted")}
+              className={cn("tw-tap min-h-9 rounded-md px-2 text-sm", cat === c ? "bg-fg text-bg" : "bg-elevated text-muted")}
             >
               {c === "All" ? t("All") : t(c)}
             </button>
           ))}
         </div>
+        {wallOnly ? null : (
+          <div className="tw-help-jump" data-help-jumps>
+            {HELP_JUMPS.map((j) => (
+              <button
+                key={j.q}
+                type="button"
+                onClick={() => {
+                  setCat("All");
+                  setQ(j.q);
+                }}
+                className={cn("tw-tap min-h-8 rounded-full px-3 text-[11px] font-semibold uppercase tracking-wider", q.toLowerCase() === j.q.toLowerCase() ? "bg-gold text-bg" : "bg-elevated text-muted")}
+              >
+                {j.label}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="min-h-0 flex-1 overflow-auto px-4 pb-4">
+          {q.trim() ? (
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted" role="status">
+              {listed.length} {listed.length === 1 ? "match" : "matches"}
+            </p>
+          ) : null}
           {!q.trim() && (cat === "All" || cat === "Welcome" || cat === "Wall") ? <WelcomeArea wallOnly={wallOnly} /> : null}
-          {hits.length === 0 ? (
-            <p className="py-8 text-sm text-muted">{t("No articles for")} “{q}”.</p>
+          {listed.length === 0 ? (
+            <p className="py-8 text-sm text-muted">
+              {t("No articles for")} “{q}”. Try Web, Theme, Store, PIN, or Cleanup.
+            </p>
           ) : (
-            hits
-              .filter((a) => q.trim() || cat === "Welcome" || a.category !== "Welcome")
-              .map((a) => {
-                const copy = article(a.id, a.title, a.body);
-                return (
-              <article key={a.id} className="border-t border-border py-3">
-                <p className="text-xs font-semibold uppercase tracking-widest text-subtle">{t(a.category)}</p>
-                <h2 className="mt-1 text-base font-semibold">{copy.title}</h2>
-                <p className="mt-1 text-sm text-muted">{copy.body}</p>
-              </article>
-                );
-              })
-            )}
+            listed.map((a) => {
+              const copy = article(a.id, a.title, a.body);
+              return (
+                <article key={a.id} className="tw-help-card">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-subtle">{t(a.category)}</p>
+                  <h2 className="mt-1 text-base font-semibold">
+                    <Marks text={copy.title} q={q} />
+                  </h2>
+                  <p className="mt-1 text-sm leading-relaxed text-muted">
+                    <Marks text={copy.body} q={q} />
+                  </p>
+                </article>
+              );
+            })
+          )}
         </div>
         <footer className="border-t border-border p-3">
           <p className="mb-2 flex items-center gap-2 text-[11px] text-muted">

@@ -1,6 +1,6 @@
-# TechWorks architecture · v1.92.71
+# TechWorks architecture · v1.92.72
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.71.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.72.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
@@ -52,7 +52,7 @@ TechWorks is one shop PC gradebook with four kinds of number. They never average
 
 - Cog = Settings (Admin). Arrange wall / Arrange plates live on those pages.
 - Shop PC writes. Cloud is a locked copy. Drive is a download, not a live sync.
-- HUD chrome (Lock, Help, Web, language, NOW) stays tappable after any premade theme or wall look. Chip scale is for plates, not the top bar.
+- HUD chrome (Lock, Help, Web, language, NOW) stays tappable after any premade theme or wall look. Chip scale is for plates, not the top bar. Theme picker shows mini wall previews; those previews are paint-only.
 
 ## PlanIt → Teach → Deck → Wall
 

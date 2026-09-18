@@ -1555,6 +1555,7 @@ header.desk-chrome {
   position: relative;
   z-index: 40;
   isolation: isolate;
+  pointer-events: auto;
   gap: 0.35rem;
   overflow: visible;
   border-radius: calc(var(--ui-radius, 14px) + 4px);
@@ -1590,6 +1591,7 @@ header.desk-chrome .tw-hud-btn {
   position: relative;
   z-index: 3;
   pointer-events: auto !important;
+  touch-action: manipulation;
 }
 header.desk-chrome .min-h-11,
 header.desk-chrome .tw-hud-btn {
@@ -1994,6 +1996,7 @@ html[data-finish="felt"] .bg-surface,
 }
 .tw-tap {
   cursor: pointer;
+  touch-action: manipulation;
 }
 .tw-tap:focus-visible {
   outline: 2px solid var(--color-gold, #e8c547);
@@ -2002,6 +2005,176 @@ html[data-finish="felt"] .bg-surface,
 .tw-tap:active {
   transform: translateY(1px);
   box-shadow: 0 0 0 2px var(--color-fg);
+}
+
+/* Theme / wall-look picker — 2D previews, Chromebook-safe, paint-only minis. */
+.tw-look-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+@media (min-width: 720px) {
+  .tw-look-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+.tw-look-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  padding: 0.4rem 0.45rem 0.45rem;
+  text-align: left;
+  border-radius: 12px;
+  background: var(--color-elevated);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 10%, transparent);
+}
+.tw-look-card-on {
+  background: color-mix(in oklab, var(--color-fg) 10%, var(--color-elevated));
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #fff 14%, transparent),
+    0 0 0 2px var(--color-gold);
+}
+.tw-look-mini {
+  pointer-events: none;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 3px;
+  height: 2.2rem;
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, #fff 12%, transparent);
+}
+.tw-look-mini > span {
+  pointer-events: none;
+  border-radius: 4px;
+}
+.tw-look-mini > i {
+  pointer-events: none;
+  position: absolute;
+  left: 6px;
+  right: 42%;
+  bottom: 6px;
+  height: 3px;
+  border-radius: 99px;
+}
+.tw-look-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding-right: 1.8rem;
+}
+.tw-look-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+}
+.tw-look-hint {
+  font-size: 0.65rem;
+  line-height: 1.25;
+  color: var(--color-muted);
+}
+.tw-look-on {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  pointer-events: none;
+  border-radius: 99px;
+  background: var(--color-gold);
+  color: var(--color-bg);
+  padding: 0.1rem 0.35rem;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+.tw-theme-status {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 12px;
+  background: var(--color-elevated);
+}
+.tw-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+@media (min-width: 640px) {
+  .tw-theme-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  .tw-theme-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+.tw-theme-tile {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.28rem;
+  min-height: 2.75rem;
+  padding: 0.35rem;
+  text-align: left;
+  border-radius: 12px;
+  background: var(--color-elevated);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 8%, transparent);
+}
+.tw-theme-tile-on {
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #fff 12%, transparent),
+    0 0 0 2px var(--color-gold);
+}
+.tw-theme-tile-dice {
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #2ee6ff 28%, transparent),
+    0 0 0 1px color-mix(in oklab, #8b6cff 45%, transparent);
+}
+.tw-theme-tile-dice.tw-theme-tile-on {
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #2ee6ff 28%, transparent),
+    0 0 0 2px var(--color-gold);
+}
+.tw-theme-swatch {
+  pointer-events: none;
+  display: block;
+  height: 1.7rem;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, #000 25%, transparent);
+}
+.tw-theme-name {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+.tw-theme-kind {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+.tw-theme-tile-on .tw-theme-kind {
+  color: var(--color-gold);
+}
+.tw-help-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0 1rem 0.35rem;
+}
+.tw-help-card {
+  border-top: 1px solid var(--color-border);
+  padding: 0.75rem 0;
+}
+.tw-help-mark {
+  background: color-mix(in oklab, var(--color-gold) 42%, transparent);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 0.12em;
 }
 
 /* One control language: HUD icons, rails, tiles, segments. */
@@ -2018,6 +2191,7 @@ html[data-finish="felt"] .bg-surface,
 .tw-hud-row::-webkit-scrollbar { display: none; }
 .tw-hud-btn {
   flex: 0 0 auto;
+  touch-action: manipulation;
 }
 .tw-rail {
   display: flex;

@@ -32,4 +32,11 @@ describe("chrome hit layer", () => {
   it("pins HUD tap size so premade looks cannot inflate Web and peer buttons", () => {
     assert.match(css, /header\.desk-chrome \.tw-hud-btn \{[\s\S]*?min-height:\s*2\.75rem/);
   });
+
+  it("keeps look previews paint-only so they cannot steal HUD hits", () => {
+    assert.match(css, /header\.desk-chrome \{[\s\S]*?pointer-events:\s*auto/);
+    assert.match(css, /\.tw-look-mini \{[\s\S]*?pointer-events:\s*none/);
+    assert.match(css, /\.tw-theme-swatch \{[\s\S]*?pointer-events:\s*none/);
+    assert.match(css, /header\.desk-chrome button,[\s\S]*?touch-action:\s*manipulation/);
+  });
 });

@@ -30,7 +30,7 @@ export const ARCH_SECTIONS: ArchSection[] = [
     notes: [
       "Cog = Settings (Admin). Arrange wall / Arrange plates live on those pages.",
       "Shop PC writes. Cloud is a locked copy. Drive is a download, not a live sync.",
-      "HUD chrome (Lock, Help, Web, language, NOW) stays tappable after any premade theme or wall look. Chip scale is for plates, not the top bar.",
+      "HUD chrome (Lock, Help, Web, language, NOW) stays tappable after any premade theme or wall look. Chip scale is for plates, not the top bar. Theme picker shows mini wall previews; those previews are paint-only.",
     ],
   },
   {
