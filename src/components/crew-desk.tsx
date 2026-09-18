@@ -319,7 +319,6 @@ function Kid({ s, file, xp, lead, on, onPick }: { s: RawStudent; file: EconomyFi
         title={lead ? "Crew lead" : titleOf(xp)}
         xp={xp}
         lead={lead}
-        legal={s.legalLast}
         onClick={onPick}
       />
     </li>

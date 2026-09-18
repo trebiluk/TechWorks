@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { EconomyFile, RawStudent } from "@/lib/economy";
-import { legalFirstOf, legalLastOf, money, periodTitle, score, shopBells } from "@/lib/economy";
+import { money, periodTitle, score, shopBells } from "@/lib/economy";
 import { SCHOOLTOOL_SECTIONS } from "@/data/schooltool-sections";
 import { loadClub } from "@/lib/club";
 import {
@@ -21,7 +21,7 @@ import {
 import { gradeSlots, letterOf, postedFor, sessionMark } from "@/lib/grades";
 import { skillXp } from "@/lib/skills";
 import { currentCycleOf } from "@/lib/roles";
-import { addTypedStudent, deskSavePending, saveDeskNow, setAlias, setGradeOverride, setLegalNames, setStudentFlags } from "@/lib/store";
+import { addTypedStudent, deskSavePending, saveDeskNow, setAlias, setGradeOverride } from "@/lib/store";
 import { auditStudentIds } from "@/lib/ids";
 import { emptyRoster, snapshotNow } from "@/lib/vault";
 import { publicHandle } from "@/lib/live";
@@ -50,7 +50,6 @@ export function YearRoster({
   const [filter, setFilter] = useState<Filter>("all");
   const [pick, setPick] = useState<string | null>(null);
   const [st, setSt] = useState(false);
-  const [showLegal, setShowLegal] = useState(false);
   const [pending, setPending] = useState(false);
   const [notice, setNotice] = useState("");
   const counts = useMemo(() => yearCounts(file, club), [file, club]);
@@ -125,9 +124,6 @@ export function YearRoster({
               Clear workers
             </button>
           ) : null}
-          <MarkChip mark={markOf("legal")} on={showLegal} onClick={() => setShowLegal((v) => !v)}>
-            {showLegal ? "Hide legal" : "Show legal"}
-          </MarkChip>
           <MarkChip mark={markOf("schooltool")} on={st} onClick={() => setSt((v) => !v)}>
             SchoolTool
           </MarkChip>
@@ -272,13 +268,12 @@ export function YearRoster({
             {cohort ? `${cohort.course} · Sec ${cohort.section} · ${cohort.quarter === "YEAR" ? "year" : cohort.quarter} · Rm ${cohort.room}` : "Every kid this year"} · {rows.length}
           </p>
           {cohort && cohort.kind !== "club" ? (
-            <ClassBook file={file} cohort={cohort} showLegal={showLegal} onChange={onChange} onOpenId={onOpenId} onPlace={place} onNotice={setNotice} />
+            <ClassBook file={file} cohort={cohort} onChange={onChange} onOpenId={onOpenId} onPlace={place} onNotice={setNotice} />
           ) : (
             <table className="w-full text-left text-sm">
             <thead className="text-[11px] uppercase tracking-wider text-subtle">
               <tr>
                 <th className="px-2 py-1 font-semibold">Alias</th>
-                {showLegal ? <th className="px-2 py-1 font-semibold">Legal</th> : null}
                 <th className="px-2 py-1 font-semibold">Id</th>
                 <th className="px-2 py-1 font-semibold">Class</th>
                 <th className="px-2 py-1 font-semibold">XP</th>
@@ -299,13 +294,6 @@ export function YearRoster({
                       {k.club ? " · club" : ""}
                     </span>
                   </td>
-                  {showLegal && s ? (
-                    <td className="px-2 py-1.5">
-                      <LegalCell file={file} student={s} onChange={onChange} />
-                    </td>
-                  ) : showLegal ? (
-                    <td className="px-2 py-1.5 text-subtle">—</td>
-                  ) : null}
                   <td className="px-2 py-1.5 font-mono text-[10px] text-subtle" title={k.id}>
                     {publicHandle(k.id)}
                   </td>
@@ -399,7 +387,6 @@ function AddKid({
   cohort: YearCohort | null;
   onChange: (next: EconomyFile) => void;
 }) {
-  const [last, setLast] = useState("");
   const [first, setFirst] = useState("");
   const [crew, setCrew] = useState("");
   const [flash, setFlash] = useState("");
@@ -408,10 +395,9 @@ function AddKid({
   const crews = file.crews.filter((c) => c.period === (target?.period ?? 0));
 
   function add() {
-    if (!target || (!last.trim() && !first.trim())) return;
+    if (!target) return;
     const next = addTypedStudent(file, {
-      legalLast: last,
-      legalFirst: first,
+      alias: first,
       period: target.period,
       crewKey: crew || undefined,
       section: target.section,
@@ -421,7 +407,6 @@ function AddKid({
     });
     const kid = next.students[next.students.length - 1];
     onChange(next);
-    setLast("");
     setFirst("");
     setFlash(kid ? `Added ${kid.first} · ${publicHandle(kid.id)}` : "Added");
     window.setTimeout(() => setFlash(""), 3200);
@@ -435,7 +420,7 @@ function AddKid({
         add();
       }}
     >
-      <p className="w-full text-[11px] font-bold uppercase tracking-wider text-subtle">Add student · legal names stay vault-only</p>
+      <p className="w-full text-[11px] font-bold uppercase tracking-wider text-subtle">Add worker · alias only</p>
       {!cohort ? (
         <label className="text-xs text-muted">
           Class
@@ -457,19 +442,11 @@ function AddKid({
         </p>
       )}
       <label className="text-xs text-muted">
-        Last
-        <input
-          value={last}
-          onChange={(e) => setLast(e.target.value)}
-          className="mt-1 block min-h-11 w-36 rounded-md bg-elevated px-2 text-sm outline-none"
-          autoComplete="off"
-        />
-      </label>
-      <label className="text-xs text-muted">
-        First
+        Alias
         <input
           value={first}
           onChange={(e) => setFirst(e.target.value)}
+          placeholder="Blank = auto"
           className="mt-1 block min-h-11 w-36 rounded-md bg-elevated px-2 text-sm outline-none"
           autoComplete="off"
         />
@@ -523,51 +500,6 @@ function AliasCell({
   );
 }
 
-function LegalCell({
-  file,
-  student,
-  onChange,
-}: {
-  file: EconomyFile;
-  student: RawStudent;
-  onChange: (next: EconomyFile) => void;
-}) {
-  return (
-    <span className="flex flex-wrap items-center gap-1">
-      <input
-        value={legalLastOf(student)}
-        onChange={(e) => onChange(setLegalNames(file, student.id, { legalLast: e.target.value }))}
-        placeholder="Last"
-        className="h-9 w-28 rounded-md bg-elevated px-2 text-sm outline-none"
-      />
-      <input
-        value={legalFirstOf(student)}
-        onChange={(e) => onChange(setLegalNames(file, student.id, { legalFirst: e.target.value }))}
-        placeholder="First"
-        className="h-9 w-28 rounded-md bg-elevated px-2 text-sm outline-none"
-      />
-      <label className="text-[10px] uppercase tracking-wider text-subtle">
-        <input
-          type="checkbox"
-          checked={Boolean(student.flags?.iep)}
-          onChange={(e) => onChange(setStudentFlags(file, student.id, { iep: e.target.checked }))}
-          className="mr-1"
-        />
-        IEP
-      </label>
-      <label className="text-[10px] uppercase tracking-wider text-subtle">
-        <input
-          type="checkbox"
-          checked={Boolean(student.flags?.plan504)}
-          onChange={(e) => onChange(setStudentFlags(file, student.id, { plan504: e.target.checked }))}
-          className="mr-1"
-        />
-        504
-      </label>
-    </span>
-  );
-}
-
 function cashOf(file: EconomyFile, s: RawStudent): number {
   const hit = score(file).find((x) => x.id === s.id);
   if (hit) return hit.quarter;
@@ -577,7 +509,6 @@ function cashOf(file: EconomyFile, s: RawStudent): number {
 function ClassBook({
   file,
   cohort,
-  showLegal,
   onChange,
   onOpenId,
   onPlace,
@@ -585,7 +516,6 @@ function ClassBook({
 }: {
   file: EconomyFile;
   cohort: YearCohort;
-  showLegal: boolean;
   onChange: (next: EconomyFile) => void;
   onOpenId?: (id: string) => void;
   onPlace: (id: string, c: YearCohort) => void;
@@ -601,7 +531,6 @@ function ClassBook({
       <thead className="text-[11px] uppercase tracking-wider text-subtle">
         <tr>
           <th className="sticky left-0 bg-surface px-2 py-1 font-semibold">Alias</th>
-          {showLegal ? <th className="px-2 py-1 font-semibold">Legal</th> : null}
           <th className="px-2 py-1 font-semibold">Id</th>
           <th className="px-2 py-1 font-semibold">Crew</th>
           {["D1", "D2", "D3", "D4"].map((d) => (
@@ -633,11 +562,6 @@ function ClassBook({
               <td className="sticky left-0 bg-surface px-2 py-1.5">
                 <AliasCell file={file} student={s} fallback={s.first} onChange={onChange} onOpenId={onOpenId} />
               </td>
-              {showLegal ? (
-                <td className="px-2 py-1.5">
-                  <LegalCell file={file} student={s} onChange={onChange} />
-                </td>
-              ) : null}
               <td className="px-2 py-1.5 font-mono text-[10px] text-subtle" title={s.id}>
                 {publicHandle(s.id)}
               </td>
@@ -751,7 +675,7 @@ function SeparateRules({
   const kids = useMemo(
     () =>
       [...file.students].sort(
-        (x, y) => x.period - y.period || legalLastOf(x).localeCompare(legalLastOf(y)) || x.first.localeCompare(y.first),
+        (x, y) => x.period - y.period || x.first.localeCompare(y.first),
       ),
     [file.students],
   );
@@ -860,7 +784,7 @@ function RosterPick({
   const list = students.filter((s) => {
     if (hide && s.id === hide) return false;
     if (!needle) return true;
-    const blob = `${s.first} ${legalLastOf(s)} ${legalFirstOf(s)} ${s.id} p${s.period}`.toLowerCase();
+    const blob = `${s.first} ${s.id} p${s.period}`.toLowerCase();
     return blob.includes(needle);
   }).slice(0, 48);
 

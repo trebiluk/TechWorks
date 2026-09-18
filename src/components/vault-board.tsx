@@ -98,7 +98,7 @@ export function VaultBoard({
       <header>
         <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Records · this device</h2>
         <p className="mt-1 text-sm text-muted">
-          This computer is the gradebook. Cloud copies scores and aliases (no last names). Google book is the year archive — VAULT name columns stay blank. Print codebook is who is who.
+          This computer is the gradebook. Cloud copies scores and aliases. Real names are not stored. Google book is the year archive. Class list is Shop ID + alias.
         </p>
       </header>
 

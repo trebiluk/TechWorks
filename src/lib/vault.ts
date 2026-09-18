@@ -96,8 +96,6 @@ export function packVault(file: EconomyFile, label = "Snapshot"): VaultBundle {
 export function migrateDesk(file: EconomyFile): EconomyFile {
   const next = cloneFile(file);
   next.students = (next.students ?? []).map((s, i) => {
-    const legalLast = (s.legalLast ?? s.last ?? "").trim() || undefined;
-    const legalFirst = (s.legalFirst ?? "").trim() || undefined;
     return {
       ...s,
       days: days4(s.days),
@@ -116,9 +114,9 @@ export function migrateDesk(file: EconomyFile): EconomyFile {
       picks: s.picks ?? [],
       gradeOverrides: s.gradeOverrides ?? {},
       abDay: s.abDay ?? (s.period === 6 ? (i % 2 === 0 ? "A" : "B") : "BOTH"),
-      legalLast,
-      legalFirst,
-      last: legalLast ?? s.last ?? "",
+      last: "",
+      legalLast: undefined,
+      legalFirst: undefined,
     };
   });
   next.students = ensureStudentIds(next.students);

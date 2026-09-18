@@ -8,11 +8,8 @@ import { workerCards } from "@/lib/report";
 import { APP_MARK } from "@/lib/copy";
 import { cn } from "@/lib/utils";
 
-function displayName(s: RawStudent, names: boolean) {
-  if (!names) return s.first;
-  const first = s.legalFirst || s.first;
-  const last = s.legalLast || s.last || "";
-  return last ? `${first} ${last}` : first;
+function displayName(s: RawStudent, _names: boolean) {
+  return s.first;
 }
 
 function courseLine(file: EconomyFile, period: number, grade: number) {

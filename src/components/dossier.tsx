@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { ChevronDown, ChevronRight, X } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
-import { money, score, legalFirstOf, legalLastOf, bellFor } from "@/lib/economy";
+import { money, score, bellFor } from "@/lib/economy";
 import { skillsOf, skillScore, skillTrackOf, xpIntoLevel, levelBandsOf } from "@/lib/skills";
 import { gradeSlots, letterOf, postedFor, sessionMark } from "@/lib/grades";
 import { currentProject, recordOn, MST_SKILLS } from "@/lib/mst";
@@ -171,7 +171,7 @@ export function Dossier({
               {openInfo ? (
                 <div className="mt-1 text-sm text-muted">
                   <p>
-                    {legalFirstOf(raw) || raw.first} {legalLastOf(raw)} · {raw.course} · sec {raw.section} · {raw.sem}
+                    {raw.first} · {raw.course} · sec {raw.section} · {raw.sem}
                   </p>
                   <p className="mt-1 text-xs text-subtle">
                     IEP {flags.iep ? "yes" : "no"} · 504 {flags.plan504 ? "yes" : "no"}

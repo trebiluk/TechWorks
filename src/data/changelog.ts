@@ -6,12 +6,26 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.68 — 2026-09-18
+
+- Help → Data privacy: what this app stores (Shop ID + alias), what it never stores (legal names), family web, IEP/504, cloud key, idle lock.
+
+## 1.92.67 — 2026-09-18
+
+
+- Real names are out. The desk, cloud, class list, and backups keep Shop ID + alias only. SIS paste still mints aliases once, then the names are dropped. Show first real names / Show legal / codebook last-name columns are gone.
+
+## 1.92.66 — 2026-09-17
+
+
+- Shop GUI: glass plates with a quiet shine and drop shadow, cyan lamp on the HUD rail, inset fields. Navy + cyan kept. Purple wash off period chips and the default palette. TECHWORKS lockup unchanged.
+
 ## 1.92.65 — 2026-09-17
+
 
 - FERPA split: legal names and IEP/504 stay on this PC + the codebook. Cloud desk, live wall file, Google book VAULT, and Grades CSV are Shop ID + alias only. Family web / portal no longer list the class — type the Shop ID from the paper. Idle lock 5 minutes back on the teacher pad.
 
 ## 1.92.64 — 2026-09-17
-
 
 
 - Codebook: Admin → Records → Names (or Backups) → Print codebook / Download codebook. Paper and private CSV map Shop ID + alias → last, first. Wall stays aliases. IEP/504 stay in the names vault, not on the paper. Confirm before print — teacher drawer, not the shop tray.

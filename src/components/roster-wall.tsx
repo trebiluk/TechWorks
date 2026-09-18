@@ -51,7 +51,7 @@ export function RosterWall({
         </p>
         {unlocked && onRecords ? (
           <button type="button" onClick={onRecords} className="mt-1 text-xs font-semibold text-accent">
-            Records · legal names
+            Records · roster
           </button>
         ) : null}
       </header>

@@ -8,7 +8,7 @@ import { writeTape } from "@/lib/tape";
 import type { DjiaQuote } from "@/lib/djia";
 import { afterAffectMaybeConfirm, afterCrewLeaderChange, roleHistoryOf } from "@/lib/roles";
 import { persistPack, readLocal, writePack, packDesk, migrateDesk } from "@/lib/vault";
-import { persistNamesVault } from "@/lib/names-vault";
+import { persistNamesVault, stripNames } from "@/lib/names-vault";
 import { scheduleCloudPush } from "@/lib/desk-cloud";
 import { builtinPacks, type BellPack, type ScheduleId } from "@/lib/bells";
 import { SAVE_FAIL_EVENT, stripFakeDemo } from "@/lib/demo";
@@ -90,10 +90,11 @@ export function deskSavePending(): boolean {
 }
 
 function flushDesk(file: EconomyFile) {
-  const pack = packDesk(stripFakeDemo(file));
+  const clean = stripNames(stripFakeDemo(file));
+  persistNamesVault(clean);
+  const pack = packDesk(clean);
   const json = JSON.stringify(pack);
   const wrote = writePack(pack, json);
-  persistNamesVault(file);
   if (!wrote.ok) {
     try {
       window.dispatchEvent(new CustomEvent(SAVE_FAIL_EVENT, { detail: "This PC could not save (storage full). Download a full backup now." }));
@@ -957,24 +958,8 @@ export function setAlias(file: EconomyFile, id: string, first: string): EconomyF
   return next;
 }
 
-export function setLegalNames(
-  file: EconomyFile,
-  id: string,
-  legal: { legalFirst?: string; legalLast?: string },
-): EconomyFile {
-  const next = clone(file);
-  next.students = next.students.map((s) => {
-    if (s.id !== id) return s;
-    const legalFirst = legal.legalFirst !== undefined ? legal.legalFirst.trim().slice(0, 40) : s.legalFirst;
-    const legalLast = legal.legalLast !== undefined ? legal.legalLast.trim().slice(0, 40) : s.legalLast;
-    return {
-      ...s,
-      legalFirst: legalFirst || undefined,
-      legalLast: legalLast || undefined,
-      last: (legalLast || s.last || "").trim(),
-    };
-  });
-  return next;
+export function setLegalNames(file: EconomyFile, _id: string, _legal: { legalFirst?: string; legalLast?: string }): EconomyFile {
+  return file;
 }
 
 export function setStudentFlags(
@@ -1017,15 +1002,11 @@ function blankWorker(partial: {
   course?: string;
   sem?: string;
 }): RawStudent {
-  const legalLast = (partial.legalLast ?? "").trim().slice(0, 40);
-  const legalFirst = (partial.legalFirst ?? "").trim().slice(0, 40);
   const period = partial.period;
   return {
     id: partial.id,
     first: partial.first,
-    last: legalLast,
-    legalFirst: legalFirst || undefined,
-    legalLast: legalLast || undefined,
+    last: "",
     period,
     grade: partial.grade,
     crewKey: partial.crewKey,
@@ -1058,6 +1039,7 @@ function blankWorker(partial: {
 }
 
 export type TypedStudent = {
+  alias?: string;
   legalFirst?: string;
   legalLast?: string;
   period: number;
@@ -1076,15 +1058,14 @@ function defaultCrewKey(file: EconomyFile, period: number, idx: number): string 
   return crews[idx % crews.length]?.key ?? crews[0].key;
 }
 
-/** Mint a locked id, then an alias. Legal names never become the wall name. */
+/** Mint a locked id, then an alias. Real names are not stored. */
 export function addTypedStudent(file: EconomyFile, row: TypedStudent): EconomyFile {
-  const legalLast = (row.legalLast ?? "").trim();
-  const legalFirst = (row.legalFirst ?? "").trim();
-  if (!legalLast && !legalFirst) return file;
   const next = clone(file);
   const id = newStudentId(next.students.map((s) => s.id));
   const used = next.students.map((s) => s.first);
-  const alias = aliasAfterId(id, used);
+  const wanted = (row.alias ?? "").trim().slice(0, 24);
+  const clash = wanted && used.some((n) => n.trim().toLowerCase() === wanted.toLowerCase());
+  const alias = wanted && !clash ? wanted : aliasAfterId(id, used);
   const bells = bellFor(next);
   const period = row.period;
   const grade = row.grade ?? bells.find((b) => b.period === period)?.grade ?? 6;
@@ -1093,8 +1074,6 @@ export function addTypedStudent(file: EconomyFile, row: TypedStudent): EconomyFi
   const kid = blankWorker({
     id,
     first: alias,
-    legalFirst,
-    legalLast,
     period,
     grade,
     crewKey,
@@ -1130,33 +1109,8 @@ export function importLegalRoster(file: EconomyFile, rows: LegalRosterRow[]): Ec
   const quarter = next.meta.quarterName || "Q1";
   const bells = bellFor(next);
   const ids = next.students.map((s) => s.id);
-  const byName = new Map<string, number>();
-  next.students.forEach((s, i) => {
-    const key = legalNameKey(s.legalLast || s.last || "", s.legalFirst || "");
-    if (key !== "|") byName.set(key, i);
-  });
 
   for (const row of rows) {
-    const legalLast = row.legalLast.trim().slice(0, 40);
-    const legalFirst = row.legalFirst.trim().slice(0, 40);
-    const key = legalNameKey(legalLast, legalFirst);
-    const hit = key !== "|" ? byName.get(key) : undefined;
-    if (hit != null) {
-      const cur = next.students[hit]!;
-      next.students[hit] = {
-        ...cur,
-        period: row.period || cur.period,
-        legalFirst: legalFirst || cur.legalFirst,
-        legalLast: legalLast || cur.legalLast,
-        last: legalLast || cur.last,
-        flags: {
-          ...(cur.flags ?? {}),
-          iep: Boolean(row.iep) || Boolean(cur.flags?.iep),
-          plan504: Boolean(row.plan504) || Boolean(cur.flags?.plan504),
-        },
-      };
-      continue;
-    }
     const id = newStudentId(ids);
     ids.push(id);
     const alias = aliasAfterId(id, used);
@@ -1167,8 +1121,6 @@ export function importLegalRoster(file: EconomyFile, rows: LegalRosterRow[]): Ec
       ...blankWorker({
         id,
         first: alias,
-        legalFirst,
-        legalLast,
         period: row.period,
         grade,
         crewKey,
@@ -1182,7 +1134,6 @@ export function importLegalRoster(file: EconomyFile, rows: LegalRosterRow[]): Ec
       },
       abDay: row.period === 6 ? (next.students.filter((s) => s.period === 6).length % 2 === 0 ? "A" : "B") : "BOTH",
     } as RawStudent;
-    byName.set(key, next.students.length);
     next.students.push(kid);
   }
 

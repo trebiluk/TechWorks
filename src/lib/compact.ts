@@ -25,7 +25,7 @@ export function compactStudent(s: RawStudent): RawStudent {
   const next: RawStudent = {
     id: s.id,
     first: s.first,
-    last: s.last,
+    last: "",
     period: s.period,
     crewKey: s.crewKey,
     days: s.days?.length ? s.days : ["", "", "", ""],
@@ -37,8 +37,6 @@ export function compactStudent(s: RawStudent): RawStudent {
   if (s.crewByCycle && Object.keys(s.crewByCycle).length) next.crewByCycle = s.crewByCycle;
   const crewDays = slimMap(s.crewDays as Record<string, unknown> | undefined);
   if (crewDays) next.crewDays = crewDays as RawStudent["crewDays"];
-  if (s.legalFirst) next.legalFirst = s.legalFirst;
-  if (s.legalLast) next.legalLast = s.legalLast;
   if (s.grade) next.grade = s.grade;
   if (s.section) next.section = s.section;
   if (s.course) next.course = s.course;

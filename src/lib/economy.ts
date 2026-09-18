@@ -71,18 +71,17 @@ export type RawStudent = {
   lucky?: { ts: string; date: string; face: number; stake: number; payout: number }[];
 };
 
-export function legalLastOf(s: Pick<RawStudent, "legalLast" | "last">): string {
-  return String(s.legalLast ?? s.last ?? "").trim();
+export function legalLastOf(_s: Pick<RawStudent, "legalLast" | "last">): string {
+  return "";
 }
 
-export function legalFirstOf(s: Pick<RawStudent, "legalFirst">): string {
-  return String(s.legalFirst ?? "").trim();
+export function legalFirstOf(_s: Pick<RawStudent, "legalFirst">): string {
+  return "";
 }
 
-/** Legal first name when the teacher toggle is on. Alias if the vault is empty. */
-export function padFirst(s: Pick<RawStudent, "first" | "legalFirst">, on: boolean): string {
-  if (!on) return s.first;
-  return legalFirstOf(s) || s.first;
+/** Wall name is always the alias. Real names are not stored. */
+export function padFirst(s: Pick<RawStudent, "first" | "legalFirst">, _on?: boolean): string {
+  return s.first;
 }
 
 export type Bell = { period: number; grade: number };
@@ -311,19 +310,13 @@ export type EconomyFile = {
   students: RawStudent[];
 };
 
-/** Teacher desk pads. Off by default. Wall / Teach / Family web never read this. */
-export function showFirstReal(file: EconomyFile): boolean {
-  return file.meta.config?.showFirstReal === true;
+/** Real names are not stored. Always off. */
+export function showFirstReal(_file: EconomyFile): boolean {
+  return false;
 }
 
-export function setShowFirstReal(file: EconomyFile, on: boolean): EconomyFile {
-  return {
-    ...file,
-    meta: {
-      ...file.meta,
-      config: { ...(file.meta.config ?? {}), showFirstReal: on },
-    },
-  };
+export function setShowFirstReal(file: EconomyFile, _on: boolean): EconomyFile {
+  return file;
 }
 
 export type ScoredStudent = RawStudent & {

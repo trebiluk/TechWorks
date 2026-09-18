@@ -25,7 +25,7 @@ function desk(students: RawStudent[]): EconomyFile {
 }
 
 describe("codebook", () => {
-  it("maps shop id + alias to legal names and skips fake workers", () => {
+  it("lists shop id + alias and skips fake workers", () => {
     const file = desk([
       kid({ id: "TW-AAAAAAAAAA", first: "Rivet", period: 8, legalLast: "Smith", legalFirst: "Jordan" }),
       kid({ id: "TW-BBBBBBBBBB", first: "Forge", period: 3, legalLast: "Nguyen", legalFirst: "Ada" }),
@@ -35,22 +35,22 @@ describe("codebook", () => {
     assert.equal(rows.length, 2);
     assert.equal(rows[0]!.period, 3);
     assert.equal(rows[0]!.alias, "Forge");
-    assert.equal(rows[0]!.last, "Nguyen");
-    assert.equal(rows[0]!.first, "Ada");
+    assert.equal(rows[0]!.last, "");
+    assert.equal(rows[0]!.first, "");
     assert.match(rows[0]!.shop, /^[A-Z2-9]{5}$/);
-    assert.equal(rows[0]!.shop.includes("Nguyen"), false);
     assert.equal(rows[1]!.alias, "Rivet");
   });
 
-  it("csv and print html carry last names; shop id stays nameless", () => {
+  it("csv and print html never carry last names", () => {
     const file = desk([kid({ id: "TW-CCCCCCCCCC", first: "Volt", period: 2, legalLast: "Lopez", legalFirst: "Mira" })]);
     const csv = codebookCsv(codebookOf(file));
-    assert.match(csv, /Lopez/);
+    assert.equal(csv.includes("Lopez"), false);
+    assert.equal(csv.includes("Mira"), false);
     assert.match(csv, /Volt/);
-    assert.equal(csv.includes("IEP"), false);
+    assert.equal(csv.includes("Last"), false);
     const html = codebookHtml(file);
-    assert.match(html, /PRIVATE/i);
-    assert.match(html, /Lopez/);
+    assert.equal(html.includes("Lopez"), false);
+    assert.match(html, /Volt/);
     assert.equal(html.includes("demo-"), false);
   });
 });

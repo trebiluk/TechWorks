@@ -218,11 +218,11 @@ Admin → Day. Pick the date. Sub and bells are for that day. Lunch and two wall
 
 ### Google book
 
-Admin → Records → Google book (also Data). One 2026–27 workbook: YEAR dashboard, a tab per class (P1, P2, P3, P8, P9, P10), study hall, club, STEM stems, skill log, full-year C1D1–C8D4, LOG, MASTER, VAULT. Gold headers (tw_ keys) are locked for the desk — do not rename them. extra_1 through extra_8 are yours; add more columns only after extra_8 and keep a copy before you re-export. VAULT is legal names — do not share or project that tab. Download, then open in Drive as a Google Sheet. Data → Protect gold columns. No Apps Script. This device is still the gradebook.
+Admin → Records → Google book (also Data). One 2026–27 workbook: YEAR dashboard, a tab per class (P1, P2, P3, P8, P9, P10), study hall, club, STEM stems, skill log, full-year C1D1–C8D4, LOG, MASTER, VAULT. Gold headers (tw_ keys) are locked for the desk — do not rename them. extra_1 through extra_8 are yours; add more columns only after extra_8 and keep a copy before you re-export. VAULT name columns stay blank. Download, then open in Drive as a Google Sheet. Data → Protect gold columns. No Apps Script. This device is still the gradebook.
 
 ### Roster ids and aliases
 
-Admin → Records → Roster. Type legal Last, First, then Add — or Import / CSV (Last, First, Period, IEP, 504). TechWorks mints a locked unique id first, then a wall alias from that id — never from the legal name. Separate: pick two names already on the list; they will not sit in the same crew. Clear workers snapshots first. Edit alias, crew, and (Show legal) names/IEP/504 in the table. Scores, XP, and $ stay on the id. Auto-save on this device; tap the Save chip to write now. Backups is the other Records chip: snapshot, download full, restore.
+Admin → Records → Roster. Add an alias, or Import / CSV (Last, First, Period, IEP, 504). The paste is used once to mint Shop IDs and aliases, then the real names are dropped. Separate: pick two aliases already on the list; they will not sit in the same crew. Clear workers snapshots first. Edit alias and crew in the table. Scores, XP, and $ stay on the id. Auto-save on this device; tap the Save chip to write now. Backups is the other Records chip: snapshot, download full, restore.
 
 ## Crew
 
@@ -332,32 +332,36 @@ Admin → Club. Tap a month day to SET club (usual weekdays still apply). Open t
 
 ### Worker profile
 
-Open from Dashboard, Data, Skills, or Find worker. Public handle + alias. Arrow reveals legal name, course, IEP/504 (from roster). Store and money steps need PIN. The locked worker id never changes; alias can.
+Open from Dashboard, Data, Skills, or Find worker. Public handle + alias. Arrow reveals course and IEP/504 (from roster). Store and money steps need PIN. The locked worker id never changes; alias can.
 
 ### Berty and Mr. K
 
 BertyBot is the workshop mascot — cleanup, enter/listen/work, never a grade or a wallet. Mr. K is the teacher card (Richard Kulibert). Open from the version chip (tap Berty or the v number), Find (type berty or kulibert), Teach (tap Berty), or Admin → About. These are house profiles, not students.
 
-## Privacy
+## Data privacy
+
+### Data privacy
+
+TechWorks does not store legal first or last names. The wall, this PC, the cloud desk, the Google book, backups, and the class list are Shop ID + alias only. A SchoolTool paste may mint aliases once; those names are dropped and never saved. Family web needs the class code, then the Shop ID — it does not list the class. Wallet, Lucky, and IEP/504 stay off family web. IEP/504 live on the teacher profile behind PIN, mixed with decoy dots, never on the projector. Cloud copies aliases and scores with a desk key you keep in the planner. Idle lock after 5 minutes. The teacher PIN is the one you set — never 1111.
 
 ### Family web code
 
-Web on the HUD, or ?web=1. Class web code is the portal PIN (default 2627 — change in Settings). Not the teacher PIN. Then type the Shop ID from the codebook / family paper. No class list. Aliases, skill charts, family sheet. No wallet.
+Web on the HUD, or ?web=1. Class web code is the portal PIN (default 2627 — change in Settings). Not the teacher PIN. Then type the Shop ID from your teacher. No class list. Aliases, skill charts, family sheet. No wallet.
 
 ### FERPA / what gets published
 
-Live export and the cloud desk have no last names. Names vault + codebook are the private map (alias, last, period, IEP/504) on this PC / paper / USB. Every worker has a locked unique id; the wall alias is generated after that id exists. Shop ID is the 5-letter tag. Family web asks for that Shop ID — it does not list the class. IEP is a blue deco dot and 504 orange, only inside Show full info, mixed with fake dots. Google book VAULT columns stay blank; print the codebook instead. Teacher pads can show legal first names when you turn on Show first real names — last names stay vault, and the wall never follows. Idle lock after 5 minutes.
+This app does not store last names or legal first names. Cloud, live, Google book, class list, and this PC are Shop ID + alias. Import may paste a SIS list once to mint aliases, then those names are dropped. Family web asks for Shop ID. IEP is a blue deco dot and 504 orange, only inside Show full info, mixed with fake dots. Idle lock after 5 minutes.
 
-### Codebook / who’s who
+### Class list / Shop IDs
 
-The wall only knows Rivet. You know who Rivet is from the codebook. Admin → Records → Names or Backups → Print codebook (paper) or Download codebook (CSV on USB). Columns: Period, Shop ID, Alias, Last, First. IEP/504 are not on that paper — they stay in Names vault. Print to the teacher printer. Keep the sheet in the drawer. Do not leave it on the shop tray.
+Admin → Records → Names or Backups → Print class list or Download class list. Columns: Period, Shop ID, Alias. Real names are not stored. Write the paper map by hand if you need one in the drawer.
 
-### Show first real names
+### No real names
 
-Settings → Privacy, or First names on the Score pad. Puts legal first names on teacher pads: Score, Crew, Skills, Wallet, Prints, Hall, Data, Grades. Last names stay in the vault. Off by default. Wall, Teach, Deck, Family web, and a locked projector stay aliases. Crew 2222 can see first names if you turned the switch on — they cannot change it.
+The desk cannot store or show legal first or last names. Aliases and Shop IDs only. A SIS paste is used once to mint aliases, then dropped.
 
 ## Export
 
 ### Save, live export, Friday
 
-Roster and scoring auto-save on this device, and also to the internet when Cloud is on (chip in the top bar). Admin → Records → Cloud: copy the desk key, paste it once on the other room’s PC, Pull. Names travel locked. This PC still keeps a copy if the pipe misses. Snapshots and full backup stay on Records → Backups.
+Roster and scoring auto-save on this device, and also to the internet when Cloud is on (chip in the top bar). Admin → Records → Cloud: copy the desk key, paste it once on the other room’s PC, Pull. Aliases travel. This PC still keeps a copy if the pipe misses. Snapshots and full backup stay on Records → Backups.

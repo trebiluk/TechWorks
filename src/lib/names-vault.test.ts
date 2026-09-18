@@ -25,7 +25,7 @@ function desk(students: RawStudent[]): EconomyFile {
 }
 
 describe("names vault", () => {
-  it("strips legal names and disability flags from a public desk copy", () => {
+  it("strips legal names from a public desk copy", () => {
     const file = desk([
       kid({
         id: "TW-AAAAAAAAAA",
@@ -43,21 +43,18 @@ describe("names vault", () => {
     assert.equal(s.last, "");
     assert.equal(s.legalFirst, undefined);
     assert.equal(s.legalLast, undefined);
-    assert.equal(s.flags?.iep, undefined);
-    assert.equal(s.flags?.plan504, undefined);
+    assert.equal(s.flags?.iep, true);
     const vault = namesVaultOf(file);
-    assert.equal(vault["TW-AAAAAAAAAA"]?.last, "Smith");
-    assert.equal(vault["TW-AAAAAAAAAA"]?.iep, true);
+    assert.deepEqual(vault, {});
   });
 
-  it("merges the private vault back onto aliases without inventing names", () => {
-    const pub = desk([kid({ id: "TW-AAAAAAAAAA", first: "Rivet", period: 3 })]);
+  it("merge does not restore legal names", () => {
+    const pub = desk([kid({ id: "TW-AAAAAAAAAA", first: "Rivet", period: 3, last: "Smith", legalLast: "Smith" })]);
     const merged = mergeNames(pub, {
       "TW-AAAAAAAAAA": { alias: "Rivet", last: "Smith", legalFirst: "Jordan", period: 3, iep: true, plan504: false },
     });
-    assert.equal(merged.students[0]!.legalLast, "Smith");
-    assert.equal(merged.students[0]!.legalFirst, "Jordan");
-    assert.equal(merged.students[0]!.flags?.iep, true);
-    assert.equal(pub.students[0]!.legalLast, undefined);
+    assert.equal(merged.students[0]!.legalLast, undefined);
+    assert.equal(merged.students[0]!.last, "");
+    assert.equal(merged.students[0]!.first, "Rivet");
   });
 });

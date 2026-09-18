@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Undo2, Users } from "lucide-react";
 import { PeriodRewardChip } from "@/components/reward-bar";
 import { BertyCueBot } from "@/components/berty";
 import type { DayCode, EconomyFile } from "@/lib/economy";
-import { dayPay, money, padFirst, setShowFirstReal, shopBells, showFirstReal } from "@/lib/economy";
+import { dayPay, money, padFirst, shopBells, showFirstReal } from "@/lib/economy";
 import { cycleDayLabel, cycleProgress, daySlot, formatSchoolDate, isSchoolDay, quarterNow, quarterProgress, scoreDate as nearestScoreDate, stepSchoolDay, todayIso, yearProgress } from "@/lib/calendar";
 import {
   abOn,
@@ -524,16 +524,6 @@ export function ScoreDesk({
         <a href={SCHOOLTOOL_URL} target="_blank" rel="noreferrer" className={cn("min-h-9 rounded-lg px-2 py-1 text-xs font-semibold", stDone ? "bg-gain text-bg" : p1Alarm ? "bg-loss text-accent-fg" : "bg-elevated text-muted")}>
           {stDone ? "ST in" : p1Alarm ? "ST due" : "ST"}
         </a>
-        {unlocked ? (
-          <button
-            type="button"
-            title="Legal first names on this pad. Wall stays aliases."
-            onClick={() => commit(setShowFirstReal(file, !real))}
-            className={cn("min-h-9 rounded-lg px-2 text-xs font-semibold", real ? "bg-gold text-bg" : "bg-elevated text-muted")}
-          >
-            First names
-          </button>
-        ) : null}
         <button
           type="button"
           onClick={() => {

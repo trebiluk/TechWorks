@@ -1,5 +1,4 @@
 import type { EconomyFile } from "@/lib/economy";
-import { setShowFirstReal, showFirstReal } from "@/lib/economy";
 import { setCleanupMins, setCleanupSound, setCurrentCycle, setLevelConfig, setSchedule, resetAbCycle } from "@/lib/store";
 import { DEFAULT_LEVEL_BANDS, levelBandsOf } from "@/lib/skills";
 import { storedLeadXp, setLeadXpBonus, clampLeadXp } from "@/lib/roles";
@@ -241,19 +240,11 @@ export function SettingsBody({
                 ) : (
                   <>
                     <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">People</h2>
-                    <p className="mt-1 text-sm text-muted">Paste legal names. The wall only gets shop names. Supports stay vault-only.</p>
+                    <p className="mt-1 text-sm text-muted">Workers are aliases + Shop ID. Real names are not stored. IEP/504 stay on the profile, behind PIN.</p>
                   </>
                 )}
                 <p className="mt-6 text-sm font-medium uppercase tracking-wider text-subtle">Privacy</p>
-                <p className="mt-1 text-sm text-muted">Wall is shop names only. Teacher PIN is the one you set on the lock bar — Set teacher PIN. Never 1111.</p>
-                <div className="mt-3">
-                  <MarkChip mark={markOf("legal")} on={showFirstReal(file)} onClick={() => onChange(setShowFirstReal(file, !showFirstReal(file)))}>
-                    {showFirstReal(file) ? "First names on" : "Show first real names"}
-                  </MarkChip>
-                  <p className="mt-2 text-sm text-muted">
-                    Score, crew, skills, wallet, prints, and other desk pads. Legal first only — not last names. Wall, Teach, and Family web stay aliases.
-                  </p>
-                </div>
+                <p className="mt-1 text-sm text-muted">Wall and desk are shop names only. Teacher PIN is the one you set on the lock bar — Set teacher PIN. Never 1111.</p>
                 <p className="mt-4 text-sm font-medium uppercase tracking-wider text-subtle">Worker portal PIN</p>
                 <p className="mt-1 text-sm text-muted">Only if the portal module is on. Default 2627. Not the teacher PIN.</p>
                 <PinField

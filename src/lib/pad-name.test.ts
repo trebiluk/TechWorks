@@ -13,21 +13,26 @@ function desk(): EconomyFile {
 }
 
 describe("first real names", () => {
-  it("defaults off and uses the alias", () => {
+  it("always uses the alias", () => {
     const file = desk();
     assert.equal(showFirstReal(file), false);
     assert.equal(padFirst({ first: "River", legalFirst: "Jordan" }, false), "River");
+    assert.equal(padFirst({ first: "River", legalFirst: "Jordan" }, true), "River");
   });
 
-  it("teacher toggle shows legal first, not last, and falls back to alias", () => {
+  it("toggle cannot turn real names on", () => {
     const on = showFirstReal(setShowFirstReal(desk(), true));
-    assert.equal(on, true);
-    assert.equal(padFirst({ first: "River", legalFirst: "Jordan" }, true), "Jordan");
-    assert.equal(padFirst({ first: "River" }, true), "River");
+    assert.equal(on, false);
   });
 
-  it("survives compact", () => {
-    const packed = compactFile(setShowFirstReal(desk(), true));
-    assert.equal(showFirstReal(packed), true);
+  it("compact does not keep legal names", () => {
+    const packed = compactFile({
+      ...desk(),
+      students: [{ id: "TW-AAAAAAAAAA", first: "River", last: "Smith", legalLast: "Smith", legalFirst: "Jordan", period: 1, crewKey: "A", days: ["", "", "", ""], bonus: 0, deduct: 0, clutch: 0, opening: 0 }],
+    });
+    assert.equal(packed.students[0]!.legalFirst, undefined);
+    assert.equal(packed.students[0]!.legalLast, undefined);
+    assert.equal(packed.students[0]!.last, "");
+    assert.equal(packed.students[0]!.first, "River");
   });
 });

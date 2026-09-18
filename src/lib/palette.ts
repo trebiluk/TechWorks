@@ -20,7 +20,7 @@ export const SOLVAY_PALETTE: Palette = {
   surface: "#0b1028",
   elevated: "#141c42",
   orange: "#2ee6ff",
-  royal: "#8b6cff",
+  royal: "#1E4BAF",
   white: "#f7f9ff",
   gold: "#f0d48a",
   title: "#f7f9ff",

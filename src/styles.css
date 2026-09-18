@@ -7,6 +7,10 @@ html {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) { cursor: pointer; }
+}
 
 /* Teacher edit mode: red ring on fields, not a red wall. */
 /* Teacher edit mode: red ring only on marked fields, never Find / chrome. */
@@ -169,19 +173,34 @@ html[data-edit="on"] .edit-field {
   color: var(--color-title, var(--color-fg));
 }
 
-/* Instrument plates — glass edge, one cyan lamp, hard bezel gone. */
+/* Instrument plates — glass edge, cyan lamp, nested radius. */
 .tw-gadget {
   position: relative;
-  border-radius: var(--ui-radius, 12px);
+  border-radius: var(--ui-radius, 14px);
   background:
-    linear-gradient(165deg, color-mix(in oklab, #fff 11%, transparent), transparent 42%),
+    linear-gradient(165deg, color-mix(in oklab, #fff 14%, transparent), transparent 38%),
     var(--color-surface);
   box-shadow:
-    inset 0 1px 0 color-mix(in oklab, #fff 20%, transparent),
-    inset 0 0 0 1px color-mix(in oklab, #fff 8%, transparent),
-    0 1px 0 color-mix(in oklab, var(--color-accent) 14%, transparent),
-    0 18px 36px -22px color-mix(in oklab, #000 62%, transparent);
-  transition: box-shadow 180ms ease;
+    inset 0 1px 0 color-mix(in oklab, #fff 22%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, #fff 9%, transparent),
+    0 1px 0 color-mix(in oklab, var(--color-accent) 22%, transparent),
+    0 16px 40px -24px color-mix(in oklab, #000 70%, transparent);
+  transition: box-shadow 180ms var(--ease-smooth-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+.tw-gadget::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    118deg,
+    transparent 28%,
+    color-mix(in oklab, #fff 16%, transparent) 46%,
+    transparent 58%
+  );
+  opacity: 0.45;
+  mix-blend-mode: screen;
 }
 .tw-hud::before {
   content: "";
@@ -242,7 +261,7 @@ html[data-edit="on"] .edit-field {
   display: block;
   height: 100%;
   border-radius: 4px;
-  background: linear-gradient(90deg, var(--color-accent), var(--color-royal), var(--color-violet));
+  background: linear-gradient(90deg, var(--color-accent), color-mix(in oklab, var(--color-accent) 40%, #3B82F6));
   box-shadow: 0 0 12px color-mix(in oklab, var(--color-accent) 45%, transparent);
 }
 .tw-led.tw-led-warn > span {
@@ -387,7 +406,7 @@ html[data-edit="on"] .edit-field {
 }
 
 @theme {
-  /* FINAL StyleBot THEME-PURPLE-BLUE. Paw is Bearcat only. */
+  /* Shop default: navy + cyan. Purple stays off the wall. */
   --tw-bg: #06122B;
   --tw-surface: #0B1A40;
   --tw-elevated: #132A5C;
@@ -397,12 +416,12 @@ html[data-edit="on"] .edit-field {
   --tw-accent: #22D3EE;
   --tw-accent-fg: #06122B;
   --tw-blue: #3B82F6;
-  --tw-royal: #3B82F6;
-  --tw-indigo: #6366F1;
-  --tw-purple: #A855F7;
-  --tw-violet: #A855F7;
-  --tw-deep: #6D28D9;
-  --tw-logo-grad: linear-gradient(90deg, #22D3EE 0%, #3B82F6 35%, #6366F1 65%, #A855F7 100%);
+  --tw-royal: #1E4BAF;
+  --tw-indigo: #3B82F6;
+  --tw-purple: #3B82F6;
+  --tw-violet: #60A5FA;
+  --tw-deep: #1E4BAF;
+  --tw-logo-grad: linear-gradient(90deg, #22D3EE 0%, #3B82F6 55%, #F7F9FF 100%);
   --color-bg: #06122B;
   --color-surface: #0B1A40;
   --color-elevated: #132A5C;
@@ -422,23 +441,23 @@ html[data-edit="on"] .edit-field {
   --color-teacher-card: #7a1822;
   --color-crew: #0B1A40;
   --color-crew-card: #132A5C;
-  --color-crew-hi: #A855F7;
+  --color-crew-hi: #22D3EE;
   --color-period-1: #22D3EE;
   --color-period-2: #3B82F6;
-  --color-period-3: #6366F1;
-  --color-period-4: #A855F7;
-  --color-period-5: #6D28D9;
+  --color-period-3: #1E4BAF;
+  --color-period-4: #67E8F9;
+  --color-period-5: #60A5FA;
   --color-period-6: #B7C4EA;
   --color-work-w: #22D3EE;
   --color-work-pc: #3B82F6;
-  --color-work-p: #A855F7;
-  --color-work-pto: #6D28D9;
+  --color-work-p: #60A5FA;
+  --color-work-pto: #f0d48a;
 
   --radius-xs: 4px;
   --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 28px;
 
   --font-display: "Outfit", "Segoe UI", system-ui, sans-serif;
   --font-sans: "Outfit", "Segoe UI", system-ui, sans-serif;
@@ -477,11 +496,11 @@ html[data-theme="solvay"] {
   --tw-accent: #22D3EE;
   --tw-accent-fg: #06122B;
   --tw-blue: #3B82F6;
-  --tw-royal: #3B82F6;
-  --tw-indigo: #6366F1;
-  --tw-purple: #A855F7;
-  --tw-violet: #A855F7;
-  --tw-deep: #6D28D9;
+  --tw-royal: #1E4BAF;
+  --tw-indigo: #3B82F6;
+  --tw-purple: #3B82F6;
+  --tw-violet: #60A5FA;
+  --tw-deep: #1E4BAF;
   --color-bg: #06122B;
   --color-surface: #0B1A40;
   --color-elevated: #132A5C;
@@ -498,7 +517,7 @@ html[data-theme="solvay"] {
   --color-teacher-card: #7a1822;
   --color-crew: #0B1A40;
   --color-crew-card: #132A5C;
-  --color-crew-hi: #A855F7;
+  --color-crew-hi: #22D3EE;
 }
 
 html[data-theme="dice"] {
@@ -1533,10 +1552,15 @@ html {
 header.desk-chrome {
   gap: 0.35rem;
   overflow: visible;
-  border-radius: 14px;
-  padding: 0.2rem 0.25rem 0.3rem;
-  background: linear-gradient(180deg, color-mix(in oklab, #fff 7%, transparent), transparent 78%);
-  box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 12%, transparent);
+  border-radius: calc(var(--ui-radius, 14px) + 4px);
+  padding: 0.28rem 0.4rem 0.38rem;
+  background:
+    linear-gradient(180deg, color-mix(in oklab, #fff 10%, transparent), transparent 72%),
+    color-mix(in oklab, var(--color-surface) 88%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #fff 18%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 16%, transparent),
+    0 14px 32px -22px color-mix(in oklab, #000 55%, transparent);
 }
 header.desk-chrome .nav-cluster {
   width: 100%;
@@ -1825,9 +1849,9 @@ html[data-look] body::before {
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(980px 460px at 90% -16%, color-mix(in oklab, var(--color-accent) 36%, transparent), transparent 58%),
-    radial-gradient(640px 380px at -8% 108%, color-mix(in oklab, var(--color-accent) 10%, transparent), transparent 70%);
-  opacity: calc(var(--ui-glow, 0.52) * 0.72);
+    linear-gradient(180deg, color-mix(in oklab, var(--color-accent) 14%, transparent), transparent 28%),
+    radial-gradient(900px 280px at 88% -8%, color-mix(in oklab, var(--color-accent) 22%, transparent), transparent 62%);
+  opacity: calc(var(--ui-glow, 0.52) * 0.55);
 }
 html[data-look] .board-root {
   position: relative;
@@ -1983,7 +2007,7 @@ html[data-finish="felt"] .bg-surface,
 .tw-tile {
   min-height: 3.35rem;
   padding: 0.35rem 0.2rem;
-  border-radius: 0.75rem;
+  border-radius: max(8px, calc(var(--ui-radius, 14px) - 4px));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1994,6 +2018,9 @@ html[data-finish="felt"] .bg-surface,
   letter-spacing: 0.06em;
   text-transform: uppercase;
   line-height: 1.1;
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #fff 14%, transparent),
+    0 8px 16px -14px color-mix(in oklab, #000 50%, transparent);
 }
 .tw-seg {
   display: inline-flex;
@@ -2002,22 +2029,24 @@ html[data-finish="felt"] .bg-surface,
   flex-wrap: wrap;
   gap: 0.2rem;
   padding: 0.2rem;
-  border-radius: 0.75rem;
+  border-radius: calc(var(--ui-radius, 14px) + 2px);
   background: var(--color-elevated);
-  box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 10%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #fff 12%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, #fff 6%, transparent);
 }
 .tw-field {
   min-height: 2.75rem;
   width: 100%;
-  border-radius: 0.5rem;
-  background: color-mix(in oklab, var(--color-elevated) 88%, #000);
+  border-radius: max(8px, calc(var(--ui-radius, 14px) - 6px));
+  background: color-mix(in oklab, var(--color-elevated) 72%, #000);
   padding: 0 0.75rem;
   color: var(--color-fg);
   outline: none;
   box-shadow:
     inset 0 1px 0 color-mix(in oklab, #fff 8%, transparent),
     inset 0 0 0 1px color-mix(in oklab, var(--color-border) 80%, transparent),
-    inset 0 8px 16px -12px color-mix(in oklab, #000 45%, transparent);
+    inset 0 10px 18px -12px color-mix(in oklab, #000 55%, transparent);
 }
 .tw-field:focus {
   box-shadow:
@@ -2050,14 +2079,16 @@ html[data-finish="felt"] .bg-surface,
 
 /* Nested plates step radius down. No white hover fills. */
 .tw-gadget .tw-gadget {
-  border-radius: 12px;
+  border-radius: max(6px, calc(var(--ui-radius, 14px) - 6px));
   box-shadow:
-    inset 0 1px 0 color-mix(in oklab, #fff 10%, transparent),
-    0 6px 16px -12px color-mix(in oklab, #000 40%, transparent);
+    inset 0 1px 0 color-mix(in oklab, #fff 12%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, #fff 6%, transparent),
+    0 8px 18px -14px color-mix(in oklab, #000 45%, transparent);
 }
+.tw-gadget .tw-gadget::after { opacity: 0.2; }
 .desk-chrome {
-  border-radius: 14px;
-  padding: 0.25rem 0.4rem;
+  border-radius: calc(var(--ui-radius, 14px) + 4px);
+  padding: 0.28rem 0.4rem;
 }
 .board-root input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
 .board-root textarea,
@@ -2080,12 +2111,18 @@ html[data-kind="light"] .tw-gadget {
     inset 0 1px 0 color-mix(in oklab, var(--color-fg) 14%, transparent),
     0 10px 24px -16px color-mix(in oklab, #000 28%, transparent);
 }
+html[data-kind="light"] .tw-gadget::after { opacity: 0.18; }
 html[data-kind="light"] .tw-hud::before {
   opacity: 0.35;
 }
 .phone-dock {
-  background: var(--color-surface);
-  box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 12%, transparent);
+  background:
+    linear-gradient(180deg, color-mix(in oklab, #fff 8%, transparent), transparent 55%),
+    var(--color-surface);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #fff 16%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 14%, transparent),
+    0 -12px 28px -18px color-mix(in oklab, #000 50%, transparent);
 }
 .phone-dock button[aria-current="page"] {
   color: var(--color-accent);

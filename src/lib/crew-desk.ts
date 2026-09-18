@@ -1,5 +1,5 @@
 import type { EconomyFile, RawStudent } from "./economy";
-import { isLiveStudent, legalFirstOf, legalLastOf, shopBells } from "./economy";
+import { isLiveStudent, shopBells } from "./economy";
 import { cloneFile } from "./clone";
 import { todayIso } from "./calendar";
 
@@ -7,7 +7,7 @@ export const CREW_MIN = 3;
 export const CREW_MAX = 4;
 export const CREWS_MAX = 5;
 export const BENCH = "Bench";
-export const CREW_COLORS = ["#22D3EE", "#3B82F6", "#A855F7", "#E85820", "#22c55e", "#f59e0b", "#f43f5e", "#94a3b8"];
+export const CREW_COLORS = ["#22D3EE", "#3B82F6", "#1E4BAF", "#E85820", "#22c55e", "#f59e0b", "#f43f5e", "#94a3b8"];
 
 export type CrewRules = { min: number; max: number; crewsMax: number };
 
@@ -345,22 +345,13 @@ export function setCrewProfile(
   return next;
 }
 
-export function whoOf(s: RawStudent, legal: boolean) {
-  if (legal && (s.legalFirst || s.legalLast)) {
-    return `${s.first} · ${(s.legalFirst ?? s.first) + " " + (s.legalLast ?? "")}`.trim();
-  }
+export function whoOf(s: RawStudent, _legal?: boolean) {
   return s.first;
 }
 
-/** Roster pick line: legal last, first · alias · period. */
-export function rosterLabel(s: RawStudent, legal: boolean) {
-  const last = legalLastOf(s);
-  const first = legalFirstOf(s);
+/** Roster pick line: alias · period. */
+export function rosterLabel(s: RawStudent, _legal?: boolean) {
   const p = s.period ? `P${s.period}` : "—";
-  if (legal && (last || first)) {
-    const name = [last, first].filter(Boolean).join(", ");
-    return `${name} · ${s.first} · ${p}`;
-  }
   return `${s.first} · ${p}`;
 }
 

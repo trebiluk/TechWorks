@@ -1,8 +1,20 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.65. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.68. -->
 
 # TechWorks changelog
 
-App version **1.92.65**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.68**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.68 — 2026-09-18
+
+- Help → Data privacy: what this app stores (Shop ID + alias), what it never stores (legal names), family web, IEP/504, cloud key, idle lock.
+
+## 1.92.67 — 2026-09-18
+
+- Real names are out. The desk, cloud, class list, and backups keep Shop ID + alias only. SIS paste still mints aliases once, then the names are dropped. Show first real names / Show legal / codebook last-name columns are gone.
+
+## 1.92.66 — 2026-09-17
+
+- Shop GUI: glass plates with a quiet shine and drop shadow, cyan lamp on the HUD rail, inset fields. Navy + cyan kept. Purple wash off period chips and the default palette. TECHWORKS lockup unchanged.
 
 ## 1.92.65 — 2026-09-17
 

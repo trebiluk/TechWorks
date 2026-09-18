@@ -1,7 +1,7 @@
-/** Teacher-only who’s-who. Wall stays alias + shop id. Legal names live on this paper / file. */
+/** Teacher class list. Shop ID + alias + period. Real names are not stored. */
 
 import type { EconomyFile } from "@/lib/economy";
-import { legalFirstOf, legalLastOf, periodTitle, shopBells } from "@/lib/economy";
+import { periodTitle, shopBells } from "@/lib/economy";
 import { isDemoStudentId } from "@/lib/demo";
 import { publicHandle } from "@/lib/live";
 import { todayIso } from "@/lib/calendar";
@@ -25,13 +25,11 @@ export function codebookOf(file: EconomyFile): CodebookRow[] {
       shop: publicHandle(s.id),
       id: s.id,
       alias: s.first,
-      last: legalLastOf(s),
-      first: legalFirstOf(s),
+      last: "",
+      first: "",
     });
   }
-  return rows.sort(
-    (a, b) => a.period - b.period || a.last.localeCompare(b.last) || a.alias.localeCompare(b.alias),
-  );
+  return rows.sort((a, b) => a.period - b.period || a.alias.localeCompare(b.alias));
 }
 
 function csvCell(v: string): string {
@@ -40,10 +38,10 @@ function csvCell(v: string): string {
   return t;
 }
 
-/** Private CSV. Not the live wall. No IEP/504 — those stay in the names vault. */
+/** Private CSV. Alias + Shop ID. Real names are not in this app. */
 export function codebookCsv(rows: CodebookRow[]): string {
-  const header = "Period,Shop ID,Alias,Last,First,Locked id";
-  const body = rows.map((r) => [String(r.period), r.shop, r.alias, r.last, r.first, r.id].map(csvCell).join(","));
+  const header = "Period,Shop ID,Alias,Locked id";
+  const body = rows.map((r) => [String(r.period), r.shop, r.alias, r.id].map(csvCell).join(","));
   return [header, ...body].join("\n");
 }
 
@@ -62,10 +60,10 @@ export function codebookHtml(file: EconomyFile, rows = codebookOf(file)): string
         .filter((r) => r.period === p)
         .map(
           (r) =>
-            `<tr><td class="shop">${esc(r.shop)}</td><td>${esc(r.alias)}</td><td>${esc(r.last)}</td><td>${esc(r.first)}</td></tr>`,
+            `<tr><td class="shop">${esc(r.shop)}</td><td>${esc(r.alias)}</td></tr>`,
         )
         .join("");
-      return `<section><h2>${esc(label)}</h2><table><thead><tr><th>Shop</th><th>Alias</th><th>Last</th><th>First</th></tr></thead><tbody>${body}</tbody></table></section>`;
+      return `<section><h2>${esc(label)}</h2><table><thead><tr><th>Shop</th><th>Alias</th></tr></thead><tbody>${body}</tbody></table></section>`;
     })
     .join("");
   return `<!doctype html><html><head><meta charset="utf-8"/><title>PRIVATE codebook · ${esc(title)}</title>
@@ -81,9 +79,9 @@ export function codebookHtml(file: EconomyFile, rows = codebookOf(file)): string
   .shop{font-family:ui-monospace,Menlo,monospace;letter-spacing:.12em;font-weight:700}
   @media print{body{margin:12px} .noprint{display:none}}
 </style></head><body>
-<p class="banner">Private · teacher drawer · not the wall · not the shop printer</p>
-<h1>${esc(title)} codebook</h1>
-<p class="sub">${rows.length} workers · ${todayIso()} · Wall shows alias only. This page is who is who.</p>
+<p class="banner">Teacher list · Shop ID + alias · real names are not stored</p>
+<h1>${esc(title)} class list</h1>
+<p class="sub">${rows.length} workers · ${todayIso()} · Wall and this page are aliases only.</p>
 ${blocks || "<p>No workers on this desk.</p>"}
 </body></html>`;
 }

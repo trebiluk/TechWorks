@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { X } from "lucide-react";
-import { bellFor, legalFirstOf, legalLastOf, type EconomyFile } from "@/lib/economy";
+import { bellFor, type EconomyFile } from "@/lib/economy";
 import { parseLegalRosterText } from "@/lib/alias-bank";
 import { importLegalRoster, rerollAlias, setAlias, saveDeskNow } from "@/lib/store";
 import { snapshotNow } from "@/lib/vault";
@@ -22,7 +22,6 @@ export function RosterOnboard({
   const bells = bellFor(file);
   const [period, setPeriod] = useState(bells[0]?.period ?? 1);
   const [paste, setPaste] = useState("");
-  const [showLegal, setShowLegal] = useState(false);
   const [note, setNote] = useState("");
   const parsed = useMemo(() => parseLegalRosterText(paste), [paste]);
   const recent = file.students.filter((s) => s.period === period).slice(-24);
@@ -83,7 +82,7 @@ export function RosterOnboard({
             <p className="self-center text-xs text-muted">Last, First, Period, IEP, 504 · Period in the file wins if present</p>
           </div>
           <p className="text-xs text-muted">
-            {parsed.length} rows · missing period uses P{period} · same legal name keeps the alias · id first, then alias
+            {parsed.length} rows · missing period uses P{period} · names mint aliases then drop
           </p>
           {note ? <p className="text-xs font-semibold text-gold">{note}</p> : null}
           <button
@@ -95,15 +94,10 @@ export function RosterOnboard({
               void snapshotNow(file, "Before roster import");
               const next = importLegalRoster(file, rows);
               const added = next.students.length - before;
-              const skipped = rows.length - added;
               saveDeskNow(next);
               onChange(next);
               setPaste("");
-              setNote(
-                skipped > 0
-                  ? `${added} new · ${skipped} already on the desk (same legal name, kept the alias)`
-                  : `${added} new aliases minted`,
-              );
+              setNote(`${added} new aliases minted`);
             }}
             className={cn(
               "min-h-11 w-full rounded-md px-3 text-sm font-semibold",
@@ -115,9 +109,6 @@ export function RosterOnboard({
 
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium uppercase tracking-wider text-subtle">P{period} aliases</p>
-            <button type="button" onClick={() => setShowLegal((v) => !v)} className="text-xs text-muted underline">
-              {showLegal ? "Hide legal" : "Show legal"}
-            </button>
           </div>
           <div className="overflow-auto rounded-lg bg-elevated">
             <table className="w-full text-left text-sm">
@@ -126,7 +117,6 @@ export function RosterOnboard({
                   <th className="px-2 py-2">Alias</th>
                   <th className="px-2 py-2">P</th>
                   <th className="px-2 py-2">Class</th>
-                  {showLegal ? <th className="px-2 py-2">Legal</th> : null}
                   <th className="px-2 py-2" />
                 </tr>
               </thead>
@@ -142,11 +132,6 @@ export function RosterOnboard({
                     </td>
                     <td className="px-2 py-1.5 font-mono text-xs">{s.period}</td>
                     <td className="px-2 py-1.5 font-mono text-xs text-subtle">{publicHandle(s.id)}</td>
-                    {showLegal ? (
-                      <td className="px-2 py-1.5 text-xs text-muted">
-                        {legalLastOf(s)}, {legalFirstOf(s)}
-                      </td>
-                    ) : null}
                     <td className="px-2 py-1.5">
                       <button
                         type="button"

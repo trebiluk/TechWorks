@@ -29,7 +29,7 @@ export const FINISHES: {
   corners: number;
   wallpaper: number;
 }[] = [
-  { id: "plate", label: "Plate", hint: "Glass edge. Cyan lamp.", lift: 68, stroke: 0, corners: 12, wallpaper: 52 },
+  { id: "plate", label: "Plate", hint: "Glass edge. Cyan lamp.", lift: 72, stroke: 0, corners: 14, wallpaper: 40 },
   { id: "steel", label: "Brushed steel", hint: "Tighter, cooler", lift: 40, stroke: 1, corners: 6, wallpaper: 25 },
   { id: "cast", label: "Cast iron", hint: "Heavy drop", lift: 95, stroke: 2, corners: 18, wallpaper: 55 },
   { id: "paper", label: "Chipboard", hint: "Flat paper", lift: 18, stroke: 0, corners: 2, wallpaper: 8 },
@@ -41,11 +41,11 @@ export const SOLVAY_LOOK: Look = {
   titles: 120,
   fill: 100,
   chips: 44,
-  corners: 12,
+  corners: 14,
   stroke: 0,
   pad: 14,
-  lift: 68,
-  wallpaper: 52,
+  lift: 72,
+  wallpaper: 40,
   caps: "off",
   finish: "plate",
 };
