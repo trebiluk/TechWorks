@@ -30,6 +30,7 @@ export const ARCH_SECTIONS: ArchSection[] = [
     notes: [
       "Cog = Settings (Admin). Arrange wall / Arrange plates live on those pages.",
       "Shop PC writes. Cloud is a locked copy. Drive is a download, not a live sync.",
+      "HUD chrome (Lock, Help, Web, language, NOW) stays tappable after any premade theme or wall look. Chip scale is for plates, not the top bar.",
     ],
   },
   {
@@ -109,10 +110,9 @@ export const ARCH_SECTIONS: ArchSection[] = [
         head: ["Bit", "Where it lives", "Wall", "Profile (locked)", "Family", "Export"],
         rows: [
           ["Locked id", "students[].id", "Hidden", "Hidden", "Hidden", "Encoded live export"],
-          ["Shop ID", "publicHandle(id)", "Never as a name", "Roster / dossier / codebook", "Portal tag", "Live export code"],
+          ["Shop ID", "publicHandle(id)", "Never as a name", "Roster / dossier / Shop IDs", "Portal tag", "Live export code"],
           ["Alias (first)", "students[].first", "Yes", "Yes", "Yes", "Yes"],
-          ["Codebook", "paper / CSV", "Never", "Print after PIN", "Never", "Teacher drawer only"],
-          ["Desk first names", "config.showFirstReal", "Never", "Teacher toggle · first only", "Never", "Never"],
+          ["Codebook", "paper / CSV", "Never", "Print Shop IDs after PIN", "Never", "Teacher drawer only"],
           ["Legal name", "not stored", "Never", "Never", "Never", "Not in this app"],
           ["IEP / 504", "not stored", "Never", "Never", "Never", "Not in this app"],
           ["Crew key", "crewKey + crewDays", "Crew plates", "Yes", "No", "Class tabs"],
@@ -122,8 +122,7 @@ export const ARCH_SECTIONS: ArchSection[] = [
     ],
     notes: [
       "Admin → Crews: size, deal, look, crown. Separate rules live on Roster.",
-      "Rosters page is the yearbook of aliases. Legal names stay in Admin → Records. Print codebook is the paper map.",
-      "Show first real names (Settings → Privacy) puts legal first names on teacher pads only. The wall never follows.",
+      "Rosters page is the yearbook of aliases. Shop IDs print from Records → Roster / Backups. Real names are not stored.",
     ],
   },
   {
@@ -232,7 +231,7 @@ export const ARCH_SECTIONS: ArchSection[] = [
           ["Learn Words", "Open", "Shop vocab", "Bank"],
           ["Crew pad", "2222 / live P", "Teal 3/2/1", "—"],
           ["Score / Rosters / Admin / Store / Grades", "Teacher PIN", "Never", "Yes"],
-          ["Family sheet", "Tap alias; legal after PIN", "Project mark, skill words", "—"],
+          ["Family sheet", "Tap alias; family web uses Shop ID", "Project mark, skill words", "—"],
           ["Embed ?embed=1", "Wall only", "Same as Wall", "No dock"],
         ],
       },
@@ -247,9 +246,9 @@ export const ARCH_SECTIONS: ArchSection[] = [
         caption: "Copies",
         head: ["Copy", "Holds", "Does not hold"],
         rows: [
-          ["This PC (gradebook)", "Roster, marks, skills, projects, teachDays, club, prints, vault names", "Theme, layout, PIN, Fake data toggle (browser only)"],
-          ["Cloud (desk key)", "Same vault, encrypted", "Theme / PIN / Fake data. Empty PC will not overwrite names"],
-          ["Drive folder", "JSON + Google book you download", "Live watch. VAULT tab = legal names — do not share"],
+          ["This PC (gradebook)", "Roster (Shop ID + alias), marks, skills, projects, teachDays, club, prints", "Theme, layout, PIN, Fake data toggle (browser only). Legal names / IEP"],
+          ["Cloud (desk key)", "Same aliases + scores, encrypted", "Theme / PIN / Fake data. Empty PC will not overwrite names"],
+          ["Drive folder", "JSON + Google book you download", "Live watch. VAULT tab = Shop ID + alias — not legal names"],
         ],
       },
     ],

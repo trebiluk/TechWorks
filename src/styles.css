@@ -192,6 +192,7 @@ html[data-edit="on"] .edit-field {
   pointer-events: none;
   position: absolute;
   inset: 0;
+  z-index: 0;
   border-radius: inherit;
   background: linear-gradient(
     118deg,
@@ -207,6 +208,7 @@ html[data-edit="on"] .edit-field {
   pointer-events: none;
   position: absolute;
   inset: max(4px, calc(var(--ui-pad, 12px) * 0.45));
+  z-index: 0;
   border-radius: var(--radius-sm, 8px);
   opacity: 0.32;
   background:
@@ -1550,6 +1552,9 @@ html {
 }
 
 header.desk-chrome {
+  position: relative;
+  z-index: 40;
+  isolation: isolate;
   gap: 0.35rem;
   overflow: visible;
   border-radius: calc(var(--ui-radius, 14px) + 4px);
@@ -1561,6 +1566,39 @@ header.desk-chrome {
     inset 0 1px 0 color-mix(in oklab, #fff 18%, transparent),
     inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 16%, transparent),
     0 14px 32px -22px color-mix(in oklab, #000 55%, transparent);
+}
+/* Themes / wall looks may paint chrome. They must never cover, resize, or disable HUD hits. */
+header.desk-chrome.tw-gadget::after {
+  content: none;
+}
+header.desk-chrome.tw-hud::before {
+  pointer-events: none !important;
+  z-index: 0;
+  mix-blend-mode: normal;
+}
+header.desk-chrome .nav-cluster,
+header.desk-chrome .tw-hud-row {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
+}
+header.desk-chrome button,
+header.desk-chrome a,
+header.desk-chrome input,
+header.desk-chrome [role="button"],
+header.desk-chrome .tw-hud-btn {
+  position: relative;
+  z-index: 3;
+  pointer-events: auto !important;
+}
+header.desk-chrome .min-h-11,
+header.desk-chrome .tw-hud-btn {
+  min-height: 2.75rem;
+}
+header.desk-chrome .size-11 {
+  width: 2.75rem;
+  height: 2.75rem;
+  min-height: 2.75rem;
 }
 header.desk-chrome .nav-cluster {
   width: 100%;
@@ -1833,7 +1871,8 @@ html[data-look] .bg-surface {
     inset 0 1px 0 color-mix(in oklab, var(--color-fg) calc(12% * var(--ui-shadow, 0.7)), transparent),
     0 calc(22px * var(--ui-shadow, 0.7)) calc(44px * var(--ui-shadow, 0.7)) calc(-28px * var(--ui-shadow, 0.7)) rgb(0 0 0 / calc(0.7 * var(--ui-shadow, 0.7)));
 }
-html[data-look] .min-h-11 { min-height: var(--ui-chip, 2.75rem); }
+/* Chip scale is for wall plates / board content — never HUD chrome. */
+html[data-look] .board-main .min-h-11 { min-height: var(--ui-chip, 2.75rem); }
 html[data-look] .tw-gadget { border-radius: var(--ui-radius, 12px); }
 html[data-look] .tw-gadget {
   box-shadow:
@@ -2085,10 +2124,22 @@ html[data-finish="felt"] .bg-surface,
     inset 0 0 0 1px color-mix(in oklab, #fff 6%, transparent),
     0 8px 18px -14px color-mix(in oklab, #000 45%, transparent);
 }
-.tw-gadget .tw-gadget::after { opacity: 0.2; }
+.tw-gadget .tw-gadget::after { opacity: 0.2; pointer-events: none !important; }
 .desk-chrome {
   border-radius: calc(var(--ui-radius, 14px) + 4px);
   padding: 0.28rem 0.4rem;
+}
+.phone-dock {
+  position: relative;
+  z-index: 50;
+  isolation: isolate;
+}
+.phone-dock button,
+.phone-dock a,
+.phone-dock [role="button"] {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto !important;
 }
 .board-root input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
 .board-root textarea,
@@ -2159,7 +2210,7 @@ html[dir="rtl"] .board-root { direction: rtl; }
 
 @media (max-width: 899px) {
   html { font-size: min(var(--ui-base, 16px), 15px); }
-  html[data-look] .min-h-11 { min-height: 2.5rem; }
+  html[data-look] .board-main .min-h-11 { min-height: 2.5rem; }
   .board-root {
     padding-left: max(0.5rem, env(safe-area-inset-left));
     padding-right: max(0.5rem, env(safe-area-inset-right));

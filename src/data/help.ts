@@ -94,7 +94,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Menu (Dash · Learn · Crew · Admin)",
     tags: ["menu", "nav", "tabs", "classic"],
     wall: true,
-    body: "Bottom dock: Dash · Learn · Crew · Rosters · Admin. Dash strip: Wall · Teach · Deck · Week · Club · Hall. Teach is the lesson. Deck plays that lesson. After class, Wall is the projector. Cog is Settings (Admin). Arrange wall / Arrange plates live on those pages.",
+    body: "Bottom dock: Dash · Learn · Crew · Rosters · Admin. Dash strip: Wall · Teach · Deck · Week · Club · Hall. Teach is the lesson. Deck plays that lesson. After class, Wall is the projector. Top chrome: Lock, Cog (Settings), Help, Web (family), language globe, NOW clock. Arrange wall / Arrange plates live on those pages.",
   },
   {
     id: "wall-polls",
@@ -158,7 +158,15 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Wall looks",
     tags: ["theme", "scale", "preset", "projector", "arrange", "look"],
     wall: true,
-    body: "Arrange wall → Looks, or Admin → Theme. Shop wall is the default: navy, cyan lamp, glass plates, Hour on the left, clock on the right. Back row goes bigger. Night shop, Oswego, Scoreboard, Club night, Projector, Harvest each paint color, type, scale, and the two-column grid in one tap. Kits only move plates into those columns. Drag a plate to the other column. Glow and lift sliders now actually change the wall. Default stays dark.",
+    body: "Arrange wall → Looks, or Admin → Theme. Shop wall is the default: navy, cyan lamp, glass plates, Hour on the left, clock on the right. Back row goes bigger. Night shop, Oswego, Scoreboard, Club night, Projector, Harvest each paint color, type, scale, and the two-column grid in one tap. Kits only move plates into those columns. Drag a plate to the other column. Glow and lift sliders now actually change the wall. Looks never cover Lock, Help, Web, or the other HUD buttons. Default stays dark.",
+  },
+  {
+    id: "wall-jobs",
+    category: "Wall",
+    title: "Jobs on the wall",
+    tags: ["jobs", "agenda", "cleanup", "need", "goggles", "do this"],
+    wall: true,
+    body: "Two job lists. Agenda (Do this now) is the hour’s work — Teach writes it, Deck plays it, Wall hangs it. Cleanup jobs are the coral list (workshop tools vs classroom seats). Need (goggles / stock) is a Teach line kids see at Enter. Edit cleanup jobs on the coral pad (PIN). Caught helping extra can earn a perk — not XP.",
   },
   {
     id: "dash-teach",
@@ -388,10 +396,18 @@ export const HELP_ARTICLES: HelpArticle[] = [
   },
   {
     id: "studyhall",
-    category: "Score",
+    category: "Study Hall",
     title: "Study Hall pad",
-    tags: ["study hall", "p6", "a day", "b day", "cleanup"],
-    body: "Admin → Hall Mgr, or tap P6 on the wall (unlocked). Phone: Hall next to Admin. Check-in pad (HERE / NURSE / …). Tap a name for the drawer (ready, on-task, note). Wall is projector-only. Habits ≠ Tech XP. Data → Mix is the only building rank.",
+    tags: ["study hall", "p6", "a day", "b day", "cleanup", "hall"],
+    body: "Admin → Hall Mgr, or tap P6 on the wall (unlocked). Phone: Hall next to Admin. Check-in pad (HERE / NURSE / …). Tap a name for the drawer (ready, on-task, note). Dash → Hall is the projector wall (HERE counts). Habits ≠ Tech XP. Data → Mix is the only building rank.",
+  },
+  {
+    id: "studyhall-wall",
+    category: "Study Hall",
+    title: "Study Hall wall",
+    tags: ["hall", "p6", "here", "wall", "study hall"],
+    wall: true,
+    body: "Dash → Hall is the projector: HERE counts, not Tech XP. P6 on the Wall jumps there when unlocked. Coral cleanup has its own hall list. Store on Hall is separate perks, not class effort.",
   },
   {
     id: "club",
@@ -578,14 +594,30 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "One desk",
     tags: ["web", "mobile", "ipad", "projector", "layout", "dock"],
-    body: "One layout. Bottom dock is Dash · Learn · Crew · Rosters · Admin. Dash strip is Wall · Teach · Deck · Week · Club · Hall. Teach during class. After class, Wall is the projector — no grips. Unlocked: Wall → Arrange wall (kits, hide, drag). Teach → Arrange plates. Cog always opens Admin. Rosters is the yearbook (aliases). Legal names stay in Admin → Records. Google Site embed hides the dock.",
+    body: "One layout. Bottom dock is Dash · Learn · Crew · Rosters · Admin. Dash strip is Wall · Teach · Deck · Week · Club · Hall. Teach during class. After class, Wall is the projector — no grips. Unlocked: Wall → Arrange wall (kits, hide, drag). Teach → Arrange plates. Cog always opens Admin. Rosters is the yearbook (aliases). Shop IDs print from Records. Google Site embed hides the dock.",
   },
   {
     id: "themes",
     category: "Start",
     title: "Stylesheets",
-    tags: ["theme", "bearcat", "night", "holiday", "contrast"],
-    body: "Admin → Theme (PIN). Default stays dark (navy / cyan / violet). Never a white wall — Kulibert is light-sensitive. Oswego is a dark homage (hunter #235937, sunset gold #FDAE3F) with no official marks. Bearcat, Paper, Projector, and holiday overlays stay options. Cleanup coral. Due red.",
+    tags: ["theme", "bearcat", "night", "holiday", "contrast", "dice", "look", "premade"],
+    body: "Admin → Theme (PIN). Default stays dark (navy / cyan). Never a white wall — Kulibert is light-sensitive. Wall looks (Shop, Back row, Night shop, Oswego, Scoreboard, Club night, Projector, Harvest) paint color, type, scale, and plates in one tap. Brand chips include ROLL THE DICE. Holiday packs (Holly, Frost, Harvest, Spooky, Patriot, Clover, Wrapping, Valentine, Pumpkin) and Day / ADA (Daylight, Manila, Polar) are full themes. High vis / Contrast sit on top. Hover a chip to preview; click to apply. Looks may grow wall plates — HUD buttons (Web, Help, Lock, Cog, language, NOW) stay the same tap size and stay clickable. Shine overlays on the top bar cannot steal taps. Cleanup coral. Due red.",
+  },
+  {
+    id: "chrome-hud",
+    category: "Start",
+    title: "Top chrome (Lock, Help, Web, language)",
+    tags: ["chrome", "web", "help", "lock", "settings", "cog", "translate", "now", "chips", "hud", "globe"],
+    wall: true,
+    body: "The top bar is always the same. TECHWORKS goes to the Wall. NOW P# is this period and minutes left. Lock opens the teacher PIN or locks the desk. Cog is Settings (Admin). ? is Help. Web is Family web (?web=1) — class code, then Shop ID; no wallet. Globe is English / Ukrainian / Russian. Version chip is the live build. Wall looks, ROLL THE DICE, holiday themes, and Theme Tools may paint this bar — they cannot cover it, steal taps, or resize those buttons. Swipe the right cluster if the Chromebook is narrow.",
+  },
+  {
+    id: "period-now",
+    category: "Schedule",
+    title: "Period chips and the clock",
+    tags: ["period", "chips", "now", "time", "bell", "clock"],
+    wall: true,
+    body: "NOW on the HUD is the live period and time left. Period chips on the Wall, Teach, Deck, and Score jump you to that hour. Gold ring = this period. P6 is Study Hall. Cleanup coral in the last minutes. Bells live on Admin → Day. Themes do not turn the chips off.",
   },
   {
     id: "legal",
@@ -599,7 +631,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "The cog is Settings",
     tags: ["settings", "gear", "cog", "admin", "arrange"],
-    body: "The cog always opens Admin (Today, Day, Records, Crews, Theme, Docs). It does not jump you off Deck or flash “this page is this page.” Arrange the projector from Wall → Arrange wall. Teach → Arrange plates. Deck → Edit slides. Unlock first if the lock is on.",
+    body: "The cog always opens Admin (Today, Day, Records, Crews, Theme, Docs, Modules). It does not jump you off Deck or flash “this page is this page.” Theme is wall looks + color chips + Type. Modules hide Club / Hall / Store / games. Arrange the projector from Wall → Arrange wall (drag plates left or right). Teach → Arrange plates (drag / hide). Deck → Edit slides. Unlock first if the lock is on.",
   },
   {
     id: "data-copies",
@@ -641,54 +673,67 @@ export function helpMarkdown(): string {
   return `# TechWorks Help · v${APP_VERSION}\n\n${COPYRIGHT_LONG}\n\nSearch in the app Help panel. Categories below.\n\n${groups}\n`;
 }
 
-/** IT / teacher print. Twin of docs/TECHWORKS-TECHNICAL-DETAILS-v8.0.html */
+/** IT / teacher print. Twin of docs/TECHWORKS-TECHNICAL-DETAILS-v8.1.html */
 export function techMarkdown(): string {
   return `# TechWorks technical manual · v${APP_VERSION}
 
 ${COPYRIGHT_LONG}
 
 Live class: https://tw.kulibert.net
-Help in the app: tap **?**. This file is the IT / teacher print.
+Help in the app: tap **?**. This file is the IT / teacher print. Twin of docs/TECHWORKS-TECHNICAL-DETAILS-v8.1.html.
 
 ## Who this is for
 
 - **Students** — Wall, Teach (locked), Deck Present, Help Welcome / Wall. No legal names.
 - **Crew leads** — Crew pad, 3 / 2 / 1. PIN 2222 for another period. No wallet, bonus, or grades.
-- **Families** — Tap alias → Family. One project mark, skills in words. No wallet on that sheet.
+- **Families** — Web on the HUD or ?web=1. Class web code (portal PIN, default 2627), then Shop ID. One project mark, skills in words. No wallet.
 - **Teacher** — Set teacher PIN (never 1111). Teach → Deck → Wall. Score one-row pad. Cog = Admin.
 - **Sub** — Do not open this app. Teacher taps SUB. Wall stays up.
 - **IT / second room** — Same desk key, Pull. Public GitHub ships students: []. Do not print the teacher PIN.
 
 ## Three copies (not live Drive sync)
 
-1. **This PC** — the gradebook (auto-save).
-2. **Cloud** — encrypted blob, desk key from Records → Cloud. Same key on the other room.
-3. **Drive folder** — JSON + Google book you download, then File → Open as a Sheet.
+1. **This PC** — the gradebook (localStorage + IndexedDB snapshots). Auto-save ~0.5s. Shop ID + alias only.
+2. **Cloud** — encrypted blob at /api/desk, desk key from Records → Cloud (AES-GCM, PBKDF2 80k). Same key on the other room. Empty PC will not overwrite a named cloud roster.
+3. **Drive folder** — JSON + Google book you download, then File → Open as a Sheet. VAULT tab is Shop ID + alias. Drive does not watch this PC.
 
-The PIN is not a backup. The desk key is not the PIN.
+The PIN is not a backup. The desk key is not the PIN. Layout, theme, PIN, and Fake data stay on this browser.
 
 ## PINs
 
 - Teacher unlock = Lock → Set teacher PIN. 1111 is rejected. Never print the real PIN.
 - Crew 2222 = crew pad only. Off the student About card.
-- Portal default 2627, off unless you turn it on.
+- Family web / portal default 2627 (Settings → Worker portal PIN). Not the teacher PIN.
 
-## Plan book → Teach → Deck → Wall
+## Chrome (must stay tappable)
 
-One write. Type Ask / Do on Teach (or Edit slides on Deck). Leave the field or change period — the draft still saves. Present is play-only. The cog is Settings, not “edit this screen.”
+Top bar: TECHWORKS · Dash strip (Wall / Teach / Deck / Week / Club / Hall) · NOW · Lock · Cog (Settings) · Help · Web · language · version.
+Wall looks, ROLL THE DICE, holiday packs, and Theme Tools paint color / type / scale. They must not cover HUD hits, resize HUD buttons, or disable handlers. Shine overlays on chrome are paint-only (pointer-events none). Chip scale applies to wall plates, not the HUD.
+Web = Family web (?web=1). Globe = translate (EN / UK / RU). Cleanup coral is a Wall overlay; Teach and Score stay open.
+
+## PlanIt → Teach → Deck → Wall
+
+One write. Type Ask / Do / Agenda on Teach (or Edit slides on Deck, or a PlanIt cell). Leave the field or change period — the draft still saves. Present is play-only. Hang a Drive / Slides / YouTube / Canva link on Teach; Deck and Wall play it. Arrange wall (drag columns) and Arrange plates live on those pages — not the cog.
+
+## Score, Store, Club, Hall
+
+- Crew 3/2/1 is not a skill 1–4. Wallet $ never goes on the Family sheet.
+- Store / Rewards = wallet perks (PIN). Prints are 3D collections. Lucky Bench is class cash only.
+- Club IN is $10 + 2 XP once a day — not Tech effort. Dash Club is the projector; Admin Club is the desk.
+- Study Hall (P6) HERE / NURSE is not Tech effort. Dash Hall is the wall; Hall Mgr is the pad.
 
 ## Monday
 
-Shop PC only. Fake data Off. Snapshot. Mint desk key. Push if this PC has names; Pull if this PC is empty. Paste Last, First, Period. Wall shows aliases.
+Shop PC only. Fake data Off. Snapshot. Mint desk key. Push if this PC has workers; Pull if this PC is empty. Paste Last, First, Period (names mint aliases, then drop). Wall shows aliases. Teach: type Ask / Do. Flip to Deck — same words.
 
 ## Deploy
 
 tw.kulibert.net ← Cloudflare Pages kulibert-desk ← github.com/trebiluk/TechWorks main.
-Grok Publish hits Orbit only. Do not commit legal names.
+Grok Publish hits Orbit only. Do not commit legal names. Desk pack kind techworks-desk. Cloud pack kind techworks-cloud.
 
 ## Privacy
 
-Projector and ?embed=1 are aliases only. No legal names. No IEP or 504.
+This app does not store legal names, IEP, or 504. Projector, ?embed=1, cloud, Google book, and this PC are Shop ID + alias. Family web asks for Shop ID after the class code. Idle lock after 5 minutes. Crew 2222 stays off student About. Teacher PIN is never printed.
 `;
 }
 

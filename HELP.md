@@ -1,6 +1,6 @@
-# TechWorks Help · v1.92.61
+# TechWorks Help · v1.92.71
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.61.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.71.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
@@ -40,7 +40,7 @@ The Goals plate is the job, not the filing system. Five lines: the driving quest
 
 ### Menu (Dash · Learn · Crew · Admin)
 
-Bottom dock: Dash · Learn · Crew · Rosters · Admin. Dash strip: Wall · Teach · Deck · Week · Club · Hall. Teach is the lesson. Deck plays that lesson. After class, Wall is the projector. Cog is Settings (Admin). Arrange wall / Arrange plates live on those pages.
+Bottom dock: Dash · Learn · Crew · Rosters · Admin. Dash strip: Wall · Teach · Deck · Week · Club · Hall. Teach is the lesson. Deck plays that lesson. After class, Wall is the projector. Top chrome: Lock, Cog (Settings), Help, Web (family), language globe, NOW clock. Arrange wall / Arrange plates live on those pages.
 
 ### Live polls
 
@@ -68,11 +68,15 @@ Open a worker (tap a name) → Family. One project mark. Skills in plain words. 
 
 ### BertyBot
 
-Berty is the workshop mascot. He waves at ENTER, thinks at LISTEN, stands for CREW WORK, points at CLEAN UP and between classes, and celebrates SHARE / class reward. HAND LAW: both claws stay on every pose — Bare means no tool, not no hands. Color chips paint the metal. Cleanup and passing always show him. Open Berty from the version chip.
+Berty is the workshop mascot. He waves at ENTER, thinks at LISTEN, stands for CREW WORK, points at CLEAN UP and between classes, and celebrates SHARE / class reward. HAND LAW: both claws stay on every pose — Bare means no tool, not no hands. Color chips paint the metal (each Berty gets its own paint so two on screen cannot steal cyan). Cleanup and passing always show him. Open Berty from the version chip.
 
 ### Wall looks
 
-Arrange wall → Looks, or Admin → Theme. Shop wall is the default: navy, cyan lamp, glass plates, Hour on the left, clock on the right. Back row goes bigger. Night shop, Oswego, Scoreboard, Club night, Projector, Harvest each paint color, type, scale, and the two-column grid in one tap. Kits only move plates into those columns. Drag a plate to the other column. Glow and lift sliders now actually change the wall. Default stays dark.
+Arrange wall → Looks, or Admin → Theme. Shop wall is the default: navy, cyan lamp, glass plates, Hour on the left, clock on the right. Back row goes bigger. Night shop, Oswego, Scoreboard, Club night, Projector, Harvest each paint color, type, scale, and the two-column grid in one tap. Kits only move plates into those columns. Drag a plate to the other column. Glow and lift sliders now actually change the wall. Looks never cover Lock, Help, Web, or the other HUD buttons. Default stays dark.
+
+### Jobs on the wall
+
+Two job lists. Agenda (Do this now) is the hour’s work — Teach writes it, Deck plays it, Wall hangs it. Cleanup jobs are the coral list (workshop tools vs classroom seats). Need (goggles / stock) is a Teach line kids see at Enter. Edit cleanup jobs on the coral pad (PIN). Caught helping extra can earn a perk — not XP.
 
 ### Cleanup
 
@@ -86,21 +90,17 @@ Globe next to Help. This quarter the class languages are English, Ukrainian, and
 
 Dash → Deck plays today’s Teach plan. Present is play-only (even with PIN). Edit slides, then leave a field — Ask / Do / hour lines write to Teach. Same date and period chip. E toggles edit. Hour pack still lives on Teach.
 
-### PlanIt
-
-Dash or Learn → PlanIt is the week grid (periods × days). Tap a cell. Type Do this — that line is the Wall, Teach, and Deck. Need (goggles / stock) is the kit chip kids see. Process chips are tags, not titles. New unit is a name plus an optional driving question. Send this hour: pick other periods today and/or this period on other days, then Send. It never overwrites an hour that already has a plan. Put last class day here writes the hour you are looking at. Wall preview is the Agenda 2×2 for that hour. This week on the Wall is Mon–Fri for the live period. Teach this hour jumps to the live plates. See wall hangs the projector. Units still live on Learn → Projects. Admin → Day is lunch / sub / meetings — not the lesson.
-
 ## Start
 
 ### Copyright
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.54.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.71.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
 ### PINs and who can tap what
 
-Teacher PIN is the one you set on Lock → Set teacher PIN (never 1111 — that code is rejected). It unlocks scoring, Store, roster, and legal names. Crew override 2222 opens other periods on the crew pad only — it is not printed on the student wall. Locked chrome: Wall, Teach, Deck, Week, Club, Hall, Learn Words, Help. Embed ?embed=1 is Wall only.
+Teacher PIN is the one you set on Lock → Set teacher PIN (never 1111 — that code is rejected). It unlocks scoring, Store, and roster. Crew override 2222 opens other periods on the crew pad only — it is not printed on the student wall. Locked chrome: Wall, Teach, Deck, Week, Club, Hall, Learn Words, Help. Embed ?embed=1 is Wall only.
 
 ### Menu map
 
@@ -108,7 +108,7 @@ Bottom dock: Dash · Learn · Crew · Rosters · Admin (PIN on the last three). 
 
 ### Version
 
-The floating chip is v1.92.54. Same string as About, Help, and the changelog header. Product name TECHWORKS™. Workshop zips labeled 1.0 or 2.1.0 are not live.
+The floating chip is v1.92.71. Same string as About, Help, and the changelog header. Product name TECHWORKS™. Workshop zips labeled 1.0 or 2.1.0 are not live.
 
 ### Describe mode / tips
 
@@ -116,11 +116,15 @@ Lightbulb in the top bar, or Settings → Describe mode. When on, a strip under 
 
 ### One desk
 
-One layout. Bottom dock is Dash · Learn · Crew · Rosters · Admin. Dash strip is Wall · Teach · Deck · Week · Club · Hall. Teach during class. After class, Wall is the projector — no grips. Unlocked: Wall → Arrange wall (kits, hide, drag). Teach → Arrange plates. Cog always opens Admin. Rosters is the yearbook (aliases). Legal names stay in Admin → Records. Google Site embed hides the dock.
+One layout. Bottom dock is Dash · Learn · Crew · Rosters · Admin. Dash strip is Wall · Teach · Deck · Week · Club · Hall. Teach during class. After class, Wall is the projector — no grips. Unlocked: Wall → Arrange wall (kits, hide, drag). Teach → Arrange plates. Cog always opens Admin. Rosters is the yearbook (aliases). Shop IDs print from Records. Google Site embed hides the dock.
 
 ### Stylesheets
 
-Admin → Theme (PIN). Default stays dark (navy / cyan / violet). Never a white wall — Kulibert is light-sensitive. Oswego is a dark homage (hunter #235937, sunset gold #FDAE3F) with no official marks. Bearcat, Paper, Projector, and holiday overlays stay options. Cleanup coral. Due red.
+Admin → Theme (PIN). Default stays dark (navy / cyan). Never a white wall — Kulibert is light-sensitive. Wall looks (Shop, Back row, Night shop, Oswego, Scoreboard, Club night, Projector, Harvest) paint color, type, scale, and plates in one tap. Brand chips include ROLL THE DICE. Holiday packs (Holly, Frost, Harvest, Spooky, Patriot, Clover, Wrapping, Valentine, Pumpkin) and Day / ADA (Daylight, Manila, Polar) are full themes. High vis / Contrast sit on top. Hover a chip to preview; click to apply. Looks may grow wall plates — HUD buttons (Web, Help, Lock, Cog, language, NOW) stay the same tap size and stay clickable. Shine overlays on the top bar cannot steal taps. Cleanup coral. Due red.
+
+### Top chrome (Lock, Help, Web, language)
+
+The top bar is always the same. TECHWORKS goes to the Wall. NOW P# is this period and minutes left. Lock opens the teacher PIN or locks the desk. Cog is Settings (Admin). ? is Help. Web is Family web (?web=1) — class code, then Shop ID; no wallet. Globe is English / Ukrainian / Russian. Version chip is the live build. Wall looks, ROLL THE DICE, holiday themes, and Theme Tools may paint this bar — they cannot cover it, steal taps, or resize those buttons. Swipe the right cluster if the Chromebook is narrow.
 
 ### Copyright and trademark
 
@@ -128,7 +132,7 @@ Admin → Theme (PIN). Default stays dark (navy / cyan / violet). Never a white 
 
 ### The cog is Settings
 
-The cog always opens Admin (Today, Day, Records, Crews, Theme, Docs). It does not jump you off Deck or flash “this page is this page.” Arrange the projector from Wall → Arrange wall. Teach → Arrange plates. Deck → Edit slides. Unlock first if the lock is on.
+The cog always opens Admin (Today, Day, Records, Crews, Theme, Docs, Modules). It does not jump you off Deck or flash “this page is this page.” Theme is wall looks + color chips + Type. Modules hide Club / Hall / Store / games. Arrange the projector from Wall → Arrange wall (drag plates left or right). Teach → Arrange plates (drag / hide). Deck → Edit slides. Unlock first if the lock is on.
 
 ### Where the data lives
 
@@ -178,6 +182,14 @@ The shop PC is the writer. A second computer is a reader until you Pull with the
 
 Dash → Teach. Type Ask, Do this now, and Objective — leave a field (or change period) and it saves. Same words become the Deck and the Plan book. Hang a Drive file, Slides, Doc, YouTube, or Canva on this hour (Share → Anyone with the link). Deck plays the hang as a slide. Hour packs change the beats. Arrange plates (not the cog) to drag or hide. After class, Wall hangs the scoreboard. No names on Teach.
 
+### PlanIt
+
+Dash or Learn → PlanIt is the week grid (periods × days). Tap a cell. Type Do this — that line is the Wall, Teach, and Deck. Need (goggles / stock) is the kit chip kids see. Process chips are tags, not titles. New unit is a name plus an optional driving question. Send this hour: pick other periods today and/or this period on other days, then Send. It never overwrites an hour that already has a plan. Put last class day here writes the hour you are looking at. Wall preview is the Agenda 2×2 for that hour. This week on the Wall is Mon–Fri for the live period. Teach this hour jumps to the live plates. See wall hangs the projector. Units still live on Learn → Projects. Admin → Day is lunch / sub / meetings — not the lesson.
+
+### The class loop
+
+Arrive → Teach. Green dots + “n of 8 hours set” mean that hour is planned. Type Agenda 01–04 and Need (goggles / stock); it is the Wall, the Deck, and PlanIt. Paste a Drive or Canva link on Hang — it plays on the Wall under Agenda. See wall is next to Deck. Send this hour copies the agenda onto other empty periods or days you pick — never a week blast. Wall: Enter is sit / need / in a minute, then a chime into Agenda 2×2 with This week under it, coral Cleanup in the last minutes. After the last bell the Agenda stays. Crew lead PIN: today’s make, last marks, Buy if the catalog has perks.
+
 ### Skills board vs Perks board
 
 The wall has two boards. Skills (default) ranks by workshop XP. Perks ranks by wallet $. Stocks are a separate game on the Stocks tab and do not level anyone. Period cards show top 3; chevron expands the whole class. School list is top 5, also expandable.
@@ -190,9 +202,9 @@ Settings → Show embed copies an iframe with ?embed=1. That load is Dashboard o
 
 Admin → Wall. If Tools is hidden, tap Show · Tools. Timer, draw a worker (alias), draw a crew for this period. Ambient Chaos only if that module is on. Names are aliases.
 
-### PlanIt → Teach → Deck → Wall
+### Plan book → Teach → Deck → Wall
 
-One write. Type Do this on PlanIt (or Teach). Dates and grade land it on the week. Teach for that day is the only author. Deck plays that plan. Wall hangs the hour and This week. Changing period or day still keeps the draft.
+One write. Create the activity (or type Ask / Do on Teach). Dates and grade land it on the Plan book. Teach for that day is the only author. Deck plays that plan (Present for the class, Edit slides if you must type on the glass). Wall hangs the job after class. Changing period or day still keeps the draft.
 
 ## Admin
 
@@ -244,10 +256,6 @@ Name sits next to 3 / 2 / 1 on one row — tap the alias for the profile. Codes 
 
 Attendance lives in SchoolTool, not here. Dashboard shows a dashed SCHOOLTOOL OPEN banner until you tap ST in. After 8:15 (or the delay attend-by) it pulses red so the class can remind you. The wall beeps during P1. Link opens SchoolTool. Desk ST chip still works.
 
-### Study Hall pad
-
-Admin → Hall Mgr, or tap P6 on the wall (unlocked). Phone: Hall next to Admin. Check-in pad (HERE / NURSE / …). Tap a name for the drawer (ready, on-task, note). Wall is projector-only. Habits ≠ Tech XP. Data → Mix is the only building rank.
-
 ## Skills
 
 ### Word Heat
@@ -264,7 +272,7 @@ Skills → Standard 5. NY MST Standard 5 Technology. Seven skills S1–S7. Score
 
 ### Projects
 
-Learn → Projects. The desk starts empty — you type the unit. New Activity asks: part of a project, independent, or sub work? Dates and default grade fill the Plan book. Teach for that day is the author; Deck only plays it. Print lesson from Teach makes the PDF (skills × objectives). Floor parks the unit on a period.
+Learn → Projects. The desk starts empty — you type the unit. PlanIt is the week grid: name a unit there, or New Activity here for belong / dates. Teach for that day is the author; Deck only plays it. Print lesson from PlanIt or Teach makes the PDF. Floor parks the unit on a period.
 
 ### Shop words
 
@@ -312,15 +320,25 @@ Desk: Nurse on the worker card stamps the clock and sets attendance to nurse. If
 
 ### Cleanup time
 
-Last minutes of a live period: a coral full-screen CLEANUP card replaces the wall. Workshop jobs vs classroom tidy. Study hall has its own list. Teacher (unlocked) taps a name for +$5 wallet when they catch extra cleanup in any space (max 2/day). Not XP. Desk button hides the card until the next period. Cleanup miss is still −$10 wallet, not effort.
+Last minutes of a live period: the cleanup bell rings once. Wall goes coral full-screen (Workshop vs classroom jobs). Teach stays open with the same jobs pad so you can still run the room. Edit jobs and the extra tidy line (PIN). Study hall has its own list. Tap a name for +$5 wallet when you catch extra cleanup (max 2/day). Not XP. Desk button hides the wall card until the next period. Cleanup miss is still −$10 wallet, not effort.
 
 ### Yearly / sessions
 
 Four Tech sessions (S1–S4), about 8 weeks each. End session archives XP and $ for that cohort. Names stay so you can load the next roster. Study hall (P6) is year-long. You grade at the full quarter (MP), not at MMP checkpoints. Year $ is cohort vs cohort, not one student’s career.
 
+### Period chips and the clock
+
+NOW on the HUD is the live period and time left. Period chips on the Wall, Teach, Deck, and Score jump you to that hour. Gold ring = this period. P6 is Study Hall. Cleanup coral in the last minutes. Bells live on Admin → Day. Themes do not turn the chips off.
+
 ## Study Hall
 
+### Study Hall pad
 
+Admin → Hall Mgr, or tap P6 on the wall (unlocked). Phone: Hall next to Admin. Check-in pad (HERE / NURSE / …). Tap a name for the drawer (ready, on-task, note). Dash → Hall is the projector wall (HERE counts). Habits ≠ Tech XP. Data → Mix is the only building rank.
+
+### Study Hall wall
+
+Dash → Hall is the projector: HERE counts, not Tech XP. P6 on the Wall jumps there when unlocked. Coral cleanup has its own hall list. Store on Hall is separate perks, not class effort.
 
 ## Club
 

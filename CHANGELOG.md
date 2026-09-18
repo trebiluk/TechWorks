@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.70. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.71. -->
 
 # TechWorks changelog
 
-App version **1.92.70**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.71**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.71 — 2026-09-18
+
+- Premade themes / wall looks / ROLL THE DICE no longer cover or resize HUD chrome. Web, Help, Lock, Cog, language, and NOW stay tappable. Help covers every major surface. Technical manual v8.1.
 
 ## 1.92.70 — 2026-09-18
 

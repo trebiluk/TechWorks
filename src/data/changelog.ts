@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.71 — 2026-09-18
+
+- Premade themes / wall looks / ROLL THE DICE no longer cover or resize HUD chrome. Web, Help, Lock, Cog, language, and NOW stay tappable. Help covers every major surface. Technical manual v8.1.
+
 ## 1.92.70 — 2026-09-18
 
 - FERPA scrub: IEP, 504, ELL, DHH, seating, extended time, and quiet notes are not stored. Profile Supports gone. Import is Last, First, Period. Google book VAULT is Shop ID + alias.

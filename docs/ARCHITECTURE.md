@@ -1,6 +1,6 @@
-# TechWorks architecture · v1.92.47
+# TechWorks architecture · v1.92.71
 
-© 2026 Richard Kulibert. TECHWORKS™ v1.92.47.
+© 2026 Richard Kulibert. TECHWORKS™ v1.92.71.
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
@@ -9,7 +9,7 @@ How the shop is wired. In-app: **Admin → Docs**. Help **?** is the role book.
 ```mermaid
 flowchart LR
   subgraph author [Author]
-    Plan[PlanIt]
+    Plan[Plan book / Activity]
     Teach[Teach Ask / Do / pack]
   end
   subgraph play [Play]
@@ -52,6 +52,7 @@ TechWorks is one shop PC gradebook with four kinds of number. They never average
 
 - Cog = Settings (Admin). Arrange wall / Arrange plates live on those pages.
 - Shop PC writes. Cloud is a locked copy. Drive is a download, not a live sync.
+- HUD chrome (Lock, Help, Web, language, NOW) stays tappable after any premade theme or wall look. Chip scale is for plates, not the top bar.
 
 ## PlanIt → Teach → Deck → Wall
 
@@ -60,26 +61,31 @@ One write. You type the hour once. Every play surface reads that hour. Deck is n
 ### How a class hour is born
 
 ```
-New Activity / Plan book  —dates + grade + belong→  Parked unit on that period
+PlanIt week grid  —tap cell · type Do this · send this hour to empty slots→  teachDays for every P × day
+PlanIt New unit  —name + optional question→  Parked unit on that period
 Teach Ask / Do / Objective  —leave field or change P→  teachDays + the same unit
+Teach Agenda 01–04  —saveAgendaLine→  Wall plate · Deck This hour · Plan Do/close/notes
 Teach hour pack  —Workshop / Demo / …→  Enter · Listen · Work · Cleanup beats
-Deck Present  —reads teachJob→  Slides for this P + date
-Deck Edit slides  —same saveTeach* writes→  Teach + Plan book
-Wall Goals plate  —jobCardOf + teach override→  Question, rules, today, done, look-for
+Deck Present  —reads teachJob + hourAgenda→  Slides for this P + date
+Deck Edit slides  —same saveTeach* / saveAgendaLine writes→  Teach + PlanIt + Wall
+Wall beat  —wallMode from the bell→  Enter · Agenda · Cleanup · idle
 ```
 
 ### Lesson fields — who shows them
 
-| Field | Written on | Teach | Deck | Wall | Plan book | Family |
+| Field | Written on | Teach | Deck | Wall | PlanIt | Family |
 | --- | --- | --- | --- | --- | --- | --- |
-| Ask / driving question | Teach or Activity | Yes | Title slide | Goals plate | Unit prompt | No |
-| Do this now | Teach or Activity.today | Yes | Prove / beats | Today line | Activity | No |
+| Ask / driving question | Teach or Activity | Yes | Title slide | Idle Hour | Unit prompt | No |
+| Agenda 01–04 | Teach Agenda | Yes | This hour slide | Enter / Agenda plate | Do / close / notes | No |
+| Do this now | Teach or Activity.today | Yes | Agenda 02 + Prove | Agenda 02 | Activity | No |
 | Objective / done | Teach or Activity.done | Yes | Prove | Done line | Activity | No |
 | Look-for a 3 | Activity.lookFor | Hour line | Prove | Look-for | Activity | No |
 | Rules / goggles | Project constraints | Listen beat | Rules slide | Rules | Write the job | No |
 | Hour pack (Workshop…) | Teach only | Chips | Beat kicker | No | No | No |
 | STEM sentence | Project stemLine | Objective fallback | Title line | Under question | Unit | No |
-| Hang (Drive / Slides / YouTube) | Teach Hang paste | Yes | Embed slide | No | No | No |
+| Hang (Drive / Slides / YouTube / Canva) | Teach Hang paste | Yes | Embed slide | Under Agenda | No | No |
+| Need / materials | Teach Need or Plan cell | Yes | No | Enter + kit chip | Yes | No |
+| Closure / homework / mods | Plan cell | No | No | No | Yes | No |
 | Skill 1–4 expected | Activity.expect | No | No | Look-for n = | Activity | Words after you score |
 
 **Do not**
@@ -116,18 +122,16 @@ A worker is a locked id. The wall shows an alias minted from that id, never from
 | Bit | Where it lives | Wall | Profile (locked) | Family | Export |
 | --- | --- | --- | --- | --- | --- |
 | Locked id | students[].id | Hidden | Hidden | Hidden | Encoded live export |
-| Shop ID | publicHandle(id) | Never as a name | Roster / dossier / codebook | Portal tag | Live export code |
+| Shop ID | publicHandle(id) | Never as a name | Roster / dossier / Shop IDs | Portal tag | Live export code |
 | Alias (first) | students[].first | Yes | Yes | Yes | Yes |
-| Codebook | paper / CSV | Never | Print after PIN | Never | Teacher drawer only |
-| Desk first names | config.showFirstReal | Never | Teacher toggle · first only | Never | Never |
+| Codebook | paper / CSV | Never | Print Shop IDs after PIN | Never | Teacher drawer only |
 | Legal name | not stored | Never | Never | Never | Not in this app |
 | IEP / 504 | not stored | Never | Never | Never | Not in this app |
 | Crew key | crewKey + crewDays | Crew plates | Yes | No | Class tabs |
 | Period / grade | period, grade | P chips | Yes | Yes | Yes |
 
 - Admin → Crews: size, deal, look, crown. Separate rules live on Roster.
-- Rosters page is the yearbook of aliases. Legal names stay in Admin → Records. Print codebook is the paper map.
-- Show first real names (Settings → Privacy) puts legal first names on teacher pads only. The wall never follows.
+- Rosters page is the yearbook of aliases. Shop IDs print from Records → Roster / Backups. Real names are not stored.
 
 ## Score, Week, Year, Data
 
@@ -217,7 +221,7 @@ Locked chrome is the projector. PIN opens the writer. Crew 2222 is the kiosk, no
 | Learn Words | Open | Shop vocab | Bank |
 | Crew pad | 2222 / live P | Teal 3/2/1 | — |
 | Score / Rosters / Admin / Store / Grades | Teacher PIN | Never | Yes |
-| Family sheet | Tap alias; legal after PIN | Project mark, skill words | — |
+| Family sheet | Tap alias; family web uses Shop ID | Project mark, skill words | — |
 | Embed ?embed=1 | Wall only | Same as Wall | No dock |
 
 ## Where the bits live
@@ -228,9 +232,9 @@ Three copies. None of them is live Google Drive sync.
 
 | Copy | Holds | Does not hold |
 | --- | --- | --- |
-| This PC (gradebook) | Roster, marks, skills, projects, teachDays, club, prints, vault names | Theme, layout, PIN, Fake data toggle (browser only) |
-| Cloud (desk key) | Same desk, **no legal names** | Theme / PIN / Fake data. Names stay on this PC + codebook |
-| Drive folder | JSON + Google book you download | Live watch. VAULT tab = legal names — do not share |
+| This PC (gradebook) | Roster (Shop ID + alias), marks, skills, projects, teachDays, club, prints | Theme, layout, PIN, Fake data toggle (browser only). Legal names / IEP |
+| Cloud (desk key) | Same aliases + scores, encrypted | Theme / PIN / Fake data. Empty PC will not overwrite names |
+| Drive folder | JSON + Google book you download | Live watch. VAULT tab = Shop ID + alias — not legal names |
 
 - Teacher PIN = Set teacher PIN. 1111 is rejected. Never print it.
 - Crew 2222 stays off the student About card.
