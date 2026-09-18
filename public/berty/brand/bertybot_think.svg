@@ -27,20 +27,14 @@
   <g transform="translate(154,100) rotate(-15)">
     <rect x="0" y="0" width="24" height="58" rx="7" fill="url(#twthinkRed)" stroke="#1a1a1a" stroke-width="2.5"/>
     <g data-berty-hand="claw" transform="translate(-3,58)">
-      <rect x="0" y="0" width="30" height="16" rx="4" fill="url(#twthinkHand)" stroke="#1a1a1a" stroke-width="2"/>
-      <rect x="-2" y="14" width="8" height="14" rx="2.5" fill="url(#twthinkHand)" stroke="#1a1a1a" stroke-width="1.8"/>
-      <rect x="11" y="15" width="8" height="15" rx="2.5" fill="url(#twthinkHand)" stroke="#1a1a1a" stroke-width="1.8"/>
-      <rect x="24" y="14" width="8" height="14" rx="2.5" fill="url(#twthinkHand)" stroke="#1a1a1a" stroke-width="1.8"/>
+      <rect x="0" y="0" width="28" height="24" rx="11" fill="url(#twthinkHand)" stroke="#1a1a1a" stroke-width="2"/>
     </g>
   </g>
   <!-- left arm to chin -->
   <g transform="translate(55,95) rotate(55)">
     <rect x="0" y="0" width="24" height="55" rx="7" fill="url(#twthinkRed)" stroke="#1a1a1a" stroke-width="2.5"/>
     <g data-berty-hand="claw" transform="translate(-3,54)">
-      <rect x="0" y="0" width="30" height="16" rx="4" fill="url(#twthinkHand)" stroke="#1a1a1a" stroke-width="2"/>
-      <rect x="-2" y="14" width="8" height="14" rx="2.5" fill="url(#twthinkHand)" stroke="#1a1a1a" stroke-width="1.8"/>
-      <rect x="11" y="15" width="8" height="15" rx="2.5" fill="url(#twthinkHand)" stroke="#1a1a1a" stroke-width="1.8"/>
-      <rect x="24" y="14" width="8" height="14" rx="2.5" fill="url(#twthinkHand)" stroke="#1a1a1a" stroke-width="1.8"/>
+      <rect x="0" y="0" width="28" height="24" rx="11" fill="url(#twthinkHand)" stroke="#1a1a1a" stroke-width="2"/>
     </g>
   </g>
   <g>

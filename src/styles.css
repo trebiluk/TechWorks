@@ -90,7 +90,7 @@ html[data-edit="on"] .edit-field {
   filter: drop-shadow(0 8px 12px color-mix(in oklab, #000 42%, transparent));
   pointer-events: none;
   user-select: none;
-  overflow: hidden;
+  overflow: visible;
 }
 .berty-figure {
   position: relative;
@@ -100,7 +100,7 @@ html[data-edit="on"] .edit-field {
   flex-shrink: 0;
   align-items: flex-end;
   justify-content: center;
-  overflow: hidden;
+  overflow: visible;
 }
 .berty-figure[data-size="icon"] {
   --berty-h: 1.5rem;
@@ -116,13 +116,13 @@ html[data-edit="on"] .edit-field {
 .berty-figure .berty-seat {
   height: 100%;
   width: auto;
-  overflow: hidden;
+  overflow: visible;
 }
 .berty-figure .berty-seat svg {
   display: block;
   height: 100%;
   width: auto;
-  overflow: hidden;
+  overflow: visible;
   max-width: none;
 }
 .berty-figure[data-finish="matte"] .berty-seat {
@@ -173,26 +173,41 @@ html[data-edit="on"] .edit-field {
   color: var(--color-title, var(--color-fg));
 }
 
-/* Instrument plates — glass edge, cyan lamp, nested radius. */
-.tw-gadget {
+/* Instrument plates — chamfered Tron hull, cyan lamp. */
+.tw-chamfer,
+.tw-gadget,
+.tw-agenda-card {
+  --cut: var(--tw-cut, 10px);
   position: relative;
-  border-radius: var(--ui-radius, 14px);
+  border-radius: 0;
+  clip-path: polygon(
+    var(--cut) 0,
+    calc(100% - var(--cut)) 0,
+    100% var(--cut),
+    100% calc(100% - var(--cut)),
+    calc(100% - var(--cut)) 100%,
+    var(--cut) 100%,
+    0 calc(100% - var(--cut)),
+    0 var(--cut)
+  );
+}
+.tw-gadget {
   background:
-    linear-gradient(165deg, color-mix(in oklab, #fff 14%, transparent), transparent 38%),
+    linear-gradient(165deg, color-mix(in oklab, #fff 16%, transparent), transparent 36%),
     var(--color-surface);
   box-shadow:
     inset 0 1px 0 color-mix(in oklab, #fff 22%, transparent),
-    inset 0 0 0 1px color-mix(in oklab, #fff 9%, transparent),
-    0 1px 0 color-mix(in oklab, var(--color-accent) 22%, transparent),
-    0 16px 40px -24px color-mix(in oklab, #000 70%, transparent);
-  transition: box-shadow 180ms var(--ease-smooth-out, cubic-bezier(0.22, 1, 0.36, 1));
+    inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 28%, transparent),
+    0 0 0 1px color-mix(in oklab, var(--color-accent) 18%, transparent),
+    0 18px 40px -24px color-mix(in oklab, #000 72%, transparent);
+  filter: drop-shadow(0 0 10px color-mix(in oklab, var(--color-accent) 18%, transparent));
+  transition: filter 180ms var(--ease-smooth-out, cubic-bezier(0.22, 1, 0.36, 1));
 }
 .tw-gadget::after {
   content: "";
   pointer-events: none;
   position: absolute;
   inset: 0;
-  z-index: 0;
   border-radius: inherit;
   background: linear-gradient(
     118deg,
@@ -208,7 +223,6 @@ html[data-edit="on"] .edit-field {
   pointer-events: none;
   position: absolute;
   inset: max(4px, calc(var(--ui-pad, 12px) * 0.45));
-  z-index: 0;
   border-radius: var(--radius-sm, 8px);
   opacity: 0.32;
   background:
@@ -228,6 +242,12 @@ html[data-edit="on"] .edit-field {
     0 0 0 1px color-mix(in oklab, var(--color-accent) 40%, transparent),
     0 0 32px -8px color-mix(in oklab, var(--color-accent) 48%, transparent);
   animation: tw-breathe 2.8s ease-in-out infinite;
+}
+.tw-warn {
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #fff 16%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--color-cleanup, #f97316) 50%, transparent),
+    0 0 28px -8px color-mix(in oklab, var(--color-cleanup, #f97316) 48%, transparent);
 }
 .tw-podium {
   background: linear-gradient(
@@ -390,7 +410,8 @@ html[data-edit="on"] .edit-field {
   .tw-lockup::after,
   .tw-live,
   .tw-ring-live,
-  .tw-dot-on {
+  .tw-dot-on,
+  .tw-now-band::after {
     animation: none !important;
   }
 }
@@ -1019,11 +1040,11 @@ html[data-contrast="high"] {
   min-height: 10rem;
 }
 
-/* Two-column wall. Hour is the wide hero. Phone stacks left then right. */
+/* Two-column wall. Hour is the wide hero. Widescreen stays 2-col on phones. */
 .tw-wall-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-  gap: 0.375rem;
+  grid-template-columns: minmax(0, 1.62fr) minmax(13rem, 0.7fr);
+  gap: 0.5rem;
   align-items: stretch;
   min-width: 0;
   min-height: 0;
@@ -1060,6 +1081,14 @@ html[data-contrast="high"] {
   border-radius: 12px;
 }
 @media (max-width: 899px) {
+  .tw-web-wall[data-wall-stage="show"] .tw-wall-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(8.5rem, 0.28fr);
+    min-width: 52rem;
+    gap: 0.35rem;
+  }
+  .tw-web-wall[data-wall-stage="show"] {
+    overflow-x: auto;
+  }
   .tw-wall-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1068,6 +1097,8 @@ html[data-contrast="high"] {
   flex: 1 1 0;
   min-height: 0;
   height: 100%;
+  grid-template-columns: minmax(0, 1fr) minmax(9rem, 0.26fr);
+  gap: 0.35rem;
 }
 .tw-web-wall[data-wall-stage="show"] .tw-wall-col {
   overflow: hidden;
@@ -1285,6 +1316,44 @@ html[data-contrast="high"] {
   flex: 1 1 0 !important;
   height: 100% !important;
   min-height: 0;
+  container-type: size;
+  container-name: hour;
+  overflow: visible;
+}
+.tw-hour-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  flex: 1 1 0;
+  min-height: 0;
+  align-items: stretch;
+  gap: 0.2rem;
+}
+.tw-hour-body:has(.tw-berty-corner) {
+  grid-template-columns: minmax(0, 1fr) clamp(6.25rem, 18cqi, 15rem);
+}
+.tw-berty-corner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+.tw-berty-corner .berty-figure {
+  --berty-h: min(100%, clamp(7rem, 64cqh, 22rem));
+  height: var(--berty-h);
+  max-height: 100%;
+}
+.tw-berty-corner .berty-seat {
+  max-height: 100%;
+  filter: drop-shadow(0 0 18px color-mix(in oklab, var(--color-accent) 48%, transparent)) drop-shadow(0 16px 14px color-mix(in oklab, #000 48%, transparent));
+}
+.tw-web-wall[data-wall-stage="show"] .tw-hour-stage {
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #fff 22%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 40%, transparent),
+    0 0 42px -14px color-mix(in oklab, var(--color-accent) 42%, transparent);
 }
 .tw-web-wall[data-wall-stage="show"] .tw-fill-row:has([data-job-plate]):not(:has([data-dash-pair])) {
   flex: 1 1 0;
@@ -1555,55 +1624,17 @@ html {
 }
 
 header.desk-chrome {
-  position: relative;
-  z-index: 40;
-  isolation: isolate;
-  pointer-events: auto;
   gap: 0.35rem;
   overflow: visible;
-  border-radius: calc(var(--ui-radius, 14px) + 4px);
+  border-radius: 0;
   padding: 0.28rem 0.4rem 0.38rem;
   background:
-    linear-gradient(180deg, color-mix(in oklab, #fff 10%, transparent), transparent 72%),
-    color-mix(in oklab, var(--color-surface) 88%, transparent);
+    linear-gradient(180deg, color-mix(in oklab, #2ee6ff 14%, transparent), transparent 70%),
+    color-mix(in oklab, var(--color-surface) 90%, transparent);
   box-shadow:
-    inset 0 1px 0 color-mix(in oklab, #fff 18%, transparent),
-    inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 16%, transparent),
+    inset 0 1px 0 color-mix(in oklab, #fff 20%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 32%, transparent),
     0 14px 32px -22px color-mix(in oklab, #000 55%, transparent);
-}
-/* Themes / wall looks may paint chrome. They must never cover, resize, or disable HUD hits. */
-header.desk-chrome.tw-gadget::after {
-  content: none;
-}
-header.desk-chrome.tw-hud::before {
-  pointer-events: none !important;
-  z-index: 0;
-  mix-blend-mode: normal;
-}
-header.desk-chrome .nav-cluster,
-header.desk-chrome .tw-hud-row {
-  position: relative;
-  z-index: 2;
-  pointer-events: auto;
-}
-header.desk-chrome button,
-header.desk-chrome a,
-header.desk-chrome input,
-header.desk-chrome [role="button"],
-header.desk-chrome .tw-hud-btn {
-  position: relative;
-  z-index: 3;
-  pointer-events: auto !important;
-  touch-action: manipulation;
-}
-header.desk-chrome .min-h-11,
-header.desk-chrome .tw-hud-btn {
-  min-height: 2.75rem;
-}
-header.desk-chrome .size-11 {
-  width: 2.75rem;
-  height: 2.75rem;
-  min-height: 2.75rem;
 }
 header.desk-chrome .nav-cluster {
   width: 100%;
@@ -1796,6 +1827,9 @@ html[data-phone="on"] .phone-dock .tw-tap {
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .tw-ticker-track {
+      animation: none;
+    }
     *,
     *::before,
     *::after {
@@ -1876,8 +1910,7 @@ html[data-look] .bg-surface {
     inset 0 1px 0 color-mix(in oklab, var(--color-fg) calc(12% * var(--ui-shadow, 0.7)), transparent),
     0 calc(22px * var(--ui-shadow, 0.7)) calc(44px * var(--ui-shadow, 0.7)) calc(-28px * var(--ui-shadow, 0.7)) rgb(0 0 0 / calc(0.7 * var(--ui-shadow, 0.7)));
 }
-/* Chip scale is for wall plates / board content — never HUD chrome. */
-html[data-look] .board-main .min-h-11 { min-height: var(--ui-chip, 2.75rem); }
+html[data-look] .min-h-11 { min-height: var(--ui-chip, 2.75rem); }
 html[data-look] .tw-gadget { border-radius: var(--ui-radius, 12px); }
 html[data-look] .tw-gadget {
   box-shadow:
@@ -1893,9 +1926,12 @@ html[data-look] body::before {
   inset: 0;
   z-index: 0;
   background:
-    linear-gradient(180deg, color-mix(in oklab, var(--color-accent) 14%, transparent), transparent 28%),
-    radial-gradient(900px 280px at 88% -8%, color-mix(in oklab, var(--color-accent) 22%, transparent), transparent 62%);
-  opacity: calc(var(--ui-glow, 0.52) * 0.55);
+    linear-gradient(color-mix(in oklab, var(--color-accent) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--color-accent) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(180deg, color-mix(in oklab, var(--color-accent) 16%, transparent), transparent 30%),
+    radial-gradient(900px 280px at 88% -8%, color-mix(in oklab, var(--color-accent) 26%, transparent), transparent 62%);
+  background-size: 56px 56px, 56px 56px, auto, auto;
+  opacity: calc(var(--ui-glow, 0.52) * 0.7);
 }
 html[data-look] .board-root {
   position: relative;
@@ -1985,6 +2021,10 @@ html[data-finish="felt"] .bg-surface,
 }
 .board-root { scrollbar-width: thin; scrollbar-color: color-mix(in oklab, var(--color-fg) 28%, transparent) transparent; }
 .tw-web-wall { min-height: 0; flex: 1 1 0; }
+.board-root:has([data-wall-stage="show"]) {
+  padding-inline: 0.4rem;
+  padding-block: 0.4rem 0.3rem;
+}
 .board-root :focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
 
 .tw-scrim {
@@ -1999,7 +2039,6 @@ html[data-finish="felt"] .bg-surface,
 }
 .tw-tap {
   cursor: pointer;
-  touch-action: manipulation;
 }
 .tw-tap:focus-visible {
   outline: 2px solid var(--color-gold, #e8c547);
@@ -2008,176 +2047,6 @@ html[data-finish="felt"] .bg-surface,
 .tw-tap:active {
   transform: translateY(1px);
   box-shadow: 0 0 0 2px var(--color-fg);
-}
-
-/* Theme / wall-look picker — 2D previews, Chromebook-safe, paint-only minis. */
-.tw-look-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.45rem;
-}
-@media (min-width: 720px) {
-  .tw-look-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-}
-.tw-look-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  min-height: 2.75rem;
-  padding: 0.4rem 0.45rem 0.45rem;
-  text-align: left;
-  border-radius: 12px;
-  background: var(--color-elevated);
-  box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 10%, transparent);
-}
-.tw-look-card-on {
-  background: color-mix(in oklab, var(--color-fg) 10%, var(--color-elevated));
-  box-shadow:
-    inset 0 1px 0 color-mix(in oklab, #fff 14%, transparent),
-    0 0 0 2px var(--color-gold);
-}
-.tw-look-mini {
-  pointer-events: none;
-  position: relative;
-  display: grid;
-  grid-template-columns: 1.35fr 1fr;
-  gap: 3px;
-  height: 2.2rem;
-  border-radius: 8px;
-  padding: 4px;
-  box-shadow: inset 0 0 0 1px color-mix(in oklab, #fff 12%, transparent);
-}
-.tw-look-mini > span {
-  pointer-events: none;
-  border-radius: 4px;
-}
-.tw-look-mini > i {
-  pointer-events: none;
-  position: absolute;
-  left: 6px;
-  right: 42%;
-  bottom: 6px;
-  height: 3px;
-  border-radius: 99px;
-}
-.tw-look-copy {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 0.1rem;
-  padding-right: 1.8rem;
-}
-.tw-look-name {
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  line-height: 1.15;
-}
-.tw-look-hint {
-  font-size: 0.65rem;
-  line-height: 1.25;
-  color: var(--color-muted);
-}
-.tw-look-on {
-  position: absolute;
-  top: 0.4rem;
-  right: 0.4rem;
-  pointer-events: none;
-  border-radius: 99px;
-  background: var(--color-gold);
-  color: var(--color-bg);
-  padding: 0.1rem 0.35rem;
-  font-size: 0.58rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-}
-.tw-theme-status {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  min-height: 2.75rem;
-  padding: 0.35rem 0.5rem;
-  border-radius: 12px;
-  background: var(--color-elevated);
-}
-.tw-theme-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.4rem;
-}
-@media (min-width: 640px) {
-  .tw-theme-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-}
-@media (min-width: 1024px) {
-  .tw-theme-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-}
-.tw-theme-tile {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 0.28rem;
-  min-height: 2.75rem;
-  padding: 0.35rem;
-  text-align: left;
-  border-radius: 12px;
-  background: var(--color-elevated);
-  box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 8%, transparent);
-}
-.tw-theme-tile-on {
-  box-shadow:
-    inset 0 1px 0 color-mix(in oklab, #fff 12%, transparent),
-    0 0 0 2px var(--color-gold);
-}
-.tw-theme-tile-dice {
-  box-shadow:
-    inset 0 1px 0 color-mix(in oklab, #2ee6ff 28%, transparent),
-    0 0 0 1px color-mix(in oklab, #8b6cff 45%, transparent);
-}
-.tw-theme-tile-dice.tw-theme-tile-on {
-  box-shadow:
-    inset 0 1px 0 color-mix(in oklab, #2ee6ff 28%, transparent),
-    0 0 0 2px var(--color-gold);
-}
-.tw-theme-swatch {
-  pointer-events: none;
-  display: block;
-  height: 1.7rem;
-  border-radius: 8px;
-  box-shadow: inset 0 0 0 1px color-mix(in oklab, #000 25%, transparent);
-}
-.tw-theme-name {
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  line-height: 1.15;
-  text-transform: uppercase;
-}
-.tw-theme-kind {
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-muted);
-}
-.tw-theme-tile-on .tw-theme-kind {
-  color: var(--color-gold);
-}
-.tw-help-jump {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  padding: 0 1rem 0.35rem;
-}
-.tw-help-card {
-  border-top: 1px solid var(--color-border);
-  padding: 0.75rem 0;
-}
-.tw-help-mark {
-  background: color-mix(in oklab, var(--color-gold) 42%, transparent);
-  color: inherit;
-  border-radius: 2px;
-  padding: 0 0.12em;
 }
 
 /* One control language: HUD icons, rails, tiles, segments. */
@@ -2194,7 +2063,6 @@ html[data-finish="felt"] .bg-surface,
 .tw-hud-row::-webkit-scrollbar { display: none; }
 .tw-hud-btn {
   flex: 0 0 auto;
-  touch-action: manipulation;
 }
 .tw-rail {
   display: flex;
@@ -2301,22 +2169,10 @@ html[data-finish="felt"] .bg-surface,
     inset 0 0 0 1px color-mix(in oklab, #fff 6%, transparent),
     0 8px 18px -14px color-mix(in oklab, #000 45%, transparent);
 }
-.tw-gadget .tw-gadget::after { opacity: 0.2; pointer-events: none !important; }
+.tw-gadget .tw-gadget::after { opacity: 0.2; }
 .desk-chrome {
   border-radius: calc(var(--ui-radius, 14px) + 4px);
   padding: 0.28rem 0.4rem;
-}
-.phone-dock {
-  position: relative;
-  z-index: 50;
-  isolation: isolate;
-}
-.phone-dock button,
-.phone-dock a,
-.phone-dock [role="button"] {
-  position: relative;
-  z-index: 2;
-  pointer-events: auto !important;
 }
 .board-root input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
 .board-root textarea,
@@ -2387,7 +2243,7 @@ html[dir="rtl"] .board-root { direction: rtl; }
 
 @media (max-width: 899px) {
   html { font-size: min(var(--ui-base, 16px), 15px); }
-  html[data-look] .board-main .min-h-11 { min-height: 2.5rem; }
+  html[data-look] .min-h-11 { min-height: 2.5rem; }
   .board-root {
     padding-left: max(0.5rem, env(safe-area-inset-left));
     padding-right: max(0.5rem, env(safe-area-inset-right));
@@ -2656,8 +2512,7 @@ html[dir="rtl"] .board-root { direction: rtl; }
   min-height: 0;
   height: 100%;
 }
-.tw-agenda[data-n="1"],
-.tw-agenda[data-n="2"] {
+.tw-agenda[data-n="1"] {
   grid-template-columns: 1fr;
   grid-template-rows: 1fr;
 }
@@ -2667,15 +2522,98 @@ html[dir="rtl"] .board-root { direction: rtl; }
 .tw-agenda-card {
   min-height: 0;
   height: 100%;
+  background: color-mix(in oklab, var(--color-elevated) 88%, transparent);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 28%, transparent),
+    inset 0 1px 0 color-mix(in oklab, #fff 12%, transparent);
+}
+.tw-now-band {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex: 0 0 auto;
+  min-height: 3.25rem;
+  padding: 0.45rem 0.85rem;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    linear-gradient(90deg, color-mix(in oklab, var(--color-accent) 36%, transparent), color-mix(in oklab, var(--color-accent) 8%, transparent) 58%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #fff 22%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 55%, transparent),
+    0 0 28px -10px color-mix(in oklab, var(--color-accent) 55%, transparent);
+}
+.tw-now-band::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    108deg,
+    transparent 28%,
+    color-mix(in oklab, #fff 32%, transparent) 46%,
+    transparent 62%
+  );
+  transform: translateX(-130%);
+  animation: tw-shine 6.8s ease-in-out 0.8s infinite;
+}
+.tw-now-band > span:first-child {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  text-shadow: 0 0 14px color-mix(in oklab, var(--color-accent) 75%, transparent);
+}
+.tw-now-band > strong {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 3.4vw, 2.15rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--color-title);
+}
+.tw-ticker {
+  flex: 0 0 auto;
+  height: 2.35rem;
+  overflow: hidden;
+  --cut: 10px;
+  clip-path: polygon(var(--cut) 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%);
+  background:
+    linear-gradient(90deg, color-mix(in oklab, var(--color-accent) 24%, var(--color-bg)), var(--color-bg) 42%, color-mix(in oklab, var(--color-accent) 18%, var(--color-bg)));
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--color-accent) 72%, transparent),
+    0 -14px 30px -12px color-mix(in oklab, var(--color-accent) 55%, transparent);
 }
 .tw-agenda-on {
+  background: color-mix(in oklab, var(--color-gold) 14%, var(--color-elevated));
   box-shadow:
     inset 0 0 0 2px var(--color-gold),
-    inset 0 1px 0 color-mix(in oklab, #fff 18%, transparent);
+    inset 0 1px 0 color-mix(in oklab, #fff 22%, transparent),
+    0 0 26px -8px color-mix(in oklab, var(--color-gold) 60%, transparent);
 }
 .tw-agenda-on .tw-agenda-n {
   background: var(--color-gold);
   color: var(--color-bg);
+}
+.tw-ticker-track {
+  display: flex;
+  gap: 2.75rem;
+  width: max-content;
+  padding: 0.5rem 1.5rem;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  animation: tw-ticker 32s linear infinite;
+}
+.tw-ticker-track span {
+  white-space: nowrap;
+}
+@keyframes tw-ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 .tw-kit {
   font-size: clamp(0.85rem, 3.2cqh, 1.15rem);
@@ -2713,11 +2651,6 @@ html[dir="rtl"] .board-root { direction: rtl; }
 .tw-hang-play {
   min-height: 10rem;
   flex: 1 1 auto;
-}
-@media (max-width: 640px) {
-  .tw-agenda {
-    grid-template-columns: 1fr;
-  }
 }
 @media (prefers-reduced-motion: no-preference) {
   .tw-enter > * {
@@ -2813,60 +2746,59 @@ html[dir="rtl"] .board-root { direction: rtl; }
   background: var(--color-elevated);
 }
 
-.tw-now-band {
+/* Grafted from 1.92.73 theme/help chrome */
+.tw-look-mini {
+  pointer-events: none;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 3px;
+  height: 2.2rem;
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, #fff 12%, transparent);
+}
+.tw-look-mini > span {
+  pointer-events: none;
+  border-radius: 4px;
+}
+.tw-look-mini > i {
+  pointer-events: none;
+  position: absolute;
+  left: 6px;
+  right: 42%;
+  bottom: 6px;
+  height: 3px;
+  border-radius: 99px;
+}
+.tw-look-copy {
   display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
-  flex: 0 0 auto;
-  min-height: 3.25rem;
-  padding: 0.45rem 0.85rem;
-  background:
-    linear-gradient(90deg, color-mix(in oklab, var(--color-accent) 22%, transparent), transparent 70%);
-  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 40%, transparent);
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding-right: 1.8rem;
 }
-.tw-now-band > span:first-child {
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--color-accent);
-}
-.tw-now-band > strong {
-  font-family: var(--font-display);
-  font-size: clamp(1.35rem, 3.4vw, 2.15rem);
+.tw-look-name {
+  font-size: 0.8rem;
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
 }
-.tw-ticker {
-  flex: 0 0 auto;
-  height: 2.35rem;
-  overflow: hidden;
-  background: color-mix(in oklab, var(--color-accent) 10%, var(--color-bg));
-  box-shadow:
-    inset 0 1px 0 color-mix(in oklab, var(--color-accent) 55%, transparent),
-    0 -10px 24px -16px color-mix(in oklab, var(--color-accent) 40%, transparent);
-}
-.tw-ticker-track {
+
+.tw-help-jump {
   display: flex;
-  gap: 2.75rem;
-  width: max-content;
-  padding: 0.5rem 1.5rem;
-  font-family: var(--font-display);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--color-accent);
-  animation: tw-ticker 32s linear infinite;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0 1rem 0.35rem;
 }
-.tw-ticker-track span {
-  white-space: nowrap;
+.tw-help-card {
+  border-top: 1px solid var(--color-border);
+  padding: 0.75rem 0;
 }
-@keyframes tw-ticker {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .tw-ticker-track { animation: none; }
+.tw-help-mark {
+  background: color-mix(in oklab, var(--color-gold) 42%, transparent);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 0.12em;
 }
 

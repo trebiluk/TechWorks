@@ -20,14 +20,13 @@ import { ClubPulseCard } from "@/components/club-pulse";
 import { clubPulse, loadClub } from "@/lib/club";
 import { pollForPeriod } from "@/lib/polls";
 import { featureOn } from "@/lib/features";
-import { showBerty } from "@/lib/berty";
+import { showBerty, bertyPose } from "@/lib/berty";
 import { procedureStep } from "@/lib/procedure";
 import { teachJob, laySlots, teachFocusPeriod, hangOf } from "@/lib/teach";
 import { hourKit } from "@/lib/hour-flow";
 import { AgendaWall, KitChip } from "@/components/agenda-wall";
 import { hideDashRow, loadDashLayout, moveDashRow, moveDashTo, applyDashKit, DASH_KITS, patchDash, rowOn, saveDashLayout, DASH_ROWS, DEFAULT_LAYOUT, type DashLayout, type DashRowId } from "@/lib/dash-layout";
 import { WALL_PRESET_EVENT } from "@/lib/wall-presets";
-import { WallLookChips } from "@/components/wall-looks";
 import { SortableItem, SortableList, SortableWell } from "@/components/sortable";
 import { useShopClock } from "@/lib/use-clock";
 import { ProcedureCue } from "@/components/procedure-cue";
@@ -39,6 +38,7 @@ import { PollWall } from "@/components/polls";
 import { useLang } from "@/lib/i18n-hook";
 import { HangFrame } from "@/components/hang-frame";
 import { PlanitWeek } from "@/components/planit-week";
+import { WallLookChips } from "@/components/wall-looks";
 
 const FOLD_KEY = "techworks-dash-fold-v2";
 const DEFAULT_CLOSED: Record<string, boolean> = { spark: true, notes: true };
@@ -195,7 +195,7 @@ export const Dashboard = memo(function Dashboard({
   }
 
   const nowCard = (
-    <article className={cn("tw-gadget tw-hud tw-fill flex min-h-[10rem] flex-col p-3 text-fg", clock?.live ? "justify-center" : "", clock?.cleanup ? "bg-cleanup text-accent-fg" : "", clock?.live && !clock.cleanup ? "tw-live" : "")}>
+    <article className={cn("tw-gadget tw-hud tw-fill flex min-h-0 flex-col p-2 text-fg", clock?.live ? "justify-center" : "", clock?.cleanup ? "bg-cleanup text-accent-fg" : "", clock?.live && !clock.cleanup ? "tw-live" : "")}>
       <div className="flex items-center gap-3">
         {clock?.live ? (
           <ProgressRing
@@ -231,7 +231,6 @@ export const Dashboard = memo(function Dashboard({
                 : wallJob.question || wallJob.today || `Opens ${formatSchoolDate(openDay)} P1`}
           </p>
         </div>
-        {bertyOn ? <Berty pose="point" size="lg" className="shrink-0" /> : null}
       </div>
       {!clock?.live && arrange ? (
         <div className="mt-auto pt-2">
@@ -243,14 +242,29 @@ export const Dashboard = memo(function Dashboard({
   );
 
   const classCard = (
-    <article data-job-plate className="tw-gadget tw-hud tw-fill-wide tw-hour-stage flex min-h-0 flex-1 flex-col gap-2 p-3">
+    <article data-job-plate className={cn("tw-gadget tw-hud tw-fill-wide tw-hour-stage tw-chamfer flex min-h-0 flex-1 flex-col gap-2 p-3", clock?.live && !clock.cleanup && "tw-live", clock?.cleanup && "tw-warn")}>
       {viewMine ? (
         <>
           <p className="tw-now-band tw-chamfer">
             <span>Now</span>
             <strong>{wallJob.today || wallJob.question || periodTitle(shown, bells)}</strong>
           </p>
-          <AgendaWall file={file} date={wallDate} period={shown} unlocked={unlocked} editing={arrange} onChange={onChange} active={step} />
+          <div className="tw-hour-body">
+            <AgendaWall file={file} date={wallDate} period={shown} unlocked={unlocked} editing={arrange} onChange={onChange} active={step} />
+            {bertyOn && !arrange ? (
+              <aside className="tw-berty-corner" aria-hidden>
+                <Berty
+                  pose={bertyPose({
+                    cleanup: Boolean(clock?.cleanup),
+                    passing,
+                    live: shopLive,
+                    slot: step,
+                  })}
+                  size="xl"
+                />
+              </aside>
+            ) : null}
+          </div>
           <KitChip kit={hourKit(file, wallDate, shown)} />
           {arrange ? (
             <>
@@ -552,8 +566,7 @@ function LayoutBar({
   return (
     <section className="tw-gadget shrink-0 space-y-2 p-3">
       <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gold">Customize this wall</p>
-      <p className="text-sm text-muted">Looks paint color, type, and scale. Each look shows a mini wall. Show wall still fills Hour as a 2×2. Kits park extra plates. Drag a plate to the other column.</p>
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-gold">Looks</p>
+      <p className="text-sm text-muted">Kits park plates in two columns. Drag a plate to the other column.</p>
       <WallLookChips />
       <div className="flex flex-wrap items-center gap-1">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Kits</span>

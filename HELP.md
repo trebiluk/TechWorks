@@ -68,7 +68,7 @@ Open a worker (tap a name) → Family. One project mark. Skills in plain words. 
 
 ### BertyBot
 
-Berty is the workshop mascot. He waves at ENTER, thinks at LISTEN, stands for CREW WORK, points at CLEAN UP and between classes, and celebrates SHARE / class reward. HAND LAW: both claws stay on every pose — Bare means no tool, not no hands. Color chips paint the metal (each Berty gets its own paint so two on screen cannot steal cyan). Cleanup and passing always show him. Open Berty from the version chip.
+Berty is the workshop mascot. On the wall he takes the hour corner. He waves at ENTER, thinks at LISTEN, stands for CREW WORK, points at CLEAN UP and between classes, and celebrates SHARE / class reward. HAND LAW: both claws stay on every pose — Bare means no tool, not no hands. Color chips paint the metal (each Berty gets its own paint so two on screen cannot steal cyan). Cleanup and passing always show him. Open Berty from the version chip.
 
 ### Wall looks
 

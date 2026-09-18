@@ -1,8 +1,20 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.73. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.76. -->
 
 # TechWorks changelog
 
-App version **1.92.73**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.76**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.76 — 2026-09-18
+
+- Wall wow: Berty owns the hour corner, thin info rail, lamp on NOW / live plate / ticker. Old bot, one mitt per arm. Oswego paint kept.
+
+## 1.92.75 — 2026-09-18
+
+- Berty sits in the hour corner at drawing scale. Info rail is thin. Ticker stays the floor. One mitt per arm.
+
+## 1.92.74 — 2026-09-18
+
+- Berty is the old shop bot again. Each arm has one mitt — the extra pointing arm and three-finger claws are gone.
 
 ## 1.92.73 — 2026-09-18
 
@@ -10,11 +22,12 @@ App version **1.92.73**. Newest first. Sheets stay the archive; this desk is the
 
 ## 1.92.72 — 2026-09-18
 
-- Theme picker shows mini wall looks and color tiles. ROLL THE DICE and holidays still leave Web, Help, Lock, Cog, language, and NOW tappable. Help is searchable with jump chips.
+- Wall is the drawing: NOW band, 2×2 agenda, Berty + clock on the right, locked ticker. Cyan on navy, chamfered plates, widescreen on phones. Themes are ADA contrast only.
 
 ## 1.92.71 — 2026-09-18
 
-- Premade themes / wall looks / ROLL THE DICE no longer cover or resize HUD chrome. Web, Help, Lock, Cog, language, and NOW stay tappable. Help covers every major surface. Technical manual v8.1.
+
+- Plan and activity create: type the job, pick the days. PlanIt cell opens on Do this now. Need and Close sit next. Unit, hour shape, and the rest fold away. The design-process wizard is gone.
 
 ## 1.92.70 — 2026-09-18
 
