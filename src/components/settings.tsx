@@ -60,7 +60,6 @@ export function SettingsBody({
   tab,
   onChange,
   onTab,
-  onExportNames,
   onExport,
   onSave,
   onTips,
@@ -73,7 +72,6 @@ export function SettingsBody({
   tab: SettingsTab;
   onChange: (next: EconomyFile) => void;
   onTab?: (id: SettingsTab) => void;
-  onExportNames: () => void;
   onExport?: () => void;
   onSave?: () => void;
   onTips?: (on: boolean) => void;
@@ -264,13 +262,6 @@ export function SettingsBody({
                 >
                   Save portal PIN
                 </button>
-                <button
-                  type="button"
-                  onClick={onExportNames}
-                  className="mt-6 min-h-11 rounded-lg bg-elevated px-4 text-sm font-medium"
-                >
-                  Export names vault (private)
-                </button>
               </section>
             ) : null}
 
@@ -425,7 +416,6 @@ export function SettingsBody({
                 file={file}
                 onChange={onChange}
                 onExport={onExport}
-                onExportNames={onExportNames}
                 onSave={onSave}
                 onImport={() => setRosterOpen(true)}
               />

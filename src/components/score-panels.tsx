@@ -239,7 +239,7 @@ function EmbedCard() {
       </button>
       {open ? (
         <div className="mt-2 space-y-2">
-          <p className="text-sm text-muted">Google Site → Insert → Embed. Overview only. Aliases, no names vault.</p>
+          <p className="text-sm text-muted">Google Site → Insert → Embed. Overview only. Aliases.</p>
           <textarea readOnly value={html} className="min-h-24 w-full rounded-md bg-surface p-2 font-mono text-xs outline-none" />
           <button
             type="button"

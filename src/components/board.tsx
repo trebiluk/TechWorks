@@ -290,13 +290,7 @@ export function Board() {
     downloadText("techworks-LIVE.enc.txt", encoded, "text/plain");
     const posted = await publishLive(encoded);
     setFile((cur) => stampLiveExport(cur, todayIso(), liveP ?? undefined));
-    flashMsg(posted ? "Live published · names not in that file" : "Live file saved here · names not in that file");
-  }
-
-  function exportNames() {
-    const { names } = splitExport(file);
-    downloadText("techworks-NAMES.private.json", JSON.stringify(names, null, 2));
-    flashMsg("Names vault downloaded · keep private");
+    flashMsg(posted ? "Live published · aliases only" : "Live file saved here · aliases only");
   }
 
   function toggleRank(board: "skill" | "perk") {
@@ -803,7 +797,7 @@ export function Board() {
           onClick={() => void exportLive()}
           className="mb-2 min-h-11 rounded-md bg-accent px-3 text-left text-sm font-semibold text-accent-fg"
         >
-          Friday · export live (no names) before you leave. Names vault is a separate private file.
+          Friday · export live before you leave. Aliases only.
         </button>
       ) : unlocked && mode !== "board" && liveP && isSchoolDay(today) && !isSubDay(file, today) && !exportedThisPeriod(file, today, liveP) ? (
         <button
@@ -811,7 +805,7 @@ export function Board() {
           onClick={() => void exportLive()}
           className="mb-2 min-h-11 rounded-md ring-1 ring-loss px-3 text-left text-sm font-semibold"
         >
-          Export P{liveP} live · at least once this period. Names stay in the vault.
+          Export P{liveP} live · at least once this period. Aliases only.
         </button>
       ) : null}
       <div className="board-main flex min-h-0 flex-1 flex-col overflow-hidden">
@@ -873,7 +867,6 @@ export function Board() {
           onExport={() => void exportLive()}
           onSave={saveNow}
           onHelp={() => setHelpOpen(true)}
-          onExportNames={exportNames}
           onTips={setDescribeOn}
           wallDesk={wallDash(true)}
         />

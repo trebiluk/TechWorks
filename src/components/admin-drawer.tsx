@@ -18,7 +18,6 @@ export function AdminDrawer({
   view,
   file,
   onChange,
-  onExportNames,
   onExport,
   onSave,
   onTips,
@@ -28,7 +27,6 @@ export function AdminDrawer({
   view: string;
   file: EconomyFile;
   onChange: (next: EconomyFile) => void;
-  onExportNames: () => void;
   onExport?: () => void;
   onSave?: () => void;
   onTips?: (on: boolean) => void;
@@ -48,7 +46,6 @@ export function AdminDrawer({
             file={file}
             tab={gearTabFor(view)}
             onChange={onChange}
-            onExportNames={onExportNames}
             onExport={onExport}
             onSave={onSave}
             onTips={onTips}

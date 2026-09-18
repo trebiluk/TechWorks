@@ -27,14 +27,12 @@ export function VaultBoard({
   file,
   onChange,
   onExport,
-  onExportNames,
   onSave,
   onImport,
 }: {
   file: EconomyFile;
   onChange: (next: EconomyFile) => void;
   onExport?: () => void;
-  onExportNames: () => void;
   onSave?: () => void;
   onImport?: () => void;
 }) {
@@ -98,7 +96,7 @@ export function VaultBoard({
       <header>
         <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Records · this device</h2>
         <p className="mt-1 text-sm text-muted">
-          This computer is the gradebook. Cloud copies scores and aliases. Real names are not stored. Google book is the year archive. Class list is Shop ID + alias.
+          This computer is the gradebook. Cloud copies scores and aliases. Real names are not stored. Google book is the year archive.
         </p>
       </header>
 
@@ -218,7 +216,7 @@ export function VaultBoard({
           </label>
           {onImport ? (
             <button type="button" onClick={onImport} className="tw-tap min-h-11 rounded-md bg-elevated px-3 text-sm font-semibold">
-              Import class list
+              Import roster
             </button>
           ) : null}
           <button type="button" onClick={() => downloadRosterTemplate()} className="tw-tap min-h-11 rounded-md bg-elevated px-3 text-sm font-semibold">
@@ -234,9 +232,6 @@ export function VaultBoard({
           >
             Live wall
           </button>
-          <button type="button" onClick={onExportNames} className="tw-tap min-h-11 rounded-md bg-elevated px-3 text-sm font-semibold">
-            Names vault
-          </button>
           <CodebookActions file={file} />
           <button
             type="button"
@@ -249,7 +244,7 @@ export function VaultBoard({
             Download all snapshots
           </button>
         </div>
-        <p className="mt-2 text-xs text-muted">CSV columns: Last, First, Period, IEP, 504. Paste also works on Roster.</p>
+        <p className="mt-2 text-xs text-muted">CSV columns: Last, First, Period, IEP, 504. Names mint aliases, then drop. Paste also works on Roster.</p>
       </div>
 
       <div>

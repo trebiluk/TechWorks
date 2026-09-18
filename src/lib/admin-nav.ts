@@ -19,7 +19,7 @@ export type AdminGroupId = (typeof ADMIN_GROUPS)[number]["id"];
 export const PANE_LABEL: Record<string, string> = {
   today: "Today",
   vault: "Backups",
-  roster: "Names",
+  roster: "Roster",
   cloud: "Cloud",
   crews: "Crews",
   wall: "Wall",

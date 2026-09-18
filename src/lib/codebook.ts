@@ -1,4 +1,4 @@
-/** Teacher class list. Shop ID + alias + period. Real names are not stored. */
+/** Shop ID + alias + period. Real names are not stored. */
 
 import type { EconomyFile } from "@/lib/economy";
 import { periodTitle, shopBells } from "@/lib/economy";
@@ -79,8 +79,8 @@ export function codebookHtml(file: EconomyFile, rows = codebookOf(file)): string
   .shop{font-family:ui-monospace,Menlo,monospace;letter-spacing:.12em;font-weight:700}
   @media print{body{margin:12px} .noprint{display:none}}
 </style></head><body>
-<p class="banner">Teacher list · Shop ID + alias · real names are not stored</p>
-<h1>${esc(title)} class list</h1>
+<p class="banner">Shop IDs · aliases · real names are not stored</p>
+<h1>${esc(title)} Shop IDs</h1>
 <p class="sub">${rows.length} workers · ${todayIso()} · Wall and this page are aliases only.</p>
 ${blocks || "<p>No workers on this desk.</p>"}
 </body></html>`;

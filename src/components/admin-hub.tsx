@@ -44,7 +44,6 @@ export function AdminHub({
   onExport,
   onSave,
   onHelp: _onHelp,
-  onExportNames,
   onTips,
   onData,
   onOpenId,
@@ -72,7 +71,6 @@ export function AdminHub({
   onExport: () => void;
   onSave: () => void;
   onHelp: () => void;
-  onExportNames: () => void;
   onTips?: (on: boolean) => void;
   onData?: () => void;
   onOpenId?: (id: string) => void;
@@ -213,7 +211,6 @@ export function AdminHub({
             tab={pane as SettingsTab}
             onChange={onChange}
             onTab={undefined}
-            onExportNames={onExportNames}
             onExport={onExport}
             onSave={onSave}
             onTips={onTips}

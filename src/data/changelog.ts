@@ -6,7 +6,12 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.69 — 2026-09-18
+
+- Admin Records: Names pane is Roster. Names vault export is gone. Print Shop IDs lives on Backups. Copy no longer talks about a names vault or a class list.
+
 ## 1.92.68 — 2026-09-18
+
 
 - Help → Data privacy: what this app stores (Shop ID + alias), what it never stores (legal names), family web, IEP/504, cloud key, idle lock.
 

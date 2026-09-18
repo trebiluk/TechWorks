@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.68. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.69. -->
 
 # TechWorks changelog
 
-App version **1.92.68**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.69**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.69 — 2026-09-18
+
+- Admin Records: Names pane is Roster. Names vault export is gone. Print Shop IDs lives on Backups. Copy no longer talks about a names vault or a class list.
 
 ## 1.92.68 — 2026-09-18
 

@@ -522,7 +522,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Data privacy",
     tags: ["privacy", "ferpa", "data", "names", "alias", "cloud", "family", "iep"],
     wall: true,
-    body: "TechWorks does not store legal first or last names. The wall, this PC, the cloud desk, the Google book, backups, and the class list are Shop ID + alias only. A SchoolTool paste may mint aliases once; those names are dropped and never saved. Family web needs the class code, then the Shop ID — it does not list the class. Wallet, Lucky, and IEP/504 stay off family web. IEP/504 live on the teacher profile behind PIN, mixed with decoy dots, never on the projector. Cloud copies aliases and scores with a desk key you keep in the planner. Idle lock after 5 minutes. The teacher PIN is the one you set — never 1111.",
+    body: "TechWorks does not store legal first or last names. The wall, this PC, the cloud desk, the Google book, and backups are Shop ID + alias only. A SchoolTool paste may mint aliases once; those names are dropped and never saved. Family web needs the class code, then the Shop ID — it does not list the class. Wallet, Lucky, and IEP/504 stay off family web. IEP/504 live on the teacher profile behind PIN, mixed with decoy dots, never on the projector. Cloud copies aliases and scores with a desk key you keep in the planner. Idle lock after 5 minutes. The teacher PIN is the one you set — never 1111.",
   },
   {
     id: "portal",
@@ -536,14 +536,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Data privacy",
     title: "FERPA / what gets published",
     tags: ["ferpa", "alias", "names", "iep", "export", "first"],
-    body: "This app does not store last names or legal first names. Cloud, live, Google book, class list, and this PC are Shop ID + alias. Import may paste a SIS list once to mint aliases, then those names are dropped. Family web asks for Shop ID. IEP is a blue deco dot and 504 orange, only inside Show full info, mixed with fake dots. Idle lock after 5 minutes.",
+    body: "This app does not store last names or legal first names. Cloud, live, Google book, and this PC are Shop ID + alias. Import may paste a SIS list once to mint aliases, then those names are dropped. Family web asks for Shop ID. IEP is a blue deco dot and 504 orange, only inside Show full info, mixed with fake dots. Idle lock after 5 minutes.",
   },
   {
     id: "codebook",
     category: "Data privacy",
-    title: "Class list / Shop IDs",
+    title: "Shop IDs",
     tags: ["codebook", "ferpa", "alias", "shop", "id", "print", "names"],
-    body: "Admin → Records → Names or Backups → Print class list or Download class list. Columns: Period, Shop ID, Alias. Real names are not stored. Write the paper map by hand if you need one in the drawer.",
+    body: "Admin → Records → Roster or Backups → Print Shop IDs / Download Shop IDs. Columns: Period, Shop ID, Alias. Real names are not stored.",
   },
   {
     id: "first-names",
