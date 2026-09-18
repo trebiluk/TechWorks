@@ -241,7 +241,7 @@ function readmeSheet(): BookSheet {
     ["Your fields", "extra_1 through extra_8 — rename the label row, type whatever you need. The desk never overwrites those."],
     ["Add more columns", "Add them AFTER extra_8. Keep a copy before you re-export, then paste your extra columns back."],
     ["Do not insert", "Do not insert columns between gold headers. That breaks the lock."],
-    ["FERPA", "Class, club, year, skills, master, log = aliases + Shop ID. Legal names are the codebook paper, not this book. VAULT columns for last/first/IEP stay blank."],
+    ["FERPA", "This book is Shop ID + alias only. No legal names. No IEP or 504."],
     ["Class tabs", "One mini dashboard per period (1, 2, 3, 8, 9, 10) plus study hall and club."],
     ["YEAR MARKS", "Full year D1–D4 for cycles 1–8. Blank is not a zero. Fill as the year happens."],
     ["STEM", "Evidence stems (the 1–4 sentences). Not a second MST score. NY Tech stays on the desk."],
@@ -448,33 +448,16 @@ function ledgerSheet(file: EconomyFile): BookSheet {
 }
 
 function vaultSheet(file: EconomyFile): BookSheet {
-  const keys = ["tw_id", "tw_alias", "tw_legal_last", "tw_legal_first", "tw_period", "tw_iep", "tw_504", "tw_ell", "tw_dhh", "tw_extended", "tw_quiet", ...EXTRA_KEYS];
-  const labels = ["Shop ID (locked)", "Alias", "Legal last", "Legal first", "Period", "IEP", "504", "ELL", "DHH", "Extended time", "Quiet notes", ...EXTRA_LABELS];
+  const keys = ["tw_id", "tw_alias", "tw_period", ...EXTRA_KEYS];
+  const labels = ["Shop ID (locked)", "Alias", "Period", ...EXTRA_LABELS];
   const rows = file.students
     .slice()
     .sort((a, b) => a.period - b.period || a.first.localeCompare(b.first))
-    .map((s) =>
-      padExtras(
-        [
-          publicHandle(s.id),
-          s.first,
-          "",
-          "",
-          s.period,
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-        ],
-        keys.length - EXTRA_N,
-      ),
-    );
+    .map((s) => padExtras([publicHandle(s.id), s.first, s.period], keys.length - EXTRA_N));
   return {
     name: "VAULT",
     kind: "table",
-    banner: "FERPA · last names live on the codebook paper · these columns stay blank",
+    banner: "Shop ID + alias · no legal names · no IEP / 504",
     warn: true,
     keys,
     labels,

@@ -483,8 +483,8 @@ export const HELP_ARTICLES: HelpArticle[] = [
     id: "profile",
     category: "Profiles",
     title: "Worker profile",
-    tags: ["profile", "alias", "iep", "504"],
-    body: "Open from Dashboard, Data, Skills, or Find worker. Public handle + alias. Arrow reveals course and IEP/504 (from roster). Store and money steps need PIN. The locked worker id never changes; alias can.",
+    tags: ["profile", "alias"],
+    body: "Open from Dashboard, Data, Skills, or Find worker. Public handle + alias. Arrow reveals course. Store and money steps need PIN. The locked worker id never changes; alias can.",
   },
   {
     id: "google-book",
@@ -506,7 +506,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Admin",
     title: "Roster ids and aliases",
     tags: ["roster", "id", "alias", "add", "save", "ferpa", "separate"],
-    body: "Admin → Records → Roster. Add an alias, or Import / CSV (Last, First, Period, IEP, 504). The paste is used once to mint Shop IDs and aliases, then the real names are dropped. Separate: pick two aliases already on the list; they will not sit in the same crew. Clear workers snapshots first. Edit alias and crew in the table. Scores, XP, and $ stay on the id. Auto-save on this device; tap the Save chip to write now. Backups is the other Records chip: snapshot, download full, restore.",
+    body: "Admin → Records → Roster. Add an alias, or Import / CSV (Last, First, Period). The paste is used once to mint Shop IDs and aliases, then the real names are dropped. Separate: pick two aliases already on the list; they will not sit in the same crew. Clear workers snapshots first. Edit alias and crew in the table. Scores, XP, and $ stay on the id. Auto-save on this device; tap the Save chip to write now. Backups is the other Records chip: snapshot, download full, restore.",
   },
   {
     id: "profile-house",
@@ -520,9 +520,9 @@ export const HELP_ARTICLES: HelpArticle[] = [
     id: "data-privacy",
     category: "Data privacy",
     title: "Data privacy",
-    tags: ["privacy", "ferpa", "data", "names", "alias", "cloud", "family", "iep"],
+    tags: ["privacy", "ferpa", "data", "names", "alias", "cloud", "family"],
     wall: true,
-    body: "TechWorks does not store legal first or last names. The wall, this PC, the cloud desk, the Google book, and backups are Shop ID + alias only. A SchoolTool paste may mint aliases once; those names are dropped and never saved. Family web needs the class code, then the Shop ID — it does not list the class. Wallet, Lucky, and IEP/504 stay off family web. IEP/504 live on the teacher profile behind PIN, mixed with decoy dots, never on the projector. Cloud copies aliases and scores with a desk key you keep in the planner. Idle lock after 5 minutes. The teacher PIN is the one you set — never 1111.",
+    body: "TechWorks does not store legal names, IEP, or 504. The wall, this PC, the cloud desk, the Google book, and backups are Shop ID + alias only. A SchoolTool paste may mint aliases once; those names are dropped and never saved. Family web needs the class code, then the Shop ID — it does not list the class. Wallet and Lucky stay off family web. Cloud copies aliases and scores with a desk key you keep in the planner. Idle lock after 5 minutes. The teacher PIN is the one you set — never 1111.",
   },
   {
     id: "portal",
@@ -535,8 +535,8 @@ export const HELP_ARTICLES: HelpArticle[] = [
     id: "ferpa",
     category: "Data privacy",
     title: "FERPA / what gets published",
-    tags: ["ferpa", "alias", "names", "iep", "export", "first"],
-    body: "This app does not store last names or legal first names. Cloud, live, Google book, and this PC are Shop ID + alias. Import may paste a SIS list once to mint aliases, then those names are dropped. Family web asks for Shop ID. IEP is a blue deco dot and 504 orange, only inside Show full info, mixed with fake dots. Idle lock after 5 minutes.",
+    tags: ["ferpa", "alias", "names", "export"],
+    body: "This app does not store last names, legal first names, IEP, or 504. Cloud, live, Google book, and this PC are Shop ID + alias. Import may paste a SIS list once to mint aliases, then those names are dropped. Family web asks for Shop ID. Idle lock after 5 minutes.",
   },
   {
     id: "codebook",
@@ -688,7 +688,7 @@ Grok Publish hits Orbit only. Do not commit legal names.
 
 ## Privacy
 
-Projector and ?embed=1 are aliases only. IEP / 504 / legal names: vault, PIN, Google book VAULT tab.
+Projector and ?embed=1 are aliases only. No legal names. No IEP or 504.
 `;
 }
 

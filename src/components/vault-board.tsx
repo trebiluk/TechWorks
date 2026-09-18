@@ -244,7 +244,7 @@ export function VaultBoard({
             Download all snapshots
           </button>
         </div>
-        <p className="mt-2 text-xs text-muted">CSV columns: Last, First, Period, IEP, 504. Names mint aliases, then drop. Paste also works on Roster.</p>
+        <p className="mt-2 text-xs text-muted">CSV columns: Last, First, Period. Names mint aliases, then drop. Paste also works on Roster.</p>
       </div>
 
       <div>

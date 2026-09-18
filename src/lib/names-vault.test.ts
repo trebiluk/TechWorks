@@ -43,7 +43,9 @@ describe("names vault", () => {
     assert.equal(s.last, "");
     assert.equal(s.legalFirst, undefined);
     assert.equal(s.legalLast, undefined);
-    assert.equal(s.flags?.iep, true);
+    assert.equal(s.flags?.iep, undefined);
+    assert.equal(s.flags?.plan504, undefined);
+    assert.equal(s.flags?.ell, undefined);
     const vault = namesVaultOf(file);
     assert.deepEqual(vault, {});
   });

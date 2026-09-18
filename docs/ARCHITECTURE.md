@@ -121,7 +121,7 @@ A worker is a locked id. The wall shows an alias minted from that id, never from
 | Codebook | paper / CSV | Never | Print after PIN | Never | Teacher drawer only |
 | Desk first names | config.showFirstReal | Never | Teacher toggle · first only | Never | Never |
 | Legal name | not stored | Never | Never | Never | Not in this app |
-| IEP / 504 | flags | Never (deco dots inside Show full) | Show full info | No | VAULT |
+| IEP / 504 | not stored | Never | Never | Never | Not in this app |
 | Crew key | crewKey + crewDays | Crew plates | Yes | No | Class tabs |
 | Period / grade | period, grade | P chips | Yes | Yes | Yes |
 

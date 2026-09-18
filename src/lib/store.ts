@@ -968,16 +968,24 @@ export function setStudentFlags(
   patch: NonNullable<RawStudent["flags"]>,
 ): EconomyFile {
   const next = clone(file);
-  next.students = next.students.map((st) =>
-    st.id === id ? { ...st, flags: { ...(st.flags ?? {}), ...patch } } : st,
-  );
+  next.students = next.students.map((st) => {
+    if (st.id !== id) return st;
+    const flags = { ...(st.flags ?? {}) };
+    if (patch.ta !== undefined) flags.ta = patch.ta;
+    if (patch.hp !== undefined) flags.hp = patch.hp;
+    delete flags.iep;
+    delete flags.plan504;
+    delete flags.ell;
+    delete flags.dhh;
+    delete flags.preferSeating;
+    delete flags.extendedTime;
+    return { ...st, flags: Object.keys(flags).length ? flags : undefined };
+  });
   return next;
 }
 
-export function setQuietNotes(file: EconomyFile, id: string, quietNotes: string): EconomyFile {
-  const next = clone(file);
-  next.students = next.students.map((st) => (st.id === id ? { ...st, quietNotes } : st));
-  return next;
+export function setQuietNotes(file: EconomyFile, _id: string, _quietNotes: string): EconomyFile {
+  return file;
 }
 
 export function rerollAlias(file: EconomyFile, id: string): EconomyFile {
@@ -1128,10 +1136,6 @@ export function importLegalRoster(file: EconomyFile, rows: LegalRosterRow[]): Ec
         course: grade === 5 ? "STUDY HALL" : `TECH ${grade}`,
         sem: quarter,
       }),
-      flags: {
-        iep: Boolean(row.iep),
-        plan504: Boolean(row.plan504),
-      },
       abDay: row.period === 6 ? (next.students.filter((s) => s.period === 6).length % 2 === 0 ? "A" : "B") : "BOTH",
     } as RawStudent;
     next.students.push(kid);

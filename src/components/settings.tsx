@@ -238,7 +238,7 @@ export function SettingsBody({
                 ) : (
                   <>
                     <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">People</h2>
-                    <p className="mt-1 text-sm text-muted">Workers are aliases + Shop ID. Real names are not stored. IEP/504 stay on the profile, behind PIN.</p>
+                    <p className="mt-1 text-sm text-muted">Workers are aliases + Shop ID. Real names, IEP, and 504 are not stored.</p>
                   </>
                 )}
                 <p className="mt-6 text-sm font-medium uppercase tracking-wider text-subtle">Privacy</p>

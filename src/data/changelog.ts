@@ -6,7 +6,12 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.70 — 2026-09-18
+
+- FERPA scrub: IEP, 504, ELL, DHH, seating, extended time, and quiet notes are not stored. Profile Supports gone. Import is Last, First, Period. Google book VAULT is Shop ID + alias.
+
 ## 1.92.69 — 2026-09-18
+
 
 - Admin Records: Names pane is Roster. Names vault export is gone. Print Shop IDs lives on Backups. Copy no longer talks about a names vault or a class list.
 

@@ -279,7 +279,7 @@ export function downloadDeskBackup(file: EconomyFile, label?: string) {
 }
 
 export function downloadRosterTemplate() {
-  const body = "Last,First,Period,IEP,504\n,,1,,\n";
+  const body = "Last,First,Period\n,,1\n";
   downloadBlob("techworks-roster-template.csv", body, "text/csv");
 }
 

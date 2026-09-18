@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.69. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.70. -->
 
 # TechWorks changelog
 
-App version **1.92.69**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.70**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.70 — 2026-09-18
+
+- FERPA scrub: IEP, 504, ELL, DHH, seating, extended time, and quiet notes are not stored. Profile Supports gone. Import is Last, First, Period. Google book VAULT is Shop ID + alias.
 
 ## 1.92.69 — 2026-09-18
 

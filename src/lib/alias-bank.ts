@@ -22,11 +22,6 @@ export function normalizeAlias(name: string): string {
   return name.trim().replace(/\s+/g, " ").slice(0, 24);
 }
 
-function truthyFlag(v: string | undefined): boolean {
-  const t = String(v ?? "").trim().toLowerCase();
-  return t === "y" || t === "yes" || t === "1" || t === "true" || t === "iep" || t === "504";
-}
-
 /** Pick a creative alias unique against `used` (case-insensitive). */
 export function generateAlias(seed: string, used: Iterable<string>): string {
   const taken = new Set([...used].map((u) => u.trim().toLowerCase()).filter(Boolean));
@@ -61,12 +56,10 @@ export type LegalRosterRow = {
   legalLast: string;
   legalFirst: string;
   period: number;
-  iep?: boolean;
-  plan504?: boolean;
   crewKey?: string;
 };
 
-/** Parse clipboard / SchoolTool-ish lines: Last, First, Period[, IEP][, 504] */
+/** Parse clipboard / SchoolTool-ish lines: Last, First, Period */
 export function parseLegalRosterText(raw: string): LegalRosterRow[] {
   const lines = raw
     .split(/\r?\n/)
@@ -87,8 +80,6 @@ export function parseLegalRosterText(raw: string): LegalRosterRow[] {
       legalLast: legalLast.slice(0, 40),
       legalFirst: legalFirst.slice(0, 40),
       period: Number.isFinite(period) && period >= 1 ? Math.round(period) : 0,
-      iep: truthyFlag(parts[3]),
-      plan504: truthyFlag(parts[4]),
     });
   }
   return rows;

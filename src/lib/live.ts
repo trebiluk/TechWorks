@@ -3,17 +3,11 @@ import { isLiveStudent } from "@/lib/economy";
 import { isSchoolDay, todayIso, weekOn } from "@/lib/calendar";
 import { isSubDay, markOn, abOn, onAbRoster } from "@/lib/store";
 
-/** Frozen names-vault schema. Private download only. Never live export. */
+/** Frozen names-vault schema. Unused. Real names and IEP are not stored. */
 export const VAULT_FIELDS = [
   "alias",
-  "legalFirst",
-  "last",
   "period",
   "section",
-  "iep",
-  "plan504",
-  "ell",
-  "dhh",
 ] as const;
 
 export type NamesVaultRow = {
@@ -30,23 +24,16 @@ export type NamesVaultRow = {
 
 export function vaultRowOf(s: {
   first: string;
-  last?: string;
-  legalFirst?: string;
-  legalLast?: string;
   period: number;
   section?: number;
-  flags?: { iep?: boolean; plan504?: boolean; ell?: boolean; dhh?: boolean };
 }): NamesVaultRow {
   return {
     alias: s.first,
-    last: s.legalLast ?? s.last ?? "",
-    legalFirst: s.legalFirst,
+    last: "",
     period: s.period,
     section: s.section,
-    iep: Boolean(s.flags?.iep),
-    plan504: Boolean(s.flags?.plan504),
-    ell: Boolean(s.flags?.ell),
-    dhh: Boolean(s.flags?.dhh),
+    iep: false,
+    plan504: false,
   };
 }
 

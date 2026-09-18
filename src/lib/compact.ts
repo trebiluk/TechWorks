@@ -43,8 +43,16 @@ export function compactStudent(s: RawStudent): RawStudent {
   if (s.sem) next.sem = s.sem;
   if (s.abDay && s.abDay !== "BOTH") next.abDay = s.abDay;
   if (tape) next.markTape = tape;
-  const flags = slimMap(s.flags as Record<string, unknown> | undefined);
-  if (flags) next.flags = flags as RawStudent["flags"];
+  const rawFlags = slimMap(s.flags as Record<string, unknown> | undefined);
+  if (rawFlags) {
+    delete rawFlags.iep;
+    delete rawFlags.plan504;
+    delete rawFlags.ell;
+    delete rawFlags.dhh;
+    delete rawFlags.preferSeating;
+    delete rawFlags.extendedTime;
+    if (Object.keys(rawFlags).length) next.flags = rawFlags as RawStudent["flags"];
+  }
   const invest = slimMap(s.investDays as Record<string, unknown> | undefined);
   if (invest) next.investDays = invest as RawStudent["investDays"];
   const ask = slimMap(s.investAsk as Record<string, unknown> | undefined);
@@ -77,7 +85,6 @@ export function compactStudent(s: RawStudent): RawStudent {
   if (s.purchases?.length) next.purchases = s.purchases;
   const prints = slimMap(s.prints as Record<string, unknown> | undefined);
   if (prints) next.prints = prints as RawStudent["prints"];
-  if (s.quietNotes) next.quietNotes = s.quietNotes;
   if (s.bonusXp) next.bonusXp = s.bonusXp;
   const clubDays = slimMap(s.clubDays as Record<string, unknown> | undefined);
   if (clubDays) next.clubDays = clubDays as RawStudent["clubDays"];

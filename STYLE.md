@@ -51,8 +51,7 @@ PINs: teacher is the PIN they set (1111 is rejected). Crew override `2222`.
 
 - Walls, projector, desk, cloud, and backups: **alias + Shop ID only**.
 - Real last and first names are **not stored**. A SIS paste may mint aliases once, then the names are dropped.
-- Who-is-who paper is handwritten if you need it. Class list print is Shop ID + alias.
-- IEP = blue dot, 504 = orange dot, mixed with decoy dots on profile only.
+- IEP, 504, ELL, DHH, and quiet notes are **not stored**.
 - Never log the confidential roster PDF. Never paste real names into changelog, Help, or Drive dumps.
 
 ---

@@ -25,7 +25,7 @@ function prettySkill(name: string) {
   return name.charAt(0) + name.slice(1).toLowerCase();
 }
 
-/** Parent / family conference sheet. Wallet, IEP, and 3/2/1 codes stay off. */
+/** Parent / family conference sheet. Wallet and 3/2/1 codes stay off. */
 export function ReportCard({ file, id, names, print }: { file: EconomyFile; id: string; names: boolean; print?: boolean }) {
   const s = file.students.find((x) => x.id === id);
   if (!s) return null;

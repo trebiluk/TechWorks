@@ -12,7 +12,16 @@ export function namesVaultOf(_file: EconomyFile): NamesVaultMap {
 }
 
 export function stripStudentNames(s: RawStudent): RawStudent {
-  return { ...s, last: "", legalFirst: undefined, legalLast: undefined };
+  const flags = { ...(s.flags ?? {}) };
+  delete flags.iep;
+  delete flags.plan504;
+  delete flags.ell;
+  delete flags.dhh;
+  delete flags.preferSeating;
+  delete flags.extendedTime;
+  const next: RawStudent = { ...s, last: "", legalFirst: undefined, legalLast: undefined, quietNotes: undefined };
+  next.flags = Object.keys(flags).length ? flags : undefined;
+  return next;
 }
 
 export function stripNames(file: EconomyFile): EconomyFile {

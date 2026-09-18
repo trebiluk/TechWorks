@@ -7,7 +7,7 @@ import { gradeSlots, letterOf, postedFor, sessionMark } from "@/lib/grades";
 import { currentProject, recordOn, MST_SKILLS } from "@/lib/mst";
 import { formatSchoolDate, todayIso } from "@/lib/calendar";
 import { workerCards } from "@/lib/report";
-import { bumpMoney, buyShop, catalogOf, MONEY_STEP, setAffect, setAlias, setAvatar, setStudentFlags, setQuietNotes } from "@/lib/store";
+import { bumpMoney, buyShop, catalogOf, MONEY_STEP, setAffect, setAlias, setAvatar } from "@/lib/store";
 import { ownedQty, printsOf, RARITY_LABEL } from "@/lib/prints";
 import { AVATARS, avatarOf } from "@/lib/avatars";
 import { publicHandle } from "@/lib/live";
@@ -33,14 +33,10 @@ function gradeOf(file: EconomyFile, id: string): { avg: number | null; letter: s
   return { avg, letter: letterOf(avg) };
 }
 
-function deco(id: string, flags: EconomyFile["students"][number]["flags"] | undefined, unlocked: boolean) {
+function deco(id: string) {
   const palette = ["bg-period-1", "bg-period-2", "bg-period-3", "bg-period-4", "bg-period-5", "bg-period-6", "bg-subtle", "bg-elevated"];
   const hash = [...id].reduce((n, c) => n + c.charCodeAt(0), 0);
-  const dots = Array.from({ length: 8 }, (_, i) => palette[(hash + i * 3) % palette.length]);
-  if (unlocked && flags?.iep) dots[hash % 8] = "bg-dot-iep";
-  if (unlocked && flags?.plan504) dots[(hash + 5) % 8] = "bg-dot-504";
-  if (unlocked && flags?.dhh) dots[(hash + 2) % 8] = "bg-subtle";
-  return dots;
+  return Array.from({ length: 8 }, (_, i) => palette[(hash + i * 3) % palette.length]);
 }
 
 export function Dossier({
@@ -71,8 +67,7 @@ export function Dossier({
   if (!raw || !row || !card) return null;
   const shop = catalogOf(file, raw.period);
   const groups = [...new Set(shop.map((x) => x.category))];
-  const flags = raw.flags ?? {};
-  const dots = deco(raw.id, flags, unlocked);
+  const dots = deco(raw.id);
   const band = xpIntoLevel(file, raw.id);
   const skills = skillsOf(file);
   const achievements = achievementsFor(file, id);
@@ -172,12 +167,6 @@ export function Dossier({
                 <div className="mt-1 text-sm text-muted">
                   <p>
                     {raw.first} · {raw.course} · sec {raw.section} · {raw.sem}
-                  </p>
-                  <p className="mt-1 text-xs text-subtle">
-                    IEP {flags.iep ? "yes" : "no"} · 504 {flags.plan504 ? "yes" : "no"}
-                    {flags.ell ? " · ELL" : ""}
-                    {flags.dhh ? " · DHH" : ""}
-                    <span className="text-subtle"> · roster, not the wall</span>
                   </p>
                 </div>
               ) : null}
@@ -321,34 +310,6 @@ export function Dossier({
 
           {pane === "desk" && unlocked ? (
             <div className="space-y-5">
-              <section className="rounded-lg bg-elevated px-3 py-3">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-subtle">Supports</p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {([["ell", "ELL"], ["preferSeating", "Seating"], ["extendedTime", "Ext. time"], ["dhh", "DHH"]] as const).map(([key, label]) => {
-                    const on = Boolean(flags[key]);
-                    return (
-                      <button
-                        key={key}
-                        type="button"
-                        onClick={() => onChange(setStudentFlags(file, id, { [key]: !on }))}
-                        className={cn("tw-tap min-h-11 rounded-md px-3 text-sm font-semibold", on ? "bg-surface text-fg ring-1 ring-border" : "bg-surface text-muted")}
-                      >
-                        {label}
-                      </button>
-                    );
-                  })}
-                </div>
-                <label className="mt-3 block">
-                  <span className="text-sm text-subtle">Quiet notes</span>
-                  <textarea
-                    value={raw.quietNotes ?? ""}
-                    onChange={(e) => onChange(setQuietNotes(file, id, e.target.value))}
-                    rows={2}
-                    className="mt-1 w-full rounded-md bg-surface px-3 py-2 text-sm text-fg outline-none"
-                  />
-                </label>
-              </section>
-
               <p className="text-[11px] font-semibold uppercase tracking-wider text-subtle">Adjust $</p>
               <div className="grid grid-cols-3 gap-2">
                 {(["bonus", "deduct", "clutch"] as const).map((field) => (

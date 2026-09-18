@@ -79,7 +79,7 @@ export function RosterOnboard({
                 }}
               />
             </label>
-            <p className="self-center text-xs text-muted">Last, First, Period, IEP, 504 · Period in the file wins if present</p>
+            <p className="self-center text-xs text-muted">Last, First, Period · names mint aliases, then drop</p>
           </div>
           <p className="text-xs text-muted">
             {parsed.length} rows · missing period uses P{period} · names mint aliases then drop
