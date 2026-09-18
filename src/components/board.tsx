@@ -741,7 +741,7 @@ export function Board() {
                   const u = new URL(window.location.href);
                   u.searchParams.set("web", "1");
                   window.location.assign(u.toString());
-                }} className="tw-hud-btn tw-tap relative z-30 inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl px-2.5 text-fg hover:bg-elevated">
+                }} className="tw-hud-btn tw-tap relative z-30 inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl px-2.5 text-fg hover:bg-elevated pointer-events-auto">
                   <Globe className="size-5" />
                   <span className="text-xs font-bold uppercase tracking-wide">Web</span>
                 </button>

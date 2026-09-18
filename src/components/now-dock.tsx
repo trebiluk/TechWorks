@@ -24,7 +24,7 @@ export function NowDock({
       type="button"
       onClick={onClick}
       className={cn(
-        "flex min-h-11 min-w-0 items-center gap-1.5 rounded-md px-2 sm:min-h-9",
+        "tw-hud-btn tw-tap relative z-30 flex min-h-11 min-w-0 items-center gap-1.5 rounded-md px-2 sm:min-h-9",
         hot ? "bg-cleanup text-accent-fg" : "bg-elevated",
       )}
       title={t("Now")}
