@@ -10,6 +10,55 @@ export type HelpArticle = {
   wall?: boolean;
 };
 
+export const HELP_JUMPS = [
+  { q: "web", label: "Web" },
+  { q: "theme", label: "Theme" },
+  { q: "store", label: "Store" },
+  { q: "study hall", label: "Study Hall" },
+  { q: "club", label: "Club" },
+  { q: "cleanup", label: "Cleanup" },
+  { q: "settings", label: "Settings" },
+  { q: "PIN", label: "PIN" },
+  { q: "score", label: "Score" },
+  { q: "jobs", label: "Jobs" },
+  { q: "translate", label: "Translate" },
+  { q: "chips", label: "Chips" },
+] as const;
+
+const HELP_SYNONYMS: Record<string, string[]> = {
+  stylesheet: ["theme"],
+  stylesheets: ["theme"],
+  dice: ["roll", "theme"],
+  holiday: ["theme", "holly"],
+  holidays: ["theme", "holly"],
+  cog: ["settings"],
+  globe: ["translate", "language"],
+  rewards: ["store"],
+  look: ["theme", "wall"],
+  looks: ["theme", "wall"],
+};
+
+export function highlightPieces(text: string, q: string): { t: string; hit: boolean }[] {
+  const words = q
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((w) => w.length >= 2);
+  if (!words.length) return [{ t: text, hit: false }];
+  const esc = words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const re = new RegExp(`(${esc.join("|")})`, "ig");
+  const out: { t: string; hit: boolean }[] = [];
+  let last = 0;
+  for (const m of text.matchAll(re)) {
+    const i = m.index ?? 0;
+    if (i > last) out.push({ t: text.slice(last, i), hit: false });
+    out.push({ t: m[0], hit: true });
+    last = i + m[0].length;
+  }
+  if (last < text.length) out.push({ t: text.slice(last), hit: false });
+  return out.length ? out : [{ t: text, hit: false }];
+}
+
 export const HELP_CATEGORIES = [
   "Welcome",
   "Wall",
@@ -38,7 +87,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "What is TechWorks?",
     tags: ["welcome", "intro", "what", "techworks", "class", "kids", "family"],
     wall: true,
-    body: "TechWorks is Mr. Kulibert’s technology class, turned into a workshop you can see. You work in a small crew. You practice real skills (measure, cut, finish, share). You earn gold XP for getting better at the work — that is the point. Class cash is a perk game for showing up and doing the job. It is not your grade. The board on the wall uses shop aliases, not legal names, so it is safe to look at together.",
+    body: "TechWorks is Mr. Kulibert’s shop class. You work in a small crew. You practice real skills: measure, cut, finish, share. Gold XP means you got better at the work. That is the point. Class cash is a perk game. It is not your grade. Names on the wall are shop aliases, not legal names.",
   },
   {
     id: "welcome-day",
@@ -70,7 +119,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Who this Help is for",
     tags: ["help", "family", "crew", "teacher", "sub", "student", "search"],
     wall: true,
-    body: "Students: stay on Welcome and Wall. Crew leads: Roles → Crew lead, then Crew. Families: tap an alias → Family, or type Family in the search box. Teacher: Start, Teach, Deck, Score, Admin. Sub: Roles → Sub day — you do not open this app. Type a word in the search box. Teachers can Download help file for the whole book.",
+    body: "Students: Welcome and Wall. Crew leads: Roles → Crew lead. Families: tap an alias → Family, or type Family in the search box. Teacher: Start, Teach, Deck, Score, Admin. Sub: do not open this app. Type a word in the search box. Teachers can Download help file for the whole book.",
   },
   {
     id: "wall-read",
@@ -78,7 +127,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "How to read this board",
     tags: ["wall", "projector", "xp", "alias", "cleanup"],
     wall: true,
-    body: "This is the class wall. Names here are shop aliases, not legal names. Gold numbers are skill XP. $ is classroom perks, a game. The ring is minutes left in this period. Coral means cleanup — tools away, seats, floor.",
+    body: "This is the class wall. Names here are shop aliases, not legal names. Gold numbers are skill XP. $ is classroom perks, a game. The ring is minutes left. Coral means cleanup — tools away, seats, floor.",
   },
   {
     id: "wall-job",
@@ -156,9 +205,9 @@ export const HELP_ARTICLES: HelpArticle[] = [
     id: "wall-looks",
     category: "Wall",
     title: "Wall looks",
-    tags: ["theme", "scale", "preset", "projector", "arrange", "look"],
+    tags: ["theme", "scale", "preset", "projector", "arrange", "look", "holiday", "dice"],
     wall: true,
-    body: "Arrange wall → Looks, or Admin → Theme. Shop wall is the default: navy, cyan lamp, glass plates, Hour on the left, clock on the right. Back row goes bigger. Night shop, Oswego, Scoreboard, Club night, Projector, Harvest each paint color, type, scale, and the two-column grid in one tap. Kits only move plates into those columns. Drag a plate to the other column. Glow and lift sliders now actually change the wall. Looks never cover Lock, Help, Web, or the other HUD buttons. Default stays dark.",
+    body: "Looks change the wall paint. Shop wall is the usual navy. Back row is bigger type so the back of the room can read it. Holiday looks are for fun days. Your scores stay. Gold is still XP. Coral is still cleanup. The top buttons (Help, Lock, Web) still work.",
   },
   {
     id: "wall-jobs",
@@ -600,8 +649,8 @@ export const HELP_ARTICLES: HelpArticle[] = [
     id: "themes",
     category: "Start",
     title: "Stylesheets",
-    tags: ["theme", "bearcat", "night", "holiday", "contrast", "dice", "look", "premade"],
-    body: "Admin → Theme (PIN). Default stays dark (navy / cyan). Never a white wall — Kulibert is light-sensitive. Wall looks (Shop, Back row, Night shop, Oswego, Scoreboard, Club night, Projector, Harvest) paint color, type, scale, and plates in one tap. Brand chips include ROLL THE DICE. Holiday packs (Holly, Frost, Harvest, Spooky, Patriot, Clover, Wrapping, Valentine, Pumpkin) and Day / ADA (Daylight, Manila, Polar) are full themes. High vis / Contrast sit on top. Hover a chip to preview; click to apply. Looks may grow wall plates — HUD buttons (Web, Help, Lock, Cog, language, NOW) stay the same tap size and stay clickable. Shine overlays on the top bar cannot steal taps. Cleanup coral. Due red.",
+    tags: ["theme", "bearcat", "night", "holiday", "contrast", "dice", "look", "premade", "stylesheet", "roll", "wall look"],
+    body: "Admin → Theme (PIN), or Wall → Arrange wall → Looks. Default stays dark (navy / cyan). Never a white wall — Kulibert is light-sensitive. Wall looks (Shop, Back row, Night shop, Oswego, Scoreboard, Club night, Projector, Harvest) each show a mini wall, then paint color, type, scale, and plates in one tap. Kits only move plates. Drag a plate to the other column. Brand chips include ROLL THE DICE. Holiday packs (Holly, Frost, Harvest, Spooky, Patriot, Clover, Wrapping, Valentine, Pumpkin) and Day / ADA (Daylight, Manila, Polar) are full themes. High vis / Contrast sit on top. Hover a chip to preview (mouse). Tap to apply (Chromebook). Looks may grow wall plates — HUD buttons (Web, Help, Lock, Cog, language, NOW) stay the same tap size and stay clickable. Shine overlays on the top bar cannot steal taps. Cleanup coral. Due red.",
   },
   {
     id: "chrome-hud",
@@ -708,7 +757,7 @@ The PIN is not a backup. The desk key is not the PIN. Layout, theme, PIN, and Fa
 ## Chrome (must stay tappable)
 
 Top bar: TECHWORKS · Dash strip (Wall / Teach / Deck / Week / Club / Hall) · NOW · Lock · Cog (Settings) · Help · Web · language · version.
-Wall looks, ROLL THE DICE, holiday packs, and Theme Tools paint color / type / scale. They must not cover HUD hits, resize HUD buttons, or disable handlers. Shine overlays on chrome are paint-only (pointer-events none). Chip scale applies to wall plates, not the HUD.
+Wall looks, ROLL THE DICE, holiday packs, and Theme Tools paint color / type / scale. Theme picker shows a mini wall per look and a color stripe per chip. They must not cover HUD hits, resize HUD buttons, or disable handlers. Shine overlays on chrome are paint-only (pointer-events none). Chip scale applies to wall plates, not the HUD. Mini wall previews are paint-only.
 Web = Family web (?web=1). Globe = translate (EN / UK / RU). Cleanup coral is a Wall overlay; Teach and Score stay open.
 
 ## PlanIt → Teach → Deck → Wall
@@ -743,6 +792,9 @@ export function searchHelp(q: string, wallOnly = false): HelpArticle[] {
   if (!n) return pool;
   return pool.filter((a) => {
     const blob = `${a.category} ${a.title} ${a.body} ${a.tags.join(" ")}`.toLowerCase();
-    return n.split(/\s+/).every((w) => blob.includes(w));
+    return n.split(/\s+/).every((w) => {
+      const alts = [w, ...(HELP_SYNONYMS[w] ?? [])];
+      return alts.some((term) => blob.includes(term));
+    });
   });
 }

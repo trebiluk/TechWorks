@@ -9,7 +9,7 @@ describe("Solvay look", () => {
     assert.equal(SOLVAY_LOOK.stroke, 0);
     assert.ok(SOLVAY_LOOK.lift <= 75);
     assert.ok(SOLVAY_LOOK.wallpaper <= 60);
-    assert.equal(SOLVAY_LOOK.corners, 12);
+    assert.equal(SOLVAY_LOOK.corners, 14);
     const plate = FINISHES.find((f) => f.id === "plate");
     assert.equal(plate?.hint.includes("Glass"), true);
   });
@@ -22,9 +22,9 @@ describe("Solvay look", () => {
 
   it("writes glow and lift as CSS vars", () => {
     const vars = lookVars(SOLVAY_LOOK);
-    assert.equal(vars["--ui-radius"], "12px");
-    assert.equal(vars["--ui-shadow"], "0.68");
-    assert.equal(vars["--ui-glow"], "0.52");
+    assert.equal(vars["--ui-radius"], "14px");
+    assert.equal(vars["--ui-shadow"], "0.72");
+    assert.equal(vars["--ui-glow"], "0.4");
   });
 
   it("Shop wall uses the glass plate", () => {

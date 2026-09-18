@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.72 — 2026-09-18
+
+- Theme picker shows mini wall looks and color tiles. ROLL THE DICE and holidays still leave Web, Help, Lock, Cog, language, and NOW tappable. Help is searchable with jump chips.
+
 ## 1.92.71 — 2026-09-18
 
 - Premade themes / wall looks / ROLL THE DICE no longer cover or resize HUD chrome. Web, Help, Lock, Cog, language, and NOW stay tappable. Help covers every major surface. Technical manual v8.1.

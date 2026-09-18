@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.71. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.72. -->
 
 # TechWorks changelog
 
-App version **1.92.71**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.72**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.72 — 2026-09-18
+
+- Theme picker shows mini wall looks and color tiles. ROLL THE DICE and holidays still leave Web, Help, Lock, Cog, language, and NOW tappable. Help is searchable with jump chips.
 
 ## 1.92.71 — 2026-09-18
 

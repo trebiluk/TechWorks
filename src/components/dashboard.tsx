@@ -563,8 +563,8 @@ function LayoutBar({
   return (
     <section className="tw-gadget shrink-0 space-y-2 p-3">
       <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gold">Customize this wall</p>
-      <p className="text-sm text-muted">Looks paint color, type, and scale. Kits park plates in two columns. Drag a plate to the other column.</p>
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">Looks</p>
+      <p className="text-sm text-muted">Looks paint color, type, and scale. Each look shows a mini wall. Kits park plates in two columns. Drag a plate to the other column.</p>
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-gold">Looks</p>
       <WallLookChips />
       <div className="flex flex-wrap items-center gap-1">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Kits</span>
