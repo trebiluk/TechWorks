@@ -545,7 +545,9 @@ function WallTicker({
     <div className="tw-ticker" data-wall-ticker>
       <div className="tw-ticker-track">
         <span>{line}</span>
-        <span>{line}</span>
+        <span aria-hidden>{line}</span>
+        <span aria-hidden>{line}</span>
+        <span aria-hidden>{line}</span>
       </div>
     </div>
   );

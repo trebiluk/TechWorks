@@ -1082,12 +1082,12 @@ html[data-contrast="high"] {
 }
 @media (max-width: 899px) {
   .tw-web-wall[data-wall-stage="show"] .tw-wall-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(8.5rem, 0.28fr);
-    min-width: 52rem;
+    grid-template-columns: minmax(0, 1fr) minmax(7.5rem, 0.26fr);
+    min-width: 0;
     gap: 0.35rem;
   }
   .tw-web-wall[data-wall-stage="show"] {
-    overflow-x: auto;
+    overflow: hidden;
   }
   .tw-wall-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -1319,6 +1319,10 @@ html[data-contrast="high"] {
   container-type: size;
   container-name: hour;
   overflow: visible;
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #fff 22%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 40%, transparent),
+    0 0 42px -14px color-mix(in oklab, var(--color-accent) 42%, transparent);
 }
 .tw-hour-body {
   display: grid;
@@ -1349,11 +1353,14 @@ html[data-contrast="high"] {
   max-height: 100%;
   filter: drop-shadow(0 0 18px color-mix(in oklab, var(--color-accent) 48%, transparent)) drop-shadow(0 16px 14px color-mix(in oklab, #000 48%, transparent));
 }
-.tw-web-wall[data-wall-stage="show"] .tw-hour-stage {
-  box-shadow:
-    inset 0 1px 0 color-mix(in oklab, #fff 22%, transparent),
-    inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 40%, transparent),
-    0 0 42px -14px color-mix(in oklab, var(--color-accent) 42%, transparent);
+.tw-web-wall[data-wall-stage="show"] .tw-agenda-n {
+  width: clamp(1.55rem, 11cqh, 2.75rem);
+  height: clamp(1.55rem, 11cqh, 2.75rem);
+  font-size: clamp(0.65rem, 4.6cqh, 0.875rem);
+}
+.tw-web-wall[data-wall-stage="show"] .tw-now-band {
+  min-height: clamp(2.25rem, 12cqh, 3.25rem);
+  padding-block: clamp(0.25rem, 1.6cqh, 0.45rem);
 }
 .tw-web-wall[data-wall-stage="show"] .tw-fill-row:has([data-job-plate]):not(:has([data-dash-pair])) {
   flex: 1 1 0;
@@ -1679,6 +1686,23 @@ header.desk-chrome nav {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
+/* Projector wall: 16×9, never stacked. Scales to the slot. */
+.board-root:has(.tw-web-wall[data-wall-stage="show"]) .board-main {
+  container-type: size;
+  container-name: wallslot;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.tw-web-wall[data-wall-stage="show"] {
+  width: min(100cqw, calc(100cqh * 16 / 9));
+  height: min(100cqh, calc(100cqw * 9 / 16));
+  flex: 0 0 auto;
+  max-width: 100%;
+  overflow: hidden;
+}
 .board-root.board-score .board-main {
   overflow: hidden;
 }
@@ -1773,12 +1797,19 @@ html[data-phone="on"] .tw-fill-ask {
 html[data-phone="on"] [data-wall-stage="show"],
 html[data-phone="on"] [data-teach-hero],
 html[data-phone="on"] [data-teach-slots] {
-  overflow: visible;
+  overflow: hidden;
 }
-html[data-phone="on"] .tw-web-wall,
-html[data-phone="on"] [data-wall-stage] {
+html[data-phone="on"] .tw-web-wall[data-wall-stage="show"] {
+  overflow: hidden;
+  min-height: 0;
+}
+html[data-phone="on"] .tw-web-wall[data-wall-stage="edit"],
+html[data-phone="on"] [data-wall-stage="edit"] {
   overflow: auto;
   min-height: 0;
+}
+html[data-phone="on"] .board-root:has(.tw-web-wall[data-wall-stage="show"]) .board-main {
+  overflow: hidden;
 }
 html[data-phone="on"] .tw-tap {
   min-height: 2.75rem;
@@ -2606,14 +2637,14 @@ html[dir="rtl"] .board-root { direction: rtl; }
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--color-accent);
-  animation: tw-ticker 32s linear infinite;
+  animation: tw-ticker 80s linear infinite;
 }
 .tw-ticker-track span {
   white-space: nowrap;
 }
 @keyframes tw-ticker {
   from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  to { transform: translateX(-25%); }
 }
 .tw-kit {
   font-size: clamp(0.85rem, 3.2cqh, 1.15rem);
@@ -2746,45 +2777,7 @@ html[dir="rtl"] .board-root { direction: rtl; }
   background: var(--color-elevated);
 }
 
-/* Grafted from 1.92.73 theme/help chrome */
-.tw-look-mini {
-  pointer-events: none;
-  position: relative;
-  display: grid;
-  grid-template-columns: 1.35fr 1fr;
-  gap: 3px;
-  height: 2.2rem;
-  border-radius: 8px;
-  padding: 4px;
-  box-shadow: inset 0 0 0 1px color-mix(in oklab, #fff 12%, transparent);
-}
-.tw-look-mini > span {
-  pointer-events: none;
-  border-radius: 4px;
-}
-.tw-look-mini > i {
-  pointer-events: none;
-  position: absolute;
-  left: 6px;
-  right: 42%;
-  bottom: 6px;
-  height: 3px;
-  border-radius: 99px;
-}
-.tw-look-copy {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 0.1rem;
-  padding-right: 1.8rem;
-}
-.tw-look-name {
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  line-height: 1.15;
-}
-
+/* Grafted chrome */
 .tw-help-jump {
   display: flex;
   flex-wrap: wrap;
@@ -2801,4 +2794,5 @@ html[dir="rtl"] .board-root { direction: rtl; }
   border-radius: 2px;
   padding: 0 0.12em;
 }
+
 

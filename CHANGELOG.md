@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.76. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.77. -->
 
 # TechWorks changelog
 
-App version **1.92.76**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.77**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.77 — 2026-09-18
+
+- Wall is locked 16×9 on phones and desks — no portrait stack. Ticker crawls (was racing).
 
 ## 1.92.76 — 2026-09-18
 
