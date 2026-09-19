@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.86. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.88. -->
 
 # TechWorks changelog
 
-App version **1.92.86**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.88**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.88 — 2026-09-19
+
+- PlanIt hour persistence. Job · Guiding Q · Prove · beats survive reload and a chip bump. TEACH and Deck read that same hour.
 
 ## 1.92.86 — 2026-09-19
 

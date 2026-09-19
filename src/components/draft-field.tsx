@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 
-/** Local draft. Commit on blur or when this field unmounts (period / date / slide change). */
+/** Local draft. Commit on blur, idle, page hide, or unmount so PlanIt hours survive reload. */
 export function DraftField({
   value,
   onCommit,
@@ -29,6 +29,14 @@ export function DraftField({
   const startRef = useRef(value);
   const commitRef = useRef(onCommit);
   commitRef.current = onCommit;
+  const idleRef = useRef(0);
+
+  function flushNow() {
+    const next = textRef.current;
+    if (next === startRef.current) return;
+    startRef.current = next;
+    commitRef.current(next);
+  }
 
   useEffect(() => {
     if (textRef.current === startRef.current) {
@@ -38,17 +46,29 @@ export function DraftField({
   }, [value]);
 
   useEffect(() => {
+    function onHide() {
+      flushNow();
+    }
+    window.addEventListener("pagehide", onHide, true);
+    window.addEventListener("beforeunload", onHide, true);
+    document.addEventListener("visibilitychange", onHide);
     return () => {
-      const next = textRef.current;
-      if (next !== startRef.current) commitRef.current(next);
+      window.removeEventListener("pagehide", onHide, true);
+      window.removeEventListener("beforeunload", onHide, true);
+      document.removeEventListener("visibilitychange", onHide);
+      if (idleRef.current) window.clearTimeout(idleRef.current);
+      flushNow();
     };
   }, []);
 
-  function flush() {
-    if (text !== startRef.current) {
-      startRef.current = text;
-      onCommit(text);
-    }
+  function bump(next: string) {
+    setText(next);
+    textRef.current = next;
+    if (idleRef.current) window.clearTimeout(idleRef.current);
+    idleRef.current = window.setTimeout(() => {
+      idleRef.current = 0;
+      flushNow();
+    }, 280);
   }
 
   if (!editing) {
@@ -73,8 +93,8 @@ export function DraftField({
         style={style}
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => e.stopPropagation()}
-        onChange={(e) => setText(e.target.value)}
-        onBlur={flush}
+        onChange={(e) => bump(e.target.value)}
+        onBlur={flushNow}
       />
     );
   }
@@ -90,8 +110,8 @@ export function DraftField({
         e.stopPropagation();
         if (e.key === "Enter") (e.currentTarget as HTMLInputElement).blur();
       }}
-      onChange={(e) => setText(e.target.value)}
-      onBlur={flush}
+      onChange={(e) => bump(e.target.value)}
+      onBlur={flushNow}
     />
   );
 }

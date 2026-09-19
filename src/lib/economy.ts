@@ -155,7 +155,7 @@ export type EconomyFile = {
       crewExceptions?: { a: string; b: string; date: string; note: string }[];
       crewRules?: { min?: number; max?: number; crewsMax?: number };
       teachPack?: string;
-      teachDays?: Record<string, Record<string, { pack?: string; objective?: string; pin?: string; notes?: string; ask?: string; do?: string; lines?: Record<string, string>; media?: HangItem[]; materials?: string; homework?: string; close?: string; mods?: string; reflect?: string; move?: string; agenda?: { now?: string; goal?: string; next?: string; behave?: string } }>>;
+      teachDays?: Record<string, Record<string, { pack?: string; objective?: string; pin?: string; notes?: string; ask?: string; do?: string; lines?: Record<string, string>; media?: HangItem[]; materials?: string; homework?: string; close?: string; mods?: string; reflect?: string; move?: string; skills?: string[]; agenda?: { now?: string; goal?: string; next?: string; behave?: string } }>>;
       lessons?: { id: string; title: string; cat: string; grade?: number; pack?: string; objective?: string; notes?: string; used?: { date: string; period: number; q?: string }[] }[];
       studyHall?: {
         showNotes?: boolean;
