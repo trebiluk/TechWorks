@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.90 — 2026-09-19
+
+- Cleanup wall: one leftover clock (fat digits, Berty beside, drain bar). Workshop + Classroom fill the coral plate. Extra tidy / +$5 catch lives on Teach (PIN), not the student wall.
+
 ## 1.92.89 — 2026-09-19
 
 - TEACH tools live in a left Edge Pocket. One thin period row. PlanIt writes; Teach is the live board; Deck plays it; Projector is the kid wall. Plan Book dead end is gone.

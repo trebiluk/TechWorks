@@ -215,7 +215,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Jobs on the wall",
     tags: ["jobs", "agenda", "cleanup", "need", "goggles", "do this"],
     wall: true,
-    body: "Two job lists. Agenda (Do this now) is the hour’s work — Teach writes it, Deck plays it, Wall hangs it. Cleanup jobs are the coral list (workshop tools vs classroom seats). Need (goggles / stock) is a Teach line kids see at Enter. Edit cleanup jobs on the coral pad (PIN). Caught helping extra can earn a perk — not XP.",
+    body: "Two job lists. Agenda (Do this now) is the hour’s work — Teach writes it, Deck plays it, Wall hangs it. Cleanup jobs are the coral list (workshop tools vs classroom seats). Need (goggles / stock) is a Teach line kids see at Enter. Edit cleanup jobs on Teach (PIN). Extra tidy catch is teacher-only on Teach — not on the student Cleanup wall.",
   },
   {
     id: "dash-teach",
@@ -318,7 +318,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Cleanup",
     tags: ["cleanup", "coral", "tools", "berty"],
     wall: true,
-    body: "Last five minutes: coral screen. Berty points at jobs. Workshop: tools, scraps, stations. Classroom: seats and aisles. Caught helping extra can earn a perk — not XP. Between classes Berty points at ENTER → LISTEN → CREW WORK → CLEAN UP.",
+    body: "Last five minutes: coral screen. One leftover clock. Berty points at jobs. Workshop: tools, scraps, stations. Classroom: seats and aisles. Extra tidy catch is on Teach (PIN), not the student Cleanup wall. Between classes Berty points at ENTER → LISTEN → CREW WORK → CLEAN UP.",
   },
   {
     id: "wall-lang",
@@ -542,7 +542,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Schedule",
     title: "Cleanup time",
     tags: ["cleanup", "coral", "bell", "5 minutes"],
-    body: "Last minutes of a live period: the cleanup bell rings once. Wall goes coral full-screen (Workshop vs classroom jobs). Teach stays open with the same jobs pad so you can still run the room. Edit jobs and the extra tidy line (PIN). Study hall has its own list. Tap a name for +$5 wallet when you catch extra cleanup (max 2/day). Not XP. Desk button hides the wall card until the next period. Cleanup miss is still −$10 wallet, not effort.",
+    body: "Last minutes of a live period: the cleanup bell rings once. Wall goes coral full-screen (Workshop vs classroom jobs, one leftover clock). Teach stays open with the same jobs pad so you can still run the room. Extra tidy / +$5 catch is on Teach (PIN), not the student Cleanup wall. Study hall has its own list. Tap a name on Teach for +$5 wallet when you catch extra cleanup (max 2/day). Not XP. Desk button hides the wall card until the next period. Cleanup miss is still −$10 wallet, not effort.",
   },
   {
     id: "profile",
