@@ -48,6 +48,7 @@ import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
 import { HangFrame } from "@/components/hang-frame";
 import { CleanupJobsPad } from "@/components/cleanup-wall";
 import { TeachPocket, type TeachTool } from "@/components/teach-pocket";
+import { TeachLive } from "@/components/teach-live";
 
 export function TeachBoard({
   file,
@@ -412,29 +413,18 @@ export function TeachBoard({
         </section>
       ) : null}
 
-      <SortableList
-        enabled={sortOn}
-        className={cn("flex min-h-0 flex-1 flex-col gap-2 overflow-auto")}
-        onMove={(grab, onto) => commitLayout(moveTeachTo(layout, grab, onto))}
-      >
-        {layout.order.map((id) => {
-          if (!teachRowOn(layout, id)) return null;
-          const body = plateOf(id);
-          if (!body) return null;
-          const row = TEACH_ROWS.find((r) => r.id === id);
-          return (
-            <SortableItem
-              key={id}
-              id={id}
-              label={row?.label}
-              className={id === "hero" || id === "slots" || id === "hang" ? "tw-fill-row" : "shrink-0"}
-              onHide={id === "hero" ? undefined : () => commitLayout(hideTeachRow(layout, id, false))}
-            >
-              {body}
-            </SortableItem>
-          );
-        })}
-      </SortableList>
+      <div className="tw-planit-mf min-h-0 flex-1" data-teach-mf>
+        <TeachLive
+          file={file}
+          date={date}
+          period={period}
+          unlocked={unlocked}
+          onEdit={edit}
+          onNeedPin={onNeedPin}
+          onPlan={onPlan ? () => onPlan(date, period) : undefined}
+          onDeck={onDeck}
+        />
+      </div>
     </div>
   );
 }

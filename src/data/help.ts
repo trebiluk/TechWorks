@@ -223,14 +223,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Teach mode",
     tags: ["teach", "lesson", "now", "slots", "objective", "demo"],
     wall: true,
-    body: "Dash → Teach. Live clock and the hour PlanIt wrote. Green dots + “n of 8 hours set” mean that hour is planned. Tools (PlanIt · Deck · Projector · Hang · Arrange · Print) live in the left Edge Pocket — one thin period row, no right ribbon. Open PlanIt to type Job · Guiding Q · Prove · beats. Hang a Drive file, Slides, Doc, YouTube, or Canva on this hour. Deck plays that hour. Projector is the kid wall. No names on Teach.",
+    body: "Dash → Teach. Live board for this period (Job · Guiding Q · Prove · beats, gilded Top XP / Top $). Green dots + “n of 8 hours set” mean that hour is planned. Tools (PlanIt · Deck · Projector · Hang · Arrange · Print) live in the left Edge Pocket — one thin period row, no right ribbon. Mid-class edits write back. Deck plays TEACH. Projector is the kid wall. No names on Teach.",
   },
   {
     id: "dash-plan",
     category: "Dashboard",
     title: "PlanIt",
     tags: ["plan", "planit", "planbook", "week", "copy", "materials", "homework", "closure", "sub", "objective"],
-    body: "Learn → PlanIt is the week timetable. Periods down, days across. Click a block and type Job · Guiding Q · Prove · beats — that write fills Wall and Deck. Teach is a live mirror. Tap up to three skills — Watch opens on the first. Send this hour copies onto empty cells only. Arrow keys move. Print week.",
+    body: "Learn → PlanIt is 40 / TEACH 60. Type Job · Guiding Q · Prove · beats on the left — the live board on the right is TEACH. Deck plays that same hour. Tap Week for the grid. Tap up to three skills — Watch opens on the first. Send this hour copies onto empty cells only. Arrow keys move. Print week.",
   },
   {
     id: "dash-loop",
@@ -701,7 +701,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Dashboard",
     title: "PlanIt → Teach → Deck → Wall",
     tags: ["plan", "teach", "deck", "wall", "activity", "unit"],
-    body: "One write. Type Job · Guiding Q · Prove · beats on the PlanIt hour card. Tap up to three skills — Watch opens on the first. Teach is the live period board (tools in the left Edge Pocket). Deck plays that same hour. Projector is the kid wall. Hang still pastes on Teach.",
+    body: "One write. Type Job · Guiding Q · Prove · beats on PlanIt. TEACH is the live board (same teachDays row, tools in the left Edge Pocket). Mid-class TEACH edits write back. Deck Present plays TEACH. Projector Wall still hangs the kid scoreboard. Hang still pastes on TEACH.",
   },
   {
     id: "roles-it",

@@ -940,6 +940,7 @@ export function Board() {
             go("teach");
           }}
           onSeeWall={() => go("overview")}
+          onDeck={() => go("deck")}
           onStart={setLearnStart}
         />
       ) : view === "wallet" ? (

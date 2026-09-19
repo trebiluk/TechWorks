@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.91 — 2026-09-19
+
+- PlanIt 40 / TEACH 60: Job · Guiding Q · Beats on the left, live board on the right. Dream purple–blue + gold LCARS. Gilded Top XP / Top $ with the classic alias list. Mid-class TEACH edits write back; Deck plays TEACH.
+
 ## 1.92.90 — 2026-09-19
 
 - Cleanup wall: one leftover clock (fat digits, Berty beside, drain bar). Workshop + Classroom fill the coral plate. Extra tidy / +$5 catch lives on Teach (PIN), not the student wall.
