@@ -36,6 +36,7 @@ const HELP_SYNONYMS: Record<string, string[]> = {
   rewards: ["store"],
   look: ["theme", "wall"],
   looks: ["theme", "wall"],
+  "new look": ["theme", "deluxe"],
 };
 
 export function highlightPieces(text: string, q: string): { t: string; hit: boolean }[] {
@@ -649,8 +650,8 @@ export const HELP_ARTICLES: HelpArticle[] = [
     id: "themes",
     category: "Start",
     title: "Stylesheets",
-    tags: ["theme", "bearcat", "night", "holiday", "contrast", "dice", "look", "premade", "stylesheet", "roll", "wall look", "new look"],
-    body: "Admin → Theme (PIN), or Wall → Arrange wall → Looks. Default stays dark (navy / cyan). Never a white wall — Kulibert is light-sensitive. NEW LOOK is an optional chip (same navy, extra shine) — it does not replace Dream. Wall looks (Shop, Back row, Night shop, Oswego, Scoreboard, Club night, Projector, Harvest) each show a mini wall, then paint color, type, scale, and plates in one tap. Kits only move plates. Drag a plate to the other column. Brand chips include ROLL THE DICE. Holiday packs (Holly, Frost, Harvest, Spooky, Patriot, Clover, Wrapping, Valentine, Pumpkin) and Day / ADA (Daylight, Manila, Polar) are full themes. High vis / Contrast sit on top. Hover a chip to preview (mouse). Tap to apply (Chromebook). Looks may grow wall plates — HUD buttons (Web, Help, Lock, Cog, language, NOW) stay the same tap size and stay clickable. Shine overlays on the top bar cannot steal taps. Cleanup coral. Due red.",
+    tags: ["theme", "bearcat", "night", "holiday", "contrast", "dice", "look", "premade", "stylesheet", "roll", "wall look", "tw deluxe"],
+    body: "Admin → Theme (PIN), or Wall → Arrange wall → Looks. Default stays dark (navy / cyan). Never a white wall — Kulibert is light-sensitive. TW Deluxe is an optional chip (same navy, extra shine) — it does not replace Dream. Wall looks (Shop, Back row, Night shop, Oswego, Scoreboard, Club night, Projector, Harvest) each show a mini wall, then paint color, type, scale, and plates in one tap. Kits only move plates. Drag a plate to the other column. Brand chips include ROLL THE DICE. Holiday packs (Holly, Frost, Harvest, Spooky, Patriot, Clover, Wrapping, Valentine, Pumpkin) and Day / ADA (Daylight, Manila, Polar) are full themes. High vis / Contrast sit on top. Hover a chip to preview (mouse). Tap to apply (Chromebook). Looks may grow wall plates — HUD buttons (Web, Help, Lock, Cog, language, NOW) stay the same tap size and stay clickable. Shine overlays on the top bar cannot steal taps. Cleanup coral. Due red.",
   },
   {
     id: "chrome-hud",
