@@ -8,6 +8,7 @@ export const CONTRAST_KEY = "techworks-contrast";
 
 export const THEMES = [
   { id: "solvay", label: "TechWorks", group: "solvay", kind: "dark", swatch: "#06122B", fg: "#F7F9FF", gold: "#22D3EE" },
+  { id: "new-look", label: "NEW LOOK", group: "solvay", kind: "dark", swatch: "#06122B", fg: "#F7F9FF", gold: "#F0D48A" },
   { id: "bearcat", label: "Bearcat paw", group: "solvay", kind: "dark", swatch: "#050816", fg: "#f7f9ff", gold: "#E85820" },
   { id: "dice", label: "ROLL THE DICE", group: "solvay", kind: "dark", swatch: "#050816", fg: "#f7f9ff", gold: "#f0d48a" },
   { id: "night", label: "Night Shift", group: "solvay", kind: "dark", swatch: "#0a0a0b", fg: "#f4f4f5", gold: "#e8c547" },

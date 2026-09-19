@@ -28,8 +28,9 @@ describe("PlanIt Mr Fortnite chrome", () => {
     assert.match(css, /\.tw-mf-action,\s*\.tw-mf-rank \{[\s\S]*?overflow:\s*hidden/);
     assert.match(css, /\.tw-mf-action,\s*\.tw-mf-rank \{[\s\S]*?z-index:\s*0/);
     assert.match(css, /\.tw-teach-live \{[\s\S]*?min-width:\s*0/);
-    assert.match(css, /\.tw-teach-live \{[\s\S]*?overflow:\s*auto/);
+    assert.match(css, /\.tw-teach-live \{[\s\S]*?overflow:\s*hidden/);
     assert.match(css, /\[data-teach-mf\] \{[\s\S]*?overflow:\s*hidden/);
+    assert.match(css, /\.tw-mf-round \{[\s\S]*?overflow:\s*hidden/);
   });
 
   it("paints LCARS L-rails with open corners", () => {
@@ -44,9 +45,17 @@ describe("PlanIt Mr Fortnite chrome", () => {
     assert.match(css, /@media \(prefers-reduced-motion:\s*reduce\) \{[\s\S]*?\.tw-planit-mf[\s\S]*?animation:\s*none/);
   });
 
-  it("stays Dream purple-blue + gold and never mixes Baboo Stark", () => {
-    assert.match(css, /\.tw-planit-mf(?:,\s*\.tw-teach-live)? \{[\s\S]*?--mf-violet/);
+  it("stays Dream navy + cyan LCARS, gold accent only, never Baboo Stark", () => {
+    assert.match(css, /\.tw-planit-mf(?:,\s*\.tw-teach-live)? \{[\s\S]*?--mf-void:\s*#06122b/);
+    assert.match(css, /\.tw-planit-mf(?:,\s*\.tw-teach-live)? \{[\s\S]*?--mf-plate:\s*#0b1a40/);
+    assert.match(css, /\.tw-planit-mf(?:,\s*\.tw-teach-live)? \{[\s\S]*?--mf-elev:\s*#132a5c/);
+    assert.match(css, /\.tw-planit-mf(?:,\s*\.tw-teach-live)? \{[\s\S]*?--mf-cyan:\s*#22d3ee/);
+    assert.match(css, /\.tw-planit-mf(?:,\s*\.tw-teach-live)? \{[\s\S]*?--lcars-gold:\s*var\(--mf-cyan\)/);
     assert.match(css, /\.tw-planit-mf(?:,\s*\.tw-teach-live)? \{[\s\S]*?--mf-gold/);
+    assert.match(css, /\.tw-teach-live textarea[\s\S]*?background:\s*var\(--mf-elev\)/);
+    assert.match(css, /\.tw-mf-quote \{[\s\S]*?background:\s*var\(--mf-elev\)/);
+    assert.doesNotMatch(css, /\.tw-mf-rank\[data-gold="on"\] \{[\s\S]*?linear-gradient\(180deg,\s*color-mix\(in oklab,\s*var\(--mf-gold-hi\)/);
+    assert.match(css, /\.tw-mf-rank\[data-gold="on"\] \{[\s\S]*?background:\s*var\(--mf-elev\)/);
     assert.doesNotMatch(css, /baboo|stark/i);
     assert.doesNotMatch(planit, /baboo|stark/i);
     assert.doesNotMatch(teachLive, /baboo|stark/i);

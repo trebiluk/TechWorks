@@ -223,7 +223,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Teach mode",
     tags: ["teach", "lesson", "now", "slots", "objective", "demo"],
     wall: true,
-    body: "Dash → Teach. Live board for this period (Job · Guiding Q · Prove · beats, gilded Top XP / Top $). Green dots + “n of 8 hours set” mean that hour is planned. Tools (PlanIt · Deck · Projector · Hang · Arrange · Print) live in the left Edge Pocket — one thin period row, no right ribbon. Mid-class edits write back. Deck plays TEACH. Projector is the kid wall. No names on Teach.",
+    body: "Dash → Teach. Live board for this period (Job · Guiding Q · Prove · beats, navy plates, cyan LCARS). Gold stays on the Job crown, CLEAN, and Top XP / Top $ race — never a yellow field wash. Green dots + “n of 8 hours set” mean that hour is planned. Tools (PlanIt · Deck · Projector · Hang · Arrange · Print) live in the left Edge Pocket — one thin period row, no right ribbon. Mid-class edits write back. Deck plays TEACH. Projector is the kid wall. No names on Teach.",
   },
   {
     id: "dash-plan",
@@ -649,8 +649,8 @@ export const HELP_ARTICLES: HelpArticle[] = [
     id: "themes",
     category: "Start",
     title: "Stylesheets",
-    tags: ["theme", "bearcat", "night", "holiday", "contrast", "dice", "look", "premade", "stylesheet", "roll", "wall look"],
-    body: "Admin → Theme (PIN), or Wall → Arrange wall → Looks. Default stays dark (navy / cyan). Never a white wall — Kulibert is light-sensitive. Wall looks (Shop, Back row, Night shop, Oswego, Scoreboard, Club night, Projector, Harvest) each show a mini wall, then paint color, type, scale, and plates in one tap. Kits only move plates. Drag a plate to the other column. Brand chips include ROLL THE DICE. Holiday packs (Holly, Frost, Harvest, Spooky, Patriot, Clover, Wrapping, Valentine, Pumpkin) and Day / ADA (Daylight, Manila, Polar) are full themes. High vis / Contrast sit on top. Hover a chip to preview (mouse). Tap to apply (Chromebook). Looks may grow wall plates — HUD buttons (Web, Help, Lock, Cog, language, NOW) stay the same tap size and stay clickable. Shine overlays on the top bar cannot steal taps. Cleanup coral. Due red.",
+    tags: ["theme", "bearcat", "night", "holiday", "contrast", "dice", "look", "premade", "stylesheet", "roll", "wall look", "new look"],
+    body: "Admin → Theme (PIN), or Wall → Arrange wall → Looks. Default stays dark (navy / cyan). Never a white wall — Kulibert is light-sensitive. NEW LOOK is an optional chip (same navy, extra shine) — it does not replace Dream. Wall looks (Shop, Back row, Night shop, Oswego, Scoreboard, Club night, Projector, Harvest) each show a mini wall, then paint color, type, scale, and plates in one tap. Kits only move plates. Drag a plate to the other column. Brand chips include ROLL THE DICE. Holiday packs (Holly, Frost, Harvest, Spooky, Patriot, Clover, Wrapping, Valentine, Pumpkin) and Day / ADA (Daylight, Manila, Polar) are full themes. High vis / Contrast sit on top. Hover a chip to preview (mouse). Tap to apply (Chromebook). Looks may grow wall plates — HUD buttons (Web, Help, Lock, Cog, language, NOW) stay the same tap size and stay clickable. Shine overlays on the top bar cannot steal taps. Cleanup coral. Due red.",
   },
   {
     id: "chrome-hud",

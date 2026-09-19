@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.93 — 2026-09-19
+
+- Dream default pull-back: navy plates, cyan LCARS, gold only on crowns / CLEAN / gilded race. Job · Guiding Q · Prove stay navy — no yellow field wash. NEW LOOK is an optional Theme chip.
+
 ## 1.92.92 — 2026-09-19
 
 - PlanIt week keeps Job · Guiding Q · Prove inside day/period cells. TEACH live board stays on Teach — Hang and Top XP / Top $ no longer spill across the calendar.
