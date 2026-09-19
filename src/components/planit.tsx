@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, PanelsTopLeft, Presentation, Printer } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
@@ -68,6 +68,8 @@ export function PlanIt({
   }, [dateProp, periodProp, today, firstP]);
   const [printOn, setPrintOn] = useState(false);
   const [notice, setNotice] = useState("");
+  const fileRef = useRef(file);
+  fileRef.current = file;
   const week = weekOn(weekDate);
   const days = week?.days ?? [weekDate];
   const grid = useMemo(() => planWeek(file, days, today), [file, days, today]);
@@ -124,6 +126,7 @@ export function PlanIt({
 
   function edit(next: EconomyFile) {
     if (!gate()) return;
+    fileRef.current = next;
     onChange(next);
   }
 
@@ -295,6 +298,15 @@ function HourDesk({
 }) {
   const d = cell.date;
   const p = cell.period;
+  const fileRef = useRef(file);
+  fileRef.current = file;
+  function commit(next: EconomyFile) {
+    fileRef.current = next;
+    onEdit(next);
+  }
+  function patch(fn: (f: EconomyFile) => EconomyFile) {
+    commit(fn(fileRef.current));
+  }
   const [more, setMore] = useState(false);
   const [unitOn, setUnitOn] = useState(false);
   const [newName, setNewName] = useState("");
@@ -325,7 +337,7 @@ function HourDesk({
           value={cell.do || cell.title}
           editing={unlocked}
           multiline
-          onCommit={(v) => onEdit(setPlanitJob(file, d, p, v))}
+          onCommit={(v) => patch((f) => setPlanitJob(f, d, p, v))}
           placeholder="What they do this hour — that’s the wall."
           aria-label="Job"
           className="min-h-[4.5rem] rounded-xl bg-elevated px-3 py-2 font-display text-lg font-semibold"
@@ -338,7 +350,7 @@ function HourDesk({
           value={cell.ask}
           editing={unlocked}
           multiline
-          onCommit={(v) => onEdit(setPlanitQuestion(file, d, p, v))}
+          onCommit={(v) => patch((f) => setPlanitQuestion(f, d, p, v))}
           placeholder="How can a small force move a bigger load?"
           aria-label="Guiding question"
           className="min-h-11 rounded-xl bg-elevated px-3 py-2 text-sm"
@@ -350,14 +362,14 @@ function HourDesk({
         <DraftField
           value={cell.objective}
           editing={unlocked}
-          onCommit={(v) => onEdit(setPlanitProve(file, d, p, v))}
+          onCommit={(v) => patch((f) => setPlanitProve(f, d, p, v))}
           placeholder="What they show before the bell."
           aria-label="Prove"
           className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
         />
       </label>
 
-      <HourSkills cell={cell} unlocked={unlocked} onEdit={onEdit} file={file} />
+      <HourSkills cell={cell} unlocked={unlocked} onEdit={commit} file={file} />
 
       <div className="grid gap-2" data-planit-beats>
         <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Beats</p>
@@ -374,7 +386,7 @@ function HourDesk({
             <DraftField
               value={beats.find((c) => c.id === id)?.body ?? ""}
               editing={unlocked}
-              onCommit={(v) => onEdit(setPlanitBeat(file, d, p, id, v))}
+              onCommit={(v) => patch((f) => setPlanitBeat(f, d, p, id, v))}
               placeholder={ph}
               aria-label={label}
               className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
@@ -389,7 +401,7 @@ function HourDesk({
           <DraftField
             value={cell.materials}
             editing={unlocked}
-            onCommit={(v) => onEdit(setTeachMaterials(file, d, p, v))}
+            onCommit={(v) => patch((f) => setTeachMaterials(f, d, p, v))}
             placeholder="Stock · PPE"
             className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
           />
@@ -399,7 +411,7 @@ function HourDesk({
           <DraftField
             value={cell.close}
             editing={unlocked}
-            onCommit={(v) => onEdit(setTeachClose(file, d, p, v))}
+            onCommit={(v) => patch((f) => setTeachClose(f, d, p, v))}
             placeholder="Exit / reset"
             className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
           />
@@ -428,7 +440,7 @@ function HourDesk({
         unlocked={unlocked}
         days={days}
         onSend={(next, note) => {
-          onEdit(next);
+          commit(next);
           onNote(note);
         }}
       />
@@ -443,7 +455,7 @@ function HourDesk({
           <DraftField
             value={cell.homework}
             editing={unlocked}
-            onCommit={(v) => onEdit(setTeachHomework(file, d, p, v))}
+            onCommit={(v) => patch((f) => setTeachHomework(f, d, p, v))}
             placeholder="Homework · usually none"
             className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
           />
@@ -451,7 +463,7 @@ function HourDesk({
             value={cell.notes}
             editing={unlocked}
             multiline
-            onCommit={(v) => onEdit(setTeachNotes(file, d, p, v))}
+            onCommit={(v) => patch((f) => setTeachNotes(f, d, p, v))}
             placeholder="Before class"
             className="min-h-14 rounded-xl bg-elevated px-3 py-2 text-sm"
           />
@@ -459,14 +471,14 @@ function HourDesk({
             value={cell.reflect}
             editing={unlocked}
             multiline
-            onCommit={(v) => onEdit(setTeachReflect(file, d, p, v))}
+            onCommit={(v) => patch((f) => setTeachReflect(f, d, p, v))}
             placeholder="After · what to change"
             className="min-h-14 rounded-xl bg-elevated px-3 py-2 text-sm"
           />
           <DraftField
             value={cell.mods}
             editing={unlocked}
-            onCommit={(v) => onEdit(setTeachMods(file, d, p, v))}
+            onCommit={(v) => patch((f) => setTeachMods(f, d, p, v))}
             placeholder="Mods · no names"
             className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
           />
@@ -481,7 +493,7 @@ function HourDesk({
                   type="button"
                   onClick={() => {
                     const act = activitiesOf(u)[0];
-                    if (act) onEdit(parkPlanitUnit(file, d, p, act.id));
+                    if (act) patch((f) => parkPlanitUnit(f, d, p, act.id));
                   }}
                   className={cn("tw-tap min-h-10 rounded-xl px-3 text-sm font-semibold", project?.id === u.id ? "bg-fg text-bg" : "bg-elevated")}
                 >
@@ -498,7 +510,7 @@ function HourDesk({
                 type="button"
                 disabled={!newName.trim()}
                 onClick={() => {
-                  onEdit(newPlanitUnit(file, { date: d, period: p, name: newName, title: cell.do || cell.title }));
+                  onEdit(newPlanitUnit(fileRef.current, { date: d, period: p, name: newName, title: cell.do || cell.title }));
                   setNewName("");
                 }}
                 className="tw-tap min-h-10 rounded-xl bg-elevated px-3 text-sm font-semibold disabled:opacity-40"
@@ -524,9 +536,13 @@ function HourSkills({
   unlocked: boolean;
   onEdit: (next: EconomyFile) => void;
 }) {
+  const fileRef = useRef(file);
+  fileRef.current = file;
   function tap(id: string) {
     if (!unlocked) return;
-    onEdit(toggleTeachSkill(file, cell.date, cell.period, id));
+    const next = toggleTeachSkill(fileRef.current, cell.date, cell.period, id);
+    fileRef.current = next;
+    onEdit(next);
   }
   return (
     <div className="grid gap-1.5" data-planit-skills>

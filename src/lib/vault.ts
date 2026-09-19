@@ -12,6 +12,7 @@ import { emptyRoster, pickDesk } from "@/lib/vault-core";
 import { stripFakeDemo } from "@/lib/demo";
 import { deskStorageKeys, openSchema } from "@/lib/compat";
 import { mergeNames, readNamesVault } from "@/lib/names-vault";
+import { readHours, recoverHours } from "@/lib/hour-persist";
 
 export { emptyRoster, pickDesk };
 
@@ -269,7 +270,8 @@ export async function persistPack(pack: DeskPack, json = JSON.stringify(pack)): 
 export async function hydrateVault(local: EconomyFile): Promise<EconomyFile> {
   const pack = await archiveGet<DeskPack | VaultBundle>(CURRENT);
   const idb = pack ? unpackDesk(pack) : null;
-  return mergeNames(pickDesk(local, idb), readNamesVault());
+  const picked = pickDesk(local, idb);
+  return recoverHours(mergeNames(picked, readNamesVault()), readHours());
 }
 
 export function downloadDeskBackup(file: EconomyFile, label?: string) {

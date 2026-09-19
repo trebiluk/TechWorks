@@ -10,6 +10,7 @@ import { bellFor, isLiveStudent, score } from "@/lib/economy";
 import { loadDesk, saveDesk, saveDeskNow, applyDjia, stampLiveExport, isSubDay, exportedThisPeriod, lunchOn, deskBellId, deskSavePending, setSchooltoolDone } from "@/lib/store";
 import { hydrateVault } from "@/lib/vault";
 import { applyCloudPack, cloudPackCount, cloudSyncPlan, localIsNewer, pullCloud, pushCloud } from "@/lib/desk-cloud";
+import { hourCount, hourPlanOf, readHours, recoverHours } from "@/lib/hour-persist";
 import { CloudChip } from "@/components/cloud-board";
 import { LockBar, PinPad } from "@/components/pin-pad";
 import { DescribeBar } from "@/components/describe-bar";
@@ -121,6 +122,10 @@ export function Board() {
   const [flash, setFlash] = useState<{ msg: string; tone?: "ok" | "warn" | "loss" } | null>(null);
   const [rankBoard, setRankBoard] = useState<"skill" | "perk">("skill");
   const skipSave = useRef(true);
+  const fileRef = useRef(file);
+  fileRef.current = file;
+  const overlayRef = useRef(overlayOn);
+  overlayRef.current = overlayOn;
   const today = todayIso();
   const dueN = useMemo(() => {
     const p = periodPulses(file, today);
@@ -271,7 +276,9 @@ export function Board() {
   }
 
   function commitDesk(next: EconomyFile) {
-    setFile(takeRealDesk(file, next, overlayOn));
+    const merged = takeRealDesk(fileRef.current, next, overlayRef.current);
+    fileRef.current = merged;
+    setFile(merged);
   }
 
   function rankUp(alias: string, band: string) {
@@ -280,7 +287,7 @@ export function Board() {
 
   function saveNow(period?: number) {
     saveDeskNow(file);
-    if (file.students.length > 0) void pushCloud(file);
+    if (file.students.length > 0 || hourCount(file) > 0) void pushCloud(file);
     setFile((cur) => stampLiveExport(cur, todayIso(), period ?? liveP ?? undefined));
     window.setTimeout(() => flashMsg(saveCloudHint(), "ok"), 80);
   }
@@ -337,14 +344,15 @@ export function Board() {
           }
           const cloudFile = await applyCloudPack(pack);
           if (!cloudFile) return;
-          if (localN > 0 && cloudFile.students.length === 0) {
+          const kept = recoverHours(recoverHours(cloudFile, hourPlanOf(next)), readHours());
+          if (localN > 0 && kept.students.length === 0) {
             void pushCloud(next);
             flashMsg("Cloud desk was empty · kept this PC's roster", "warn");
             return;
           }
-          setFile(cloudFile);
-          if (localN === 0 && cloudFile.students.length > 0) {
-            flashMsg(`Loaded ${cloudFile.students.length} workers from the cloud`, "ok");
+          setFile(kept);
+          if (localN === 0 && kept.students.length > 0) {
+            flashMsg(`Loaded ${kept.students.length} workers from the cloud`, "ok");
           }
         })
         .catch(() => {});
@@ -400,11 +408,13 @@ export function Board() {
 
   useEffect(() => {
     const flush = () => {
-      if (deskSavePending()) saveDeskNow(file);
+      if (skipSave.current) return;
+      saveDeskNow(fileRef.current);
     };
     const onLeave = (e: BeforeUnloadEvent) => {
+      if (skipSave.current) return;
+      saveDeskNow(fileRef.current);
       if (!deskSavePending()) return;
-      saveDeskNow(file);
       e.preventDefault();
       e.returnValue = "";
     };
@@ -419,7 +429,7 @@ export function Board() {
       window.removeEventListener("visibilitychange", onHide);
       window.removeEventListener("beforeunload", onLeave);
     };
-  }, [file]);
+  }, []);
 
   useEffect(() => {
     paintCleanup(file.meta.config?.cleanupMins, file.meta.config?.cleanupSound);
@@ -908,7 +918,7 @@ export function Board() {
         <FamilyWeb file={wallFile} />
       ) : view === "skills" || view === "projects" || view === "grades" ? (
         <SkillsBoard
-          file={wallFile}
+          file={graphFile}
           onChange={commitDesk}
           unlocked={unlocked}
           onNeedPin={() => askPin()}
@@ -969,7 +979,7 @@ export function Board() {
       ) : view === "teach" ? (
         teachStart === "plans" ? (
           <LessonBoard
-            file={wallFile}
+            file={graphFile}
             unlocked={unlocked}
             onChange={commitDesk}
             onNeedPin={() => askPin()}
@@ -979,7 +989,7 @@ export function Board() {
             }}
           />
         ) : (
-        <TeachBoard file={wallFile} unlocked={unlocked} editing={unlocked && arrangeOn} onArrange={() => {
+        <TeachBoard file={graphFile} unlocked={unlocked} editing={unlocked && arrangeOn} onArrange={() => {
           if (!unlocked) {
             askPin();
             return;
@@ -990,7 +1000,7 @@ export function Board() {
       ) : view === "polls" ? (
         <PollBoard file={file} unlocked={unlocked} onChange={commitDesk} onNeedPin={() => askPin()} />
       ) : view === "deck" ? (
-        <DeckBoard file={wallFile} unlocked={unlocked} date={planDate} onNeedPin={() => askPin()} onTeach={() => go("teach")} onChange={commitDesk} />
+        <DeckBoard file={graphFile} unlocked={unlocked} date={planDate} onNeedPin={() => askPin()} onTeach={() => go("teach")} onChange={commitDesk} />
       ) : view === "week" ? (
         <WeekBoard
           file={wallFile}

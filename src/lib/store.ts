@@ -12,6 +12,7 @@ import { persistNamesVault, stripNames } from "@/lib/names-vault";
 import { scheduleCloudPush } from "@/lib/desk-cloud";
 import { builtinPacks, type BellPack, type ScheduleId } from "@/lib/bells";
 import { SAVE_FAIL_EVENT, stripFakeDemo } from "@/lib/demo";
+import { hourPlanOf, readHours, recoverHours, writeHours } from "@/lib/hour-persist";
 
 const FOCUS_KEY = "techworks-focus";
 const MONEY_STEP = 5;
@@ -93,6 +94,7 @@ function flushDesk(file: EconomyFile) {
   const clean = stripNames(stripFakeDemo(file));
   persistNamesVault(clean);
   const pack = packDesk(clean);
+  writeHours(hourPlanOf(pack.file), pack.saved);
   const json = JSON.stringify(pack);
   const wrote = writePack(pack, json);
   if (!wrote.ok) {
@@ -137,8 +139,8 @@ function days4(days: string[] | undefined): string[] {
 export function loadDesk(fallback: EconomyFile): EconomyFile {
   if (typeof window === "undefined") return migrateDesk(fallback);
   const local = readLocal();
-  if (local) return local;
-  return migrateDesk(fallback);
+  const file = local ?? migrateDesk(fallback);
+  return recoverHours(file, readHours());
 }
 
 export function loadFocus(): { period: number; crewKey: string } | null {

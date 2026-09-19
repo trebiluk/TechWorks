@@ -5,6 +5,7 @@ import type { EconomyFile } from "@/lib/economy";
 import { isDemoStudentId, stripFakeDemo } from "@/lib/demo";
 import { cloudPackOpen } from "@/lib/compat";
 import { mergeNames, persistNamesVault, readNamesVault, stripNames } from "@/lib/names-vault";
+import { hourCount } from "@/lib/hour-persist";
 
 const KEY = "techworks-desk-key";
 const ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -285,7 +286,8 @@ function realCount(file: EconomyFile): number {
 let pushTimer = 0;
 export function scheduleCloudPush(file: EconomyFile) {
   if (typeof window === "undefined") return;
-  if (realCount(file) === 0) return;
+  if (realCount(file) === 0 && hourCount(file) === 0) return;
+  if (realCount(file) === 0 && !storedDeskKey()) return;
   if (pushTimer) window.clearTimeout(pushTimer);
   pushTimer = window.setTimeout(() => {
     pushTimer = 0;
