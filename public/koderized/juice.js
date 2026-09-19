@@ -1,4 +1,4 @@
-/* KZ 1.7.0 juice — rolls the bot, shop floor, shout, teaser. */
+/* KZ 1.8.0 juice — rolls the bot, crate, wall, shout, teaser. */
 (function () {
   const $ = id => document.getElementById(id);
   let animFrame = 0;
@@ -15,6 +15,7 @@
       }
     }
     ctx.fillStyle = "#3f1d0f";
+    if (sim.wallX < sim.cols) {
     ctx.fillRect(sim.wallX * cw, 0, cw * 2, H);
     const stripe = 14;
     for (let i = -H; i < H + W; i += stripe * 2) {
@@ -32,6 +33,18 @@
     ctx.fillStyle = "#fff7ed";
     ctx.font = "bold 13px sans-serif";
     ctx.fillText("SAW / WALL", sim.wallX * cw + 10, 18);
+    }
+    if (sim.goalX != null && sim.goalX < sim.cols) {
+      const gy = (sim.goalY != null ? sim.goalY : 3) * ch;
+      const gx = sim.goalX * cw;
+      ctx.fillStyle = "#b45309";
+      ctx.fillRect(gx + 10, gy + 12, cw - 20, ch - 22);
+      ctx.fillStyle = "#fbbf24";
+      ctx.fillRect(gx + 14, gy + 16, cw - 28, 8);
+      ctx.fillStyle = "#fff7ed";
+      ctx.font = "bold 11px sans-serif";
+      ctx.fillText("CRATE", gx + 12, gy + 40);
+    }
     return { cw, ch };
   }
 
@@ -113,8 +126,12 @@
       window.draw($("world"), sim, i);
       const last = i >= sim.path.length - 1;
       if (last) {
-        if (sim.stopped && sim.hitWall) shout("SAFE", "good");
-        else { shout(sim.hitWall ? "BONK" : "RUNAWAY", "bad"); shake(); }
+        const atCrate = sim.goalX != null && sim.x === sim.goalX;
+        if (atCrate) shout("CRATE", "good");
+        else if (sim.stopped && sim.hitWall) shout("SAFE", "good");
+        else if (sim.hitWall) { shout("BONK", "bad"); shake(); }
+        else if ((sim.path || []).length <= 1) shout("SIT", "");
+        else shout("ROLL", "good");
         return;
       }
       i += 1;

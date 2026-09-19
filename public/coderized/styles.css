@@ -52,6 +52,17 @@ h1, h2, h3 { margin: 0 0 .4rem; color: #f8fafc; }
 .wrap { max-width: 1180px; margin: 0 auto; padding: 16px; }
 .hero { text-align: center; padding: 12px 8px 8px; }
 .hero h1 { font-size: clamp(2rem, 5vw, 3.1rem); letter-spacing: -.02em; text-shadow: 0 4px 0 #000; }
+.ladder {
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+  list-style: none; padding: 0; margin: 12px 0 0;
+}
+.ladder li {
+  background: #0b1c33; border: 1px solid #234; color: #e8eef4;
+  border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 800;
+}
+.ladder li:nth-child(1) { border-color: var(--gold); color: var(--gold); }
+.block.empty { background: transparent; border: 1px dashed #4b5d74; color: #9fb0c3; justify-content: center; }
+.door-btn.go { background: linear-gradient(180deg, #22c55e, #15803d); }
 .hero-bot { max-width: 420px; margin: 0 auto 8px; }
 .hero-bot canvas { width: 100%; border-radius: 16px; display: block; background: #071018; border: 2px solid #234; }
 .join { max-width: 480px; margin: 0 auto; }
