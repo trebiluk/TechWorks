@@ -355,7 +355,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "PINs and who can tap what",
     tags: ["pin", "1111", "2222", "lock", "unlock", "teacher", "crew"],
-    body: "Teacher PIN is the one you set on Lock → Set teacher PIN (never 1111 — that code is rejected). It unlocks scoring, Store, and roster. Crew override 2222 opens other periods on the crew pad only — it is not printed on the student wall. Locked chrome: Wall, Teach, Deck, Week, Club, Hall, Learn Words, Help. Embed ?embed=1 is Wall only.",
+    body: "Factory desk PIN is 7879 (not printed on the student wall). 1111 is rejected. It unlocks scoring, Store, and roster. Crew override 2222 opens other periods on the crew pad only. Locked chrome: Wall, Teach, Deck, Week, Club, Hall, Learn Words, Help. Embed ?embed=1 is Wall only.",
   },
   {
     id: "nav",

@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.80 — 2026-09-19
+
+- Factory desk PIN is 7879 (always unlocks teacher). 1111 stays rejected. Not printed on the student wall.
+
 ## 1.92.79 — 2026-09-19
 
 - Wall fills the phone. Berty stays in his column (no overlap). Ticker crawls (~3 min a pass).

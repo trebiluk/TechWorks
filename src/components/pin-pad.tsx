@@ -81,15 +81,7 @@ export function PinPad({
       setErr("At least 4 digits");
       return;
     }
-    if (n === CREW_PIN) {
-      const kind = unlockKind(n);
-      if (kind) {
-        onUnlock(kind);
-        onClose();
-      }
-      return;
-    }
-    if (n === "1111") {
+    if (n === "1111" || n === CREW_PIN) {
       setErr("Pick a PIN that is not 1111 or 2222");
       return;
     }
