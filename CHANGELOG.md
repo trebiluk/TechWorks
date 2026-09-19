@@ -2,7 +2,11 @@
 
 # TechWorks changelog
 
-App version **1.92.81**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.82**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.82 — 2026-09-19
+
+- Top nav: Wall / Teach / Deck / PlanIt stay fully readable. Fake data and the clock wrap under the chips instead of covering them.
 
 ## 1.92.81 — 2026-09-19
 

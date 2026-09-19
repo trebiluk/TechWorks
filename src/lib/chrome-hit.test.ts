@@ -39,4 +39,21 @@ describe("chrome hit layer", () => {
     assert.match(css, /\.tw-theme-swatch \{[\s\S]*?pointer-events:\s*none/);
     assert.match(css, /header\.desk-chrome button,[\s\S]*?touch-action:\s*manipulation/);
   });
+
+  it("never lets status pills cover Wall Teach Deck PlanIt", () => {
+    const cluster = css.match(/header\.desk-chrome \.nav-cluster \{[^}]+\}/);
+    assert.ok(cluster, "nav-cluster rule");
+    assert.match(cluster[0], /flex-wrap:\s*wrap/);
+    assert.doesNotMatch(cluster[0], /flex-wrap:\s*nowrap/);
+    const chips = css.match(/header\.desk-chrome \.nav-cluster > \.nav-chips \{[^}]+\}/);
+    assert.ok(chips, "nav-chips rule");
+    assert.match(chips[0], /flex:\s*1 1 auto/);
+    assert.match(chips[0], /min-width:\s*min\(24rem,\s*100%\)/);
+    const hud = css.match(/header\.desk-chrome \.tw-hud-row \{[^}]+\}/);
+    assert.ok(hud, "hud-row rule");
+    assert.match(hud[0], /flex:\s*0 0 auto/);
+    const chipZ = Number(/z-index:\s*(\d+)/.exec(chips[0])?.[1] ?? 0);
+    const hudZ = Number(/z-index:\s*(\d+)/.exec(hud[0])?.[1] ?? 0);
+    assert.ok(chipZ > hudZ, `nav chips z-index ${chipZ} must beat HUD ${hudZ}`);
+  });
 });
