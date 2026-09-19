@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.94 — 2026-09-19
+
+- Score · 40s. Period chips, then fat 3 / 2 / 1 on every crew — six on one Chromebook screen. Daily Goal and Happened moved to TEACH. Crew-lead PIN scores own crew only. Mark is the crew score, not wallet.
+
 ## 1.92.93 — 2026-09-19
 
 - Dream default pull-back: navy plates, cyan LCARS, gold only on crowns / CLEAN / gilded race. Job · Guiding Q · Prove stay navy — no yellow field wash. NEW LOOK is an optional Theme chip.

@@ -49,6 +49,7 @@ import { HangFrame } from "@/components/hang-frame";
 import { CleanupJobsPad } from "@/components/cleanup-wall";
 import { TeachPocket, type TeachTool } from "@/components/teach-pocket";
 import { TeachLive } from "@/components/teach-live";
+import { DayFacts } from "@/components/day-facts";
 
 export function TeachBoard({
   file,
@@ -311,7 +312,7 @@ export function TeachBoard({
   return (
     <div className="tw-teach-stage flex min-h-0 flex-1 flex-col" data-wall-stage={sortOn ? "edit" : "show"}>
       {printOn ? <LessonPlanSheet file={file} period={period} dates={weekDays} onClose={() => setPrintOn(false)} /> : null}
-      <header className="tw-teach-top">
+      <header className="tw-teach-top flex flex-col gap-1">
         <div className="flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto">
           <TeachPocket
             tools={tools}
@@ -381,6 +382,9 @@ export function TeachBoard({
               </span>
             ) : null}
           </p>
+        </div>
+        <div data-teach-day-facts className="min-w-0 px-1 pb-1">
+          <DayFacts file={file} date={date} period={period} edit unlocked={unlocked} onNeedPin={onNeedPin} onChange={edit} />
         </div>
       </header>
 

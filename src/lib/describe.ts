@@ -44,12 +44,12 @@ const CARDS: Record<string, DescribeCard> = {
   },
   crew: {
     title: "Crew",
-    purpose: "Kiosk. Crew lead PIN opens Daily scoring, Our crew, and Buy. Gold signed-in bar. Last marks + today’s make. Projector stays the wall.",
+    purpose: "Kiosk. Crew lead PIN opens Score for your crew only, plus Our crew and Buy. Fat 3/2/1. No other crews’ marks. Projector stays the wall.",
     links: [{ label: "Help", href: "#help" }],
   },
   score: {
     title: "Desk",
-    purpose: "Verify marks, invest, cleanup, and pay. Attendance is SchoolTool.",
+    purpose: "Score · 40s. Period chips then fat 3/2/1 on every crew. Mark is the crew score, not wallet. Daily Goal lives on Teach.",
     links: [{ label: "SchoolTool", href: SCHOOLTOOL }, { label: "Help", href: "#help" }],
   },
   schedule: {

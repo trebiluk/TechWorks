@@ -1,4 +1,6 @@
 import { bellFor, dayPay, isLiveStudent, score, type DayCode, type EconomyFile, type RawStudent } from "@/lib/economy";
+import { crewAt } from "@/lib/crew-desk";
+import { isAwayMark } from "@/lib/score-pad";
 import { generateAlias, type LegalRosterRow } from "@/lib/alias-bank";
 import { aliasAfterId, newStudentId } from "@/lib/ids";
 import { DEFAULT_LEVEL_BANDS, skillXp, type LevelBand } from "@/lib/skills";
@@ -580,9 +582,11 @@ export function setCrewMark(
 ): EconomyFile {
   const next = clone(file);
   const q = file.meta.quarterName;
-  next.students = next.students.map((s) =>
-    s.period === period && s.crewKey === crewKey && isLiveStudent(s, q) ? withDayMark(s, date, code) : s,
-  );
+  next.students = next.students.map((s) => {
+    if (s.period !== period || !isLiveStudent(s, q) || crewAt(s, date) !== crewKey) return s;
+    if (isAwayMark(markOn(s, date))) return s;
+    return withDayMark(s, date, code);
+  });
   return next;
 }
 

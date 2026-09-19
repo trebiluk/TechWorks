@@ -115,8 +115,12 @@ function codeFor(id: string, date: string, messy: boolean, i: number): string {
 
 const FAKE_ALIASES = ["Spark", "Kerf", "Bit", "Rivet", "Flux", "Chuck", "Nib", "Jig", "Bevel", "Shim", "Boss", "Gage"];
 const FAKE_CREW = [
-  { key: "Forge", name: "Forge", color: "#E8C547", motto: "Heat and hammer." },
-  { key: "Volt", name: "Volt", color: "#22D3EE", motto: "We don't leave a mess." },
+  { key: "Forge", name: "Forge", color: "#22D3EE", motto: "Heat and hammer." },
+  { key: "Volt", name: "Volt", color: "#3B82F6", motto: "We don't leave a mess." },
+  { key: "Sprocket", name: "Sprocket", color: "#67E8F9", motto: "Keep it turning." },
+  { key: "Rivet", name: "Rivet", color: "#38BDF8", motto: "Hold fast." },
+  { key: "Flux", name: "Flux", color: "#1E4BAF", motto: "Flow the joint." },
+  { key: "Spark", name: "Spark", color: "#2EE6FF", motto: "Strike once." },
 ];
 
 function fakeKid(id: string, first: string, period: number, grade: number, crewKey: string, quarter: string): RawStudent {
@@ -166,7 +170,7 @@ export function seedFakeShop(file: EconomyFile): EconomyFile {
         crews.push({ period: b.period, key: c.key, name: c.name, color: c.color, motto: c.motto });
       }
     }
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < FAKE_CREW.length * 3; i++) {
       const crew = FAKE_CREW[i % FAKE_CREW.length]!;
       const first = FAKE_ALIASES[n % FAKE_ALIASES.length]!;
       students.push(fakeKid(`demo-${b.period}-${i}`, `${first}${b.period}`, b.period, b.grade, crew.key, quarter));

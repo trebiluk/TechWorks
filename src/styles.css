@@ -3792,6 +3792,18 @@ html[dir="rtl"] .board-root { direction: rtl; }
   }
 }
 
+/* Score · 40s — fat 3/2/1, six crews fit without scrolling to reach one. */
+[data-score-pad] {
+  min-height: 0;
+}
+[data-score-crews] {
+  overflow: hidden;
+}
+[data-score-mark] {
+  min-height: 2.75rem;
+}
+
+
 html[data-theme="new-look"] .tw-mf-tab[data-on="on"] {
   box-shadow: var(--tw-active-pill);
 }

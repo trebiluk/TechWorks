@@ -37,19 +37,19 @@ export function DayFacts({
 
   if (!edit) {
     return (
-      <div className={cn("min-w-0 text-sm", className)}>
-        <p>
+      <div className={cn("min-w-0 text-sm", className)} data-day-facts="">
+        <p data-daily-goal="">
           <span className="text-mast uppercase tracking-wider text-subtle">Goal </span>
           <span className="uppercase">{goal || "—"}</span>
         </p>
-        {happened ? <p className="mt-0.5 text-muted">{happened}</p> : null}
+        {happened ? <p className="mt-0.5 text-muted" data-happened="">{happened}</p> : null}
       </div>
     );
   }
 
   return (
-    <div className={cn("flex min-w-0 flex-col gap-2", className)}>
-      <div>
+    <div className={cn("flex min-w-0 flex-col gap-2", className)} data-day-facts="">
+      <div data-daily-goal="">
         <p className="mb-1 text-mast uppercase tracking-wider text-subtle">Daily goal · Grade {grade}</p>
         <GoalChips
           value={STAGES.includes(goal as (typeof STAGES)[number]) ? goal : STAGES[0]}
@@ -59,7 +59,7 @@ export function DayFacts({
           }}
         />
       </div>
-      <label className="block">
+      <label className="block" data-happened="">
         <span className="text-mast uppercase tracking-wider text-subtle">Happened</span>
         <input
           value={happened}
