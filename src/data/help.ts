@@ -223,7 +223,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Teach mode",
     tags: ["teach", "lesson", "now", "slots", "objective", "demo"],
     wall: true,
-    body: "Dash → Teach. Live clock and the hour PlanIt wrote. Green dots + “n of 8 hours set” mean that hour is planned. Tools (PlanIt · Deck · Projector · Hang · Arrange · Print) live in the left Edge Pocket — one thin period row, no right ribbon. Open PlanIt to type Job · Guiding Q · Prove · beats. Hang a Drive file, Slides, Doc, YouTube, or Canva on this hour. Deck plays that hour. Projector is the kid wall. No names on Teach.",
+    body: "Dash → Teach. Live clock and the hour PlanIt wrote. Green dots + “n of 8 hours set” mean that hour is planned. Tools (PlanIt · Deck · Projector · Hang · Arrange · Print) live in the left Edge Pocket — one thin period row, no right ribbon. Daily goal chips and a one-line Happened sit under that period strip — not on Score. Open PlanIt to type Job · Guiding Q · Prove · beats. Hang a Drive file, Slides, Doc, YouTube, or Canva on this hour. Deck plays that hour. Projector is the kid wall. No names on Teach.",
   },
   {
     id: "dash-plan",
@@ -273,7 +273,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Crew lead path",
     tags: ["crew", "kiosk", "2222", "3", "2", "1"],
     wall: true,
-    body: "PIN 2222, this period only unless you need another class. Hi, Team Leader. Tap 3 / 2 / 1 or Absent / Excused / Personal. Optional INVEST? after a 3/2/1. Next crew auto-advances. Our crew: name, mark, and motto — not seats. You cannot touch wallet, bonus, or grades.",
+    body: "PIN 2222, this period only. Pick your crew — Score shows fat 3 / 2 / 1 for that crew only. Never other crews’ marks. Mark is the crew score, not wallet. Our crew: name, mark, and motto — not seats. You cannot touch wallet, bonus, or grades.",
   },
   {
     id: "roles-worker",
@@ -392,7 +392,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Crew",
     title: "Crew leader pad",
     tags: ["crew", "3", "2", "1", "absent", "excused", "personal", "invest"],
-    body: "Teal screen. Live period only unless you enter 2222. 3 / 2 / 1 and ABSENT / EXCUSED / PERSONAL. INVEST? only after a 3/2/1. Faces and notes do not change pay. A sub never uses this pad. Teacher Score is a different page: name + 3/2/1 on one row.",
+    body: "PIN 2222. Live period. Pick your crew, then one fat 3 / 2 / 1. Own crew only — no other marks, no wallet. A sub never uses this pad. Teacher Score is the same 3 / 2 / 1 on every crew at once (six on one Chromebook screen).",
   },
   {
     id: "effort",
@@ -406,7 +406,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Score",
     title: "Teacher Verify / Score",
     tags: ["score", "verify", "bonus", "deduct", "clutch", "sub", "assist"],
-    body: "Name sits next to 3 / 2 / 1 on one row — tap the alias for the profile. Codes (Abs / Exc / PTO / Nurse) sit on a slim row. More is Assist / Clean / cash. Period chips show crews scored.",
+    body: "Score · 40s. Period chips, then every crew on one screen with fat 3 / 2 / 1 (icon + number, ≥44px). Mark is the crew score — not wallet / TechCash. Daily Goal and Happened live on TEACH. Present kids only; A / E / P stay put.",
   },
   {
     id: "schooltool",

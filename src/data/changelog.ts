@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.90 — 2026-09-19
+
+- Score · 40s. Period chips, then fat 3 / 2 / 1 on every crew — six on one Chromebook screen. Daily Goal and Happened moved to TEACH. Crew-lead PIN scores own crew only. Mark is the crew score, not wallet.
+
 ## 1.92.89 — 2026-09-19
 
 - TEACH tools live in a left Edge Pocket. One thin period row. PlanIt writes; Teach is the live board; Deck plays it; Projector is the kid wall. Plan Book dead end is gone.

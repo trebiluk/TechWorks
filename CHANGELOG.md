@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.89. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.90. -->
 
 # TechWorks changelog
 
-App version **1.92.89**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.90**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.90 — 2026-09-19
+
+- Score · 40s. Period chips, then fat 3 / 2 / 1 on every crew — six on one Chromebook screen. Daily Goal and Happened moved to TEACH. Crew-lead PIN scores own crew only. Mark is the crew score, not wallet.
 
 ## 1.92.89 — 2026-09-19
 
