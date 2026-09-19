@@ -74,6 +74,7 @@ export const NAV_MARK: Record<string, LucideIcon> = {
   club: Star,
   clubwall: Star,
   hall: DoorOpen,
+  door: DoorOpen,
   hallwall: DoorOpen,
   studyhall: DoorOpen,
   learn: BookOpen,
