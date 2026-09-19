@@ -218,32 +218,40 @@ function walkHint(s) {
   const loc = doorL(d);
   const p = s.program || [];
   const ready = s.tests && s.tests[0] && s.tests[1];
+  const pack = L();
+  const tapMove = pack.move || "move";
+  const tapGo = pack.go || "GO";
+  const tapNext = pack.nextDoor || "Next door";
+  const tapRep = pack.repeat || "repeat";
+  const tapStop = pack.stop || "stop";
+  const tapScore = pack.score || "score";
+  const tapDone = pack.done || "Done";
   if (d.id === "zero") {
-    if (!p.some(b => b.t === "move")) return { say: loc.help.modify && loc.help.modify.say, tap: "move", id: "pal-move" };
-    if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: "GO", id: "btn-run-mine" };
-    return { say: L().winPeriod, tap: "Next door", id: "btn-next-door" };
+    if (!p.some(b => b.t === "move")) return { say: loc.help.modify && loc.help.modify.say, tap: tapMove, id: "pal-move" };
+    if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: tapGo, id: "btn-run-mine" };
+    return { say: pack.winPeriod, tap: tapNext, id: "btn-next-door" };
   }
   if (d.id === "line") {
     const moves = p.filter(b => b.t === "move").length;
-    if (moves < 4) return { say: loc.help.modify && loc.help.modify.say, tap: "move", id: "pal-move" };
-    if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: "GO", id: "btn-run-mine" };
-    return { say: L().winPeriod, tap: "Next door", id: "btn-next-door" };
+    if (moves < 4) return { say: loc.help.modify && loc.help.modify.say, tap: tapMove, id: "pal-move" };
+    if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: tapGo, id: "btn-run-mine" };
+    return { say: pack.winPeriod, tap: tapNext, id: "btn-next-door" };
   }
   if (d.id === "loop") {
     const rep = p.find(b => b.t === "repeat");
-    if (!rep) return { say: loc.help.modify && loc.help.modify.say, tap: "repeat", id: "pal-repeat" };
+    if (!rep) return { say: loc.help.modify && loc.help.modify.say, tap: tapRep, id: "pal-repeat" };
     if (Number(rep.n) !== 4) return { say: loc.help.modify && loc.help.modify.say, tap: "4", id: null, poke: true };
-    if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: "GO", id: "btn-run-mine" };
-    return { say: L().winPeriod, tap: "Next door", id: "btn-next-door" };
+    if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: tapGo, id: "btn-run-mine" };
+    return { say: pack.winPeriod, tap: tapNext, id: "btn-next-door" };
   }
   if (d.id === "wall") {
-    if (!p.some(b => b.t === "if-wall-stop")) return { say: loc.help.modify && loc.help.modify.say, tap: "if wall: stop", id: "pal-stop" };
-    if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: "GO", id: "btn-run-mine" };
-    return { say: L().winPeriod, tap: "Next door", id: "btn-next-door" };
+    if (!p.some(b => b.t === "if-wall-stop")) return { say: loc.help.modify && loc.help.modify.say, tap: tapStop, id: "pal-stop" };
+    if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: tapGo, id: "btn-run-mine" };
+    return { say: pack.winPeriod, tap: tapNext, id: "btn-next-door" };
   }
-  if (!p.some(b => b.t === "if-wall-score")) return { say: loc.help.modify && loc.help.modify.say, tap: "score", id: "pal-score" };
-  if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: "GO", id: "btn-run-mine" };
-  return { say: L().winPeriod, tap: "Done", id: null };
+  if (!p.some(b => b.t === "if-wall-score")) return { say: loc.help.modify && loc.help.modify.say, tap: tapScore, id: "pal-score" };
+  if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: tapGo, id: "btn-run-mine" };
+  return { say: pack.winPeriod, tap: tapDone, id: null };
 }
 function glow(id, poke) {
   document.querySelectorAll(".glow").forEach(el => el.classList.remove("glow"));
