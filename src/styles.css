@@ -1643,6 +1643,10 @@ html {
 }
 
 header.desk-chrome {
+  position: relative;
+  z-index: 40;
+  isolation: isolate;
+  pointer-events: auto;
   gap: 0.35rem;
   overflow: visible;
   border-radius: 0;
@@ -1655,32 +1659,78 @@ header.desk-chrome {
     inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 32%, transparent),
     0 14px 32px -22px color-mix(in oklab, #000 55%, transparent);
 }
+/* Themes / wall looks may paint chrome. They must never cover, resize, or disable HUD hits. */
+header.desk-chrome.tw-gadget::after {
+  content: none;
+}
+header.desk-chrome.tw-hud::before {
+  pointer-events: none !important;
+  z-index: 0;
+  mix-blend-mode: normal;
+}
 header.desk-chrome .nav-cluster {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
   width: 100%;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  align-items: center;
   overflow: visible;
   min-width: 0;
+  row-gap: 0.25rem;
 }
-header.desk-chrome .nav-cluster > .min-w-0.flex-1 {
-  min-width: 0;
+/* Primary chips keep their words. Status pills wrap under — they never paint on top. */
+header.desk-chrome .nav-cluster > .nav-chips {
+  position: relative;
+  z-index: 3;
+  flex: 1 1 auto;
+  min-width: min(24rem, 100%);
+  max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: none;
 }
 header.desk-chrome nav {
-  flex-wrap: nowrap !important;
+  flex-wrap: nowrap;
   overflow-x: auto;
   overflow-y: hidden;
   max-width: 100%;
 }
-@media (max-width: 1279px) {
-  header.desk-chrome .nav-cluster {
-    flex-wrap: wrap;
-    row-gap: 0.2rem;
-  }
-  header.desk-chrome .tw-hud-row {
-    margin-left: auto;
-  }
+header.desk-chrome .tw-hud-row {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
+  flex: 0 0 auto;
+  min-width: 0;
+  max-width: 100%;
+  margin-left: auto;
+}
+header.desk-chrome button,
+header.desk-chrome a,
+header.desk-chrome input,
+header.desk-chrome [role="button"],
+header.desk-chrome .tw-hud-btn {
+  position: relative;
+  z-index: 3;
+  pointer-events: auto !important;
+  touch-action: manipulation;
+}
+header.desk-chrome .min-h-11,
+header.desk-chrome .tw-hud-btn {
+  min-height: 2.75rem;
+}
+header.desk-chrome .size-11 {
+  width: 2.75rem;
+  height: 2.75rem;
+  min-height: 2.75rem;
+}
+
+/* Paint-only previews. Never steal HUD / chrome hits. */
+.tw-look-mini {
+  pointer-events: none;
+}
+.tw-theme-swatch {
+  pointer-events: none;
 }
 
 .board-root {
@@ -1985,7 +2035,8 @@ html[data-look] .bg-surface {
     inset 0 1px 0 color-mix(in oklab, var(--color-fg) calc(12% * var(--ui-shadow, 0.7)), transparent),
     0 calc(22px * var(--ui-shadow, 0.7)) calc(44px * var(--ui-shadow, 0.7)) calc(-28px * var(--ui-shadow, 0.7)) rgb(0 0 0 / calc(0.7 * var(--ui-shadow, 0.7)));
 }
-html[data-look] .min-h-11 { min-height: var(--ui-chip, 2.75rem); }
+/* Chip scale is for wall plates / board content — never HUD chrome. */
+html[data-look] .board-main .min-h-11 { min-height: var(--ui-chip, 2.75rem); }
 html[data-look] .tw-gadget { border-radius: var(--ui-radius, 12px); }
 html[data-look] .tw-gadget {
   box-shadow:
@@ -2318,7 +2369,7 @@ html[dir="rtl"] .board-root { direction: rtl; }
 
 @media (max-width: 899px) {
   html { font-size: min(var(--ui-base, 16px), 15px); }
-  html[data-look] .min-h-11 { min-height: 2.5rem; }
+  html[data-look] .board-main .min-h-11 { min-height: 2.5rem; }
   .board-root {
     padding-left: max(0.5rem, env(safe-area-inset-left));
     padding-right: max(0.5rem, env(safe-area-inset-right));

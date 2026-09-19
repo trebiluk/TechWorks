@@ -649,12 +649,12 @@ export function Board() {
       ) : crewOn && view === "crew" ? null : (
         <>
         <header className="desk-chrome tw-gadget tw-hud mb-1 min-w-0">
-            <div className="nav-cluster flex min-w-0 items-center gap-1">
+            <div className="nav-cluster flex min-w-0 flex-wrap items-center gap-1">
               <button type="button" onClick={() => go("overview")} title="Shop names only" className="shrink-0">
                 <TwWordmark compact={phone} />
               </button>
-              <div className="min-w-0 flex-1">{appStrip}</div>
-              <div className="tw-hud-row relative z-20 shrink-0">
+              <div className="nav-chips min-w-0">{appStrip}</div>
+              <div className="tw-hud-row">
                 {unlocked ? (
                   <div className="relative hidden xl:block" data-find-box>
                     <Search className="pointer-events-none absolute left-2 top-2.5 size-3.5 text-subtle" />
@@ -695,7 +695,7 @@ export function Board() {
                   </div>
                 ) : null}
                 {demoId !== "off" && featureOn(file, "debug") ? (
-                  <span className="rounded-full bg-gold px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-bg">
+                  <span className="shrink-0 whitespace-nowrap rounded-full bg-gold px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-bg">
                     Fake data · not saved
                   </span>
                 ) : null}
