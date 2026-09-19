@@ -1,7 +1,7 @@
 import type { EconomyFile, RawStudent } from "@/lib/economy";
 import { cloneFile } from "@/lib/clone";
 import { dayPay, isLiveStudent, shopBells } from "@/lib/economy";
-import { schoolDays } from "@/lib/calendar";
+import { schoolDays, todayIso } from "@/lib/calendar";
 import { writeTape } from "@/lib/tape";
 import { compactStudent } from "@/lib/compact";
 import { SKILL_TRACK } from "@/lib/skills";
@@ -103,8 +103,8 @@ function hash(s: string): number {
   return n >>> 0;
 }
 
-function codeFor(id: string, date: string, messy: boolean, i: number): string {
-  const h = hash(`${id}|${date}`) % 22;
+function codeFor(id: string, date: string, messy: boolean, i: number, crewKey = ""): string {
+  const h = hash(`${crewKey || id}|${date}`) % 22;
   if (messy && i < 3 && hash(id) % 7 === 0) return "A";
   if (h === 0) return "A";
   if (h === 1) return messy ? "E" : "2";
@@ -230,6 +230,8 @@ export function paintDemo(file: EconomyFile, id: DemoId): EconomyFile {
   if (!n) return file;
   const messy = id === "messy";
   const days = schoolDays().slice(0, n).map((d) => d.date);
+  const today = todayIso();
+  if (!days.includes(today)) days.push(today);
   let next = seedFakeShop(cloneFile(file));
   next = dressCrews(next, messy);
   next = dressProjects(next);
@@ -239,7 +241,7 @@ export function paintDemo(file: EconomyFile, id: DemoId): EconomyFile {
     let tape = "";
     let earned = 0;
     days.forEach((d, i) => {
-      const c = codeFor(s.id, d, messy, i);
+      const c = codeFor(s.id, d, messy, i, s.crewKey);
       tape = writeTape(tape, d, c);
       earned += dayPay(c, rates);
     });

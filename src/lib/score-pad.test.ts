@@ -124,7 +124,7 @@ describe("Score · 40s surfaces", () => {
     assert.match(score, /Chromebook · 1366×768/);
     assert.match(score, /Mark = crew score/);
     assert.match(score, /score-lead-card/);
-    assert.match(score, /CircleCheck/);
+    assert.match(score, /tapeMark/);
     assert.doesNotMatch(score, /Tech Club/);
     assert.doesNotMatch(score, /club-board/);
     assert.match(css, /\[data-score-mark\]\[data-score-on="1"\]/);

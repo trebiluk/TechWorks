@@ -3,6 +3,9 @@ import { describe, it } from "node:test";
 import type { EconomyFile } from "./economy.ts";
 import { paintDemo, seedFakeShop, stripFakeDemo, takeRealDesk, mergeTeacherDayLog } from "./demo.ts";
 import { cloneFile } from "./clone.ts";
+import { schoolDays } from "./calendar.ts";
+import { tapeMark } from "./tape.ts";
+import { crewEffortMark } from "./score-pad.ts";
 
 function desk(): EconomyFile {
   return {
@@ -104,6 +107,15 @@ describe("fake data overlay", () => {
     const merged = mergeTeacherDayLog(real, next);
     assert.equal(merged?.["2026-09-10"]?.visits?.["1"], "MEETING");
     assert.equal(merged?.["2026-09-10"]?.crewPhase?.["1|Forge"], "FINISHING STAGE");
+  });
+
+  it("paints one shared 3/2/1 per crew so Score can light a selected bar", () => {
+    const painted = paintDemo(desk(), "cycle");
+    const date = schoolDays()[0]!.date;
+    const forge = painted.students.filter((s) => s.period === 1 && s.crewKey === "Forge");
+    assert.ok(forge.length >= 2);
+    const mark = crewEffortMark(forge.map((s) => tapeMark(s.markTape, date)));
+    assert.ok(mark === "3" || mark === "2" || mark === "1");
   });
 
   it("stripFakeDemo drops demo ids and keeps real kids", () => {

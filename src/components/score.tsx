@@ -19,10 +19,11 @@ import {
   Wrench,
   Zap,
 } from "lucide-react";
-import type { DayCode, EconomyFile } from "@/lib/economy";
+import type { DayCode, EconomyFile, RawStudent } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
 import { formatSchoolDate, isSchoolDay, scoreDate as nearestScoreDate, stepSchoolDay, todayIso } from "@/lib/calendar";
 import { deskBellId, isSubDay, loadFocus, markOn, setCrewMark } from "@/lib/store";
+import { tapeMark } from "@/lib/tape";
 import { periodNow } from "@/lib/bells";
 import { cn } from "@/lib/utils";
 import { crewDone, crewsOf, type CrewRow } from "@/lib/crews";
@@ -50,6 +51,10 @@ export function CrewHex({
       <Icon strokeWidth={2.2} />
     </span>
   );
+}
+
+function padMark(s: RawStudent, date: string): string {
+  return markOn(s, date) || tapeMark(s.markTape, date);
 }
 
 function markIcon(code: EffortMark, on: boolean, fat: boolean): LucideIcon {
@@ -172,7 +177,8 @@ export function ScoreDesk({
   }, [jumpPeriod, jumpCrew, jumpDate]);
 
   useEffect(() => {
-    if (crewMode) setDate(todayIso());
+    if (!crewMode) return;
+    setDate(isSchoolDay(todayIso()) ? todayIso() : nearestScoreDate());
   }, [crewMode]);
 
   useEffect(() => {
@@ -213,7 +219,7 @@ export function ScoreDesk({
 
   function tapCrew(row: CrewRow, code: EffortMark) {
     if (sub || scoringLocked) return;
-    const cur = crewEffortMark(row.kids.map((s) => markOn(s, date)));
+    const cur = crewEffortMark(row.kids.map((s) => padMark(s, date)));
     const next = cur === code ? ("" as DayCode) : code;
     commit(setCrewMark(file, period, row.key, date, next));
   }
@@ -309,7 +315,7 @@ export function ScoreDesk({
           style={{ gridTemplateRows: `repeat(${twoCol ? Math.ceil(n / 2) : n}, minmax(2.75rem, 1fr))` }}
         >
           {visibleCrews.map((c) => {
-            const mark = crewEffortMark(c.kids.map((s) => markOn(s, date)));
+            const mark = crewEffortMark(c.kids.map((s) => padMark(s, date)));
             return (
               <div key={c.key} data-score-crew={c.key} className="score-crew-row grid min-h-11 grid-cols-[minmax(8rem,0.9fr)_repeat(3,minmax(2.75rem,1fr))] items-stretch gap-2 overflow-hidden">
                 <div className="flex min-w-0 items-center gap-3 px-1">
@@ -374,7 +380,7 @@ function LeadPad({
   lockLine?: string;
   onTap: (code: EffortMark) => void;
 }) {
-  const mark = crewEffortMark(crew.kids.map((s) => markOn(s, date)));
+  const mark = crewEffortMark(crew.kids.map((s) => padMark(s, date)));
   const school = isSchoolDay(date);
   return (
     <section data-score-crews data-score-crew={crew.key} data-score-lead className="score-lead-card flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 sm:p-5">
