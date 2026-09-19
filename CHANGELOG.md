@@ -1,8 +1,16 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.77. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.78. -->
 
 # TechWorks changelog
 
-App version **1.92.77**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.79**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.79 — 2026-09-19
+
+- Wall fills the phone. Berty stays in his column (no overlap). Ticker crawls (~3 min a pass).
+
+## 1.92.78 — 2026-09-18
+
+- PlanIt rebuilt as a week timetable: periods × days, one sentence per block, inspector for aim / need / close. Arrows move. Process wizard stays gone.
 
 ## 1.92.77 — 2026-09-18
 

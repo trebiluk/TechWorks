@@ -230,7 +230,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Dashboard",
     title: "PlanIt",
     tags: ["plan", "planit", "planbook", "week", "copy", "materials", "homework", "closure", "sub", "objective"],
-    body: "Dash or Learn → PlanIt is the week grid (periods × days). Tap a cell. Type Do this — that line is the Wall, Teach, and Deck. Need (goggles / stock) is the kit chip kids see. Process chips are tags, not titles. New unit is a name plus an optional driving question. Send this hour: pick other periods today and/or this period on other days, then Send. It never overwrites an hour that already has a plan. Put last class day here writes the hour you are looking at. Wall preview is the Agenda 2×2 for that hour. This week on the Wall is Mon–Fri for the live period. Teach this hour jumps to the live plates. See wall hangs the projector. Units still live on Learn → Projects. Admin → Day is lunch / sub / meetings — not the lesson.",
+    body: "Learn → PlanIt is the week timetable. Periods down, days across. One sentence on the block is the Wall. Click a block to write Lesson, Aim, Need, Close. Send this hour copies onto empty cells only. Arrow keys move. Print week. Teach and Wall open from the inspector.",
   },
   {
     id: "dash-loop",

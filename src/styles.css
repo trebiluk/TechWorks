@@ -1333,7 +1333,7 @@ html[data-contrast="high"] {
   gap: 0.2rem;
 }
 .tw-hour-body:has(.tw-berty-corner) {
-  grid-template-columns: minmax(0, 1fr) clamp(6.25rem, 18cqi, 15rem);
+  grid-template-columns: minmax(0, 1fr) clamp(5rem, 16cqi, 12rem);
 }
 .tw-berty-corner {
   display: flex;
@@ -1342,12 +1342,24 @@ html[data-contrast="high"] {
   min-width: 0;
   min-height: 0;
   pointer-events: none;
-  overflow: visible;
+  overflow: hidden;
 }
 .tw-berty-corner .berty-figure {
-  --berty-h: min(100%, clamp(7rem, 64cqh, 22rem));
+  --berty-h: min(100%, clamp(5.5rem, 58cqh, 18rem));
+  width: 100%;
   height: var(--berty-h);
+  max-width: 100%;
   max-height: 100%;
+}
+.tw-berty-corner .berty-seat,
+.tw-berty-corner img,
+.tw-berty-corner svg {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: bottom center;
 }
 .tw-berty-corner .berty-seat {
   max-height: 100%;
@@ -1686,21 +1698,22 @@ header.desk-chrome nav {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
-/* Projector wall: 16×9, never stacked. Scales to the slot. */
+/* Projector wall fills the slot. Layout stays two-column — never stacked. */
 .board-root:has(.tw-web-wall[data-wall-stage="show"]) .board-main {
   container-type: size;
   container-name: wallslot;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: stretch;
 }
 .tw-web-wall[data-wall-stage="show"] {
-  width: min(100cqw, calc(100cqh * 16 / 9));
-  height: min(100cqh, calc(100cqw * 9 / 16));
-  flex: 0 0 auto;
-  max-width: 100%;
+  width: 100%;
+  height: 100%;
+  flex: 1 1 0;
+  min-height: 0;
+  min-width: 0;
   overflow: hidden;
 }
 .board-root.board-score .board-main {
@@ -2379,6 +2392,200 @@ html[dir="rtl"] .board-root { direction: rtl; }
   text-align: left;
 }
 
+.tw-planit {
+  gap: 0.7rem;
+  min-height: 0;
+}
+.tw-planit-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.35rem 0.75rem;
+  align-items: end;
+  padding: 0.85rem 1rem 0.75rem;
+  background: color-mix(in oklab, var(--color-surface) 88%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 22%, transparent);
+}
+.tw-planit-top .tw-planit-meter,
+.tw-planit-top > p {
+  grid-column: 1 / -1;
+}
+.tw-planit-meter {
+  height: 3px;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--color-accent) 16%, transparent);
+}
+.tw-planit-meter > span {
+  display: block;
+  height: 100%;
+  background: var(--color-accent);
+  box-shadow: 0 0 12px color-mix(in oklab, var(--color-accent) 55%, transparent);
+}
+.tw-planit-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18.5rem, 23rem);
+  gap: 0.7rem;
+  flex: 1 1 0;
+  min-height: 0;
+}
+.tw-planit-board {
+  display: grid;
+  grid-template-columns: 3.6rem repeat(var(--days, 5), minmax(0, 1fr));
+  grid-auto-rows: minmax(5.4rem, 1fr);
+  gap: 0.32rem;
+  padding: 0.55rem;
+  min-height: 0;
+  overflow: auto;
+  background: color-mix(in oklab, var(--color-bg) 55%, var(--color-surface));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 16%, transparent);
+}
+.tw-planit-corner { min-height: 2.4rem; }
+.tw-planit-dow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.4rem;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+.tw-planit-dow strong {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: -0.03em;
+  color: var(--color-title);
+}
+.tw-planit-dow em {
+  font-style: normal;
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  color: var(--color-loss, #f87171);
+}
+.tw-planit-dow.is-today strong { color: var(--color-accent); }
+.tw-planit-period {
+  display: grid;
+  place-content: center;
+  text-align: center;
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 18%, transparent);
+}
+.tw-planit-period p {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.tw-planit-period span {
+  margin-top: 0.15rem;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--color-muted);
+}
+.tw-planit-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  min-height: 5.4rem;
+  padding: 0.5rem 0.55rem;
+  text-align: left;
+  background: color-mix(in oklab, var(--color-elevated) 70%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 14%, transparent);
+}
+.tw-planit-cell strong {
+  display: -webkit-box;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 650;
+  line-height: 1.2;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+.tw-planit-cell em {
+  margin-top: auto;
+  overflow: hidden;
+  font-style: normal;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+.tw-planit-cell[data-set="on"] {
+  background: color-mix(in oklab, var(--color-accent) 10%, var(--color-elevated));
+}
+.tw-planit-cell[data-live="on"] {
+  box-shadow: inset 0 0 0 1.5px var(--color-gold, #f0d48a);
+}
+.tw-planit-cell[data-on="on"] {
+  background: color-mix(in oklab, var(--color-accent) 22%, var(--color-surface));
+  box-shadow:
+    inset 0 0 0 2px var(--color-accent),
+    0 0 22px -8px color-mix(in oklab, var(--color-accent) 50%, transparent);
+}
+.tw-planit-cell[data-off="on"] {
+  pointer-events: none;
+  opacity: 0.35;
+}
+.tw-planit-desk {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.9rem;
+  min-height: 0;
+  overflow: auto;
+}
+.tw-planit-preview {
+  padding: 0.65rem 0.7rem;
+  background: color-mix(in oklab, var(--color-bg) 55%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 16%, transparent);
+}
+.tw-planit-preview ol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+}
+.tw-planit-preview li {
+  display: flex;
+  gap: 0.35rem;
+  min-height: 2.6rem;
+  padding: 0.35rem 0.4rem;
+  background: var(--color-elevated);
+}
+.tw-planit-preview li span {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--color-accent);
+}
+.tw-planit-preview li p {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 650;
+  line-height: 1.25;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+@media (max-width: 899px) {
+  .tw-planit-stage {
+    grid-template-columns: minmax(0, 1fr);
+    overflow: auto;
+  }
+  .tw-planit-board {
+    min-width: 44rem;
+    min-height: 22rem;
+  }
+}
+
 .tw-planit-strip-card {
   flex-shrink: 0;
 }
@@ -2634,10 +2841,10 @@ html[dir="rtl"] .board-root { direction: rtl; }
   font-family: var(--font-display);
   font-size: 0.72rem;
   font-weight: 800;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-accent);
-  animation: tw-ticker 80s linear infinite;
+  animation: tw-ticker 180s linear infinite;
 }
 .tw-ticker-track span {
   white-space: nowrap;
@@ -2794,5 +3001,6 @@ html[dir="rtl"] .board-root { direction: rtl; }
   border-radius: 2px;
   padding: 0 0.12em;
 }
+
 
 

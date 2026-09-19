@@ -71,7 +71,7 @@ export function LearningCenter({
   }, [unlocked, pane]);
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+      <div className={cn("min-h-0 flex-1 overscroll-contain", pane === "plan" ? "flex flex-col overflow-hidden" : "overflow-y-auto")}>
         {pane === "book" ? (
           <Suspense fallback={<p className="px-3 py-8 text-center text-sm text-gold">Loading gradebook…</p>}>
             <GradeBoard file={file} onChange={onChange} unlocked={unlocked} onNeedPin={onNeedPin} onOpenId={onOpenId} />
@@ -97,7 +97,7 @@ export function LearningCenter({
           </div>
         ) : null}
         {pane === "plan" ? (
-          <div className="h-full overflow-auto p-1">
+          <div className="flex h-full min-h-0 flex-col overflow-hidden p-1">
             <PlanIt file={file} unlocked={unlocked} onNeedPin={onNeedPin} onChange={onChange} onTeach={onTeachDay} onWall={onSeeWall} />
           </div>
         ) : null}

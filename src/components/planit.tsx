@@ -1,11 +1,10 @@
-import { useMemo, useState } from "react";
-import { CalendarDays, PanelsTopLeft, Plus, Presentation } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ChevronLeft, ChevronRight, PanelsTopLeft, Presentation, Printer } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
 import { formatSchoolDate, instructionalWeeks, isSchoolDay, todayIso, weekOn } from "@/lib/calendar";
 import { activitiesOf, pinDayActivity, slotsOf } from "@/lib/projects";
 import {
-  TEACH_PACKS,
   dropTeachDay,
   setTeachClose,
   setTeachHomework,
@@ -13,24 +12,10 @@ import {
   setTeachMods,
   setTeachNotes,
   setTeachObjective,
-  setTeachPack,
   setTeachReflect,
 } from "@/lib/teach";
-import {
-  planWeek,
-  weekFillCount,
-  type PlanCell,
-} from "@/lib/planbook";
-import {
-  PLANIT_MOVES,
-  newPlanitUnit,
-  parkPlanitUnit,
-  planitMoveOf,
-  planitPreview,
-  setPlanitMove,
-  setPlanitQuestion,
-  setPlanitTitle,
-} from "@/lib/planit";
+import { planWeek, weekFillCount, type PlanCell } from "@/lib/planbook";
+import { newPlanitUnit, parkPlanitUnit, planitPreview, setPlanitTitle, weekdayShort } from "@/lib/planit";
 import { DraftField } from "@/components/draft-field";
 import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
 import { KitChip } from "@/components/agenda-wall";
@@ -53,16 +38,18 @@ export function PlanIt({
   onWall?: () => void;
 }) {
   const today = todayIso();
+  const bells = shopBells(file);
+  const firstP = bells[0]?.period ?? 1;
   const [weekDate, setWeekDate] = useState(today);
-  const [open, setOpen] = useState<{ date: string; period: number } | null>({ date: today, period: shopBells(file)[0]?.period ?? 1 });
+  const [open, setOpen] = useState<{ date: string; period: number }>({ date: today, period: firstP });
   const [printOn, setPrintOn] = useState(false);
   const [notice, setNotice] = useState("");
   const week = weekOn(weekDate);
   const days = week?.days ?? [weekDate];
   const grid = useMemo(() => planWeek(file, days, today), [file, days, today]);
   const fill = weekFillCount(file, days);
-  const bells = shopBells(file);
-  const cell = open ? grid.flat().find((c) => c.date === open.date && c.period === open.period) : undefined;
+  const periods = useMemo(() => grid.map((row) => row[0]?.period).filter((p): p is number => p != null), [grid]);
+  const cell = grid.flat().find((c) => c.date === open.date && c.period === open.period);
 
   function gate(): boolean {
     if (unlocked) return true;
@@ -73,85 +60,117 @@ export function PlanIt({
   function goWeek(dir: -1 | 1) {
     const weeks = instructionalWeeks();
     const i = weeks.findIndex((w) => w.start === week?.start);
-    const next = i >= 0 ? weeks[i + dir] : null;
+    const next = weeks[i + dir];
     if (next?.days[0]) {
+      const idx = Math.max(0, days.indexOf(open.date));
       setWeekDate(next.days[0]);
-      setOpen(null);
+      setOpen({ date: next.days[Math.min(idx, next.days.length - 1)] ?? next.days[0]!, period: open.period });
     }
   }
+
+  function move(dx: number, dy: number) {
+    const di = days.indexOf(open.date);
+    const pi = periods.indexOf(open.period);
+    const nd = days[Math.max(0, Math.min(days.length - 1, di + dx))];
+    const np = periods[Math.max(0, Math.min(periods.length - 1, pi + dy))];
+    if (nd && np != null) setOpen({ date: nd, period: np });
+  }
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        move(1, 0);
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        move(-1, 0);
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        move(0, 1);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        move(0, -1);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open.date, open.period, days, periods]);
 
   function edit(next: EconomyFile) {
     if (!gate()) return;
     onChange(next);
   }
 
+  const pct = fill.total ? Math.round((fill.set / fill.total) * 100) : 0;
+
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-3 pb-8" data-planit>
-      {printOn ? <LessonPlanSheet file={file} period={cell?.period ?? bells[0]?.period ?? 1} dates={days} onClose={() => setPrintOn(false)} /> : null}
-      <header className="space-y-2">
-        <div className="flex flex-wrap items-end gap-2">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gold">PlanIt</p>
-            <h1 className="font-display text-2xl font-semibold tracking-tight">This week</h1>
-          </div>
-          <p className="text-sm text-muted">
-            {fill.set} of {fill.total} hours set. Type the job. Wall, Teach, and Deck play the same hour.
-          </p>
+    <div className="tw-planit flex min-h-0 flex-1 flex-col" data-planit>
+      {printOn ? <LessonPlanSheet file={file} period={cell?.period ?? firstP} dates={days} onClose={() => setPrintOn(false)} /> : null}
+
+      <header className="tw-planit-top tw-chamfer">
+        <div className="min-w-0">
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-accent">Week</p>
+          <h1 className="font-display text-[1.65rem] font-semibold leading-none tracking-tight">
+            {days[0] ? formatSchoolDate(days[0]).replace(/,.*/, "") : "This week"}
+            {days.length > 1 ? ` – ${formatSchoolDate(days[days.length - 1]!).replace(/,.*/, "")}` : ""}
+          </h1>
         </div>
-        <div className="flex flex-wrap items-center gap-1">
-          <button type="button" onClick={() => goWeek(-1)} className="tw-tap grid size-11 place-items-center rounded-xl bg-elevated text-lg font-semibold" title="Previous week">
-            ‹
+        <div className="ml-auto flex flex-wrap items-center gap-1">
+          <button type="button" onClick={() => goWeek(-1)} className="tw-tap grid size-11 place-items-center rounded-xl bg-elevated" title="Previous week">
+            <ChevronLeft className="size-4" />
           </button>
           <button
             type="button"
             onClick={() => {
               setWeekDate(today);
-              setOpen({ date: today, period: open?.period ?? bells[0]?.period ?? 1 });
+              setOpen({ date: today, period: open.period });
             }}
-            className={cn("tw-tap min-h-11 rounded-xl px-3 text-xs font-semibold", days.includes(today) ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+            className={cn("tw-tap min-h-11 rounded-xl px-3 text-xs font-semibold", days.includes(today) ? "bg-accent text-accent-fg" : "bg-elevated")}
           >
             Today
           </button>
-          <button type="button" onClick={() => goWeek(1)} className="tw-tap grid size-11 place-items-center rounded-xl bg-elevated text-lg font-semibold" title="Next week">
-            ›
+          <button type="button" onClick={() => goWeek(1)} className="tw-tap grid size-11 place-items-center rounded-xl bg-elevated" title="Next week">
+            <ChevronRight className="size-4" />
           </button>
-          <span className="inline-flex items-center gap-1.5 px-2 text-sm font-semibold">
-            <CalendarDays className="size-4 text-gold" aria-hidden />
-            {days[0] ? formatSchoolDate(days[0]) : ""}
-            {days.length > 1 ? ` – ${formatSchoolDate(days[days.length - 1]!)}` : ""}
-          </span>
-          <button type="button" onClick={() => setPrintOn(true)} className="tw-tap ml-auto min-h-11 rounded-xl bg-elevated px-3 text-xs font-semibold">
-            Print week
+          <button type="button" onClick={() => setPrintOn(true)} className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-elevated px-3 text-xs font-semibold">
+            <Printer className="size-3.5" />
+            Print
           </button>
         </div>
+        <div className="tw-planit-meter" title={`${fill.set} of ${fill.total} hours`}>
+          <span style={{ width: `${pct}%` }} />
+        </div>
+        <p className="text-xs text-muted">
+          {fill.set}/{fill.total} hours · arrows move · click a block to write
+        </p>
         {notice ? <p className="text-sm font-semibold text-gain">{notice}</p> : null}
       </header>
 
-      <div className="flex min-h-0 flex-col gap-3 lg:flex-row lg:items-start">
-        <div className="min-w-0 flex-1 overflow-x-auto pb-1">
-          <div className="tw-plan-grid min-w-[44rem]" style={{ ["--days" as string]: String(days.length) }}>
-            <div className="tw-plan-head sticky left-0 z-10 bg-bg">Hour</div>
-            {days.map((d) => (
-              <div key={d} className={cn("tw-plan-head text-center", d === today ? "text-gold" : "")}>
-                {formatSchoolDate(d).replace(/,.*/, "")}
-                {!isSchoolDay(d) ? <span className="mt-0.5 block text-[10px] font-medium text-loss">No school</span> : null}
-              </div>
-            ))}
-            {grid.map((row) =>
-              row.length ? (
-                <PeriodRow
-                  key={row[0]!.period}
-                  row={row}
-                  open={open}
-                  onOpen={(c) => setOpen({ date: c.date, period: c.period })}
-                />
-              ) : null,
-            )}
-          </div>
+      <div className="tw-planit-stage">
+        <div className="tw-planit-board tw-chamfer" style={{ ["--days" as string]: String(Math.max(days.length, 1)) }}>
+          <div className="tw-planit-corner" />
+          {days.map((d) => (
+            <div key={d} className={cn("tw-planit-dow", d === today && "is-today")}>
+              <span>{weekdayShort(d)}</span>
+              <strong>{d.slice(8)}</strong>
+              {!isSchoolDay(d) ? <em>off</em> : null}
+            </div>
+          ))}
+          {grid.map((row) =>
+            row.length ? (
+              <PeriodRow
+                key={row[0]!.period}
+                row={row}
+                open={open}
+                onOpen={(c) => c.school && setOpen({ date: c.date, period: c.period })}
+              />
+            ) : null,
+          )}
         </div>
 
         {cell?.school ? (
-          <div className="w-full shrink-0 lg:w-[22rem] lg:sticky lg:top-2">
           <HourDesk
             key={`${cell.date}-${cell.period}`}
             file={file}
@@ -169,11 +188,11 @@ export function PlanIt({
             }}
             onNote={setNotice}
           />
-          </div>
         ) : (
-          <section className="tw-gadget p-3">
-            <p className="text-sm text-muted">Tap a school-day cell. Title is enough — everything else is optional.</p>
-          </section>
+          <aside className="tw-planit-desk tw-gadget p-4">
+            <p className="font-display text-lg font-semibold">No school</p>
+            <p className="mt-1 text-sm text-muted">Pick a class day. The week is the plan.</p>
+          </aside>
         )}
       </div>
     </div>
@@ -186,35 +205,38 @@ function PeriodRow({
   onOpen,
 }: {
   row: PlanCell[];
-  open: { date: string; period: number } | null;
+  open: { date: string; period: number };
   onOpen: (c: PlanCell) => void;
 }) {
   const head = row[0]!;
   return (
     <>
-      <div className="tw-plan-period sticky left-0 z-10">
-        <p className="font-display text-lg font-semibold leading-none">P{head.period}</p>
-        <p className="text-[10px] font-bold uppercase tracking-wide text-muted">G{head.grade}</p>
+      <div className="tw-planit-period">
+        <p>P{head.period}</p>
+        <span>G{head.grade}</span>
       </div>
       {row.map((c) => {
-        const on = open?.date === c.date && open.period === c.period;
-        const move = planitMoveOf(c.move);
+        const on = open.date === c.date && open.period === c.period;
+        const title = c.do || c.title;
         return (
           <button
             key={`${c.date}-${c.period}`}
             type="button"
             onClick={() => onOpen(c)}
-            className={cn(
-              "tw-tap tw-plan-cell",
-              on ? "bg-accent text-accent-fg" : c.live ? "bg-gold/15 ring-1 ring-gold" : "bg-elevated",
-              !c.school ? "opacity-40" : "",
-            )}
+            data-on={on ? "on" : undefined}
+            data-live={c.live ? "on" : undefined}
+            data-set={c.set ? "on" : undefined}
+            data-off={c.school ? undefined : "on"}
+            className="tw-tap tw-planit-cell tw-chamfer"
           >
-            <span className="font-display text-sm font-semibold leading-tight">{c.title || (c.school ? "Tap to set" : "—")}</span>
-            <span className="mt-auto flex flex-wrap items-center gap-1 text-[10px] font-bold uppercase tracking-wide opacity-80">
-              {move ? <span className="rounded-full bg-bg/40 px-1.5 py-0.5">{move.label}</span> : null}
-              {c.set ? c.packLabel : c.school ? "Unset" : ""}
-            </span>
+            {c.school ? (
+              <>
+                <strong>{title || "·"}</strong>
+                {c.materials ? <em>{c.materials}</em> : null}
+              </>
+            ) : (
+              <span className="opacity-40">—</span>
+            )}
           </button>
         );
       })}
@@ -243,178 +265,92 @@ function HourDesk({
   onClear: () => void;
   onNote: (note: string) => void;
 }) {
-  const project = slotsOf(file, cell.period, cell.date)[0];
-  const acts = project ? activitiesOf(project) : [];
-  const units = slotsOf(file, cell.period);
   const d = cell.date;
   const p = cell.period;
   const [more, setMore] = useState(false);
-  const [newOn, setNewOn] = useState(false);
+  const [unitOn, setUnitOn] = useState(false);
   const [newName, setNewName] = useState("");
-  const [newQ, setNewQ] = useState("");
+  const project = slotsOf(file, p, d)[0];
+  const units = slotsOf(file, p);
   const preview = planitPreview(file, d, p);
+  const empty = !cell.set;
 
   return (
-    <section className="tw-gadget space-y-3 p-3" data-planit-hour>
+    <aside className="tw-planit-desk tw-gadget tw-chamfer" data-planit-hour>
       <div className="flex flex-wrap items-center gap-2">
-        <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">
-          P{p} · G{cell.grade} · {formatSchoolDate(d)}
-        </p>
-        {onTeach ? (
-          <button type="button" onClick={() => onTeach(d, p)} className="tw-tap inline-flex min-h-9 items-center gap-1.5 rounded-xl bg-gold px-3 text-xs font-semibold text-bg">
-            <Presentation className="size-3.5" aria-hidden />
-            Teach this hour
-          </button>
-        ) : null}
-        {onWall ? (
-          <button type="button" onClick={onWall} className="tw-tap inline-flex min-h-9 items-center gap-1.5 rounded-xl bg-elevated px-3 text-xs font-semibold">
-            <PanelsTopLeft className="size-3.5" aria-hidden />
-            See wall
-          </button>
-        ) : null}
+        <div className="min-w-0">
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">
+            P{p} · {weekdayShort(d)} {d.slice(8)} · G{cell.grade}
+          </p>
+          <p className="truncate text-xs text-muted">{cell.course || cell.label}</p>
+        </div>
         {cell.set ? (
           <button type="button" onClick={onClear} className="ml-auto text-xs font-semibold text-muted">
-            Clear hour
+            Clear
           </button>
         ) : null}
       </div>
 
       <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wide text-subtle">Do this now</span>
+        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Lesson</span>
         <DraftField
           value={cell.do || cell.title}
           editing={unlocked}
           multiline
           onCommit={(v) => onEdit(setPlanitTitle(file, d, p, v))}
-          placeholder="The job kids see on the wall"
-          className="min-h-16 rounded-xl bg-elevated px-3 py-2 text-sm"
+          placeholder="One line. That’s the wall."
+          className="min-h-[4.5rem] rounded-xl bg-elevated px-3 py-2 font-display text-lg font-semibold"
         />
       </label>
 
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-wide text-subtle">Unit</p>
-        <div className="mt-1 flex flex-wrap gap-1">
-          {units.map((u) => (
-            <button
-              key={u.id}
-              type="button"
-              onClick={() => {
-                const act = activitiesOf(u)[0];
-                if (act) onEdit(parkPlanitUnit(file, d, p, act.id));
-              }}
-              className={cn("tw-tap min-h-11 rounded-xl px-3 text-sm font-semibold", project?.id === u.id ? "bg-fg text-bg" : "bg-elevated text-muted")}
-            >
-              {u.title}
-            </button>
-          ))}
-          {acts.length > 1
-            ? acts.map((a) => (
-                <button
-                  key={a.id}
-                  type="button"
-                  onClick={() => onEdit(parkPlanitUnit(file, d, p, a.id))}
-                  className={cn("tw-tap min-h-11 rounded-xl px-3 text-sm font-semibold", cell.activityId === a.id ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
-                >
-                  {a.name}
-                </button>
-              ))
-            : null}
-          <button
-            type="button"
-            onClick={() => setNewOn((v) => !v)}
-            className={cn("tw-tap inline-flex min-h-11 items-center gap-1 rounded-xl px-3 text-sm font-semibold", newOn ? "bg-gold text-bg" : "bg-elevated text-muted")}
-          >
-            <Plus className="size-3.5" aria-hidden />
-            New unit
-          </button>
-        </div>
-        {newOn ? (
-          <div className="mt-2 grid gap-2">
-            <input
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              placeholder="CO2 cars"
-              aria-label="Unit name"
-              className="min-h-11 rounded-xl bg-elevated px-3 text-sm text-fg"
-            />
-            <input
-              value={newQ}
-              onChange={(e) => setNewQ(e.target.value)}
-              placeholder="Driving question (optional)"
-              aria-label="Driving question"
-              className="min-h-11 rounded-xl bg-elevated px-3 text-sm text-fg"
-            />
-            <button
-              type="button"
-              disabled={!newName.trim()}
-              onClick={() => {
-                onEdit(
-                  newPlanitUnit(file, {
-                    date: d,
-                    period: p,
-                    name: newName,
-                    question: newQ,
-                    title: cell.do || cell.title,
-                  }),
-                );
-                setNewOn(false);
-                setNewName("");
-                setNewQ("");
-              }}
-              className="tw-tap min-h-11 rounded-xl bg-gold px-3 text-sm font-semibold text-bg disabled:opacity-40"
-            >
-              Save on this hour
-            </button>
-          </div>
-        ) : null}
-      </div>
-
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-wide text-subtle">Move · tag only</p>
-        <div className="mt-1 flex flex-wrap gap-1">
-          {PLANIT_MOVES.map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              title={m.hint}
-              onClick={() => onEdit(setPlanitMove(file, d, p, m.id))}
-              className={cn("tw-tap min-h-11 rounded-xl px-3 text-sm font-semibold", cell.move === m.id ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-wide text-subtle">Hour shape</p>
-        <div className="mt-1 flex flex-wrap gap-1">
-          {TEACH_PACKS.map((pack) => (
-            <button
-              key={pack.id}
-              type="button"
-              onClick={() => onEdit(setTeachPack(file, d, p, pack.id))}
-              className={cn("tw-tap min-h-11 rounded-xl px-3 text-sm font-semibold", cell.pack === pack.id ? "bg-fg text-bg" : "bg-elevated text-muted")}
-              title={pack.hint}
-            >
-              {pack.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
       <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wide text-subtle">Need · wall</span>
+        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Aim</span>
         <DraftField
-          value={cell.materials}
+          value={cell.objective}
           editing={unlocked}
-          onCommit={(v) => onEdit(setTeachMaterials(file, d, p, v))}
-          placeholder="Goggles · rulers · stock"
+          onCommit={(v) => onEdit(setTeachObjective(file, d, p, v))}
+          placeholder="They will be able to…"
           className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
         />
       </label>
 
-      <WallPreview preview={preview} />
+      <div className="grid grid-cols-2 gap-2">
+        <label className="grid gap-1">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Need</span>
+          <DraftField
+            value={cell.materials}
+            editing={unlocked}
+            onCommit={(v) => onEdit(setTeachMaterials(file, d, p, v))}
+            placeholder="Stock · PPE"
+            className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
+          />
+        </label>
+        <label className="grid gap-1">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Close</span>
+          <DraftField
+            value={cell.close}
+            editing={unlocked}
+            onCommit={(v) => onEdit(setTeachClose(file, d, p, v))}
+            placeholder="Exit / reset"
+            className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
+          />
+        </label>
+      </div>
+
+      <div className="flex flex-wrap gap-1">
+        {onTeach ? (
+          <button type="button" onClick={() => onTeach(d, p)} className="tw-tap inline-flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">
+            <Presentation className="size-3.5" />
+            Teach
+          </button>
+        ) : null}
+        {onWall ? (
+          <button type="button" onClick={onWall} className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-elevated px-3 text-sm font-semibold">
+            <PanelsTopLeft className="size-3.5" />
+            Wall
+          </button>
+        ) : null}
+      </div>
 
       <SendHour
         file={file}
@@ -428,101 +364,95 @@ function HourDesk({
         }}
       />
 
-      <button type="button" onClick={() => setMore((v) => !v)} className="tw-tap min-h-9 text-left text-xs font-semibold uppercase tracking-wider text-muted">
-        {more ? "Hide extra fields" : "More · question, close, homework, mods"}
+      {cell.set ? <WallPreview preview={preview} /> : null}
+
+      <button type="button" onClick={() => setMore((v) => !v)} className="tw-tap min-h-9 text-left text-[11px] font-bold uppercase tracking-wider text-muted">
+        {more ? "Less" : "Notes · homework · unit"}
       </button>
       {more ? (
         <div className="grid gap-2">
-          <label className="grid gap-1">
-            <span className="text-[11px] font-bold uppercase tracking-wide text-subtle">Question</span>
-            <DraftField
-              value={cell.ask}
-              editing={unlocked}
-              multiline
-              onCommit={(v) => onEdit(setPlanitQuestion(file, d, p, v))}
-              placeholder="Driving question kids hear"
-              className="min-h-16 rounded-xl bg-elevated px-3 py-2 text-sm"
-            />
-          </label>
-          <label className="grid gap-1">
-            <span className="text-[11px] font-bold uppercase tracking-wide text-subtle">Objective · SWBAT</span>
-            <DraftField
-              value={cell.objective}
-              editing={unlocked}
-              onCommit={(v) => onEdit(setTeachObjective(file, d, p, v))}
-              placeholder="Students will be able to…"
-              className="min-h-11 rounded-xl bg-elevated px-3 text-sm text-fg"
-            />
-          </label>
-          <label className="grid gap-1">
-            <span className="text-[11px] font-bold uppercase tracking-wide text-subtle">Closure · Then</span>
-            <DraftField
-              value={cell.close}
-              editing={unlocked}
-              onCommit={(v) => onEdit(setTeachClose(file, d, p, v))}
-              placeholder="How the hour ends"
-              className="min-h-11 rounded-xl bg-elevated px-3 text-sm text-fg"
-            />
-          </label>
-          <label className="grid gap-1">
-            <span className="text-[11px] font-bold uppercase tracking-wide text-subtle">Homework</span>
-            <DraftField
-              value={cell.homework}
-              editing={unlocked}
-              onCommit={(v) => onEdit(setTeachHomework(file, d, p, v))}
-              placeholder="Usually none"
-              className="min-h-11 rounded-xl bg-elevated px-3 text-sm text-fg"
-            />
-          </label>
-          <label className="grid gap-1">
-            <span className="text-[11px] font-bold uppercase tracking-wide text-subtle">Mods · no names</span>
-            <DraftField
-              value={cell.mods}
-              editing={unlocked}
-              onCommit={(v) => onEdit(setTeachMods(file, d, p, v))}
-              placeholder="Extended time · demo first"
-              className="min-h-11 rounded-xl bg-elevated px-3 text-sm text-fg"
-            />
-          </label>
-          <label className="grid gap-1">
-            <span className="text-[11px] font-bold uppercase tracking-wide text-subtle">Teacher notes</span>
-            <DraftField
-              value={cell.notes}
-              editing={unlocked}
-              multiline
-              onCommit={(v) => onEdit(setTeachNotes(file, d, p, v))}
-              placeholder="Before class"
-              className="min-h-16 rounded-xl bg-elevated px-3 py-2 text-sm"
-            />
-          </label>
-          <label className="grid gap-1">
-            <span className="text-[11px] font-bold uppercase tracking-wide text-subtle">Reflection</span>
-            <DraftField
-              value={cell.reflect}
-              editing={unlocked}
-              multiline
-              onCommit={(v) => onEdit(setTeachReflect(file, d, p, v))}
-              placeholder="After class. What to change."
-              className="min-h-16 rounded-xl bg-elevated px-3 py-2 text-sm"
-            />
-          </label>
+          <DraftField
+            value={cell.homework}
+            editing={unlocked}
+            onCommit={(v) => onEdit(setTeachHomework(file, d, p, v))}
+            placeholder="Homework · usually none"
+            className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
+          />
+          <DraftField
+            value={cell.notes}
+            editing={unlocked}
+            multiline
+            onCommit={(v) => onEdit(setTeachNotes(file, d, p, v))}
+            placeholder="Before class"
+            className="min-h-14 rounded-xl bg-elevated px-3 py-2 text-sm"
+          />
+          <DraftField
+            value={cell.reflect}
+            editing={unlocked}
+            multiline
+            onCommit={(v) => onEdit(setTeachReflect(file, d, p, v))}
+            placeholder="After · what to change"
+            className="min-h-14 rounded-xl bg-elevated px-3 py-2 text-sm"
+          />
+          <DraftField
+            value={cell.mods}
+            editing={unlocked}
+            onCommit={(v) => onEdit(setTeachMods(file, d, p, v))}
+            placeholder="Mods · no names"
+            className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
+          />
+          <button type="button" onClick={() => setUnitOn((v) => !v)} className="text-left text-xs font-semibold text-muted">
+            {unitOn ? "Hide units" : "Part of a unit"}
+          </button>
+          {unitOn ? (
+            <div className="flex flex-wrap gap-1">
+              {units.map((u) => (
+                <button
+                  key={u.id}
+                  type="button"
+                  onClick={() => {
+                    const act = activitiesOf(u)[0];
+                    if (act) onEdit(parkPlanitUnit(file, d, p, act.id));
+                  }}
+                  className={cn("tw-tap min-h-10 rounded-xl px-3 text-sm font-semibold", project?.id === u.id ? "bg-fg text-bg" : "bg-elevated")}
+                >
+                  {u.title}
+                </button>
+              ))}
+              <input
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder="New unit name"
+                className="tw-field min-h-10 min-w-[8rem] flex-1"
+              />
+              <button
+                type="button"
+                disabled={!newName.trim()}
+                onClick={() => {
+                  onEdit(newPlanitUnit(file, { date: d, period: p, name: newName, title: cell.do || cell.title }));
+                  setNewName("");
+                }}
+                className="tw-tap min-h-10 rounded-xl bg-elevated px-3 text-sm font-semibold disabled:opacity-40"
+              >
+                Save unit
+              </button>
+            </div>
+          ) : null}
         </div>
       ) : null}
-    </section>
+    </aside>
   );
 }
 
 function WallPreview({ preview }: { preview: ReturnType<typeof planitPreview> }) {
   return (
-    <div className="tw-planit-preview rounded-2xl bg-elevated/80 p-3" data-planit-preview>
-      <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gold">Wall preview</p>
-      <ol className="mt-2 grid grid-cols-2 gap-1.5">
+    <div className="tw-planit-preview" data-planit-preview>
+      <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-muted">On the wall</p>
+      <ol>
         {preview.cards.slice(0, 4).map((c) => (
-          <li key={c.n} className="rounded-xl bg-bg px-2 py-2">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-muted">
-              {c.n} · {c.kicker}
-            </p>
-            <p className="mt-0.5 line-clamp-2 font-display text-sm font-semibold leading-snug">{c.body || "—"}</p>
+          <li key={c.n}>
+            <span>{c.n}</span>
+            <p>{c.body || "—"}</p>
           </li>
         ))}
       </ol>
