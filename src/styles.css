@@ -1324,6 +1324,32 @@ html[data-contrast="high"] {
     inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 40%, transparent),
     0 0 42px -14px color-mix(in oklab, var(--color-accent) 42%, transparent);
 }
+.tw-hour-spine {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.2rem 0.85rem;
+  flex: 0 0 auto;
+  min-height: 0;
+  padding: 0 0.15rem;
+}
+.tw-hour-spine dt {
+  font-size: clamp(0.58rem, 2.6cqh, 0.7rem);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-subtle, var(--color-muted));
+}
+.tw-hour-spine dd {
+  font-family: var(--font-display);
+  font-size: clamp(0.85rem, 3.4cqh, 1.15rem);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-title, var(--color-fg));
+}
+.tw-web-wall[data-wall-stage="show"] .tw-hour-spine {
+  max-height: 22cqh;
+  overflow: hidden;
+}
 .tw-hour-body {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

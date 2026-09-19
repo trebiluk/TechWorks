@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.84. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.85. -->
 
 # TechWorks changelog
 
-App version **1.92.84**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.85**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.85 — 2026-09-19
+
+- Wall hour plate shows Guiding Q and Prove from the same PlanIt teachDays row Deck already reads. 1.92.84 is the Edge Pocket nav PR.
 
 ## 1.92.84 — 2026-09-19
 

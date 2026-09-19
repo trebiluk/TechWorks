@@ -237,7 +237,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Dashboard",
     title: "The class loop",
     tags: ["agenda", "enter", "cleanup", "teach", "wall", "hang", "crew", "bell"],
-    body: "Arrive → Teach to run the hour PlanIt wrote. Green dots + “n of 8 hours set” mean that hour is planned. Type Job · Guiding Q · Prove · beats on PlanIt — it is the Wall and the Deck. Paste a Drive or Canva link on Hang — it plays on the Wall under Agenda. See wall is next to Deck. Send this hour on PlanIt copies onto other empty periods or days you pick — never a week blast. Wall: Enter is sit / need / in a minute, then a chime into Agenda 2×2 with This week under it, coral Cleanup in the last minutes. After the last bell the Agenda stays. Crew lead PIN: today’s make, last marks, Buy if the catalog has perks.",
+    body: "Arrive → Teach to run the hour PlanIt wrote. Green dots + “n of 8 hours set” mean that hour is planned. Type Job · Guiding Q · Prove · beats on PlanIt — it is the Wall and the Deck. Paste a Drive or Canva link on Hang — it plays on the Wall under Agenda. See wall is next to Deck. Send this hour on PlanIt copies onto other empty periods or days you pick — never a week blast. Wall hour plate shows Job, Guiding Q, and Prove from that same teachDays row, then Agenda 2×2 beats. Enter is sit / need / in a minute. Coral Cleanup in the last minutes. After the last bell the Agenda stays. Crew lead PIN: today’s make, last marks, Buy if the catalog has perks.",
   },
   {
     id: "admin-crews",
@@ -701,7 +701,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Dashboard",
     title: "PlanIt → Teach → Deck → Wall",
     tags: ["plan", "teach", "deck", "wall", "activity", "unit"],
-    body: "One write. Type Job · Guiding Q · Prove · beats on the PlanIt hour card. That same row fills Wall and Deck. Teach is a read-only mirror (Open PlanIt to edit). Deck Present plays the hour. Hang still pastes on Teach.",
+    body: "One write. Type Job · Guiding Q · Prove · beats on the PlanIt hour card. That same teachDays row fills Wall (NOW + Guiding Q + Prove + Agenda 2×2) and Deck. Teach is a read-only mirror (Open PlanIt to edit). Deck Present plays the hour. Hang still pastes on Teach.",
   },
   {
     id: "roles-it",

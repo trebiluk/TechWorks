@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { EconomyFile } from "./economy.ts";
-import { setTeachAsk, setTeachDo, setTeachMaterials } from "./teach.ts";
-import { cleanupJobsOf, dayHourStatus, hourAgenda, hourAgendaWall, hourKit, saveAgendaLine, setCleanupJobs, wallMode } from "./hour-flow.ts";
+import { setTeachAgenda, setTeachAsk, setTeachDo, setTeachMaterials, setTeachObjective } from "./teach.ts";
+import { cleanupJobsOf, dayHourStatus, hourAgenda, hourAgendaWall, hourKit, hourWallSpine, saveAgendaLine, setCleanupJobs, wallMode } from "./hour-flow.ts";
 
 function desk(): EconomyFile {
   return {
@@ -77,5 +77,20 @@ describe("hour flow", () => {
   it("Need line is the kit kids see on Enter", () => {
     const file = setTeachMaterials(desk(), "2026-09-15", 1, "Chromebooks · one scrap of pine");
     assert.match(hourKit(file, "2026-09-15", 1), /Chromebooks/);
+  });
+
+  it("Wall hour plate reads Guiding Q and Prove from teachDays", () => {
+    let file = setTeachDo(desk(), "2026-09-21", 1, "Safety goggles check");
+    file = setTeachAsk(file, "2026-09-21", 1, "Why PPE first?");
+    file = setTeachObjective(file, "2026-09-21", 1, "Show goggles on");
+    file = setTeachAgenda(file, "2026-09-21", 1, { now: "Enter", goal: "Listen", next: "Crew", behave: "Clean" });
+    const spine = hourWallSpine(file, "2026-09-21", 1);
+    assert.equal(spine.job, "Safety goggles check");
+    assert.equal(spine.ask, "Why PPE first?");
+    assert.equal(spine.prove, "Show goggles on");
+    assert.equal(spine.cards.find((c) => c.id === "now")?.body, "Enter");
+    assert.equal(spine.cards.find((c) => c.id === "goal")?.body, "Listen");
+    assert.equal(spine.cards.find((c) => c.id === "next")?.body, "Crew");
+    assert.equal(spine.cards.find((c) => c.id === "behave")?.body, "Clean");
   });
 });

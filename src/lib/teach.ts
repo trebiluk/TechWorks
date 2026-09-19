@@ -148,6 +148,7 @@ export function teachJob(file: EconomyFile, period: number, date: string) {
     ...job,
     question: day.ask?.trim() || job.question,
     today: day.do?.trim() || job.today,
+    done: day.objective?.trim() || job.done,
   };
 }
 

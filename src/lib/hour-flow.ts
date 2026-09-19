@@ -95,6 +95,25 @@ export function hourAgendaWall(file: EconomyFile, date: string, period: number):
   });
 }
 
+/** Wall hour plate. Same PlanIt → teachDays row Deck already reads — not idle-only leftovers. */
+export type HourWallSpine = {
+  job: string;
+  ask: string;
+  prove: string;
+  cards: AgendaCard[];
+};
+
+export function hourWallSpine(file: EconomyFile, date: string, period: number): HourWallSpine {
+  const day = teachDay(file, date, period);
+  const job = teachJob(file, period, date);
+  return {
+    job: (job.today || day.do || "").trim(),
+    ask: (job.question || day.ask || "").trim(),
+    prove: (day.objective || job.done || "").trim(),
+    cards: hourAgendaWall(file, date, period),
+  };
+}
+
 /** Goggles + the Need line. Kids see this on Enter and Agenda. */
 export function hourKit(file: EconomyFile, date: string, period: number): string {
   const day = teachDay(file, date, period);

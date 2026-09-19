@@ -13,7 +13,7 @@ import {
   setPlanitTitle,
   writePlanitHour,
 } from "./planit.ts";
-import { hourAgendaWall } from "./hour-flow.ts";
+import { hourAgendaWall, hourWallSpine } from "./hour-flow.ts";
 import { hourIsSet, planCell } from "./planbook.ts";
 import { teachDeckOf } from "./teach-deck.ts";
 
@@ -111,6 +111,11 @@ describe("planit wall strip", () => {
     assert.equal(wall.find((c) => c.id === "now")?.body, "Sit with your crew.");
     assert.equal(wall.find((c) => c.id === "goal")?.body, "Sketch one lever.");
     assert.equal(wall.find((c) => c.id === "next")?.body, "Peer restyle the sketch.");
+    const spine = hourWallSpine(file, mon, 1);
+    assert.equal(spine.job, "Sketch one lever.");
+    assert.equal(spine.ask, "How can a small force move a bigger load?");
+    assert.equal(spine.prove, "Point to the load and the force on the sketch.");
+    assert.equal(spine.cards.find((c) => c.id === "behave")?.body, "Choose → work → focus → cleanup.");
     const deck = teachDeckOf(file, 1, mon);
     assert.equal(deck.slides[0]?.title, "How can a small force move a bigger load?");
     assert.equal(deck.slides.find((s) => s.id === "agenda")?.cards?.[1]?.line, "Sketch one lever.");

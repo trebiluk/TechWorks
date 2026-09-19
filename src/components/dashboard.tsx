@@ -23,7 +23,7 @@ import { featureOn } from "@/lib/features";
 import { showBerty, bertyPose } from "@/lib/berty";
 import { procedureStep } from "@/lib/procedure";
 import { teachJob, laySlots, teachFocusPeriod, hangOf } from "@/lib/teach";
-import { hourKit } from "@/lib/hour-flow";
+import { hourKit, hourWallSpine } from "@/lib/hour-flow";
 import { AgendaWall, KitChip } from "@/components/agenda-wall";
 import { hideDashRow, loadDashLayout, moveDashRow, moveDashTo, applyDashKit, DASH_KITS, patchDash, rowOn, saveDashLayout, DASH_ROWS, DEFAULT_LAYOUT, type DashLayout, type DashRowId } from "@/lib/dash-layout";
 import { WALL_PRESET_EVENT } from "@/lib/wall-presets";
@@ -150,6 +150,7 @@ export const Dashboard = memo(function Dashboard({
   const openDay = nextOpenDay(today, afterBell);
   const wallDate = shopLive || afterBell ? today : openDay;
   const wallJob = teachJob(file, shown, wallDate);
+  const wallSpine = hourWallSpine(file, wallDate, shown);
   const wallSlots = laySlots(file, wallDate, shown);
   const passing = isSchoolDay(today) && !shopLive && Boolean(nxt);
   const step = procedureStep({
@@ -247,8 +248,24 @@ export const Dashboard = memo(function Dashboard({
         <>
           <p className="tw-now-band tw-chamfer">
             <span>Now</span>
-            <strong>{wallJob.today || wallJob.question || periodTitle(shown, bells)}</strong>
+            <strong>{wallSpine.job || wallSpine.ask || periodTitle(shown, bells)}</strong>
           </p>
+          {wallSpine.ask || wallSpine.prove ? (
+            <dl className="tw-hour-spine" data-hour-spine>
+              {wallSpine.ask ? (
+                <div data-wall-ask>
+                  <dt>Guiding Q</dt>
+                  <dd>{wallSpine.ask}</dd>
+                </div>
+              ) : null}
+              {wallSpine.prove ? (
+                <div data-wall-prove>
+                  <dt>Prove</dt>
+                  <dd>{wallSpine.prove}</dd>
+                </div>
+              ) : null}
+            </dl>
+          ) : null}
           <div className="tw-hour-body">
             <AgendaWall file={file} date={wallDate} period={shown} unlocked={unlocked} editing={arrange} onChange={onChange} active={step} />
             {bertyOn && !arrange ? (
@@ -514,7 +531,7 @@ export const Dashboard = memo(function Dashboard({
       {!arrange ? (
         <WallTicker
           period={shown}
-          title={wallJob.today || wallJob.question || periodTitle(shown, bells)}
+          title={wallSpine.job || wallSpine.ask || periodTitle(shown, bells)}
           kit={hourKit(file, wallDate, shown)}
           left={clock?.live ? (clock.cleanup ? "Cleanup" : `${Math.max(0, Math.ceil(clock.left))}m left`) : nxt ? `Next P${nxt.period}` : "Shop"}
           next={nxt ? `P${nxt.period} ${formatBell(nxt.start)}` : "Last bell"}
