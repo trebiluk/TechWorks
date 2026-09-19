@@ -6,13 +6,18 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.95 — 2026-09-19
+
+- Hall auto-loads P6 Study Hall on the projector and the teacher pad. Empty A-day copy is **No class loaded** — never “Everyone is in the room.” Fake data paints demo hall aliases (not saved). Solvay profile roster stays empty until Diego pastes nicknames.
+- Optional Theme chip is now **TW Deluxe**. Internal id stays \`new-look\`. Dream / TechWorks stays the default.
+
 ## 1.92.94 — 2026-09-19
 
 - Score · 40s. Period chips, then fat 3 / 2 / 1 on every crew — six on one Chromebook screen. Hex crew glyphs; selected mark is a cyan bar with icon + number. Daily Goal and Happened moved to TEACH. Crew-lead PIN scores own crew only, bigger 3 / 2 / 1. Mark is the crew score, not wallet.
 
 ## 1.92.93 — 2026-09-19
 
-- Dream default pull-back: navy plates, cyan LCARS, gold only on crowns / CLEAN / gilded race. Job · Guiding Q · Prove stay navy — no yellow field wash. NEW LOOK is an optional Theme chip.
+- Dream default pull-back: navy plates, cyan LCARS, gold only on crowns / CLEAN / gilded race. Job · Guiding Q · Prove stay navy — no yellow field wash. TW Deluxe is an optional Theme chip.
 
 ## 1.92.92 — 2026-09-19
 

@@ -153,33 +153,57 @@ function unitForGrade(grade: number): string {
   return "prj8";
 }
 
+function fakeHallKid(i: number, quarter: string): RawStudent {
+  const first = FAKE_ALIASES[i % FAKE_ALIASES.length]!;
+  const kid = fakeKid(`demo-6-${i}`, first, 6, 5, "Hall", quarter);
+  kid.section = 10;
+  kid.course = "STUDY HALL";
+  kid.sem = "YEAR";
+  kid.abDay = i % 2 === 0 ? "A" : "B";
+  kid.groups = { hall: true };
+  return kid;
+}
+
+/** Overlay P6 SH nicknames so Hall projector + pad are not an empty A-day. */
+export function seedFakeHall(file: EconomyFile): EconomyFile {
+  const liveHall = file.students.filter((s) => s.period === 6 && isLiveStudent(s, file.meta.quarterName));
+  if (liveHall.length) return file;
+  const next = cloneFile(file);
+  const quarter = next.meta.quarterName || "Q1";
+  const kids = FAKE_ALIASES.map((_, i) => fakeHallKid(i, quarter));
+  next.students = [...next.students, ...kids];
+  return next;
+}
+
 /** Overlay-only shop so Dash / Week / Crews / Year have something to show on an empty desk. */
 export function seedFakeShop(file: EconomyFile): EconomyFile {
   const live = file.students.filter((s) => isLiveStudent(s, file.meta.quarterName));
-  if (live.length) return file;
-  const next = cloneFile(file);
-  const quarter = next.meta.quarterName || "Q1";
-  const bells = shopBells(next);
-  const students: RawStudent[] = [];
-  const crews: EconomyFile["crews"] = [];
-  let n = 0;
-  for (const b of bells) {
-    if (b.period === 6) continue;
-    for (const c of FAKE_CREW) {
-      if (!crews.some((x) => x.period === b.period && x.key === c.key)) {
-        crews.push({ period: b.period, key: c.key, name: c.name, color: c.color, motto: c.motto });
+  let next = file;
+  if (!live.length) {
+    next = cloneFile(file);
+    const quarter = next.meta.quarterName || "Q1";
+    const bells = shopBells(next);
+    const students: RawStudent[] = [];
+    const crews: EconomyFile["crews"] = [];
+    let n = 0;
+    for (const b of bells) {
+      if (b.period === 6) continue;
+      for (const c of FAKE_CREW) {
+        if (!crews.some((x) => x.period === b.period && x.key === c.key)) {
+          crews.push({ period: b.period, key: c.key, name: c.name, color: c.color, motto: c.motto });
+        }
+      }
+      for (let i = 0; i < FAKE_CREW.length * 3; i++) {
+        const crew = FAKE_CREW[i % FAKE_CREW.length]!;
+        const first = FAKE_ALIASES[n % FAKE_ALIASES.length]!;
+        students.push(fakeKid(`demo-${b.period}-${i}`, `${first}${b.period}`, b.period, b.grade, crew.key, quarter));
+        n += 1;
       }
     }
-    for (let i = 0; i < FAKE_CREW.length * 3; i++) {
-      const crew = FAKE_CREW[i % FAKE_CREW.length]!;
-      const first = FAKE_ALIASES[n % FAKE_ALIASES.length]!;
-      students.push(fakeKid(`demo-${b.period}-${i}`, `${first}${b.period}`, b.period, b.grade, crew.key, quarter));
-      n += 1;
-    }
+    next.students = students;
+    next.crews = crews;
   }
-  next.students = students;
-  next.crews = crews;
-  return next;
+  return seedFakeHall(next);
 }
 
 function dressCrews(file: EconomyFile, messy: boolean): EconomyFile {
@@ -238,6 +262,17 @@ export function paintDemo(file: EconomyFile, id: DemoId): EconomyFile {
   const rates = next.meta.codes;
   next.students = next.students.map((s, idx) => {
     if (!isLiveStudent(s, next.meta.quarterName)) return s;
+    if (s.period === 6) {
+      return compactStudent({
+        ...s,
+        markTape: "",
+        marks: undefined,
+        skills: {},
+        investDays: {},
+        opening: 0,
+        bonus: 0,
+      });
+    }
     let tape = "";
     let earned = 0;
     days.forEach((d, i) => {

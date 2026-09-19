@@ -33,6 +33,7 @@ describe("fake data overlay", () => {
     assert.ok(painted.students.length > 0);
     assert.ok(painted.students.every((s) => s.id.startsWith("demo-")));
     assert.ok(painted.crews.length > 0);
+    assert.ok(painted.students.some((s) => s.period === 6));
   });
 
   it("messy puts crews, marks, and project slots on an empty shop", () => {
@@ -64,8 +65,9 @@ describe("fake data overlay", () => {
       },
     ];
     const next = seedFakeShop(cloneFile(file));
-    assert.equal(next.students.length, 1);
-    assert.equal(next.students[0]?.id, "real-1");
+    assert.equal(next.students.filter((s) => s.id === "real-1").length, 1);
+    assert.equal(next.students.filter((s) => s.period === 1).length, 1);
+    assert.ok(next.students.some((s) => s.period === 6 && s.id.startsWith("demo-")));
   });
 
   it("takeRealDesk never keeps overlay workers", () => {

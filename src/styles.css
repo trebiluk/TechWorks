@@ -545,7 +545,7 @@ html[data-theme="solvay"] {
   --color-crew-hi: #22D3EE;
 }
 
-/* Optional picker: Dream navy + restrained shine. Default stays solvay. */
+/* Optional picker label TW Deluxe. Dream navy + restrained shine. Default stays solvay. */
 html[data-theme="new-look"] {
   color-scheme: dark;
   --tw-bg: #06122b;

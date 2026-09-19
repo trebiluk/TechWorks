@@ -19,6 +19,7 @@ import { TipsProvider } from "@/lib/tips";
 import { Dashboard } from "@/components/dashboard";
 import { featureOn } from "@/lib/features";
 import { paintDemo, SAVE_FAIL_EVENT, storedDemo, takeRealDesk, type DemoId } from "@/lib/demo";
+import { ensureP6StudyHall } from "@/lib/hall-roster";
 import { isUnlocked, lock, lockCrew, ensureDefaultPin } from "@/lib/pin";
 import { daySlot, isSchoolDay, nextOpenDay, todayIso } from "@/lib/calendar";
 import { loadDjia, type DjiaQuote } from "@/lib/djia";
@@ -90,8 +91,9 @@ export function Board() {
   const [file, setFile] = useState<EconomyFile>(seed);
   const [demoId, setDemoId] = useState<DemoId>("off");
   const graphFile = useMemo(() => {
-    if (!featureOn(file, "debug") || demoId === "off") return file;
-    return paintDemo(file, demoId);
+    const hall = ensureP6StudyHall(file);
+    if (!featureOn(file, "debug") || demoId === "off") return hall;
+    return paintDemo(hall, demoId);
   }, [file, demoId]);
   const wallFile = useDeferredValue(graphFile);
   const overlayOn = featureOn(file, "debug") && demoId !== "off";
@@ -324,30 +326,32 @@ export function Board() {
       /* */
     }
     try {
-      const desk = loadDesk(seed);
+      const desk = ensureP6StudyHall(loadDesk(seed));
       setFile(desk);
       void hydrateVault(desk)
         .then(async (next) => {
-          setFile(next);
+          const local = ensureP6StudyHall(next);
+          setFile(local);
           const pack = await pullCloud();
           if (!pack) return;
           const cloudN = cloudPackCount(pack);
-          const localN = next.students.length;
-          const sameStamp = Boolean(pack.saved && pack.saved === (next.meta.savedAt ?? ""));
-          const plan = cloudSyncPlan(localN, cloudN, localIsNewer(next, pack.saved), sameStamp);
+          const localN = local.students.length;
+          const sameStamp = Boolean(pack.saved && pack.saved === (local.meta.savedAt ?? ""));
+          const plan = cloudSyncPlan(localN, cloudN, localIsNewer(local, pack.saved), sameStamp);
           if (plan === "keep") return;
           if (plan === "push") {
-            void pushCloud(next);
+            void pushCloud(local);
             return;
           }
           const cloudFile = await applyCloudPack(pack);
           if (!cloudFile) return;
-          const kept = recoverHours(recoverHours(cloudFile, hourPlanOf(next)), readHours());
-          if (localN > 0 && kept.students.length === 0) {
-            void pushCloud(next);
+          const recovered = recoverHours(recoverHours(cloudFile, hourPlanOf(local)), readHours());
+          if (localN > 0 && recovered.students.length === 0) {
+            void pushCloud(local);
             flashMsg("Cloud desk was empty · kept this PC's roster", "warn");
             return;
           }
+          const kept = ensureP6StudyHall(recovered);
           setFile(kept);
           if (localN === 0 && kept.students.length > 0) {
             flashMsg(`Loaded ${kept.students.length} workers from the cloud`, "ok");
@@ -356,7 +360,7 @@ export function Board() {
         .catch(() => {});
     } catch (err) {
       console.error("[TechWorks] loadDesk", err);
-      setFile(seed);
+      setFile(ensureP6StudyHall(seed));
       flashMsg("Saved data failed · using seed roster");
     }
     try {

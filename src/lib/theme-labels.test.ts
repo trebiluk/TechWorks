@@ -12,11 +12,11 @@ describe("theme labels", () => {
     assert.equal(dice!.kind, "dark");
   });
 
-  it("keeps Dream TechWorks default and offers NEW LOOK as an optional chip", () => {
+  it("keeps Dream TechWorks default and offers TW Deluxe as an optional chip", () => {
     assert.equal(THEMES[0]?.id, "solvay");
     const neu = THEMES.find((t) => t.id === "new-look");
     assert.ok(neu);
-    assert.equal(neu!.label, "NEW LOOK");
+    assert.equal(neu!.label, "TW Deluxe");
     assert.equal(neu!.group, "solvay");
     assert.equal(neu!.kind, "dark");
     assert.equal(cssThemeId("new-look"), "new-look");

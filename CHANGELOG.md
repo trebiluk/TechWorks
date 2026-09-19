@@ -1,8 +1,13 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.94. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.95. -->
 
 # TechWorks changelog
 
-App version **1.92.94**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.95**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.95 — 2026-09-19
+
+- Hall auto-loads P6 Study Hall on the projector and the teacher pad. Empty A-day copy is **No class loaded** — never “Everyone is in the room.” Fake data paints demo hall aliases (not saved). Solvay profile roster stays empty until Diego pastes nicknames.
+- Optional Theme chip is now **TW Deluxe**. Internal id stays `new-look`. Dream / TechWorks stays the default.
 
 ## 1.92.94 — 2026-09-19
 
@@ -10,7 +15,7 @@ App version **1.92.94**. Newest first. Sheets stay the archive; this desk is the
 
 ## 1.92.93 — 2026-09-19
 
-- Dream default pull-back: navy plates, cyan LCARS, gold only on crowns / CLEAN / gilded race. Job · Guiding Q · Prove stay navy — no yellow field wash. NEW LOOK is an optional Theme chip.
+- Dream default pull-back: navy plates, cyan LCARS, gold only on crowns / CLEAN / gilded race. Job · Guiding Q · Prove stay navy — no yellow field wash. TW Deluxe is an optional Theme chip.
 
 ## 1.92.92 — 2026-09-19
 
