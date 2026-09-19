@@ -409,6 +409,7 @@ export function TeachBoard({
           unlocked={unlocked}
           onChange={edit}
           hall={period === 6}
+          period={period}
         />
       ) : null}
 

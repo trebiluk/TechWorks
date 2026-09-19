@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.86 — 2026-09-19
+
+- Cleanup wall: one leftover clock (fat digits, Berty beside). Workshop + Classroom fill the coral plate. Extra tidy / +$5 catch lives on Teach (PIN), not the student wall.
+
 ## 1.92.85 — 2026-09-19
 
 - Wall hour plate shows Guiding Q and Prove from the same PlanIt teachDays row Deck already reads. 1.92.84 is the Edge Pocket nav PR.

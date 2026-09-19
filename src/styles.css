@@ -264,7 +264,8 @@ html[data-edit="on"] .edit-field {
   box-shadow: 0 0 8px var(--color-accent);
   flex-shrink: 0;
 }
-.tw-dot-on {
+.tw-dot-on,
+.tw-blink {
   animation: tw-blink 1.6s ease-in-out infinite;
 }
 .tw-dot-warn {
@@ -411,6 +412,7 @@ html[data-edit="on"] .edit-field {
   .tw-live,
   .tw-ring-live,
   .tw-dot-on,
+  .tw-blink,
   .tw-now-band::after {
     animation: none !important;
   }
@@ -2797,42 +2799,59 @@ html[dir="rtl"] .board-root { direction: rtl; }
   padding: 0.3rem 0.4rem;
 }
 
-/* Cleanup wall: fit clock + two job cards + footer at 100% scale. Hands stay inside the padded Berty box. */
+/* Cleanup wall: one leftover clock + two job cards filling the coral plate. Hands stay in the Berty box. */
 .tw-cleanup {
   container-type: size;
   container-name: cleanup;
 }
+.tw-cleanup-hero {
+  flex: 0 0 auto;
+}
 .tw-cleanup .berty-figure[data-size="xl"] {
-  --berty-h: clamp(4.5rem, 22cqh, 8.75rem);
+  --berty-h: clamp(4.25rem, 18cqh, 7.5rem);
 }
 .tw-cleanup .berty-figure[data-size="lg"] {
-  --berty-h: clamp(3.75rem, 18cqh, 5.75rem);
+  --berty-h: clamp(3.5rem, 16cqh, 5.25rem);
 }
 .tw-cleanup-clock {
-  font-size: clamp(2.75rem, 16cqh, 7rem);
-  line-height: 0.9;
+  font-size: clamp(3.25rem, 14cqh, 6.5rem);
+  line-height: 0.88;
+  letter-spacing: -0.04em;
 }
 .tw-cleanup-kicker {
   font-size: clamp(0.7rem, 2.2cqh, 1.15rem);
 }
 .tw-cleanup-sub {
-  font-size: clamp(0.8rem, 2.6cqh, 1.35rem);
+  font-size: clamp(0.72rem, 2.2cqh, 1.05rem);
+}
+.tw-cleanup-drain {
+  width: min(14rem, 100%);
+  height: 0.55rem;
+  margin-top: 0.4rem;
+}
+.tw-cleanup-drain > span {
+  min-width: 0.4rem;
 }
 .tw-cleanup-cards {
   display: grid;
   min-height: 0;
-  flex: 1 1 auto;
+  flex: 1 1 0;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
   gap: clamp(0.5rem, 1.4cqh, 0.85rem);
+  margin-top: clamp(0.55rem, 1.6cqh, 0.9rem);
   overflow: hidden;
 }
 .tw-cleanup-cards[data-stack] {
   grid-template-columns: 1fr;
+  grid-template-rows: none;
+  grid-auto-rows: 1fr;
   overflow: auto;
 }
 .tw-cleanup-card {
   container-type: size;
   display: flex;
+  height: 100%;
   min-height: 0;
   flex-direction: column;
   overflow: hidden;
@@ -2842,8 +2861,8 @@ html[dir="rtl"] .board-root { direction: rtl; }
 }
 .tw-cleanup .tw-cleanup-card h2 {
   font-family: var(--font-display, ui-sans-serif);
-  font-size: clamp(1.35rem, 16cqh, 2.75rem);
-  font-weight: 650;
+  font-size: clamp(1.45rem, 14cqh, 2.85rem);
+  font-weight: 700;
   line-height: 0.95;
   letter-spacing: -0.03em;
 }
@@ -2860,14 +2879,14 @@ html[dir="rtl"] .board-root { direction: rtl; }
   flex: 1 1 auto;
   flex-direction: column;
   justify-content: space-evenly;
-  gap: 0.2rem;
-  margin-top: 0.35rem;
+  gap: 0.25rem;
+  margin-top: 0.4rem;
 }
 .tw-cleanup .tw-cleanup-card li {
   display: flex;
   gap: 0.55rem;
-  font-size: clamp(0.92rem, 11.5cqh, 1.55rem);
-  font-weight: 650;
+  font-size: clamp(1.05rem, 13cqh, 1.9rem);
+  font-weight: 700;
   line-height: 1.15;
 }
 .tw-cleanup-card li span:first-child {
@@ -2879,6 +2898,7 @@ html[dir="rtl"] .board-root { direction: rtl; }
 }
 
 .tw-cleanup-mini .tw-cleanup-card {
+  height: auto;
   padding: 0.55rem 0.7rem;
   background: color-mix(in oklab, #000 18%, transparent);
 }
@@ -3053,6 +3073,9 @@ html[dir="rtl"] .board-root { direction: rtl; }
   flex: 1 1 auto;
 }
 @media (prefers-reduced-motion: no-preference) {
+  .tw-cleanup[data-urgent="1"] .tw-cleanup-clock {
+    text-shadow: 0 0 22px color-mix(in oklab, #fff 50%, transparent);
+  }
   .tw-enter > * {
     animation: tw-rise 280ms ease-out both;
   }
