@@ -33,6 +33,8 @@ describe("t grade-6", () => {
     assert.equal(t("Cleanup", "ru"), "Убрать");
     assert.equal(t("Crew", "ru"), "Команда");
     assert.equal(t("Help", "ru"), "Помощь");
+    assert.equal(t("More", "uk"), "Ще");
+    assert.equal(t("More", "ru"), "Ещё");
   });
 
   it("translates the P1 job card at grade 6", () => {

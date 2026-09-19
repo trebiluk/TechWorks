@@ -40,20 +40,44 @@ describe("chrome hit layer", () => {
     assert.match(css, /header\.desk-chrome button,[\s\S]*?touch-action:\s*manipulation/);
   });
 
-  it("never lets status pills cover Wall Teach Deck PlanIt", () => {
+  it("keeps one thin chrome row; status lives in the Edge Pocket overlay", () => {
     const cluster = css.match(/header\.desk-chrome \.nav-cluster \{[^}]+\}/);
     assert.ok(cluster, "nav-cluster rule");
-    assert.match(cluster[0], /flex-wrap:\s*wrap/);
-    assert.doesNotMatch(cluster[0], /flex-wrap:\s*nowrap/);
+    assert.match(cluster[0], /flex-wrap:\s*nowrap/);
+    assert.doesNotMatch(cluster[0], /flex-wrap:\s*wrap/);
     const chips = css.match(/header\.desk-chrome \.nav-cluster > \.nav-chips \{[^}]+\}/);
     assert.ok(chips, "nav-chips rule");
     assert.match(chips[0], /flex:\s*1 1 auto/);
-    assert.match(chips[0], /min-width:\s*min\(24rem,\s*100%\)/);
-    const hud = css.match(/header\.desk-chrome \.tw-hud-row \{[^}]+\}/);
-    assert.ok(hud, "hud-row rule");
-    assert.match(hud[0], /flex:\s*0 0 auto/);
+    assert.match(chips[0], /min-width:\s*0/);
+    assert.doesNotMatch(chips[0], /min\(24rem/);
+    const pocket = css.match(/header\.desk-chrome \.tw-edge-pocket \{[^}]+\}/);
+    assert.ok(pocket, "edge-pocket rule");
+    assert.match(pocket[0], /flex:\s*0 0 auto/);
+    const menu = css.match(/\.tw-edge-pocket-menu \{[^}]+\}/);
+    assert.ok(menu, "edge-pocket overlay");
+    assert.match(menu[0], /position:\s*fixed/);
+    const chipBtn = css.match(/header\.desk-chrome \.tw-edge-pocket-chip \{[^}]+\}/);
+    assert.ok(chipBtn, "edge-pocket chip");
+    assert.match(chipBtn[0], /min-height:\s*2\.75rem/);
     const chipZ = Number(/z-index:\s*(\d+)/.exec(chips[0])?.[1] ?? 0);
-    const hudZ = Number(/z-index:\s*(\d+)/.exec(hud[0])?.[1] ?? 0);
-    assert.ok(chipZ > hudZ, `nav chips z-index ${chipZ} must beat HUD ${hudZ}`);
+    const pocketZ = Number(/z-index:\s*(\d+)/.exec(pocket[0])?.[1] ?? 0);
+    assert.ok(pocketZ >= chipZ, `More chip z-index ${pocketZ} must sit with nav ${chipZ}`);
+  });
+
+  it("puts Fake data and HUD extras inside EdgePocket, not a second chrome row", () => {
+    const board = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../components/board.tsx"), "utf8");
+    const pocketSrc = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../components/edge-pocket.tsx"), "utf8");
+    assert.match(board, /<EdgePocket/);
+    assert.match(pocketSrc, /createPortal/);
+    assert.match(pocketSrc, /data-edge-pocket="more"/);
+    assert.match(pocketSrc, /aria-haspopup="menu"/);
+    assert.match(pocketSrc, /min-h-11/);
+    assert.doesNotMatch(pocketSrc, /onMouseEnter/);
+    const header = board.slice(board.indexOf("<header className=\"desk-chrome"), board.indexOf("</header>"));
+    const pocketAt = header.indexOf("<EdgePocket");
+    const fakeAt = header.indexOf("Fake data");
+    assert.ok(pocketAt > 0 && fakeAt > pocketAt, "Fake data sits inside EdgePocket");
+    assert.match(header, /label=\{t\("More"\)\}/);
+    assert.doesNotMatch(header, /nav-cluster flex min-w-0 flex-wrap/);
   });
 });
