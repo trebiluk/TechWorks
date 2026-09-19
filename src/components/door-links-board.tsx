@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { deskToken, storedDeskKey } from "@/lib/desk-cloud";
+import { deskToken, ensureDeskKey, formatDeskKey, storedDeskKey } from "@/lib/desk-cloud";
 import { cn } from "@/lib/utils";
 
 const ICONS = ["link", "globe", "bookmark", "video", "file", "game", "music", "calc", "news", "school"] as const;
@@ -26,6 +26,7 @@ export function DoorLinksBoard({
   const [href, setHref] = useState("");
   const [icon, setIcon] = useState<string>("school");
   const [busy, setBusy] = useState(false);
+  const key = storedDeskKey();
 
   async function load() {
     try {
@@ -33,8 +34,12 @@ export function DoorLinksBoard({
       const pack = (await res.json()) as { links?: LinkRow[]; updated?: string; store?: string };
       setLinks(Array.isArray(pack.links) ? pack.links : []);
       setUpdated(pack.updated ?? "");
-      if (pack.store === "none") setStatus("Cloud is not bound on this host.");
-      else setStatus(`${(pack.links ?? []).length} live on the Tech Room door.`);
+      const n = (pack.links ?? []).length;
+      if (pack.store === "none") {
+        setStatus("Ready. First save publishes to every Chromebook.");
+      } else {
+        setStatus(`${n} live on the Tech Room door.`);
+      }
     } catch {
       setStatus("Could not reach the door feed.");
     }
@@ -49,20 +54,20 @@ export function DoorLinksBoard({
       onNeedPin?.();
       return;
     }
-    if (!storedDeskKey()) {
-      setStatus("Bind Cloud first (Records → Cloud). Same desk key writes the door.");
-      return;
-    }
     setBusy(true);
     try {
-      const token = await deskToken();
+      const token = await deskToken(ensureDeskKey());
       const res = await fetch("/api/door-links", {
         method: "PUT",
         headers: { "content-type": "application/json", "x-tw-desk": token },
         body: JSON.stringify({ keyHash: token, links: next }),
       });
       if (res.status === 401) {
-        setStatus("Desk key did not match Cloud. Open Records → Cloud.");
+        setStatus("Desk key did not match. Open Records → Cloud and use that same key.");
+        return;
+      }
+      if (res.status === 503) {
+        setStatus("Door store is not bound on this host yet.");
         return;
       }
       if (!res.ok) {
@@ -91,6 +96,11 @@ export function DoorLinksBoard({
         </p>
         <p className="mt-2 text-sm font-semibold">{status}</p>
         {updated ? <p className="mt-1 font-mono text-xs text-muted">{updated}</p> : null}
+        {key ? (
+          <p className="mt-2 font-mono text-xs text-muted">Desk key on this PC · {formatDeskKey(key)}</p>
+        ) : (
+          <p className="mt-2 text-xs text-muted">First save mints the Cloud desk key on this PC.</p>
+        )}
       </header>
 
       <form

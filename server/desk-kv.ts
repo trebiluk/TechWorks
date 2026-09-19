@@ -1,5 +1,7 @@
 /** Cloudflare KV when bound as TW_DESK. Preview uses the Vite /api/desk plugin. */
 
+import { deskKv } from "./cf-env";
+
 export type DeskRow = {
   keyHash: string;
   saved: string;
@@ -10,18 +12,8 @@ export type DeskRow = {
   data: string;
 };
 
-type Kv = { get: (k: string) => Promise<string | null>; put: (k: string, v: string) => Promise<void> };
-
-function kvOf(event: { context?: Record<string, unknown> }): Kv | null {
-  const ctx = event.context ?? {};
-  const cf = ctx.cloudflare as { env?: Record<string, unknown> } | undefined;
-  const ns = cf?.env?.TW_DESK as Kv | undefined;
-  if (ns && typeof ns.get === "function" && typeof ns.put === "function") return ns;
-  return null;
-}
-
-export async function loadRow(event: { context?: Record<string, unknown> }): Promise<{ row: DeskRow | null; store: "kv" | "none" }> {
-  const kv = kvOf(event);
+export async function loadRow(event: unknown): Promise<{ row: DeskRow | null; store: "kv" | "none" }> {
+  const kv = deskKv(event);
   if (!kv) return { row: null, store: "none" };
   const raw = await kv.get("desk");
   if (!raw) return { row: null, store: "kv" };
@@ -32,8 +24,8 @@ export async function loadRow(event: { context?: Record<string, unknown> }): Pro
   }
 }
 
-export async function saveRow(event: { context?: Record<string, unknown> }, row: DeskRow): Promise<"kv" | "none"> {
-  const kv = kvOf(event);
+export async function saveRow(event: unknown, row: DeskRow): Promise<"kv" | "none"> {
+  const kv = deskKv(event);
   if (!kv) return "none";
   await kv.put("desk", JSON.stringify(row));
   return "kv";
