@@ -1,4 +1,4 @@
-/* Koderized KZ 1.8.0 — five doors from zero: command, line, repeat, wall, score. */
+/* Koderized KZ 1.9.0 — five doors, Aide card, Walk with me, EN/ES. No IEP stored. */
 const DOORS = [
   {
     id: "zero",
@@ -166,6 +166,94 @@ function doorOf(id) {
   return DOORS.find(d => d.id === id) || DOORS[0];
 }
 function copy(x) { return JSON.parse(JSON.stringify(x)); }
+function lang() { return localStorage.getItem("kz-lang") === "es" ? "es" : "en"; }
+function L() { return (window.I18N && (I18N[lang()] || I18N.en)) || { doors: {} }; }
+function setLang(code) {
+  localStorage.setItem("kz-lang", code === "es" ? "es" : "en");
+  applyChrome();
+  if (session.role === "student") renderStudent();
+  if (session.role === "teacher") renderTeacher();
+}
+function applyChrome() {
+  const pack = L();
+  document.documentElement.lang = pack.lang || lang();
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const k = el.getAttribute("data-i18n");
+    if (pack[k]) el.textContent = pack[k];
+  });
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => {
+    const k = el.getAttribute("data-i18n-ph");
+    if (pack[k]) el.placeholder = pack[k];
+  });
+  document.body.classList.toggle("big-type", localStorage.getItem("kz-big") === "1");
+  if ($("btn-lang-en")) $("btn-lang-en").setAttribute("aria-pressed", lang() === "en" ? "true" : "false");
+  if ($("btn-lang-es")) $("btn-lang-es").setAttribute("aria-pressed", lang() === "es" ? "true" : "false");
+  if ($("btn-big")) $("btn-big").setAttribute("aria-pressed", localStorage.getItem("kz-big") === "1" ? "true" : "false");
+}
+function doorL(d) {
+  const pack = (L().doors && L().doors[d.id]) || {};
+  return {
+    title: pack.title || d.title,
+    idea: pack.idea || d.idea,
+    ask: pack.ask || d.ask,
+    choices: pack.choices || d.choices,
+    probeAsk: pack.probeAsk || d.probeAsk,
+    probes: pack.probes || d.probes,
+    tests: pack.tests || null,
+    help: pack.help || {}
+  };
+}
+function startWalk(s) {
+  const d = doorOf(s.door);
+  s.mode = "walk";
+  s.help = "aide";
+  s.predicted = true;
+  s.probe = (d.probes[0] && d.probes[0].v) || "do";
+  s.phase = "modify";
+  s.program = copy(d.starter);
+  s.lastChange = "Walk with me";
+}
+function walkHint(s) {
+  const d = doorOf(s.door);
+  const loc = doorL(d);
+  const p = s.program || [];
+  const ready = s.tests && s.tests[0] && s.tests[1];
+  if (d.id === "zero") {
+    if (!p.some(b => b.t === "move")) return { say: loc.help.modify && loc.help.modify.say, tap: "move", id: "pal-move" };
+    if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: "GO", id: "btn-run-mine" };
+    return { say: L().winPeriod, tap: "Next door", id: "btn-next-door" };
+  }
+  if (d.id === "line") {
+    const moves = p.filter(b => b.t === "move").length;
+    if (moves < 4) return { say: loc.help.modify && loc.help.modify.say, tap: "move", id: "pal-move" };
+    if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: "GO", id: "btn-run-mine" };
+    return { say: L().winPeriod, tap: "Next door", id: "btn-next-door" };
+  }
+  if (d.id === "loop") {
+    const rep = p.find(b => b.t === "repeat");
+    if (!rep) return { say: loc.help.modify && loc.help.modify.say, tap: "repeat", id: "pal-repeat" };
+    if (Number(rep.n) !== 4) return { say: loc.help.modify && loc.help.modify.say, tap: "4", id: null, poke: true };
+    if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: "GO", id: "btn-run-mine" };
+    return { say: L().winPeriod, tap: "Next door", id: "btn-next-door" };
+  }
+  if (d.id === "wall") {
+    if (!p.some(b => b.t === "if-wall-stop")) return { say: loc.help.modify && loc.help.modify.say, tap: "if wall: stop", id: "pal-stop" };
+    if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: "GO", id: "btn-run-mine" };
+    return { say: L().winPeriod, tap: "Next door", id: "btn-next-door" };
+  }
+  if (!p.some(b => b.t === "if-wall-score")) return { say: loc.help.modify && loc.help.modify.say, tap: "score", id: "pal-score" };
+  if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: "GO", id: "btn-run-mine" };
+  return { say: L().winPeriod, tap: "Done", id: null };
+}
+function glow(id, poke) {
+  document.querySelectorAll(".glow").forEach(el => el.classList.remove("glow"));
+  if (poke) {
+    const g = document.querySelector("#block-list .poke");
+    if (g) g.classList.add("glow");
+    return;
+  }
+  if (id && $(id)) $(id).classList.add("glow");
+}
 function shopHeat(st) {
   const list = Object.values((st && st.students) || {});
   if (!list.length) return 0;
@@ -213,7 +301,8 @@ function ensure(st, alias, id) {
       id, alias, door: st.door || "zero",
       program: [], lastGreen: [],
       predict: "", predicted: false, probe: null, tests: [false, false, false],
-      layer: "Core", status: "gray", restores: 0, tradeoff: "", lastChange: "Joined", phase: "predict"
+      layer: "Core", status: "gray", restores: 0, tradeoff: "", lastChange: "Joined", phase: "predict",
+      mode: "full", help: "off"
     };
     openDoor(st.students[id], st.door || "zero");
     st.students[id].alias = alias;
@@ -286,7 +375,7 @@ function draw(canvas, sim) {
   ctx.fillStyle = "#0b1c33"; ctx.fillRect(0, 0, W, H);
 }
 
-function goLanding() { hide("screen-student"); hide("screen-teacher"); show("screen-landing"); }
+function goLanding() { hide("screen-student"); hide("screen-teacher"); show("screen-landing"); applyChrome(); }
 function goStudent() { hide("screen-landing"); hide("screen-teacher"); show("screen-student"); renderStudent(); }
 function goTeacher() { hide("screen-landing"); hide("screen-student"); show("screen-teacher"); renderTeacher(); }
 $("btn-student").onclick = () => {
@@ -312,11 +401,12 @@ $("btn-teacher").onclick = () => {
 };
 $("btn-home").onclick = goLanding;
 function label(b) {
-  if (b.t === "move") return "move forward";
-  if (b.t === "repeat") return "repeat " + (b.n || 1);
-  if (b.t === "end") return "end repeat";
-  if (b.t === "if-wall-stop") return "if wall: stop";
-  if (b.t === "if-wall-score") return "if wall: score +1";
+  const pack = L();
+  if (b.t === "move") return pack.move || "move forward";
+  if (b.t === "repeat") return (pack.repeat || "repeat") + " " + (b.n || 1);
+  if (b.t === "end") return pack.end || "end repeat";
+  if (b.t === "if-wall-stop") return pack.stop || "if wall: stop";
+  if (b.t === "if-wall-score") return pack.score || "if wall: score +1";
   return b.t;
 }
 function bump(s) {
@@ -332,9 +422,10 @@ function chips(phase) {
   });
 }
 function renderChoices(d, s) {
+  const loc = doorL(d);
   const box = $("choices");
   box.innerHTML = "";
-  d.choices.forEach(c => {
+  loc.choices.forEach(c => {
     const b = document.createElement("button");
     b.className = "choice" + (s.predict === c.p ? " picked" : "");
     b.type = "button";
@@ -346,7 +437,7 @@ function renderChoices(d, s) {
   const pb = $("probe-choices") || $("probe-wrap").querySelector(".choices");
   if (pb) {
     pb.innerHTML = "";
-    d.probes.forEach(c => {
+    loc.probes.forEach(c => {
       const b = document.createElement("button");
       b.className = "choice probe" + (s.probe === c.v ? " picked" : "");
       b.type = "button";
@@ -355,7 +446,7 @@ function renderChoices(d, s) {
       pb.appendChild(b);
     });
   }
-  setTxt("probe-ask", d.probeAsk);
+  setTxt("probe-ask", loc.probeAsk);
 }
 function renderBlocks(el, program, editable) {
   el.innerHTML = "";
@@ -364,7 +455,7 @@ function renderBlocks(el, program, editable) {
     d.className = "block" + (b.t === "repeat" || b.t === "end" ? " control" : b.t.indexOf("if") === 0 ? " sense" : "");
     if (b.t === "repeat") {
       const lab = document.createElement("span");
-      lab.textContent = "repeat";
+      lab.textContent = L().repeat || "repeat";
       d.appendChild(lab);
       const poke = document.createElement("button");
       poke.type = "button";
@@ -407,7 +498,7 @@ function renderBlocks(el, program, editable) {
   if (!program.length) {
     const empty = document.createElement("div");
     empty.className = "block empty";
-    empty.textContent = "Empty list. Add a command.";
+    empty.textContent = L().emptyList || "Empty list. Add a command.";
     el.appendChild(empty);
   }
 }
@@ -415,20 +506,34 @@ function renderStudent() {
   const st = load(session.code);
   const s = ensure(st, session.alias, session.id);
   const d = syncExample(s);
+  const loc = doorL(d);
+  applyChrome();
   $("freeze-banner").classList.toggle("hidden", !st.frozen);
   const spotting = st.spotlight && st.spotlight !== session.id;
   $("spot-banner").classList.toggle("hidden", !spotting);
   if (spotting && st.students[st.spotlight]) $("spot-banner").textContent = "Watch " + st.students[st.spotlight].alias;
   chips(s.phase);
-  setTxt("quest-title", d.title);
-  setTxt("ask", d.ask);
+  setTxt("quest-title", loc.title);
+  setTxt("ask", loc.ask);
   setTxt("door-n", "Door " + d.n + " / 5");
-  setTxt("door-idea", d.idea);
+  setTxt("door-idea", loc.idea);
   renderChoices(d, s);
+  const walk = s.mode === "walk";
+  if ($("phase-chips")) $("phase-chips").classList.toggle("hidden", walk);
+  if ($("btn-aide")) $("btn-aide").setAttribute("aria-pressed", s.help === "aide" ? "true" : "false");
+  if ($("btn-walk")) $("btn-walk").setAttribute("aria-pressed", walk ? "true" : "false");
+  const showAide = s.help === "aide" || walk;
+  if ($("aide-card")) $("aide-card").classList.toggle("hidden", !showAide);
+  const phaseHelp = loc.help[s.phase] || loc.help.modify || { say: "", tap: "" };
+  const hint = walk ? walkHint(s) : { say: phaseHelp.say, tap: phaseHelp.tap, id: null };
+  setTxt("aide-say", hint.say || "");
+  setTxt("aide-tap", hint.tap || "");
   $("btn-predict").disabled = s.predicted || st.frozen || !s.predict;
   $("btn-run-example").disabled = !s.predicted || st.frozen;
-  $("choices").classList.toggle("hidden", s.predicted || s.phase !== "predict");
-  $("probe-wrap").classList.toggle("hidden", s.phase !== "investigate");
+  $("choices").classList.toggle("hidden", walk || s.predicted || s.phase !== "predict");
+  if ($("ask")) $("ask").classList.toggle("hidden", walk);
+  $("probe-wrap").classList.toggle("hidden", walk || s.phase !== "investigate");
+  if ($("btn-predict")) $("btn-predict").parentElement.classList.toggle("hidden", walk);
   $("modify-wrap").classList.toggle("hidden", !(s.phase === "modify" || s.phase === "make"));
   const ready = s.tests && s.tests[0] && s.tests[1];
   $("trade-wrap").classList.toggle("hidden", !ready || !(s.phase === "modify" || s.phase === "make"));
@@ -444,18 +549,20 @@ function renderStudent() {
     if ($(id)) $(id).classList.toggle("hidden", pal.indexOf(name) < 0);
   });
   const who = spotting && st.students[st.spotlight] ? st.students[st.spotlight] : s;
-  const prog = s.phase === "predict" ? EXAMPLE : who.program;
+  const prog = (!walk && s.phase === "predict") ? EXAMPLE : who.program;
   renderBlocks($("block-list"), prog, !spotting && !st.frozen && (s.phase === "modify" || s.phase === "make"));
   $("palette").classList.toggle("hidden", spotting || st.frozen || !(s.phase === "modify" || s.phase === "make"));
   const ev = evaluate(prog, who);
   draw($("world"), ev.result);
   $("tests").innerHTML = "";
-  ev.tests.forEach(t => {
+  ev.tests.forEach((t, i) => {
     const div = document.createElement("div");
-    div.className = "test " + (s.phase === "predict" ? "" : t.ok ? "pass" : "fail");
-    div.textContent = (s.phase === "predict" ? "Locked · " : t.ok ? "Yes · " : "No · ") + t.label;
+    div.className = "test " + ((walk || s.phase !== "predict") ? (t.ok ? "pass" : "fail") : "");
+    const lab = (loc.tests && loc.tests[i]) || t.label;
+    div.textContent = ((walk || s.phase !== "predict") ? (t.ok ? "Yes · " : "No · ") : "Locked · ") + lab;
     $("tests").appendChild(div);
   });
+  glow(hint.id, hint.poke);
 }
 $("choices").onclick = e => {
   const b = e.target.closest(".choice");
@@ -612,7 +719,7 @@ function renderTeacher() {
     const td = tr.lastChild;
     [["Spotlight", "ghost", () => { st.spotlight = s.id; log(st, "Teacher", "SPOT", s.alias); save(st); renderTeacher(); }],
      ["Undo", "gold", () => { const dd = doorOf(s.door); s.program = copy(s.lastGreen && s.lastGreen.length ? s.lastGreen : dd.starter); s.lastChange = "Teacher undo"; bump(s); log(st, s.alias, "RESTORE", "Teacher"); save(st); renderTeacher(); }],
-     ["Catch-up", "navy", () => { s.layer = "Catch-up"; s.status = "blue"; save(st); renderTeacher(); }]].forEach(([txt, cls, fn]) => {
+     ["Walk with me", "gold", () => { openDoor(s, "zero"); startWalk(s); s.layer = "Catch-up"; s.status = "blue"; log(st, s.alias, "WALK", "Door 1"); save(st); renderTeacher(); }]].forEach(([txt, cls, fn]) => {
       const b = document.createElement("button");
       b.className = "btn " + cls;
       b.textContent = txt;
@@ -677,4 +784,27 @@ window.addEventListener("storage", () => {
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
   navigator.serviceWorker.register("./sw.js").catch(() => {});
 }
+if ($("btn-lang-en")) $("btn-lang-en").onclick = () => setLang("en");
+if ($("btn-lang-es")) $("btn-lang-es").onclick = () => setLang("es");
+if ($("btn-big")) $("btn-big").onclick = () => {
+  localStorage.setItem("kz-big", localStorage.getItem("kz-big") === "1" ? "0" : "1");
+  applyChrome();
+};
+if ($("btn-aide")) $("btn-aide").onclick = () => {
+  const st = load(session.code);
+  const s = st.students[session.id];
+  if (!s) return;
+  s.help = s.help === "aide" ? "off" : "aide";
+  save(st); renderStudent();
+};
+if ($("btn-walk")) $("btn-walk").onclick = () => {
+  const st = load(session.code);
+  const s = st.students[session.id];
+  if (!s) return;
+  if (s.mode === "walk") { s.mode = "full"; s.help = "off"; s.lastChange = "Full path"; }
+  else startWalk(s);
+  log(st, s.alias, "WALK", s.mode);
+  save(st); renderStudent();
+};
+applyChrome();
 goLanding();

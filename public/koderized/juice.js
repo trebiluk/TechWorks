@@ -121,6 +121,17 @@
   }
   function playPath(sim) {
     clearTimeout(play.timer);
+    const calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (calm) {
+      window.draw($("world"), sim);
+      const atCrate = sim.goalX != null && sim.x === sim.goalX;
+      if (atCrate) shout("CRATE", "good");
+      else if (sim.stopped && sim.hitWall) shout("SAFE", "good");
+      else if (sim.hitWall) shout("BONK", "bad");
+      else if ((sim.path || []).length <= 1) shout("SIT", "");
+      else shout("ROLL", "good");
+      return;
+    }
     let i = 0;
     function tick() {
       window.draw($("world"), sim, i);

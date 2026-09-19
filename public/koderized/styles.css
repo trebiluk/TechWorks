@@ -52,6 +52,21 @@ h1, h2, h3 { margin: 0 0 .4rem; color: #f8fafc; }
 .wrap { max-width: 1180px; margin: 0 auto; padding: 16px; }
 .hero { text-align: center; padding: 12px 8px 8px; }
 .hero h1 { font-size: clamp(2rem, 5vw, 3.1rem); letter-spacing: -.02em; text-shadow: 0 4px 0 #000; }
+body.big-type { font-size: 20px; }
+body.big-type .btn, body.big-type .choice, body.big-type .poke { min-height: 48px; font-size: 1.05em; }
+body.big-type h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); }
+.top-tools { gap: 6px; }
+.top-tools .btn { min-height: 44px; }
+.btn[aria-pressed="true"] { outline: 3px solid var(--gold); outline-offset: 2px; }
+.aide-card {
+  background: #fff7ed; color: #1b365d; border: 3px solid var(--gold);
+  border-radius: 16px; padding: 12px 16px; margin: 0 0 12px;
+}
+.aide-card h3 { color: #1b365d; margin: 0 0 6px; }
+.glow { box-shadow: 0 0 0 4px #e0b45a, 0 8px 18px rgba(224,180,90,.45) !important; }
+@media (prefers-reduced-motion: reduce) {
+  .stage-frame.shake, .callout.pop { animation: none !important; }
+}
 .ladder {
   display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
   list-style: none; padding: 0; margin: 12px 0 0;

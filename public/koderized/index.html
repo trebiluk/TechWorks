@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#1b365d" />
   <title>Koderized — Start at zero</title>
-  <meta name="description" content="Koderized — Chromebook coding arena. Start at zero. Class code + alias only." />
+  <meta name="description" content="Koderized — Chromebook coding arena. Start at zero. Alias only. No IEP/504 in this cart." />
   <link rel="canonical" href="https://tw.kulibert.net/koderized/" />
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
@@ -13,35 +13,41 @@
 </head>
 <body>
   <header class="top">
-    <div class="brand">KODER<em>IZED</em> <span class="pill" id="version-chip">KZ 1.8.0</span></div>
+    <div class="brand">KODER<em>IZED</em> <span class="pill" id="version-chip">KZ 1.9.0</span></div>
     <div class="meta" id="top-meta">Solvay MS · Technology · Chromebook</div>
-    <button class="btn ghost" id="btn-home" type="button">Home</button>
+    <div class="row top-tools">
+      <button class="btn ghost" id="btn-lang-en" type="button" aria-pressed="true">EN</button>
+      <button class="btn ghost" id="btn-lang-es" type="button" aria-pressed="false">ES</button>
+      <button class="btn ghost" id="btn-big" type="button" data-i18n="big">Big words</button>
+      <button class="btn ghost" id="btn-home" type="button" data-i18n="home">Home</button>
+    </div>
   </header>
   <section id="screen-landing" class="wrap">
     <div class="hero">
       <div class="hero-bot" aria-hidden="true">
         <canvas id="teaser" width="420" height="160"></canvas>
       </div>
-      <h1>Start at zero.</h1>
-      <p class="hint">One command. Then a line. Then a loop. Then don’t wreck the bot. Keys: 1 2 3 · Enter · Space</p>
+      <h1 data-i18n="start">Start at zero.</h1>
+      <p class="hint" data-i18n="hint">One command. Then a line. Then a loop. Door 1 this period is a win.</p>
       <ol class="ladder">
-        <li>One command</li>
-        <li>A line of steps</li>
-        <li>Repeat</li>
-        <li>Don’t wreck the bot</li>
-        <li>Stop and score</li>
+        <li data-i18n="d1">One command</li>
+        <li data-i18n="d2">A line of steps</li>
+        <li data-i18n="d3">Repeat</li>
+        <li data-i18n="d4">Don’t wreck the bot</li>
+        <li data-i18n="d5">Stop and score</li>
       </ol>
     </div>
     <div class="card join">
-      <label for="join-code">Class code</label>
+      <label for="join-code" data-i18n="classCode">Class code</label>
       <input id="join-code" value="QUEST4" maxlength="12" autocomplete="off" />
-      <label for="join-alias">Name</label>
-      <input id="join-alias" placeholder="Jordan" maxlength="20" autocomplete="off" />
+      <label for="join-alias" data-i18n="alias">Alias (not your legal name)</label>
+      <input id="join-alias" data-i18n-ph="aliasPh" placeholder="Scout" maxlength="20" autocomplete="off" />
       <div class="row" style="margin-top:16px;">
-        <button class="btn go" id="btn-student" type="button">Roll out <span class="k">Enter</span></button>
-        <button class="btn navy" id="btn-teacher" type="button">Teacher</button>
+        <button class="btn go" id="btn-student" type="button"><span data-i18n="roll">Roll out</span> <span class="k">Enter</span></button>
+        <button class="btn navy" id="btn-teacher" type="button" data-i18n="teacher">Teacher</button>
       </div>
-      <p class="hint" style="margin-top:12px;">Chrome on a Chromebook. Alias only.</p>
+      <p class="hint" style="margin-top:12px;" data-i18n="ferpaJoin">Chrome on a Chromebook. Alias only. Do not type IEP, 504, or a legal name.</p>
+      <p class="hint"><a href="teacher.html" data-i18n="notes">Notes</a> · Aide / teacher</p>
     </div>
   </section>
   <section id="screen-student" class="wrap hidden">
@@ -54,17 +60,28 @@
       </div>
       <div class="heat" title="Shop heat">
         <span id="door-n">Door 1 / 5</span>
-        <span>HEAT</span>
+        <span data-i18n="heat">HEAT</span>
         <div class="heat-track"><i id="heat-fill"></i></div>
         <b id="heat-num">0</b>
       </div>
     </div>
-    <div class="chips">
-      <span class="chip" id="ph-predict">Guess</span>
-      <span class="chip" id="ph-run">Watch</span>
-      <span class="chip" id="ph-investigate">Find it</span>
-      <span class="chip" id="ph-modify">Fix</span>
-      <span class="chip" id="ph-make">Done</span>
+    <div class="row" style="margin-bottom:8px;">
+      <button class="btn gold" id="btn-aide" type="button" data-i18n="aide">Aide</button>
+      <button class="btn go" id="btn-walk" type="button" data-i18n="walk">Walk with me</button>
+    </div>
+    <aside id="aide-card" class="aide-card hidden">
+      <h3 id="aide-title" data-i18n="aideTitle">Aide card</h3>
+      <p><b data-i18n="say">Say</b> · <span id="aide-say"></span></p>
+      <p><b data-i18n="tap">Tap next</b> · <span id="aide-tap"></span></p>
+      <p class="hint" id="aide-win" data-i18n="winPeriod">Door 1 this period is a win. Stop there if time is short.</p>
+      <p class="hint" data-i18n="ferpaAide">Alias only. Do not type IEP, 504, ELL labels, or legal names. This is not a SIS.</p>
+    </aside>
+    <div class="chips" id="phase-chips">
+      <span class="chip" id="ph-predict" data-i18n="guess">Guess</span>
+      <span class="chip" id="ph-run" data-i18n="watch">Watch</span>
+      <span class="chip" id="ph-investigate" data-i18n="find">Find it</span>
+      <span class="chip" id="ph-modify" data-i18n="fix">Fix</span>
+      <span class="chip" id="ph-make" data-i18n="done">Done</span>
     </div>
     <div class="split">
       <div class="card stage">
@@ -78,8 +95,8 @@
         <h3 id="ask">The list is empty. What does the bot do?</h3>
         <div id="choices" class="choices"></div>
         <div class="row">
-          <button class="btn" id="btn-predict" type="button">Lock it <span class="k">Enter</span></button>
-          <button class="btn gold" id="btn-run-example" type="button">Watch <span class="k">Space</span></button>
+          <button class="btn" id="btn-predict" type="button"><span data-i18n="lock">Lock it</span> <span class="k">Enter</span></button>
+          <button class="btn gold" id="btn-run-example" type="button"><span data-i18n="watch">Watch</span> <span class="k">Space</span></button>
         </div>
         <div id="probe-wrap" class="hidden">
           <h3 id="probe-ask">What is a command?</h3>
@@ -88,24 +105,24 @@
         </div>
         <div id="modify-wrap" class="hidden">
           <div class="row palette" id="palette">
-            <button class="btn navy" id="pal-move" type="button">move</button>
-            <button class="btn" id="pal-repeat" type="button">repeat</button>
-            <button class="btn ghost" id="pal-end" type="button">end</button>
-            <button class="btn warn" id="pal-stop" type="button">if wall: stop</button>
-            <button class="btn gold" id="pal-score" type="button">score</button>
+            <button class="btn navy" id="pal-move" type="button" data-i18n="move">move</button>
+            <button class="btn" id="pal-repeat" type="button" data-i18n="repeat">repeat</button>
+            <button class="btn ghost" id="pal-end" type="button" data-i18n="end">end</button>
+            <button class="btn warn" id="pal-stop" type="button" data-i18n="stop">if wall: stop</button>
+            <button class="btn gold" id="pal-score" type="button" data-i18n="score">score</button>
           </div>
           <div class="blocks" id="block-list"></div>
           <div class="row" style="margin-top:8px;">
-            <button class="btn go" id="btn-run-mine" type="button">GO <span class="k">Space</span></button>
-            <button class="btn gold" id="btn-restore" type="button">Undo</button>
+            <button class="btn go" id="btn-run-mine" type="button"><span data-i18n="go">GO</span> <span class="k">Space</span></button>
+            <button class="btn gold" id="btn-restore" type="button" data-i18n="undo">Undo</button>
           </div>
           <div id="trade-wrap" class="hidden">
             <div id="cost-fields">
-              <label for="tradeoff">One cost you accepted</label>
+              <label for="tradeoff" data-i18n="cost">One cost you accepted</label>
               <input id="tradeoff" placeholder="Slower, but it stops." maxlength="80" />
-              <button class="btn navy" id="btn-tradeoff" type="button" style="margin-top:8px;">Done</button>
+              <button class="btn navy" id="btn-tradeoff" type="button" style="margin-top:8px;" data-i18n="done">Done</button>
             </div>
-            <button class="btn go" id="btn-next-door" type="button" style="margin-top:8px;">Next door</button>
+            <button class="btn go" id="btn-next-door" type="button" style="margin-top:8px;" data-i18n="nextDoor">Next door</button>
           </div>
         </div>
       </div>
@@ -114,40 +131,41 @@
   <section id="screen-teacher" class="wrap hidden">
     <div class="row teacher-head">
       <div>
-        <h2>Period board</h2>
+        <h2 data-i18n="period">Period board</h2>
         <p class="hint">Class <b id="t-code">QUEST4</b> · <span id="t-quest"></span> · Freeze / Spotlight / Restore. No ranks.</p>
-        <p class="hint teacher-notes">Five doors from zero. Send the class with Door 1–5. Heat is tests this period, not a kid rank. <a href="/koderized/teacher.html">Notes</a></p>
+        <p class="hint teacher-notes">Five doors from zero. Walk with me is for aides and short periods. Heat is tests, not a kid rank. <a href="teacher.html" data-i18n="notes">Notes</a></p>
         <div class="row" id="door-picks" style="margin-top:8px;"></div>
       </div>
       <div class="row">
-        <button class="btn danger" id="btn-freeze" type="button">Freeze</button>
-        <button class="btn ghost" id="btn-clear-spot" type="button">Clear spotlight</button>
-        <button class="btn navy" id="btn-export" type="button">Export CSV</button>
+        <button class="btn danger" id="btn-freeze" type="button" data-i18n="freeze">Freeze</button>
+        <button class="btn ghost" id="btn-clear-spot" type="button" data-i18n="clearSpot">Clear spotlight</button>
+        <button class="btn navy" id="btn-export" type="button" data-i18n="export">Export CSV</button>
       </div>
     </div>
     <div class="kpis">
-      <div class="kpi hot"><b id="k-heat">0</b><span>Shop heat</span></div>
-      <div class="kpi"><b id="k-present">0</b><span>Present</span></div>
-      <div class="kpi"><b id="k-predict">0</b><span>Guessed</span></div>
-      <div class="kpi"><b id="k-stuck">0</b><span>Stuck</span></div>
-      <div class="kpi"><b id="k-coach">0</b><span>Coach</span></div>
-      <div class="kpi"><b id="k-trade">0</b><span>Done</span></div>
+      <div class="kpi hot"><b id="k-heat">0</b><span data-i18n="heat">HEAT</span></div>
+      <div class="kpi"><b id="k-present">0</b><span data-i18n="present">Present</span></div>
+      <div class="kpi"><b id="k-predict">0</b><span data-i18n="guessed">Guessed</span></div>
+      <div class="kpi"><b id="k-stuck">0</b><span data-i18n="stuck">Stuck</span></div>
+      <div class="kpi"><b id="k-coach">0</b><span data-i18n="coach">Coach</span></div>
+      <div class="kpi"><b id="k-trade">0</b><span data-i18n="doneKpi">Done</span></div>
     </div>
     <div class="split">
       <div class="card table-wrap">
-        <h3>Walk red first</h3>
-        <table class="table"><thead><tr><th>Name</th><th>Fail</th><th>Last move</th></tr></thead><tbody id="stuck-body"></tbody></table>
-        <h3 style="margin-top:16px;">Roster</h3>
-        <table class="table"><thead><tr><th>Name</th><th>Status</th><th>Door</th><th>Tests</th><th>Move</th><th></th></tr></thead><tbody id="roster-body"></tbody></table>
+        <h3 data-i18n="walkRed">Walk red first</h3>
+        <table class="table"><thead><tr><th>Alias</th><th>Fail</th><th>Last move</th></tr></thead><tbody id="stuck-body"></tbody></table>
+        <h3 style="margin-top:16px;" data-i18n="roster">Roster</h3>
+        <table class="table"><thead><tr><th>Alias</th><th>Status</th><th>Door</th><th>Tests</th><th>Move</th><th></th></tr></thead><tbody id="roster-body"></tbody></table>
       </div>
       <div class="card">
-        <h3>Log</h3>
+        <h3 data-i18n="log">Log</h3>
         <div class="log" id="change-log"></div>
       </div>
     </div>
   </section>
-  <p class="footer-note">Koderized KZ 1.8.0 · Chromebook Chrome · class code + alias · not a district SIS</p>
+  <p class="footer-note" data-i18n="footer">Koderized KZ 1.9.0 · alias only · not a district SIS · no IEP/504 in this cart</p>
   <script src="origin.js"></script>
+  <script src="i18n.js"></script>
   <script src="app.js"></script>
   <script src="juice.js"></script>
 </body>
