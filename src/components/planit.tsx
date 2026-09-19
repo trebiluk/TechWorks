@@ -142,7 +142,7 @@ export function PlanIt({
 
       <header className="tw-planit-top tw-lcars">
         <div className="min-w-0">
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: "var(--mf-gold)" }}>
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: "var(--mf-cyan)" }}>
             PlanIt
           </p>
           <h1 className="font-display text-[1.65rem] font-semibold leading-none tracking-tight">

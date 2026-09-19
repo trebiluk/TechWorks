@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { THEMES } from "./theme.ts";
+import { cssThemeId, THEMES } from "./theme.ts";
 import { WALL_PRESETS } from "./wall-presets.ts";
 
 describe("theme labels", () => {
@@ -10,6 +10,17 @@ describe("theme labels", () => {
     assert.equal(dice!.label, "ROLL THE DICE");
     assert.equal(dice!.group, "solvay");
     assert.equal(dice!.kind, "dark");
+  });
+
+  it("keeps Dream TechWorks default and offers NEW LOOK as an optional chip", () => {
+    assert.equal(THEMES[0]?.id, "solvay");
+    const neu = THEMES.find((t) => t.id === "new-look");
+    assert.ok(neu);
+    assert.equal(neu!.label, "NEW LOOK");
+    assert.equal(neu!.group, "solvay");
+    assert.equal(neu!.kind, "dark");
+    assert.equal(cssThemeId("new-look"), "new-look");
+    assert.equal(cssThemeId("solvay"), "solvay");
   });
 
   it("gives every wall look a swatch preview", () => {
