@@ -109,7 +109,7 @@ const CARDS: Record<string, DescribeCard> = {
   },
   plan: {
     title: "PlanIt",
-    purpose: "PlanIt 40 / TEACH 60. Type Job · Guiding Q · Prove · beats. The live board writes back. Deck plays TEACH.",
+    purpose: "Week timetable. Type Job · Guiding Q · Prove · beats on a day/period cell. Teach is the live board. Deck plays TEACH.",
     links: [{ label: "Help", href: "#help" }],
   },
   admin: {

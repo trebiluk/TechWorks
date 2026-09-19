@@ -230,7 +230,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Dashboard",
     title: "PlanIt",
     tags: ["plan", "planit", "planbook", "week", "copy", "materials", "homework", "closure", "sub", "objective"],
-    body: "Learn → PlanIt is 40 / TEACH 60. Type Job · Guiding Q · Prove · beats on the left — the live board on the right is TEACH. Deck plays that same hour. Tap Week for the grid. Tap up to three skills — Watch opens on the first. Send this hour copies onto empty cells only. Arrow keys move. Print week.",
+    body: "Learn → PlanIt is the week timetable. Periods down, days across. Click a block and type Job · Guiding Q · Prove · beats in the hour inspector — that write fills Teach, Wall, and Deck. Teach is the live board (Hang, Top XP / Top $). Tap Week for the full grid. Tap up to three skills — Watch opens on the first. Send this hour copies onto empty cells only. Arrow keys move. Print week.",
   },
   {
     id: "dash-loop",

@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.91. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.92. -->
 
 # TechWorks changelog
 
-App version **1.92.91**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.92**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.92 — 2026-09-19
+
+- PlanIt week keeps Job · Guiding Q · Prove inside day/period cells. TEACH live board stays on Teach — Hang and Top XP / Top $ no longer spill across the calendar.
 
 ## 1.92.91 — 2026-09-19
 

@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.92 — 2026-09-19
+
+- PlanIt week keeps Job · Guiding Q · Prove inside day/period cells. TEACH live board stays on Teach — Hang and Top XP / Top $ no longer spill across the calendar.
+
 ## 1.92.91 — 2026-09-19
 
 - PlanIt 40 / TEACH 60: Job · Guiding Q · Beats on the left, live board on the right. Dream purple–blue + gold LCARS. Gilded Top XP / Top $ with the classic alias list. Mid-class TEACH edits write back; Deck plays TEACH.
