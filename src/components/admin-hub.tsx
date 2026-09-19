@@ -23,6 +23,7 @@ import { cloudStatus } from "@/lib/desk-cloud";
 import { markSchooltoolOpened } from "@/lib/workflow";
 import { VisitDesk } from "@/components/visit-chip";
 import { DocsBoard } from "@/components/docs-board";
+import { DoorLinksBoard } from "@/components/door-links-board";
 
 type Jump = (period: number, crewKey?: string, date?: string) => void;
 
@@ -146,7 +147,7 @@ export function AdminHub({
     { id: "store", label: "Rewards", on: false, go: () => onStore(), show: featureOn(file, "store") },
   ];
 
-  const dailyIds = new Set(["today", "day", "records", "people", "wall"]);
+  const dailyIds = new Set(["today", "day", "records", "people", "wall", "door"]);
   const dailyRooms = rooms.filter((r) => r.show && dailyIds.has(r.id));
   const moreRooms = rooms.filter((r) => r.show && !dailyIds.has(r.id));
   const cloud = cloudStatus();
@@ -205,6 +206,8 @@ export function AdminHub({
           wallDesk ?? <p className="p-3 text-sm text-muted">Unlock to edit the wall. Dash → Wall stays the projector.</p>
         ) : pane === "docs" ? (
           <DocsBoard />
+        ) : pane === "door" ? (
+          <DoorLinksBoard unlocked={unlocked} onNeedPin={() => onNeedPin?.()} />
         ) : pane !== "today" ? (
           <SettingsBody
             file={file}
