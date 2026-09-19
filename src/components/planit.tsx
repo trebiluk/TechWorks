@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight, PanelsTopLeft, Presentation, Printer } from "lucide-react";
+import { Briefcase, ChevronLeft, ChevronRight, HelpCircle, Presentation, Printer, Shield } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
 import { formatSchoolDate, instructionalWeeks, isSchoolDay, todayIso, weekOn } from "@/lib/calendar";
@@ -17,7 +17,6 @@ import { planWeek, weekFillCount, type PlanCell } from "@/lib/planbook";
 import {
   newPlanitUnit,
   parkPlanitUnit,
-  planitPreview,
   setPlanitJob,
   setPlanitProve,
   setPlanitQuestion,
@@ -25,10 +24,11 @@ import {
   weekdayShort,
 } from "@/lib/planit";
 import { hourAgendaDraft } from "@/lib/hour-flow";
+import { LIVE_BEATS, type LiveBoardTab } from "@/lib/live-board";
 import { DraftField } from "@/components/draft-field";
 import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
-import { KitChip } from "@/components/agenda-wall";
 import { SendHour } from "@/components/send-hour";
+import { TeachLive } from "@/components/teach-live";
 import { cn } from "@/lib/utils";
 
 export function PlanIt({
@@ -37,7 +37,7 @@ export function PlanIt({
   onNeedPin,
   onChange,
   onTeach,
-  onWall,
+  onDeck,
   date: dateProp,
   period: periodProp,
 }: {
@@ -46,6 +46,7 @@ export function PlanIt({
   onNeedPin: () => void;
   onChange: (next: EconomyFile) => void;
   onTeach?: (date: string, period: number) => void;
+  onDeck?: () => void;
   onWall?: () => void;
   date?: string;
   period?: number;
@@ -66,6 +67,8 @@ export function PlanIt({
   }, [dateProp, periodProp, today, firstP]);
   const [printOn, setPrintOn] = useState(false);
   const [notice, setNotice] = useState("");
+  const [gridOn, setGridOn] = useState(false);
+  const [liveTab, setLiveTab] = useState<LiveBoardTab>("job");
   const week = weekOn(weekDate);
   const days = week?.days ?? [weekDate];
   const grid = useMemo(() => planWeek(file, days, today), [file, days, today]);
@@ -128,12 +131,14 @@ export function PlanIt({
   const pct = fill.total ? Math.round((fill.set / fill.total) * 100) : 0;
 
   return (
-    <div className="tw-planit flex min-h-0 flex-1 flex-col" data-planit>
+    <div className="tw-planit tw-planit-mf flex min-h-0 flex-1 flex-col" data-planit data-planit-mf>
       {printOn ? <LessonPlanSheet file={file} period={cell?.period ?? firstP} dates={days} onClose={() => setPrintOn(false)} /> : null}
 
-      <header className="tw-planit-top tw-chamfer">
+      <header className="tw-planit-top tw-lcars">
         <div className="min-w-0">
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-accent">Week</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: "var(--mf-gold)" }}>
+            PlanIt
+          </p>
           <h1 className="font-display text-[1.65rem] font-semibold leading-none tracking-tight">
             {days[0] ? formatSchoolDate(days[0]).replace(/,.*/, "") : "This week"}
             {days.length > 1 ? ` – ${formatSchoolDate(days[days.length - 1]!).replace(/,.*/, "")}` : ""}
@@ -156,6 +161,13 @@ export function PlanIt({
           <button type="button" onClick={() => goWeek(1)} className="tw-tap grid size-11 place-items-center rounded-xl bg-elevated" title="Next week">
             <ChevronRight className="size-4" />
           </button>
+          <button
+            type="button"
+            onClick={() => setGridOn((v) => !v)}
+            className={cn("tw-tap min-h-11 rounded-xl px-3 text-xs font-semibold", gridOn ? "bg-accent text-accent-fg" : "bg-elevated")}
+          >
+            Week
+          </button>
           <button type="button" onClick={() => setPrintOn(true)} className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-elevated px-3 text-xs font-semibold">
             <Printer className="size-3.5" />
             Print
@@ -165,13 +177,13 @@ export function PlanIt({
           <span style={{ width: `${pct}%` }} />
         </div>
         <p className="text-xs text-muted">
-          {fill.set}/{fill.total} hours · arrows move · click a block to write
+          {fill.set}/{fill.total} hours · Job · Guiding Q · Beats write TEACH · Deck plays TEACH
         </p>
         {notice ? <p className="text-sm font-semibold text-gain">{notice}</p> : null}
       </header>
 
-      <div className="tw-planit-stage">
-        <div className="tw-planit-board tw-chamfer" style={{ ["--days" as string]: String(Math.max(days.length, 1)) }}>
+      {gridOn ? (
+        <div className="tw-planit-board tw-lcars min-h-0 flex-1" style={{ ["--days" as string]: String(Math.max(days.length, 1)) }}>
           <div className="tw-planit-corner" />
           {days.map((d) => (
             <div key={d} className={cn("tw-planit-dow", d === today && "is-today")}>
@@ -186,37 +198,66 @@ export function PlanIt({
                 key={row[0]!.period}
                 row={row}
                 open={open}
-                onOpen={(c) => c.school && setOpen({ date: c.date, period: c.period })}
+                onOpen={(c) => {
+                  if (!c.school) return;
+                  setOpen({ date: c.date, period: c.period });
+                  setGridOn(false);
+                }}
               />
             ) : null,
           )}
         </div>
-
-        {cell?.school ? (
-          <HourDesk
-            key={`${cell.date}-${cell.period}`}
-            file={file}
-            cell={cell}
-            unlocked={unlocked}
-            days={days}
-            onEdit={edit}
-            onTeach={onTeach}
-            onWall={onWall}
-            onClear={() => {
-              if (!gate()) return;
-              let next = dropTeachDay(file, cell.date, cell.period);
-              next = pinDayActivity(next, cell.date, cell.period, "");
-              onChange(next);
-            }}
-            onNote={setNotice}
-          />
-        ) : (
-          <aside className="tw-planit-desk tw-gadget p-4">
-            <p className="font-display text-lg font-semibold">No school</p>
-            <p className="mt-1 text-sm text-muted">Pick a class day. The week is the plan.</p>
-          </aside>
-        )}
-      </div>
+      ) : (
+        <div className="tw-planit-stage">
+          {cell?.school ? (
+            <HourDesk
+              key={`${cell.date}-${cell.period}`}
+              file={file}
+              cell={cell}
+              days={days}
+              periods={periods}
+              unlocked={unlocked}
+              liveTab={liveTab}
+              onLiveTab={setLiveTab}
+              onPickDay={(d) => setOpen({ date: d, period: open.period })}
+              onPickPeriod={(period) => setOpen({ date: open.date, period })}
+              onEdit={edit}
+              onTeach={onTeach}
+              onClear={() => {
+                if (!gate()) return;
+                let next = dropTeachDay(file, cell.date, cell.period);
+                next = pinDayActivity(next, cell.date, cell.period, "");
+                onChange(next);
+              }}
+              onNote={setNotice}
+            />
+          ) : (
+            <aside className="tw-planit-desk tw-lcars p-4">
+              <p className="font-display text-lg font-semibold">No school</p>
+              <p className="mt-1 text-sm text-muted">Pick a class day. The week is the plan.</p>
+            </aside>
+          )}
+          {cell?.school ? (
+            <TeachLive
+              file={file}
+              date={cell.date}
+              period={cell.period}
+              unlocked={unlocked}
+              onEdit={edit}
+              onNeedPin={onNeedPin}
+              tab={liveTab}
+              onTab={setLiveTab}
+              onPlan={onTeach ? () => onTeach(cell.date, cell.period) : undefined}
+              onDeck={onDeck}
+            />
+          ) : (
+            <aside className="tw-teach-live tw-lcars p-4">
+              <p className="font-display text-lg font-semibold">TEACH</p>
+              <p className="mt-1 text-sm text-muted">Open a class hour to see the live board.</p>
+            </aside>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -271,9 +312,13 @@ function HourDesk({
   cell,
   unlocked,
   days,
+  periods,
+  liveTab,
+  onLiveTab,
+  onPickDay,
+  onPickPeriod,
   onEdit,
   onTeach,
-  onWall,
   onClear,
   onNote,
 }: {
@@ -281,53 +326,90 @@ function HourDesk({
   cell: PlanCell;
   unlocked: boolean;
   days: string[];
+  periods: number[];
+  liveTab: LiveBoardTab;
+  onLiveTab: (tab: LiveBoardTab) => void;
+  onPickDay: (date: string) => void;
+  onPickPeriod: (period: number) => void;
   onEdit: (next: EconomyFile) => void;
   onTeach?: (date: string, period: number) => void;
-  onWall?: () => void;
   onClear: () => void;
   onNote: (note: string) => void;
 }) {
   const d = cell.date;
   const p = cell.period;
+  const today = todayIso();
   const [more, setMore] = useState(false);
   const [unitOn, setUnitOn] = useState(false);
   const [newName, setNewName] = useState("");
+  const [beatFocus, setBeatFocus] = useState<(typeof LIVE_BEATS)[number]["id"]>("now");
   const project = slotsOf(file, p, d)[0];
   const units = slotsOf(file, p);
-  const preview = planitPreview(file, d, p);
   const beats = hourAgendaDraft(file, d, p);
+  const liveHere = d === today;
 
   return (
-    <aside className="tw-planit-desk tw-gadget tw-chamfer" data-planit-hour>
+    <aside className="tw-planit-desk tw-lcars" data-planit-hour>
       <div className="flex flex-wrap items-center gap-2">
-        <div className="min-w-0">
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">
-            P{p} · {weekdayShort(d)} {d.slice(8)} · G{cell.grade}
-          </p>
-          <p className="truncate text-xs text-muted">{cell.course || cell.label}</p>
-        </div>
+        <p className="tw-mf-live">
+          {liveHere ? <i aria-hidden /> : null}
+          {weekdayShort(d)} period {p}
+          {liveHere ? " · live" : ""}
+        </p>
         {cell.set ? (
           <button type="button" onClick={onClear} className="ml-auto text-xs font-semibold text-muted">
             Clear
           </button>
         ) : null}
       </div>
+      <div className="flex flex-wrap gap-1">
+        {periods.map((period) => (
+          <button
+            key={period}
+            type="button"
+            onClick={() => onPickPeriod(period)}
+            className={cn("tw-tap min-h-11 rounded-xl px-2.5 text-xs font-semibold", period === p ? "bg-fg text-bg" : "bg-elevated text-muted")}
+          >
+            P{period}
+          </button>
+        ))}
+        {days.map((day) => (
+          <button
+            key={day}
+            type="button"
+            disabled={!isSchoolDay(day)}
+            onClick={() => isSchoolDay(day) && onPickDay(day)}
+            className={cn(
+              "tw-tap min-h-11 rounded-xl px-2.5 text-xs font-semibold",
+              day === d ? "bg-fg text-bg" : isSchoolDay(day) ? "bg-elevated text-muted" : "opacity-40",
+            )}
+          >
+            {weekdayShort(day)}
+          </button>
+        ))}
+      </div>
 
-      <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Job</span>
+      <label className="tw-mf-card tw-lcars">
+        <span className="tw-mf-kicker">
+          <Briefcase className="size-3.5" aria-hidden />
+          Job
+        </span>
         <DraftField
           value={cell.do || cell.title}
           editing={unlocked}
           multiline
           onCommit={(v) => onEdit(setPlanitJob(file, d, p, v))}
-          placeholder="What they do this hour — that’s the wall."
+          placeholder="What they do this hour — that’s TEACH."
           aria-label="Job"
-          className="min-h-[4.5rem] rounded-xl bg-elevated px-3 py-2 font-display text-lg font-semibold"
+          className="min-h-[4.5rem] tw-mf-quote"
         />
       </label>
 
-      <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Guiding Q</span>
+      <label className="tw-mf-card tw-lcars">
+        <span className="tw-mf-kicker">
+          <HelpCircle className="size-3.5" aria-hidden />
+          Guiding question
+        </span>
         <DraftField
           value={cell.ask}
           editing={unlocked}
@@ -335,43 +417,54 @@ function HourDesk({
           onCommit={(v) => onEdit(setPlanitQuestion(file, d, p, v))}
           placeholder="How can a small force move a bigger load?"
           aria-label="Guiding question"
-          className="min-h-11 rounded-xl bg-elevated px-3 py-2 text-sm"
+          className="min-h-11 tw-mf-quote"
         />
       </label>
 
-      <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Prove</span>
+      <label className="tw-mf-card tw-lcars">
+        <span className="tw-mf-kicker">
+          <Shield className="size-3.5" aria-hidden />
+          Prove
+        </span>
         <DraftField
           value={cell.objective}
           editing={unlocked}
           onCommit={(v) => onEdit(setPlanitProve(file, d, p, v))}
           placeholder="What they show before the bell."
           aria-label="Prove"
-          className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
+          className="min-h-11 tw-mf-body rounded-xl px-3"
         />
       </label>
 
       <div className="grid gap-2" data-planit-beats>
-        <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Beats</p>
-        {(
-          [
-            ["now", "01 Now", "Sit with your crew."],
-            ["goal", "02 Do this", "The make for this hour."],
-            ["next", "03 Then", "Second move · peer restyle"],
-            ["behave", "04 How we work", "Choose → work → focus → cleanup."],
-          ] as const
-        ).map(([id, label, ph]) => (
-          <label key={id} className="grid gap-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-muted">{label}</span>
-            <DraftField
-              value={beats.find((c) => c.id === id)?.body ?? ""}
-              editing={unlocked}
-              onCommit={(v) => onEdit(setPlanitBeat(file, d, p, id, v))}
-              placeholder={ph}
-              aria-label={label}
-              className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
-            />
-          </label>
+        <p className="tw-mf-kicker">Beats</p>
+        <div className="tw-mf-beats">
+          {LIVE_BEATS.map((b) => (
+            <button
+              key={b.id}
+              type="button"
+              data-tone={b.tone}
+              data-on={beatFocus === b.id ? "on" : undefined}
+              onClick={() => {
+                setBeatFocus(b.id);
+                onLiveTab("beats");
+              }}
+              className="tw-tap tw-mf-beat"
+            >
+              {b.label}
+            </button>
+          ))}
+        </div>
+        {LIVE_BEATS.filter((b) => b.id === beatFocus).map((b) => (
+          <DraftField
+            key={b.id}
+            value={beats.find((c) => c.id === b.id)?.body ?? ""}
+            editing={unlocked}
+            onCommit={(v) => onEdit(setPlanitBeat(file, d, p, b.id, v))}
+            placeholder={b.label}
+            aria-label={b.label}
+            className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
+          />
         ))}
       </div>
 
@@ -402,13 +495,7 @@ function HourDesk({
         {onTeach ? (
           <button type="button" onClick={() => onTeach(d, p)} className="tw-tap inline-flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">
             <Presentation className="size-3.5" />
-            Teach
-          </button>
-        ) : null}
-        {onWall ? (
-          <button type="button" onClick={onWall} className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-elevated px-3 text-sm font-semibold">
-            <PanelsTopLeft className="size-3.5" />
-            Wall
+            TEACH
           </button>
         ) : null}
       </div>
@@ -425,9 +512,7 @@ function HourDesk({
         }}
       />
 
-      {cell.set ? <WallPreview preview={preview} /> : null}
-
-      <button type="button" onClick={() => setMore((v) => !v)} className="tw-tap min-h-9 text-left text-[11px] font-bold uppercase tracking-wider text-muted">
+      <button type="button" onClick={() => setMore((v) => !v)} className="tw-tap min-h-11 text-left text-[11px] font-bold uppercase tracking-wider text-muted">
         {more ? "Less" : "Notes · homework · unit"}
       </button>
       {more ? (
@@ -475,7 +560,7 @@ function HourDesk({
                     const act = activitiesOf(u)[0];
                     if (act) onEdit(parkPlanitUnit(file, d, p, act.id));
                   }}
-                  className={cn("tw-tap min-h-10 rounded-xl px-3 text-sm font-semibold", project?.id === u.id ? "bg-fg text-bg" : "bg-elevated")}
+                  className={cn("tw-tap min-h-11 rounded-xl px-3 text-sm font-semibold", project?.id === u.id ? "bg-fg text-bg" : "bg-elevated")}
                 >
                   {u.title}
                 </button>
@@ -484,7 +569,7 @@ function HourDesk({
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="New unit name"
-                className="tw-field min-h-10 min-w-[8rem] flex-1"
+                className="tw-field min-h-11 min-w-[8rem] flex-1"
               />
               <button
                 type="button"
@@ -493,7 +578,7 @@ function HourDesk({
                   onEdit(newPlanitUnit(file, { date: d, period: p, name: newName, title: cell.do || cell.title }));
                   setNewName("");
                 }}
-                className="tw-tap min-h-10 rounded-xl bg-elevated px-3 text-sm font-semibold disabled:opacity-40"
+                className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold disabled:opacity-40"
               >
                 Save unit
               </button>
@@ -501,23 +586,7 @@ function HourDesk({
           ) : null}
         </div>
       ) : null}
+      <span className="sr-only">{liveTab}</span>
     </aside>
-  );
-}
-
-function WallPreview({ preview }: { preview: ReturnType<typeof planitPreview> }) {
-  return (
-    <div className="tw-planit-preview" data-planit-preview>
-      <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-muted">On the wall</p>
-      <ol>
-        {preview.cards.slice(0, 4).map((c) => (
-          <li key={c.n}>
-            <span>{c.n}</span>
-            <p>{c.body || "—"}</p>
-          </li>
-        ))}
-      </ol>
-      <KitChip kit={preview.need} />
-    </div>
   );
 }

@@ -223,14 +223,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Teach mode",
     tags: ["teach", "lesson", "now", "slots", "objective", "demo"],
     wall: true,
-    body: "Dash → Teach. Live clock and the hour PlanIt wrote. Green dots + “n of 8 hours set” mean that hour is planned. Open PlanIt to type Job · Guiding Q · Prove · beats. Hang a Drive file, Slides, Doc, YouTube, or Canva on this hour. Deck plays the hang as a slide. Arrange plates (not the cog) to drag or hide. After class, Wall hangs the scoreboard. No names on Teach.",
+    body: "Dash → Teach. TEACH is the live period board (absorbs the PlanIt twin). Prefills from PlanIt. Mid-class edits write back. Green dots + “n of 8 hours set” mean that hour is planned. Hang a Drive file, Slides, Doc, YouTube, or Canva on this hour. Deck plays TEACH. Arrange plates (not the cog) to drag or hide. Projector Wall stays the kid scoreboard. Aliases only.",
   },
   {
     id: "dash-plan",
     category: "Dashboard",
     title: "PlanIt",
     tags: ["plan", "planit", "planbook", "week", "copy", "materials", "homework", "closure", "sub", "objective"],
-    body: "Learn → PlanIt is the week timetable. Periods down, days across. Click a block and type Job · Guiding Q · Prove · beats — that write fills Wall and Deck. Teach is a live mirror. Send this hour copies onto empty cells only. Arrow keys move. Print week.",
+    body: "PlanIt is the hour writer: 40% spine (Job · Guiding Q · Beats) and a 60% TEACH live twin. Type once. TEACH is mid-class editable and writes back. Deck plays TEACH. Week chip still opens the timetable. Send this hour copies onto empty cells only. Arrow keys move. Print week.",
   },
   {
     id: "dash-loop",
@@ -564,7 +564,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Deck plays Teach",
     tags: ["deck", "slides", "projector", "theme", "navy", "violet", "powerpoint", "edit"],
     wall: true,
-    body: "Dash → Deck plays this hour from PlanIt. Present is play-only (even with PIN). Same date and period chip. Write Job · Guiding Q · Prove · beats on PlanIt.",
+    body: "Dash → Deck plays this hour from TEACH. Present is play-only (even with PIN). Same date and period chip. Write Job · Guiding Q · Prove · beats on PlanIt, or mid-class on TEACH.",
   },
   {
     id: "roster-ids",
@@ -699,9 +699,9 @@ export const HELP_ARTICLES: HelpArticle[] = [
   {
     id: "teach-plan",
     category: "Dashboard",
-    title: "PlanIt → Teach → Deck → Wall",
+    title: "PlanIt → TEACH → Deck",
     tags: ["plan", "teach", "deck", "wall", "activity", "unit"],
-    body: "One write. Type Job · Guiding Q · Prove · beats on the PlanIt hour card. That same teachDays row fills Wall (NOW + Guiding Q + Prove + Agenda 2×2) and Deck. Teach is a read-only mirror (Open PlanIt to edit). Deck Present plays the hour. Hang still pastes on Teach.",
+    body: "One write. Type Job · Guiding Q · Prove · beats on PlanIt. TEACH is the live board (same teachDays row). Mid-class TEACH edits write back. Deck Present plays TEACH. Projector Wall still hangs the kid scoreboard. Hang still pastes on TEACH.",
   },
   {
     id: "roles-it",
@@ -736,7 +736,7 @@ Help in the app: tap **?**. This file is the IT / teacher print. Twin of docs/TE
 - **Students** — Wall, Teach (locked), Deck Present, Help Welcome / Wall. No legal names.
 - **Crew leads** — Crew pad, 3 / 2 / 1. PIN 2222 for another period. No wallet, bonus, or grades.
 - **Families** — Web on the HUD or ?web=1. Class web code (portal PIN, default 2627), then Shop ID. One project mark, skills in words. No wallet.
-- **Teacher** — Set teacher PIN (never 1111). Teach → Deck → Wall. Score one-row pad. Cog = Admin.
+- **Teacher** — Set teacher PIN (never 1111). PlanIt → TEACH → Deck. Projector Wall is the kid scoreboard. Score one-row pad. Cog = Admin.
 - **Sub** — Do not open this app. Teacher taps SUB. Wall stays up.
 - **IT / second room** — Same desk key, Pull. Public GitHub ships students: []. Do not print the teacher PIN.
 
@@ -760,9 +760,9 @@ Top bar: TECHWORKS · Dash strip (Wall / Teach / Deck / Week / Club / Hall) · N
 Wall looks, ROLL THE DICE, holiday packs, and Theme Tools paint color / type / scale. Theme picker shows a mini wall per look and a color stripe per chip. They must not cover HUD hits, resize HUD buttons, or disable handlers. Shine overlays on chrome are paint-only (pointer-events none). Chip scale applies to wall plates, not the HUD. Mini wall previews are paint-only.
 Web = Family web (?web=1). Globe = translate (EN / UK / RU). Cleanup coral is a Wall overlay; Teach and Score stay open.
 
-## PlanIt → Teach → Deck → Wall
+## PlanIt → TEACH → Deck
 
-One write. Type Job · Guiding Q · Prove · beats on the PlanIt hour card. Teach is a live mirror. Present is play-only. Hang a Drive / Slides / YouTube / Canva link on Teach; Deck and Wall play it. Arrange wall (drag columns) and Arrange plates live on those pages — not the cog.
+One write. Type Job · Guiding Q · Prove · beats on PlanIt. TEACH is the live board (mid-class editable, writes back). Present is play-only. Hang a Drive / Slides / YouTube / Canva link on TEACH; Deck plays it. Projector Wall stays the kid scoreboard.
 
 ## Score, Store, Club, Hall
 

@@ -118,7 +118,7 @@ export function PlanBook({
       {printOn ? <LessonPlanSheet file={file} period={period} dates={days} onClose={() => setPrintOn(false)} /> : null}
       <header className="space-y-1">
         <p className="text-sm text-muted">
-          Fill {periodTitle(period, bells)}. Tap a day, pick the task, then say if you score the skill, the deliverable, or both. Crews can differ.
+          Unit days for {periodTitle(period, bells)}. The hour itself is written on PlanIt (Job · Guiding Q · Prove · beats). TEACH is the live board. Deck plays TEACH.
         </p>
         <p className="flex flex-wrap items-center gap-2 text-sm font-semibold">
           <span>

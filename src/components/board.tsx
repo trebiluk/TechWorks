@@ -77,7 +77,7 @@ type View = "crew" | "score" | "overview" | "week" | "year" | "data" | "wallet" 
 type DeskPanel = "score" | "schedule" | "config";
 
 function gearHint(view: string): string {
-  if (view === "teach") return "Drag plates. Hide with the eye. The hour is written on PlanIt.";
+  if (view === "teach") return "Live board. Mid-class edits write back. Deck plays TEACH.";
   if (view === "overview") return "Pick a kit, hide plates, drag the grip.";
   return "";
 }
@@ -931,7 +931,8 @@ export function Board() {
             setJumpPeriod(p);
             go("teach");
           }}
-          onSeeWall={() => go("overview")}
+          onDeck={() => go("deck")}
+          onSeeWall={() => go("teach")}
           onStart={setLearnStart}
         />
       ) : view === "wallet" ? (

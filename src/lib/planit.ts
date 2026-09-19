@@ -119,7 +119,7 @@ export type PlanitHourWrite = {
   beats?: Partial<Record<AgendaCard["id"], string>>;
 };
 
-/** One PlanIt hour write. Wall + Deck read this same teachDays row. */
+/** One PlanIt hour write. TEACH + Deck read this same teachDays row. */
 export function writePlanitHour(
   file: EconomyFile,
   date: string,

@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.85. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.87. -->
 
 # TechWorks changelog
 
-App version **1.92.85**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.87**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.87 — 2026-09-19
+
+- PlanIt 40 / TEACH 60: Job · Guiding Q · Beats on the left, live board on the right. Dream purple–blue + gold LCARS. Gilded Top XP / Top $ with the classic alias list. Mid-class TEACH edits write back; Deck plays TEACH.
 
 ## 1.92.85 — 2026-09-19
 

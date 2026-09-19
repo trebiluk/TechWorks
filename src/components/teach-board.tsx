@@ -6,12 +6,10 @@ import { periodClock, periodNow, formatBell } from "@/lib/bells";
 import { deskBellId } from "@/lib/store";
 import { formatSchoolDate, isSchoolDay, nextOpenDay, stepSchoolDay, todayIso, weekOn } from "@/lib/calendar";
 import { useShopClock } from "@/lib/use-clock";
-import { BertyCueBot } from "@/components/berty";
 import { ProgressRing } from "@/components/progress-ring";
 import { DashTools } from "@/components/dash-tools";
 import { PollWall } from "@/components/polls";
 import { livePoll } from "@/lib/polls";
-import { featureOn } from "@/lib/features";
 import {
   DEFAULT_TEACH_LAYOUT,
   hideTeachRow,
@@ -38,16 +36,16 @@ import {
   slotNow,
   teachDay,
   teachFocusPeriod,
-  teachJob,
   hangOf,
   addTeachHang,
   dropTeachHang,
 } from "@/lib/teach";
-import { dayHourStatus, hourAgendaDraft } from "@/lib/hour-flow";
+import { dayHourStatus } from "@/lib/hour-flow";
 import { cn } from "@/lib/utils";
 import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
 import { HangFrame } from "@/components/hang-frame";
 import { CleanupJobsPad } from "@/components/cleanup-wall";
+import { TeachLive } from "@/components/teach-live";
 
 export function TeachBoard({
   file,
@@ -58,7 +56,7 @@ export function TeachBoard({
   onChange,
   onNeedPin,
   onPolls,
-  onBerty,
+  onBerty: _onBerty,
   onPlan,
   onWords,
   onWall,
@@ -82,7 +80,6 @@ export function TeachBoard({
 }) {
   const today = todayIso();
   const date = dateProp || nextOpenDay(today);
-  const bellsId = deskBellId(file, date);
   const now = useShopClock(deskBellId(file, today), "beat");
   const shop = shopBells(file).map((b) => b.period);
   const live = date === today ? periodNow(deskBellId(file, today), now) : null;
@@ -95,19 +92,6 @@ export function TeachBoard({
   const day = teachDay(file, date, period);
   const cleanup = Boolean(clock?.cleanup || cur?.clean);
   const liveHere = Boolean(clock?.live);
-  const passing = date === today && !liveHere;
-  const left = clock?.left ?? 0;
-  const between = date === today && !liveHere && !cur;
-  const job = teachJob(file, period, date);
-  const writing = date !== today || !liveHere;
-  const title = writing ? (job.question || job.title || "This class") : cleanup ? "CLEAN UP" : cur?.title ?? "ENTER";
-  const line = writing
-    ? job.today || "Type what they do this hour."
-    : cleanup
-      ? "Tools, scraps, seats. Cleanup score is live."
-      : cur?.kind === "work"
-        ? job.today || cur?.line
-        : cur?.line ?? "Sit with your crew.";
   const [layout, setLayout] = useState<TeachLayout>(() => loadTeachLayout());
   const [printOn, setPrintOn] = useState(false);
   const sortOn = unlocked && editing !== false;
@@ -156,63 +140,18 @@ export function TeachBoard({
   function plateOf(id: TeachRowId) {
     if (id === "hero") {
       return (
-        <section
-          data-teach-hero
-          className={cn("tw-gadget tw-fill-wide flex shrink-0 gap-3 p-3", cleanup && !writing && "bg-cleanup text-accent-fg")}
-        >
-          <div className="min-w-0 flex-1">
-            <p className={cn("text-[11px] font-bold uppercase tracking-[0.22em]", cleanup && !writing ? "opacity-90" : "text-gold")}>
-              {writing ? `This class · ${formatSchoolDate(date)}` : cleanup ? `Cleanup ${Math.max(0, Math.ceil(left))}m` : between ? "Next" : "Today"}
-              <span className={cn("ml-2", cleanup && !writing ? "opacity-80" : "text-muted")}>P{period}</span>
-              <span className="ml-2 text-muted">Deck plays this</span>
-            </p>
-            {writing ? (
-              <div className="mt-2 grid gap-2" data-teach-mirror>
-                <p className="text-sm font-semibold text-gold">PlanIt writes this hour. Wall and Deck play it.</p>
-                <p className="tw-fill-hero font-display text-2xl font-semibold tracking-tight">{job.question || title}</p>
-                {job.today ? <p className="text-sm"><span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Job </span>{job.today}</p> : null}
-                {day.objective ? <p className="text-sm"><span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Prove </span>{day.objective}</p> : null}
-                <ol className="grid gap-1">
-                  {hourAgendaDraft(file, date, period).map((c) => (
-                    <li key={c.id} className="text-sm">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">{c.n} {c.kicker} </span>
-                      {c.body || "—"}
-                    </li>
-                  ))}
-                </ol>
-                {day.materials ? <p className="text-sm text-muted">Need · {day.materials}</p> : null}
-                {onPlan ? (
-                  <button
-                    type="button"
-                    onClick={() => onPlan(date, period)}
-                    className="tw-tap mt-1 inline-flex min-h-11 w-fit items-center rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg"
-                  >
-                    Open PlanIt
-                  </button>
-                ) : null}
-              </div>
-            ) : (
-              <>
-                <h1 className="tw-fill-hero font-display font-semibold tracking-tight">{title}</h1>
-                <p className={cn("tw-fill-line mt-2 max-w-3xl", cleanup ? "opacity-95" : "text-muted")}>{line}</p>
-              </>
-            )}
-            {day.notes ? <p className={cn("mt-1 text-base", cleanup ? "opacity-90" : "text-muted")}>{day.notes}</p> : null}
-          </div>
-          {writing ? null : (
-          <div className="flex items-center gap-4">
-            {featureOn(file, "berty") || cleanup || passing ? (
-              <BertyCueBot
-                on={featureOn(file, "berty")}
-                cue={{ cleanup, live: liveHere, passing: passing && !cleanup, slot: cur?.kind, greeting: !liveHere }}
-                size={cleanup ? "xl" : "lg"}
-                onOpen={onBerty}
-              />
-            ) : null}
-            <TeachRing period={period} bellsId={deskBellId(file, today)} cleanup={cleanup && !writing} liveHere={liveHere} />
-          </div>
-          )}
-        </section>
+        <div className="tw-planit-mf min-h-0 flex-1" data-teach-mf>
+          <TeachLive
+            file={file}
+            date={date}
+            period={period}
+            unlocked={unlocked}
+            onEdit={edit}
+            onNeedPin={onNeedPin}
+            onPlan={onPlan ? () => onPlan(date, period) : undefined}
+            onDeck={onDeck}
+          />
+        </div>
       );
     }
     if (id === "packs") {
@@ -288,7 +227,7 @@ export function TeachBoard({
   }
 
   return (
-    <div className={cn("flex min-h-0 flex-1 flex-col gap-2 overflow-auto p-1")} data-wall-stage={sortOn ? "edit" : "show"}>
+    <div className={cn("tw-planit-mf flex min-h-0 flex-1 flex-col gap-2 overflow-auto p-1")} data-wall-stage={sortOn ? "edit" : "show"} data-teach-mf>
       {printOn ? <LessonPlanSheet file={file} period={period} dates={weekDays} onClose={() => setPrintOn(false)} /> : null}
       <header className="flex shrink-0 flex-col gap-2">
         <div className="flex flex-wrap items-center gap-2">
@@ -326,7 +265,7 @@ export function TeachBoard({
             ) : null}
             {onWall ? (
               <button type="button" onClick={onWall} className="tw-tap min-h-8 rounded-full bg-accent px-3 text-[12px] font-semibold text-accent-fg">
-                See wall
+                Projector
               </button>
             ) : null}
             {onArrange ? (

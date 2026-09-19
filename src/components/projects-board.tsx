@@ -120,6 +120,17 @@ export function ProjectsBoard({
       <div className="min-h-0">
         {pane === "plan" ? (
           <div className="grid gap-3">
+            <p className="text-sm text-muted">
+              Hours live on PlanIt. This pane parks a unit — not a second hour editor.
+              {onPlanIt ? (
+                <>
+                  {" "}
+                  <button type="button" onClick={onPlanIt} className="tw-tap min-h-11 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">
+                    Open PlanIt
+                  </button>
+                </>
+              ) : null}
+            </p>
             <ActivityMaker
               file={file}
               period={period}
