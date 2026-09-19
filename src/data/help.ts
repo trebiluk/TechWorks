@@ -230,7 +230,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Dashboard",
     title: "PlanIt",
     tags: ["plan", "planit", "planbook", "week", "copy", "materials", "homework", "closure", "sub", "objective"],
-    body: "Learn → PlanIt is the week timetable. Periods down, days across. Click a block and type Job · Guiding Q · Prove · beats — that write fills Wall and Deck. Teach is a live mirror. Send this hour copies onto empty cells only. Arrow keys move. Print week.",
+    body: "Learn → PlanIt is the week timetable. Periods down, days across. Click a block and type Job · Guiding Q · Prove · beats — that write fills Wall and Deck. Teach is a live mirror. Tap up to three skills — Watch opens on the first. Send this hour copies onto empty cells only. Arrow keys move. Print week.",
   },
   {
     id: "dash-loop",
@@ -427,7 +427,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Skills",
     title: "Watch one skill",
     tags: ["watch", "stem", "beginning", "developing", "proficient", "distinguished", "1-4"],
-    body: "Watch one skill that matches today’s daily goal. The four sentences under the title are evidence stems — what you can see. 1 Beginning, 2 Developing, 3 Proficient, 4 Distinguished. Gold ring is the expected mark for today’s activity. A tap stores the stem on the worker (Profile → Skills). Blank is not a zero. Crew and project are notes, not the owner. PIN for Sit-down.",
+    body: "Watch one skill. PlanIt tags on that hour open first. The four sentences under the title are evidence stems — what you can see. 1 Beginning, 2 Developing, 3 Proficient, 4 Distinguished. Gold ring is the expected mark for today’s activity. A tap stores the stem on the worker (Profile → Skills). Blank is not a zero. Crew and project are notes, not the owner. PIN for Sit-down.",
   },
   {
     id: "mst",
@@ -701,7 +701,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Dashboard",
     title: "PlanIt → Teach → Deck → Wall",
     tags: ["plan", "teach", "deck", "wall", "activity", "unit"],
-    body: "One write. Type Job · Guiding Q · Prove · beats on the PlanIt hour card. That same teachDays row fills Wall (NOW + Guiding Q + Prove + Agenda 2×2) and Deck. Teach is a read-only mirror (Open PlanIt to edit). Deck Present plays the hour. Hang still pastes on Teach.",
+    body: "One write. Type Job · Guiding Q · Prove · beats on the PlanIt hour card. Tap up to three skills — Watch opens on the first. That same teachDays row fills Wall (NOW + Guiding Q + Prove + Agenda 2×2) and Deck. Teach is a read-only mirror (Open PlanIt to edit). Deck Present plays the hour. Hang still pastes on Teach.",
   },
   {
     id: "roles-it",

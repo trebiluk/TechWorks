@@ -114,6 +114,8 @@ export type TeachDay = {
   agenda?: { now?: string; goal?: string; next?: string; behave?: string };
   /** PlanIt process tag. Never used as the hour title. */
   move?: string;
+  /** Shop / soft skill ids for this hour. Max 3. Watch opens on the first. */
+  skills?: string[];
 };
 
 
@@ -333,6 +335,24 @@ export function setTeachMove(file: EconomyFile, date: string, period: number, mo
   return putDay(file, date, period, { move: move.trim().slice(0, 24) || undefined });
 }
 
+export const HOUR_SKILL_MAX = 3;
+
+export function hourSkillsOf(file: EconomyFile, date: string, period: number): string[] {
+  return (teachDay(file, date, period).skills ?? []).slice(0, HOUR_SKILL_MAX);
+}
+
+export function setTeachSkills(file: EconomyFile, date: string, period: number, ids: string[]): EconomyFile {
+  const clean = [...new Set(ids.map((id) => id.trim()).filter(Boolean))].slice(0, HOUR_SKILL_MAX);
+  return putDay(file, date, period, { skills: clean.length ? clean : undefined });
+}
+
+export function toggleTeachSkill(file: EconomyFile, date: string, period: number, id: string): EconomyFile {
+  const cur = hourSkillsOf(file, date, period);
+  if (cur.includes(id)) return setTeachSkills(file, date, period, cur.filter((x) => x !== id));
+  if (cur.length >= HOUR_SKILL_MAX) return file;
+  return setTeachSkills(file, date, period, [...cur, id]);
+}
+
 export function setTeachAgenda(
   file: EconomyFile,
   date: string,
@@ -363,6 +383,7 @@ function slimTeach(day: TeachDay): TeachDay {
   if (day.mods?.trim()) out.mods = day.mods.trim().slice(0, 200);
   if (day.reflect?.trim()) out.reflect = day.reflect.trim().slice(0, 400);
   if (day.move?.trim()) out.move = day.move.trim().slice(0, 24);
+  if (day.skills?.length) out.skills = [...new Set(day.skills)].slice(0, HOUR_SKILL_MAX);
   if (day.agenda) {
     const agenda = {
       now: day.agenda.now?.trim().slice(0, 220) || undefined,
@@ -408,7 +429,8 @@ export function teachHourFilled(day: TeachDay): boolean {
       day.agenda?.next?.trim() ||
       day.agenda?.behave?.trim() ||
       (day.media && day.media.length) ||
-      (day.lines && Object.keys(day.lines).length),
+      (day.lines && Object.keys(day.lines).length) ||
+      (day.skills && day.skills.length),
   );
 }
 

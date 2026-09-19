@@ -8,6 +8,7 @@ import { crewsOf } from "@/lib/crews";
 import { agendaFor } from "@/lib/projects";
 import { todayIso } from "@/lib/calendar";
 import { periodNow } from "@/lib/bells";
+import { hourSkillsOf } from "@/lib/teach";
 import { downloadText } from "@/lib/live";
 import {
   MST_SCORES,
@@ -129,17 +130,18 @@ export function SkillsBoard({
   const [more, setMore] = useState(false);
   const agenda = agendaFor(file, period);
   const goal = periodGoal(file, today, period) || agenda.goal;
-  const suggest = agenda.skillId || skillForGoal(goal);
+  const hourSkills = hourSkillsOf(file, today, period);
+  const suggest = hourSkills[0] || agenda.skillId || skillForGoal(goal);
   const [skillId, setSkillId] = useState(() => (family === "soft" ? "listen" : suggest));
   const [sort, setSort] = useState<SortKey>("name");
   const [crewKey, setCrewKey] = useState("");
 
   useEffect(() => {
-    const next = family === "soft" ? "listen" : agendaFor(file, period).skillId || skillForGoal(goal);
+    const next = family === "soft" ? hourSkills.find((id) => skillTrackOf(id)?.family === "soft") || "listen" : hourSkills[0] || agendaFor(file, period).skillId || skillForGoal(goal);
     setSkillId(next);
     setMore(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [period, family]);
+  }, [period, family, hourSkills.join("|")]);
 
   const kids = useMemo(() => {
     const liveKids = score(file).filter(

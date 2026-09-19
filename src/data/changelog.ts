@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.86 — 2026-09-19
+
+- PlanIt tags the hour’s skills (max 3). Watch opens on the first. Cub → Legend ladder verified. Present now covers NY MST S5 History.
+
 ## 1.92.85 — 2026-09-19
 
 - Wall hour plate shows Guiding Q and Prove from the same PlanIt teachDays row Deck already reads. 1.92.84 is the Edge Pocket nav PR.

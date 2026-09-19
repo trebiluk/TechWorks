@@ -12,6 +12,7 @@ import {
   setTeachMods,
   setTeachNotes,
   setTeachReflect,
+  toggleTeachSkill,
 } from "@/lib/teach";
 import { planWeek, weekFillCount, type PlanCell } from "@/lib/planbook";
 import {
@@ -25,6 +26,7 @@ import {
   weekdayShort,
 } from "@/lib/planit";
 import { hourAgendaDraft } from "@/lib/hour-flow";
+import { SKILL_TRACK, SOFT_TRACK, skillTrackOf } from "@/lib/skills";
 import { DraftField } from "@/components/draft-field";
 import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
 import { KitChip } from "@/components/agenda-wall";
@@ -165,7 +167,7 @@ export function PlanIt({
           <span style={{ width: `${pct}%` }} />
         </div>
         <p className="text-xs text-muted">
-          {fill.set}/{fill.total} hours · arrows move · click a block to write
+          {fill.set}/{fill.total} hours · arrows move · tap skills on the hour
         </p>
         {notice ? <p className="text-sm font-semibold text-gain">{notice}</p> : null}
       </header>
@@ -254,7 +256,11 @@ function PeriodRow({
             {c.school ? (
               <>
                 <strong>{title || "·"}</strong>
-                {c.materials ? <em>{c.materials}</em> : null}
+                {c.skills?.length ? (
+                  <em>{c.skills.map((id) => skillTrackOf(id)?.name ?? id).join(" · ")}</em>
+                ) : c.materials ? (
+                  <em>{c.materials}</em>
+                ) : null}
               </>
             ) : (
               <span className="opacity-40">—</span>
@@ -350,6 +356,8 @@ function HourDesk({
           className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
         />
       </label>
+
+      <HourSkills cell={cell} unlocked={unlocked} onEdit={onEdit} file={file} />
 
       <div className="grid gap-2" data-planit-beats>
         <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Beats</p>
@@ -502,6 +510,65 @@ function HourDesk({
         </div>
       ) : null}
     </aside>
+  );
+}
+
+function HourSkills({
+  file,
+  cell,
+  unlocked,
+  onEdit,
+}: {
+  file: EconomyFile;
+  cell: PlanCell;
+  unlocked: boolean;
+  onEdit: (next: EconomyFile) => void;
+}) {
+  function tap(id: string) {
+    if (!unlocked) return;
+    onEdit(toggleTeachSkill(file, cell.date, cell.period, id));
+  }
+  return (
+    <div className="grid gap-1.5" data-planit-skills>
+      <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Score this hour</p>
+      <div className="flex flex-wrap gap-1">
+        {SKILL_TRACK.map((s) => {
+          const on = cell.skills?.includes(s.id);
+          return (
+            <button
+              key={s.id}
+              type="button"
+              title={`${s.does} · NY ${s.mst.join(" ")}`}
+              onClick={() => tap(s.id)}
+              className={cn("tw-tap min-h-9 rounded-xl px-2.5 text-xs font-semibold", on ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+              aria-pressed={Boolean(on)}
+            >
+              {s.name}
+            </button>
+          );
+        })}
+      </div>
+      <div className="flex flex-wrap gap-1">
+        {SOFT_TRACK.map((s) => {
+          const on = cell.skills?.includes(s.id);
+          return (
+            <button
+              key={s.id}
+              type="button"
+              title={s.does}
+              onClick={() => tap(s.id)}
+              className={cn("tw-tap min-h-8 rounded-lg px-2 text-[11px] font-semibold", on ? "bg-gold text-bg" : "bg-elevated/80 text-muted")}
+              aria-pressed={Boolean(on)}
+            >
+              {s.name}
+            </button>
+          );
+        })}
+      </div>
+      {(cell.skills?.length ?? 0) >= 3 ? (
+        <p className="text-[11px] text-muted">Three is the max. Watch opens on {skillTrackOf(cell.skills[0] ?? "")?.name ?? "the first"}.</p>
+      ) : null}
+    </div>
   );
 }
 

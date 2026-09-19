@@ -25,6 +25,7 @@ export type PlanCell = {
   notes: string;
   reflect: string;
   move: string;
+  skills: string[];
   set: boolean;
   live: boolean;
   school: boolean;
@@ -253,6 +254,7 @@ export function planCell(file: EconomyFile, date: string, period: number, today 
     notes: day.notes?.trim() ?? "",
     reflect: day.reflect?.trim() ?? "",
     move: day.move?.trim() ?? "",
+    skills: (day.skills ?? []).slice(0, 3),
     set: hourIsSet(file, date, period),
     live: date === today,
     school: isSchoolDay(date),

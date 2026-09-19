@@ -154,7 +154,7 @@ export const SKILL_TRACK: SkillDef[] = [
       { id: "stain", name: "Stain", does: "Wipe even, no lap marks." },
     ],
   },
-  { id: "present", name: "Present", family: "shop", does: "Say what they built and why.", why: SKILL_WHY.present, bench: "A 30-second crew share.", pog: "communicator", mst: ["S7"], subs: [] },
+  { id: "present", name: "Present", family: "shop", does: "Say what they built and why.", why: SKILL_WHY.present, bench: "A 30-second crew share.", pog: "communicator", mst: ["S5", "S7"], subs: [] },
   { id: "digital", name: "Digital", family: "shop", does: "CAD / photo plan the crew can follow.", why: SKILL_WHY.digital, bench: "A file that matches the part.", pog: "innovator", mst: ["S3"], subs: [
     { id: "cad", name: "CAD", does: "A file the crew can follow." },
   ] },

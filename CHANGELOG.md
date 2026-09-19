@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.85. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.86. -->
 
 # TechWorks changelog
 
-App version **1.92.85**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.86**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.86 — 2026-09-19
+
+- PlanIt tags the hour’s skills (max 3). Watch opens on the first. Cub → Legend ladder verified. Present now covers NY MST S5 History.
 
 ## 1.92.85 — 2026-09-19
 
