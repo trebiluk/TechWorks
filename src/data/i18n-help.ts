@@ -102,7 +102,7 @@ export const HELP_I18N: Record<"uk" | "ru", Record<string, HelpBit>> = {
     },
     "chrome-hud": {
       title: "Верхня панель",
-      body: "TECHWORKS — стіна. NOW — цей урок і хвилини. Lock — PIN учителя. Cog — налаштування. ? — допомога. Web — сімейна сторінка. Глобус — мова. Теми не можуть закрити ці кнопки.",
+      body: "Верхня смуга — один ряд. Wall · Teach · Deck · Week · Club · Hall лишаються. More (кишеня) ховає Fake data, Find, NOW, Lock, Cog, Help, Web і мову — натисни, не наводь. Теми не можуть закрити ці кнопки.",
     },
     "period-now": {
       title: "Уроки і годинник",
@@ -212,7 +212,7 @@ export const HELP_I18N: Record<"uk" | "ru", Record<string, HelpBit>> = {
     },
     "chrome-hud": {
       title: "Верхняя панель",
-      body: "TECHWORKS — стена. NOW — этот урок и минуты. Lock — PIN учителя. Cog — настройки. ? — справка. Web — семейная страница. Глобус — язык. Темы не могут закрыть эти кнопки.",
+      body: "Верхняя полоса — один ряд. Wall · Teach · Deck · Week · Club · Hall остаются. More (карман) прячет Fake data, Find, NOW, Lock, Cog, Help, Web и язык — нажми, не наводи. Темы не могут закрыть эти кнопки.",
     },
     "period-now": {
       title: "Уроки и часы",

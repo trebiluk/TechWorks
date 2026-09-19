@@ -1673,22 +1673,25 @@ header.desk-chrome .nav-cluster {
   z-index: 2;
   pointer-events: auto;
   width: 100%;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   overflow: visible;
   min-width: 0;
-  row-gap: 0.25rem;
 }
-/* Primary chips keep their words. Status pills wrap under — they never paint on top. */
+/* Primary chips stay on this row. Status / utilities live in the Edge Pocket overlay. */
 header.desk-chrome .nav-cluster > .nav-chips {
   position: relative;
   z-index: 3;
   flex: 1 1 auto;
-  min-width: min(24rem, 100%);
+  min-width: 0;
   max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: none;
+}
+header.desk-chrome .nav-cluster > .nav-chips::-webkit-scrollbar { display: none; }
+header.desk-chrome .nav-chips button {
+  white-space: nowrap;
 }
 header.desk-chrome nav {
   flex-wrap: nowrap;
@@ -1703,7 +1706,53 @@ header.desk-chrome .tw-hud-row {
   flex: 0 0 auto;
   min-width: 0;
   max-width: 100%;
-  margin-left: auto;
+}
+header.desk-chrome .tw-edge-pocket {
+  position: relative;
+  z-index: 4;
+  flex: 0 0 auto;
+  pointer-events: auto;
+}
+header.desk-chrome .tw-edge-pocket-chip {
+  min-height: 2.75rem;
+}
+header.desk-chrome .tw-edge-pocket-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  min-width: min(22rem, calc(100vw - 1.5rem));
+  max-width: min(28rem, calc(100vw - 1rem));
+  max-height: min(70vh, 32rem);
+  overflow: visible;
+  padding: 0.6rem;
+  border-radius: 14px;
+  background: var(--color-surface);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #fff 16%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 28%, transparent),
+    0 18px 36px -18px color-mix(in oklab, #000 55%, transparent);
+}
+header.desk-chrome .tw-edge-pocket-menu .tw-hud-row,
+header.desk-chrome .tw-edge-pocket-utils {
+  flex-wrap: wrap;
+  overflow: visible;
+  max-width: 100%;
+}
+header.desk-chrome .tw-edge-pocket-menu .tw-next-job {
+  max-width: 100%;
+  justify-content: flex-start;
+}
+header.desk-chrome .tw-edge-pocket-lamp {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--color-gold, #e8c547);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-gold, #e8c547) 35%, transparent);
 }
 header.desk-chrome button,
 header.desk-chrome a,

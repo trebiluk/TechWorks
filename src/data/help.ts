@@ -658,7 +658,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Top chrome (Lock, Help, Web, language)",
     tags: ["chrome", "web", "help", "lock", "settings", "cog", "translate", "now", "chips", "hud", "globe"],
     wall: true,
-    body: "The top bar is always the same. TECHWORKS goes to the Wall. NOW P# is this period and minutes left. Lock opens the teacher PIN or locks the desk. Cog is Settings (Admin). ? is Help. Web is Family web (?web=1) — class code, then Shop ID; no wallet. Globe is English / Ukrainian / Russian. Version chip is the live build. Wall looks, ROLL THE DICE, holiday themes, and Theme Tools may paint this bar — they cannot cover it, steal taps, or resize those buttons. Swipe the right cluster if the Chromebook is narrow.",
+    body: "The top bar is one thin row. TECHWORKS goes to the Wall. Classroom chips stay on that row: Wall · Teach · Deck · Week · Club · Hall. More (Edge Pocket) holds Fake data, Find, NOW P#, Lock, Cog, Help, Web, language, cloud, and the version chip — tap to open an overlay, not a second row and not a side rail. Wall looks, ROLL THE DICE, holiday themes, and Theme Tools may paint this bar — they cannot cover it, steal taps, or resize those buttons.",
   },
   {
     id: "period-now",

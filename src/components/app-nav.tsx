@@ -25,7 +25,7 @@ export function AppNav({
   const row = tabs.filter((tab) => !tab.hidden);
   if (hideSections && !row.length) return null;
   return (
-    <div className={cn("flex w-full min-w-0 flex-col gap-1", className)}>
+    <div className={cn(hideSections ? "flex min-w-0" : "flex w-full min-w-0 flex-col gap-1", className)}>
       {hideSections ? null : (
       <CtrlRail label={t("Place")}>
         {shown.map((s) => (

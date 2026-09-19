@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.82. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.84. -->
 
 # TechWorks changelog
 
-App version **1.92.83**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.84**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.84 — 2026-09-19
+
+- One thin top row. Wall / Teach / Deck / Week / Club / Hall stay on it. Fake data, Find, clock, and utilities live in More (Edge Pocket overlay) — never a second chrome row on zoom.
 
 ## 1.92.83 — 2026-09-19
 

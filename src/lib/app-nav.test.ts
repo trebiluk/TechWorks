@@ -19,4 +19,12 @@ describe("chrome tabs", () => {
   it("Dash keeps Wall Teach Deck plus the rest of that strip", () => {
     assert.deepEqual(chromeTabs("dash", dash, board, false).map((t) => t.id), ["wall", "teach", "deck", "week"]);
   });
+
+  it("classroom primary set stays on the chrome row", () => {
+    const rest = [tab("wall"), tab("teach"), tab("deck"), tab("week"), tab("clubwall"), tab("hallwall")];
+    assert.deepEqual(
+      chromeTabs("dash", dash, rest, false).map((t) => t.id),
+      ["wall", "teach", "deck", "week", "clubwall", "hallwall"],
+    );
+  });
 });

@@ -3,6 +3,7 @@
 import { lazy, startTransition, Suspense, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { CircleHelp, Globe, Search, Settings } from "lucide-react";
 import { TwWordmark } from "@/components/tw-mark";
+import { EdgePocket } from "@/components/edge-pocket";
 import snapshot from "@/data/economy.json";
 import type { EconomyFile } from "@/lib/economy";
 import { bellFor, isLiveStudent, score } from "@/lib/economy";
@@ -649,27 +650,31 @@ export function Board() {
       ) : crewOn && view === "crew" ? null : (
         <>
         <header className="desk-chrome tw-gadget tw-hud mb-1 min-w-0">
-            <div className="nav-cluster flex min-w-0 flex-wrap items-center gap-1">
+            <div className="nav-cluster flex min-w-0 flex-nowrap items-center gap-1">
               <button type="button" onClick={() => go("overview")} title="Shop names only" className="shrink-0">
                 <TwWordmark compact={phone} />
               </button>
               <div className="nav-chips min-w-0">{appStrip}</div>
-              <div className="tw-hud-row">
+              <EdgePocket
+                label={t("More")}
+                lamp={overlayOn}
+                badge={unlocked && dueN && mode !== "board" ? String(dueN) : undefined}
+              >
                 {unlocked ? (
-                  <div className="relative hidden xl:block" data-find-box>
-                    <Search className="pointer-events-none absolute left-2 top-2.5 size-3.5 text-subtle" />
+                  <div className="relative w-full" data-find-box data-keep-pocket>
+                    <Search className="pointer-events-none absolute left-2 top-3 size-3.5 text-subtle" />
                     <input
                       data-find
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
-                      placeholder="Find"
-                      className="h-9 w-24 rounded-md bg-elevated pl-7 pr-2 text-sm outline-none"
+                      placeholder={t("Find")}
+                      className="h-11 w-full rounded-md bg-elevated pl-7 pr-2 text-sm outline-none"
                     />
                     {qFind && (houseMatch.length || hits.length) ? (
-                      <ul className="absolute right-0 top-10 z-40 w-56 overflow-hidden rounded-xl bg-surface ring-1 ring-border">
+                      <ul className="mt-1 overflow-hidden rounded-xl bg-elevated ring-1 ring-border">
                         {houseMatch.map((h) => (
                           <li key={h.id}>
-                            <button type="button" onClick={() => openHouse(h.id)} className="tw-tap flex min-h-10 w-full items-center px-3 text-left text-sm font-semibold">
+                            <button type="button" onClick={() => openHouse(h.id)} className="tw-tap flex min-h-11 w-full items-center px-3 text-left text-sm font-semibold">
                               {h.alias}
                               <span className="ml-auto text-[10px] uppercase tracking-wide text-muted">{h.role}</span>
                             </button>
@@ -683,7 +688,7 @@ export function Board() {
                                 setQuery("");
                                 setOpenId(s.id);
                               }}
-                              className="tw-tap flex min-h-10 w-full items-center px-3 text-left text-sm"
+                              className="tw-tap flex min-h-11 w-full items-center px-3 text-left text-sm"
                             >
                               {s.first}
                               <span className="ml-auto font-mono text-[10px] text-muted">P{s.period}</span>
@@ -694,8 +699,8 @@ export function Board() {
                     ) : null}
                   </div>
                 ) : null}
-                {demoId !== "off" && featureOn(file, "debug") ? (
-                  <span className="shrink-0 whitespace-nowrap rounded-full bg-gold px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-bg">
+                {overlayOn ? (
+                  <span className="shrink-0 whitespace-nowrap rounded-full bg-gold px-3 py-2 text-[10px] font-bold uppercase tracking-wide text-bg">
                     Fake data · not saved
                   </span>
                 ) : null}
@@ -705,6 +710,7 @@ export function Board() {
                   lunch={lunchOn(file, todayIso())}
                   onClick={() => runJob({ id: "now", label: "Now", hint: "", tone: "ok", go: "overview" })}
                 />
+                <div className="tw-hud-row tw-edge-pocket-utils">
                 <LockBar
                   unlocked={unlocked || crewOn}
                   onAsk={() => askPin()}
@@ -755,6 +761,7 @@ export function Board() {
                 />
                 ) : null}
                 {verChip}
+                </div>
                 {unlocked && dueN && mode !== "board" ? (
                   <button
                     type="button"
@@ -762,12 +769,12 @@ export function Board() {
                       setAdminPane("today");
                       go("admin");
                     }}
-                    className="tw-tap min-h-10 rounded-full bg-loss px-3 text-xs font-semibold uppercase tracking-wide text-accent-fg"
+                    className="tw-tap min-h-11 rounded-full bg-loss px-3 text-xs font-semibold uppercase tracking-wide text-accent-fg"
                   >
                     {dueN} due
                   </button>
                 ) : null}
-              </div>
+              </EdgePocket>
             </div>
         </header>
         </>

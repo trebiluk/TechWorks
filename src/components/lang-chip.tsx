@@ -27,7 +27,7 @@ export function LangChip({ className }: { className?: string }) {
   }, [open]);
 
   return (
-    <div ref={box} className={cn("relative lang-chip", className)}>
+    <div ref={box} className={cn("relative lang-chip", className)} data-keep-pocket>
       <button
         type="button"
         title={t("Read in your language")}
