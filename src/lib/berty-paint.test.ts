@@ -14,7 +14,7 @@ describe("berty hands and color", () => {
     for (const f of files) {
       const svg = readFileSync(join(DIR, f), "utf8");
       assert.equal(countBertyHands(svg), 2, `${f} must ship two data-berty-hand groups`);
-      assert.match(svg, /overflow="visible"/);
+      assert.match(svg, /overflow="hidden"|overflow="visible"/);
     }
   });
 
@@ -36,10 +36,11 @@ describe("berty hands and color", () => {
     assert.equal(b.includes("twwavingBody-head"), false);
   });
 
-  it("pads the point pose so the claws sit inside the box", () => {
+  it("keeps Berty inside a tight box so he cannot sit on the agenda", () => {
     const raw = readFileSync(join(DIR, "bertybot_point.svg"), "utf8");
     const painted = paintBertySvg(raw, "#2ee6ff", "pt");
-    assert.match(painted, /viewBox="-40 -40 280 340"/);
+    assert.match(painted, /viewBox="0 0 200 260"/);
+    assert.match(painted, /overflow="hidden"/);
     assert.equal(countBertyHands(painted), 2);
   });
 

@@ -2,7 +2,11 @@
 
 # TechWorks changelog
 
-App version **1.92.80**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.81**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.81 — 2026-09-19
+
+- Default TechWorks lamp: cyan grid, stronger plate shine. Berty stays in his column — one mitt per arm.
 
 ## 1.92.80 — 2026-09-19
 

@@ -16,16 +16,16 @@ export type Palette = {
 export const PALETTE_KEY = "techworks-palette-v1";
 
 export const SOLVAY_PALETTE: Palette = {
-  navy: "#050816",
-  surface: "#0b1028",
-  elevated: "#141c42",
-  orange: "#2ee6ff",
+  navy: "#06122B",
+  surface: "#0B1A40",
+  elevated: "#132A5C",
+  orange: "#22D3EE",
   royal: "#1E4BAF",
-  white: "#f7f9ff",
-  gold: "#f0d48a",
-  title: "#f7f9ff",
-  muted: "#b7c4ea",
-  chip: "#f7f9ff",
+  white: "#F7F9FF",
+  gold: "#F0D48A",
+  title: "#F7F9FF",
+  muted: "#B7C4EA",
+  chip: "#F7F9FF",
 };
 
 export const PALETTE_FIELDS: { key: keyof Palette; label: string }[] = [
