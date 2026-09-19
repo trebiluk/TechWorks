@@ -8,8 +8,8 @@ export type P6StudyHallClass = {
   id: typeof P6_STUDY_HALL_ID;
   period: 6;
   course: "STUDY HALL";
-  section: 10;
-  room: "136";
+  section: number;
+  room: string;
   rosterStatus: HallRosterStatus;
   roster: { A: string[]; B: string[]; BOTH?: string[] };
 };

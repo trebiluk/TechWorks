@@ -387,7 +387,7 @@ export function SettingsBody({
                 ))}
                 <div className="mt-4">
                   <p className="text-xs font-semibold uppercase tracking-wider text-subtle">Fake data</p>
-                  <p className="mt-1 text-sm text-muted">Paints Wall, Week, Year, Score, Crews, Learn, Wallet, Rosters, and Data. The saved roster stays day 0. Turn Off before you import Monday’s names.</p>
+                  <p className="mt-1 text-sm text-muted">Paints Wall, Week, Year, Score, Crews, Learn, Wallet, Rosters, Data, and Hall. The saved roster stays day 0. Turn Off before you import Monday’s names.</p>
                   <div className="mt-2 grid grid-cols-2 gap-2">
                     {DEMO_SETS.map((s) => (
                       <button
