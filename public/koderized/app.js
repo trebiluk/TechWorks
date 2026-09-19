@@ -1,4 +1,4 @@
-/* Koderized KZ 1.10.0 — pictograms, looping example, short EN/ES. No IEP stored. */
+/* Koderized KZ 1.11.0 — one board · clue chips · fat tabs. Pictograms, short EN/ES. No IEP stored. */
 const DOORS = [
   {
     id: "zero",
@@ -262,6 +262,17 @@ function glow(id, poke) {
   }
   if (id && $(id)) $(id).classList.add("glow");
 }
+function clueIcon(label, i) {
+  const lab = String(label || "").toLowerCase();
+  if (/crate|caja/.test(lab)) return "crate";
+  if (/exactly one|one move|un mover/.test(lab)) return "one";
+  if (/moved|movi[oó]/.test(lab)) return "move";
+  if (/repeat|repetir/.test(lab)) return "repeat";
+  if (/score|suma/.test(lab)) return "score";
+  if (/stop|para/.test(lab)) return "stop";
+  if (/wall|pared/.test(lab)) return "wall";
+  return ["move", "crate", "one"][i] || "bot";
+}
 function pictoSvg(name) {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("class", "picto-svg");
@@ -298,7 +309,6 @@ function renderGuide(s, d, loc, hint) {
   }
   setTxt("guide-line", hint.tap || loc.idea);
   setTxt("guide-sub", hint.say || loc.idea);
-  if (window.loopExample) window.loopExample($("example"), EXAMPLE, d.world);
 }
 function shopHeat(st) {
   const list = Object.values((st && st.students) || {});
@@ -572,6 +582,10 @@ function renderStudent() {
   setTxt("door-idea", loc.idea);
   renderChoices(d, s);
   const walk = s.mode === "walk";
+  if ($("guide")) {
+    const hideGuide = !walk && s.phase === "predict" && s.help !== "aide";
+    $("guide").classList.toggle("hidden", hideGuide);
+  }
   if ($("phase-chips")) $("phase-chips").classList.toggle("hidden", walk);
   if ($("btn-aide")) $("btn-aide").setAttribute("aria-pressed", s.help === "aide" ? "true" : "false");
   if ($("btn-walk")) $("btn-walk").setAttribute("aria-pressed", walk ? "true" : "false");
@@ -610,12 +624,18 @@ function renderStudent() {
   const ev = evaluate(prog, who);
   draw($("world"), ev.result);
   $("tests").innerHTML = "";
+  $("tests").className = "clue-chips";
   ev.tests.forEach((t, i) => {
-    const div = document.createElement("div");
-    div.className = "test " + ((walk || s.phase !== "predict") ? (t.ok ? "pass" : "fail") : "");
     const lab = (loc.tests && loc.tests[i]) || t.label;
-    div.textContent = ((walk || s.phase !== "predict") ? (t.ok ? "Yes · " : "No · ") : "Locked · ") + lab;
-    $("tests").appendChild(div);
+    const revealed = walk || s.phase !== "predict";
+    const chip = document.createElement("div");
+    chip.className = "clue-chip " + (revealed ? (t.ok ? "pass" : "fail") : "pending");
+    chip.setAttribute("aria-label", revealed ? ((t.ok ? "Yes. " : "No. ") + lab) : lab);
+    chip.appendChild(pictoSvg(clueIcon(lab, i)));
+    const span = document.createElement("span");
+    span.textContent = lab;
+    chip.appendChild(span);
+    $("tests").appendChild(chip);
   });
   glow(hint.id, hint.poke);
   renderGuide(s, d, loc, hint);

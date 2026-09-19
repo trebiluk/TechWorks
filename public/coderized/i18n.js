@@ -1,4 +1,4 @@
-/* KZ 1.10.0 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
+/* KZ 1.11.0 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
 window.I18N = {
   en: {
     lang: "en",
@@ -49,7 +49,7 @@ window.I18N = {
     cost: "One cost",
     look: "Look",
     example: "Example",
-    footer: "Koderized KZ 1.10.0 · alias only · not a SIS · no IEP/504",
+    footer: "Koderized KZ 1.11.0 · alias only · not a SIS · no IEP/504",
     sit: "SIT", crate: "CRATE", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     doors: {
       zero: {
@@ -216,7 +216,7 @@ window.I18N = {
     cost: "Un costo",
     look: "Mira",
     example: "Ejemplo",
-    footer: "Koderized KZ 1.10.0 · solo apodo · no es SIS · sin IEP/504",
+    footer: "Koderized KZ 1.11.0 · solo apodo · no es SIS · sin IEP/504",
     sit: "SIT", crate: "CAJA", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     doors: {
       zero: {

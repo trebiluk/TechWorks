@@ -138,7 +138,63 @@ input { width: 100%; border: 2px solid var(--line); border-radius: 8px; padding:
 .chip { padding: 4px 10px; border-radius: 999px; background: #1e293b; font-size: 12px; font-weight: 800; color: #94a3b8; }
 .chip.on { background: var(--gold); color: #1b365d; }
 .chip.done { background: var(--teal); color: #fff; }
-canvas#world { width: 100%; background: #071018; border-radius: 12px; display: block; }
+.mode-tabs {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  margin: 4px 0 8px;
+}
+.mode-tabs .chip {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 1 auto;
+  border-radius: 12px;
+}
+.play { display: flex; flex-direction: column; gap: 10px; }
+.play .stage, .play .prove { min-width: 0; }
+.one-board .guide-ex { display: none !important; }
+.one-board .guide { padding: 8px 12px; margin: 0 0 8px; }
+.one-board .picto-svg.xl { width: 40px; height: 40px; }
+.one-board .guide-line { font-size: clamp(1rem, 2.4vw, 1.25rem); }
+.student-tools { margin: 0; }
+.student-tools .btn { min-height: 44px; }
+.clue-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.clue-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: var(--navy);
+  font-weight: 800;
+  font-size: 13px;
+  border: 1px solid #cbd5e1;
+}
+.clue-chip .picto-svg { width: 22px; height: 22px; }
+.clue-chip.pending { background: #eef2f7; color: var(--slate); }
+.clue-chip.pass { background: var(--green-bg); color: var(--green); border-color: #86efac; }
+.clue-chip.fail { background: var(--red-bg); color: var(--red); border-color: #fca5a5; }
+canvas#world {
+  display: block;
+  width: min(100%, calc(min(28vh, 220px) * 2));
+  height: auto;
+  max-height: min(28vh, 220px);
+  margin-inline: auto;
+  background: #071018;
+  border-radius: 12px;
+}
+.choice { min-height: 44px; }
+.prove h3 { margin-bottom: 6px; }
 .stage-frame { position: relative; }
 .stage-frame.shake { animation: shake .28s linear; }
 @keyframes shake {
@@ -214,4 +270,24 @@ canvas#world { width: 100%; background: #071018; border-radius: 12px; display: b
 }
 @media (max-width: 520px) {
   .kpis { grid-template-columns: repeat(2, 1fr); }
+  .heat-track { display: none; }
+  .card { padding: 12px; }
+  .quest-bar { gap: 6px; }
+  .mode-tabs { margin: 2px 0 6px; }
 }
+@media (max-height: 800px) {
+  .wrap { padding: 10px 16px; }
+  canvas#world {
+    width: min(100%, calc(min(24vh, 180px) * 2));
+    max-height: min(24vh, 180px);
+  }
+  .quest-bar h2 { font-size: 1.05rem; }
+  .heat-track { width: 88px; }
+}
+body.big-type .mode-tabs .chip { min-height: 48px; min-width: 48px; }
+body.big-type .clue-chip { min-height: 44px; font-size: 1.05em; }
+body.big-type canvas#world {
+  width: min(100%, calc(min(26vh, 200px) * 2));
+  max-height: min(26vh, 200px);
+}
+body.big-type .top-tools .btn { min-height: 48px; }
