@@ -38,7 +38,7 @@ export function CrewLead({
   const [ownCrew, setOwnCrew] = useState(() => readOwnCrew());
   const [crewKey, setCrewKey] = useState(() => ownCrew || crewsOf(file, period, today)[0]?.key || "Crew A");
   const letter = abOn(file, today);
-  const crews = crewsOf(file, period, today);
+  const crews = crewsOf(file, period, today).filter((c) => c.kids.length > 0);
   const locked = crews.find((c) => c.key === ownCrew) ?? null;
   const crew = crews.find((c) => c.key === crewKey) ?? crews[0];
   const rec = file.crews.find((c) => c.period === period && c.key === (crew?.key ?? crewKey));

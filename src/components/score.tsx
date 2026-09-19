@@ -32,7 +32,7 @@ function FatMark({
       className={cn(
         "tw-tap tw-chamfer relative flex min-h-11 items-center justify-center gap-1 font-display font-semibold",
         fat ? "min-h-[9rem] flex-1 text-6xl sm:text-7xl" : "h-full min-h-11 text-2xl sm:text-3xl",
-        on ? "bg-accent text-accent-fg tw-live" : "bg-elevated text-fg",
+        on ? "bg-accent text-accent-fg tw-live ring-2 ring-fg" : "bg-elevated text-fg",
       )}
     >
       <Icon className={cn("shrink-0", fat ? "size-8 sm:size-10" : "size-4 sm:size-5")} strokeWidth={on ? 2.6 : 2} aria-hidden />
@@ -86,7 +86,7 @@ export function ScoreDesk({
   const crewMode = mode === "crew";
   const [date, setDate] = useState(() => nearestScoreDate());
   const [period, setPeriod] = useState(bells[0]?.period ?? 1);
-  const periodCrews = crewsOf(file, period, date);
+  const periodCrews = crewsOf(file, period, date).filter((c) => c.kids.length > 0);
   const [crewKey, setCrewKey] = useState(jumpCrew || periodCrews[0]?.key || "Crew A");
   const undoRef = useRef<EconomyFile | null>(null);
   const [canUndo, setCanUndo] = useState(false);

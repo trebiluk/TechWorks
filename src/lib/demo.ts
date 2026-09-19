@@ -161,7 +161,7 @@ export function seedFakeShop(file: EconomyFile): EconomyFile {
   const quarter = next.meta.quarterName || "Q1";
   const bells = shopBells(next);
   const students: RawStudent[] = [];
-  const crews = [...next.crews];
+  const crews: EconomyFile["crews"] = [];
   let n = 0;
   for (const b of bells) {
     if (b.period === 6) continue;

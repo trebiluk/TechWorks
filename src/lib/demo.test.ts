@@ -38,6 +38,7 @@ describe("fake data overlay", () => {
     assert.ok(painted.students.some((s) => s.markTape && s.markTape.length > 0));
     assert.ok(painted.crews.some((c) => c.name === "Volt"));
     assert.equal(new Set(painted.students.filter((s) => s.period === 1).map((s) => s.crewKey)).size, 6);
+    assert.equal(painted.crews.filter((c) => c.period === 1).length, 6);
     assert.ok((painted.meta.config?.periodProjects?.["1"] ?? []).length > 0);
     assert.ok((painted.meta.config?.crewProjects ?? []).some((r) => r.crewKey === "Forge"));
     assert.ok(painted.students.some((s) => s.skills && Object.keys(s.skills).length > 0));

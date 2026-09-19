@@ -102,6 +102,7 @@ describe("Score · 40s surfaces", () => {
     assert.match(score, /data-score-pad/);
     assert.match(score, /data-score-crews/);
     assert.match(score, /min-h-11/);
+    assert.match(score, /c\.kids\.length > 0/);
   });
 
   it("parks Daily Goal and Happened on TEACH under the period strip", () => {
