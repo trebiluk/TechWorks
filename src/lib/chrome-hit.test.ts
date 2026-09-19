@@ -53,9 +53,9 @@ describe("chrome hit layer", () => {
     const pocket = css.match(/header\.desk-chrome \.tw-edge-pocket \{[^}]+\}/);
     assert.ok(pocket, "edge-pocket rule");
     assert.match(pocket[0], /flex:\s*0 0 auto/);
-    const menu = css.match(/header\.desk-chrome \.tw-edge-pocket-menu \{[^}]+\}/);
+    const menu = css.match(/\.tw-edge-pocket-menu \{[^}]+\}/);
     assert.ok(menu, "edge-pocket overlay");
-    assert.match(menu[0], /position:\s*absolute/);
+    assert.match(menu[0], /position:\s*fixed/);
     const chipBtn = css.match(/header\.desk-chrome \.tw-edge-pocket-chip \{[^}]+\}/);
     assert.ok(chipBtn, "edge-pocket chip");
     assert.match(chipBtn[0], /min-height:\s*2\.75rem/);
@@ -68,6 +68,7 @@ describe("chrome hit layer", () => {
     const board = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../components/board.tsx"), "utf8");
     const pocketSrc = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../components/edge-pocket.tsx"), "utf8");
     assert.match(board, /<EdgePocket/);
+    assert.match(pocketSrc, /createPortal/);
     assert.match(pocketSrc, /data-edge-pocket="more"/);
     assert.match(pocketSrc, /aria-haspopup="menu"/);
     assert.match(pocketSrc, /min-h-11/);

@@ -1716,11 +1716,9 @@ header.desk-chrome .tw-edge-pocket {
 header.desk-chrome .tw-edge-pocket-chip {
   min-height: 2.75rem;
 }
-header.desk-chrome .tw-edge-pocket-menu {
-  position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
-  z-index: 50;
+.tw-edge-pocket-menu {
+  position: fixed;
+  z-index: 70;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -1728,7 +1726,7 @@ header.desk-chrome .tw-edge-pocket-menu {
   min-width: min(22rem, calc(100vw - 1.5rem));
   max-width: min(28rem, calc(100vw - 1rem));
   max-height: min(70vh, 32rem);
-  overflow: visible;
+  overflow: auto;
   padding: 0.6rem;
   border-radius: 14px;
   background: var(--color-surface);
@@ -1737,15 +1735,22 @@ header.desk-chrome .tw-edge-pocket-menu {
     inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 28%, transparent),
     0 18px 36px -18px color-mix(in oklab, #000 55%, transparent);
 }
-header.desk-chrome .tw-edge-pocket-menu .tw-hud-row,
-header.desk-chrome .tw-edge-pocket-utils {
+.tw-edge-pocket-menu .tw-hud-row,
+.tw-edge-pocket-utils {
   flex-wrap: wrap;
   overflow: visible;
   max-width: 100%;
 }
-header.desk-chrome .tw-edge-pocket-menu .tw-next-job {
+.tw-edge-pocket-menu .tw-next-job {
   max-width: 100%;
   justify-content: flex-start;
+}
+.tw-edge-pocket-menu button,
+.tw-edge-pocket-menu .tw-hud-btn,
+.tw-edge-pocket-menu input {
+  min-height: 2.75rem;
+  pointer-events: auto;
+  touch-action: manipulation;
 }
 header.desk-chrome .tw-edge-pocket-lamp {
   width: 0.55rem;

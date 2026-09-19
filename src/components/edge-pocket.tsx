@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { Ellipsis } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -19,12 +20,38 @@ export function EdgePocket({
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [pos, setPos] = useState({ top: 0, right: 8 });
   const box = useRef<HTMLDivElement>(null);
+  const menu = useRef<HTMLDivElement>(null);
+  const btn = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => setMounted(true), []);
+
+  useLayoutEffect(() => {
+    if (!open || !btn.current) return;
+    const place = () => {
+      const r = btn.current?.getBoundingClientRect();
+      if (!r) return;
+      setPos({ top: Math.round(r.bottom + 6), right: Math.round(Math.max(8, window.innerWidth - r.right)) });
+    };
+    place();
+    window.addEventListener("resize", place);
+    window.visualViewport?.addEventListener("resize", place);
+    window.addEventListener("scroll", place, true);
+    return () => {
+      window.removeEventListener("resize", place);
+      window.visualViewport?.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place, true);
+    };
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
     function onDoc(e: MouseEvent) {
-      if (box.current && !box.current.contains(e.target as Node)) setOpen(false);
+      const t = e.target as Node;
+      if (box.current?.contains(t) || menu.current?.contains(t)) return;
+      setOpen(false);
     }
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") setOpen(false);
@@ -37,9 +64,30 @@ export function EdgePocket({
     };
   }, [open]);
 
+  const panel = open && mounted ? (
+    createPortal(
+      <div
+        ref={menu}
+        className="tw-edge-pocket-menu"
+        role="menu"
+        data-edge-pocket-menu=""
+        style={{ top: pos.top, right: pos.right }}
+        onClick={(e) => {
+          const node = e.target as HTMLElement;
+          if (node.closest("input, textarea, [data-keep-pocket]")) return;
+          if (node.closest("button, a")) setOpen(false);
+        }}
+      >
+        {children}
+      </div>,
+      document.body,
+    )
+  ) : null;
+
   return (
     <div ref={box} className={cn("tw-edge-pocket", className)} data-edge-pocket="more">
       <button
+        ref={btn}
         type="button"
         title={label}
         aria-label={label}
@@ -56,19 +104,7 @@ export function EdgePocket({
         {lamp ? <span className="tw-edge-pocket-lamp" aria-hidden /> : null}
         {badge ? <span className="rounded-full bg-loss px-1.5 py-0.5 text-[10px] font-bold text-accent-fg">{badge}</span> : null}
       </button>
-      {open ? (
-        <div
-          className="tw-edge-pocket-menu"
-          role="menu"
-          onClick={(e) => {
-            const node = e.target as HTMLElement;
-            if (node.closest("input, textarea, [data-keep-pocket]")) return;
-            if (node.closest("button, a")) setOpen(false);
-          }}
-        >
-          {children}
-        </div>
-      ) : null}
+      {panel}
     </div>
   );
 }
