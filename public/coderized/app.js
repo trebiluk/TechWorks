@@ -1,4 +1,4 @@
-/* Koderized KZ 1.9.0 — five doors, Aide card, Walk with me, EN/ES. No IEP stored. */
+/* Koderized KZ 1.10.0 — pictograms, looping example, short EN/ES. No IEP stored. */
 const DOORS = [
   {
     id: "zero",
@@ -254,6 +254,44 @@ function glow(id, poke) {
   }
   if (id && $(id)) $(id).classList.add("glow");
 }
+function pictoSvg(name) {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("class", "picto-svg");
+  svg.setAttribute("aria-hidden", "true");
+  const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+  use.setAttributeNS("http://www.w3.org/1999/xlink", "href", "pics.svg#p-" + name);
+  use.setAttribute("href", "pics.svg#p-" + name);
+  svg.appendChild(use);
+  return svg;
+}
+const PIC = {
+  move: "move", repeat: "repeat", end: "end", "if-wall-stop": "stop", "if-wall-score": "score",
+  sit: "sit", roll: "roll", vanish: "vanish", short: "short", crate: "crate", past: "past",
+  through: "vanish", forever: "repeat", stop: "stop", score: "score", faster: "roll", name: "bot",
+  do: "move", guess: "watch", wall: "wall", inside: "loop", outside: "door", few: "short",
+  order: "line", count: "repeat", speed: "roll", one: "one", line: "line"
+};
+function renderGuide(s, d, loc, hint) {
+  const icon = $("guide-icon");
+  let name = "bot";
+  if (hint.poke) name = "repeat";
+  else if (hint.id === "pal-move") name = "move";
+  else if (hint.id === "pal-repeat") name = "repeat";
+  else if (hint.id === "pal-stop") name = "stop";
+  else if (hint.id === "pal-score") name = "score";
+  else if (hint.id === "btn-run-mine") name = "go";
+  else if (hint.id === "btn-next-door") name = "door";
+  else if (hint.id === "btn-run-example") name = "watch";
+  else if (s.phase === "predict") name = "watch";
+  else if (s.tests && s.tests[0] && s.tests[1]) name = "good";
+  if (icon) {
+    const u = icon.querySelector("use");
+    if (u) { u.setAttribute("href", "pics.svg#p-" + name); u.setAttributeNS("http://www.w3.org/1999/xlink", "href", "pics.svg#p-" + name); }
+  }
+  setTxt("guide-line", hint.tap || loc.idea);
+  setTxt("guide-sub", hint.say || loc.idea);
+  if (window.loopExample) window.loopExample($("example"), EXAMPLE, d.world);
+}
 function shopHeat(st) {
   const list = Object.values((st && st.students) || {});
   if (!list.length) return 0;
@@ -430,7 +468,10 @@ function renderChoices(d, s) {
     b.className = "choice" + (s.predict === c.p ? " picked" : "");
     b.type = "button";
     b.setAttribute("data-p", c.p);
-    b.textContent = c.t;
+    b.appendChild(pictoSvg(PIC[c.p] || "bot"));
+    const span = document.createElement("span");
+    span.textContent = c.t;
+    b.appendChild(span);
     b.disabled = s.predicted;
     box.appendChild(b);
   });
@@ -442,7 +483,10 @@ function renderChoices(d, s) {
       b.className = "choice probe" + (s.probe === c.v ? " picked" : "");
       b.type = "button";
       b.setAttribute("data-v", c.v);
-      b.textContent = c.t;
+      b.appendChild(pictoSvg(PIC[c.v] || "bot"));
+      const span = document.createElement("span");
+      span.textContent = c.t;
+      b.appendChild(span);
       pb.appendChild(b);
     });
   }
@@ -453,6 +497,7 @@ function renderBlocks(el, program, editable) {
   program.forEach((b, i) => {
     const d = document.createElement("div");
     d.className = "block" + (b.t === "repeat" || b.t === "end" ? " control" : b.t.indexOf("if") === 0 ? " sense" : "");
+    d.appendChild(pictoSvg(PIC[b.t] || "move"));
     if (b.t === "repeat") {
       const lab = document.createElement("span");
       lab.textContent = L().repeat || "repeat";
@@ -525,7 +570,9 @@ function renderStudent() {
   const showAide = s.help === "aide" || walk;
   if ($("aide-card")) $("aide-card").classList.toggle("hidden", !showAide);
   const phaseHelp = loc.help[s.phase] || loc.help.modify || { say: "", tap: "" };
-  const hint = walk ? walkHint(s) : { say: phaseHelp.say, tap: phaseHelp.tap, id: null };
+  let hint;
+  if (walk || s.phase === "modify" || s.phase === "make") hint = walkHint(s);
+  else hint = { say: phaseHelp.say, tap: phaseHelp.tap, id: s.phase === "run" ? "btn-run-example" : null };
   setTxt("aide-say", hint.say || "");
   setTxt("aide-tap", hint.tap || "");
   $("btn-predict").disabled = s.predicted || st.frozen || !s.predict;
@@ -563,6 +610,7 @@ function renderStudent() {
     $("tests").appendChild(div);
   });
   glow(hint.id, hint.poke);
+  renderGuide(s, d, loc, hint);
 }
 $("choices").onclick = e => {
   const b = e.target.closest(".choice");

@@ -74,6 +74,30 @@ body.big-type h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); }
 .ladder li {
   background: #0b1c33; border: 1px solid #234; color: #e8eef4;
   border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 800;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.picto-svg { width: 28px; height: 28px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
+.picto-svg.xl { width: 56px; height: 56px; }
+.guide {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  background: #0b1c33; border: 3px solid var(--gold); border-radius: 16px;
+  padding: 10px 14px; margin: 0 0 12px;
+}
+.guide-copy { flex: 1; min-width: 160px; }
+.guide-kicker { margin: 0; font-size: 12px; font-weight: 800; color: var(--gold); text-transform: uppercase; }
+.guide-line { margin: 2px 0 0; font-size: clamp(1.15rem, 3vw, 1.5rem); font-weight: 900; color: #fff; }
+.guide-ex { text-align: center; }
+#example { width: 180px; height: 72px; border-radius: 8px; background: #071018; display: block; border: 1px solid #234; }
+.choice { display: flex; align-items: center; gap: 10px; }
+.palette .btn { display: inline-flex; align-items: center; gap: 6px; }
+.block { gap: 8px; }
+.glow { animation: glowpulse 1.1s ease-in-out infinite; }
+@keyframes glowpulse {
+  0%, 100% { box-shadow: 0 0 0 4px #e0b45a; }
+  50% { box-shadow: 0 0 0 8px #fde68a; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .glow { animation: none; }
 }
 .ladder li:nth-child(1) { border-color: var(--gold); color: var(--gold); }
 .block.empty { background: transparent; border: 1px dashed #4b5d74; color: #9fb0c3; justify-content: center; }

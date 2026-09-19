@@ -1,245 +1,251 @@
-/* KZ 1.9.0 chrome — EN/ES. Alias only. No IEP/504 fields. */
+/* KZ 1.10.0 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
 window.I18N = {
   en: {
     lang: "en",
-    start: "Start at zero.",
-    hint: "One command. Then a line. Then a loop. Door 1 this period is a win.",
-    d1: "One command", d2: "A line of steps", d3: "Repeat", d4: "Don’t wreck the bot", d5: "Stop and score",
+    start: "Start here.",
+    hint: "Watch the picture. Tap the glow. Door 1 is a win today.",
+    d1: "One move", d2: "More moves", d3: "Repeat", d4: "Stop", d5: "Score",
     classCode: "Class code",
-    alias: "Alias (not your legal name)",
+    alias: "Alias (not a legal name)",
     aliasPh: "Scout",
-    ferpaJoin: "Chrome on a Chromebook. Alias only. Do not type IEP, 504, or a legal name.",
-    roll: "Roll out",
+    ferpaJoin: "Alias only. No IEP, 504, or legal name.",
+    roll: "Start",
     teacher: "Teacher",
     aide: "Aide",
     walk: "Walk with me",
     big: "Big words",
     home: "Home",
-    guess: "Guess", watch: "Watch", find: "Find it", fix: "Fix", done: "Done",
-    lock: "Lock it",
+    guess: "Guess", watch: "Watch", find: "Find", fix: "Fix", done: "Done",
+    lock: "OK",
     go: "GO",
     undo: "Undo",
     nextDoor: "Next door",
     period: "Period board",
     notes: "Notes",
     freeze: "Freeze",
-    unfreeze: "Unfreeze",
-    clearSpot: "Clear spotlight",
+    unfreeze: "Open",
+    clearSpot: "Clear",
     export: "Export CSV",
-    walkRed: "Walk red first",
+    walkRed: "Help red first",
     roster: "Roster",
     log: "Log",
     heat: "HEAT",
-    present: "Present",
+    present: "Here",
     guessed: "Guessed",
     stuck: "Stuck",
-    coach: "Coach",
+    coach: "Ready",
     doneKpi: "Done",
     aideTitle: "Aide card",
     say: "Say",
-    tap: "Tap next",
-    ferpaAide: "Alias only. Do not type IEP, 504, ELL labels, or legal names. This is not a SIS.",
-    winPeriod: "Door 1 this period is a win. Stop there if time is short.",
-    emptyList: "Empty list. Add a command.",
+    tap: "Tap",
+    ferpaAide: "Alias only. No IEP, 504, or legal name.",
+    winPeriod: "Door 1 is a win today.",
+    emptyList: "Empty. Add one.",
     move: "move",
     repeat: "repeat",
     end: "end",
-    stop: "if wall: stop",
+    stop: "stop",
     score: "score",
-    cost: "One cost you accepted",
-    footer: "Koderized KZ 1.9.0 · alias only · not a district SIS · no IEP/504 in this cart",
+    cost: "One cost",
+    look: "Look",
+    example: "Example",
+    footer: "Koderized KZ 1.10.0 · alias only · not a SIS · no IEP/504",
+    sit: "SIT", crate: "CRATE", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     doors: {
       zero: {
-        title: "Door 1 · One command",
-        idea: "A command is one thing the bot does.",
+        title: "Door 1 · One move",
+        idea: "One picture. One tap. The bot does that.",
         ask: "The list is empty. What does the bot do?",
         choices: [
-          { p: "sit", t: "1 · It sits. Nothing happens." },
-          { p: "roll", t: "2 · It rolls by itself." },
-          { p: "vanish", t: "3 · It vanishes." }
+          { p: "sit", t: "1 · It sits." },
+          { p: "roll", t: "2 · It rolls alone." },
+          { p: "vanish", t: "3 · It goes away." }
         ],
         probeAsk: "What is a command?",
         probes: [
           { v: "do", t: "1 · One thing the bot does" },
-          { v: "guess", t: "2 · A lucky guess" },
-          { v: "wall", t: "3 · The saw wall" }
+          { v: "guess", t: "2 · A guess" },
+          { v: "wall", t: "3 · The wall" }
         ],
-        tests: ["The bot moved", "One step onto the crate", "Exactly one move"],
+        tests: ["Bot moved", "On the crate", "One move"],
         help: {
-          predict: { say: "The list is empty. Nothing happens. Pick 1.", tap: "1 · It sits" },
-          run: { say: "Watch. The bot should sit.", tap: "Watch" },
-          investigate: { say: "A command is one thing the bot does.", tap: "1, then Next" },
-          modify: { say: "Tap move. Then GO. That is a program.", tap: "move, then GO" }
+          predict: { say: "Empty list. Bot sits. Tap 1.", tap: "1" },
+          run: { say: "Watch the picture.", tap: "Watch" },
+          investigate: { say: "A command is one thing.", tap: "1, then Next" },
+          modify: { say: "Tap move. Then GO.", tap: "move, then GO" }
         }
       },
       line: {
-        title: "Door 2 · A line of steps",
-        idea: "Commands run in order, top to bottom.",
-        ask: "Watch three moves. Where does the bot stop?",
+        title: "Door 2 · More moves",
+        idea: "Top to bottom. One after one.",
+        ask: "Three moves. Where does it stop?",
         choices: [
-          { p: "short", t: "1 · Short of the crate" },
+          { p: "short", t: "1 · Before the crate" },
           { p: "crate", t: "2 · On the crate" },
           { p: "past", t: "3 · Past the crate" }
         ],
         probeAsk: "Why was it short?",
         probes: [
-          { v: "few", t: "1 · Not enough moves" },
-          { v: "order", t: "2 · The order was backwards" },
-          { v: "wall", t: "3 · A hidden wall" }
+          { v: "few", t: "1 · Need more moves" },
+          { v: "order", t: "2 · Wrong order" },
+          { v: "wall", t: "3 · A wall" }
         ],
-        tests: ["Stops on the crate", "Added at least one more move", "Only moves — a line"],
+        tests: ["On the crate", "One more move", "Only moves"],
         help: {
-          predict: { say: "Three moves is not enough. Pick 1.", tap: "1 · Short of the crate" },
-          run: { say: "Watch the three moves.", tap: "Watch" },
-          investigate: { say: "We need more moves in a line.", tap: "1, then Next" },
-          modify: { say: "Tap move one more time. Then GO.", tap: "move, then GO" }
+          predict: { say: "Three is not enough. Tap 1.", tap: "1" },
+          run: { say: "Watch three steps.", tap: "Watch" },
+          investigate: { say: "Add one more move.", tap: "1, then Next" },
+          modify: { say: "Tap move. Then GO.", tap: "move, then GO" }
         }
       },
       loop: {
         title: "Door 3 · Repeat",
-        idea: "Repeat does the inside many times. Poke the gold number.",
-        ask: "A long line of moves, or one repeat. Which is the loop?",
+        idea: "Repeat does the inside many times.",
+        ask: "Which one is the loop?",
         choices: [
-          { p: "repeat", t: "1 · Repeat · move · end" },
-          { p: "line", t: "2 · Move, move, move, move…" },
-          { p: "stop", t: "3 · If wall: stop" }
+          { p: "repeat", t: "1 · Repeat" },
+          { p: "line", t: "2 · Many moves" },
+          { p: "stop", t: "3 · Stop" }
         ],
-        probeAsk: "What does the gold number mean?",
+        probeAsk: "What is the gold number?",
         probes: [
-          { v: "count", t: "1 · How many times to do the inside" },
-          { v: "score", t: "2 · Your grade" },
-          { v: "speed", t: "3 · How fast it rolls" }
+          { v: "count", t: "1 · How many times" },
+          { v: "score", t: "2 · A grade" },
+          { v: "speed", t: "3 · Speed" }
         ],
-        tests: ["Stops on the crate", "Used a repeat", "Poked repeat to 4"],
+        tests: ["On the crate", "Has repeat", "Number is 4"],
         help: {
-          predict: { say: "A loop is repeat. Pick 1.", tap: "1 · Repeat" },
-          run: { say: "Watch a line of moves. Next we will use a loop.", tap: "Watch" },
-          investigate: { say: "The gold number is how many times.", tap: "1, then Next" },
-          modify: { say: "Tap the gold 2 until it says 4. Then GO.", tap: "gold number → 4, then GO" }
+          predict: { say: "The loop is Repeat. Tap 1.", tap: "1" },
+          run: { say: "Watch the line.", tap: "Watch" },
+          investigate: { say: "Gold number = how many.", tap: "1, then Next" },
+          modify: { say: "Tap gold until 4. Then GO.", tap: "4, then GO" }
         }
       },
       wall: {
-        title: "Door 4 · Don’t wreck the bot",
-        idea: "The bot cannot see the wall unless you ask.",
+        title: "Door 4 · Stop",
+        idea: "Ask about the wall, or the bot hits it.",
         ask: "What happens at the wall?",
         choices: [
-          { p: "stop", t: "1 · It slams the brakes" },
-          { p: "through", t: "2 · It ghosts through" },
+          { p: "stop", t: "1 · It stops" },
+          { p: "through", t: "2 · It goes through" },
           { p: "forever", t: "3 · It never stops" }
         ],
-        probeAsk: "Where is STOP?",
+        probeAsk: "Where is Stop?",
         probes: [
           { v: "inside", t: "1 · In the loop" },
           { v: "outside", t: "2 · After the loop" }
         ],
-        tests: ["Stops at wall", "Doesn’t run forever", "Asks if wall"],
+        tests: ["Stops at wall", "Does not run forever", "Asks if wall"],
         help: {
-          predict: { say: "It needs a sensor. We will add if wall: stop.", tap: "Watch, then Fix" },
-          run: { say: "Watch. Does it wreck?", tap: "Watch" },
-          investigate: { say: "STOP belongs in the loop.", tap: "1, then Next" },
-          modify: { say: "Keep if wall: stop inside the repeat. Then GO.", tap: "GO" }
+          predict: { say: "It needs Stop. Watch first.", tap: "Watch" },
+          run: { say: "Watch the wall.", tap: "Watch" },
+          investigate: { say: "Stop goes in the loop.", tap: "1, then Next" },
+          modify: { say: "Keep Stop inside Repeat. GO.", tap: "GO" }
         }
       },
       score: {
-        title: "Door 5 · Stop and score",
-        idea: "A sensor can stop and count.",
-        ask: "It already stops. What is still missing?",
+        title: "Door 5 · Score",
+        idea: "Stop. Then count.",
+        ask: "It stops. What is missing?",
         choices: [
-          { p: "score", t: "1 · Score when it sees the wall" },
+          { p: "score", t: "1 · Score at the wall" },
           { p: "faster", t: "2 · More speed" },
-          { p: "name", t: "3 · The bot’s legal name" }
+          { p: "name", t: "3 · A legal name" }
         ],
-        probeAsk: "When should score run?",
+        probeAsk: "When does score run?",
         probes: [
           { v: "wall", t: "1 · If wall: score" },
           { v: "always", t: "2 · Every move" }
         ],
-        tests: ["Stops at wall", "Score goes up", "If wall: score is in the list"],
+        tests: ["Stops at wall", "Score goes up", "Has score"],
         help: {
-          predict: { say: "We need score at the wall. Pick 1. Never a legal name.", tap: "1" },
-          run: { say: "Watch. It stops but score is still no.", tap: "Watch" },
-          investigate: { say: "Score runs if wall.", tap: "1, then Next" },
-          modify: { say: "Tap score so it is in the list. Then GO.", tap: "score, then GO" }
+          predict: { say: "Need Score. Tap 1.", tap: "1" },
+          run: { say: "Watch. Score is still no.", tap: "Watch" },
+          investigate: { say: "Score at the wall.", tap: "1, then Next" },
+          modify: { say: "Tap score. Then GO.", tap: "score, then GO" }
         }
       }
     }
   },
   es: {
     lang: "es",
-    start: "Empieza en cero.",
-    hint: "Una orden. Luego una fila. Luego un ciclo. La Puerta 1 ya es un logro hoy.",
-    d1: "Una orden", d2: "Una fila de pasos", d3: "Repetir", d4: "No rompas el bot", d5: "Parar y sumar",
+    start: "Empieza aquí.",
+    hint: "Mira el dibujo. Toca el brillo. La Puerta 1 ya es un logro hoy.",
+    d1: "Un mover", d2: "Más mover", d3: "Repetir", d4: "Parar", d5: "Sumar",
     classCode: "Código de clase",
-    alias: "Apodo (no tu nombre legal)",
+    alias: "Apodo (no un nombre legal)",
     aliasPh: "Scout",
-    ferpaJoin: "Chrome en Chromebook. Solo apodo. No escribas IEP, 504, ni un nombre legal.",
-    roll: "Salir",
+    ferpaJoin: "Solo apodo. No IEP, 504, ni nombre legal.",
+    roll: "Empezar",
     teacher: "Maestro",
     aide: "Asistente",
     walk: "Camina conmigo",
     big: "Letras grandes",
     home: "Inicio",
-    guess: "Adivina", watch: "Mira", find: "Encuéntralo", fix: "Arregla", done: "Listo",
-    lock: "Fijar",
+    guess: "Adivina", watch: "Mira", find: "Halla", fix: "Arregla", done: "Listo",
+    lock: "OK",
     go: "GO",
-    undo: "Deshacer",
-    nextDoor: "Siguiente puerta",
-    period: "Pizarra del período",
+    undo: "Atrás",
+    nextDoor: "Siguiente",
+    period: "Pizarra",
     notes: "Notas",
     freeze: "Congelar",
     unfreeze: "Abrir",
-    clearSpot: "Quitar foco",
+    clearSpot: "Quitar",
     export: "Exportar CSV",
-    walkRed: "Ve primero a los rojos",
+    walkRed: "Ayuda al rojo",
     roster: "Lista",
     log: "Registro",
     heat: "CALOR",
-    present: "Presentes",
-    guessed: "Adivinaron",
-    stuck: "Atascados",
-    coach: "Listos",
+    present: "Aquí",
+    guessed: "Adivinó",
+    stuck: "Atascado",
+    coach: "Listo",
     doneKpi: "Hecho",
-    aideTitle: "Tarjeta del asistente",
+    aideTitle: "Tarjeta",
     say: "Di",
-    tap: "Toca ahora",
-    ferpaAide: "Solo apodo. No escribas IEP, 504, ELL, ni nombres legales. Esto no es el SIS.",
-    winPeriod: "La Puerta 1 ya es un logro. Si el tiempo es corto, paren ahí.",
-    emptyList: "Lista vacía. Agrega una orden.",
+    tap: "Toca",
+    ferpaAide: "Solo apodo. No IEP, 504, ni nombre legal.",
+    winPeriod: "La Puerta 1 ya es un logro hoy.",
+    emptyList: "Vacío. Agrega uno.",
     move: "mover",
     repeat: "repetir",
     end: "fin",
-    stop: "si pared: parar",
+    stop: "parar",
     score: "sumar",
-    cost: "Un costo que aceptaste",
-    footer: "Koderized KZ 1.9.0 · solo apodo · no es el SIS · sin IEP/504 en este carro",
+    cost: "Un costo",
+    look: "Mira",
+    example: "Ejemplo",
+    footer: "Koderized KZ 1.10.0 · solo apodo · no es SIS · sin IEP/504",
+    sit: "SIT", crate: "CAJA", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     doors: {
       zero: {
-        title: "Puerta 1 · Una orden",
-        idea: "Una orden es una cosa que el bot hace.",
+        title: "Puerta 1 · Un mover",
+        idea: "Un dibujo. Un toque. El bot lo hace.",
         ask: "La lista está vacía. ¿Qué hace el bot?",
         choices: [
-          { p: "sit", t: "1 · Se queda. No pasa nada." },
+          { p: "sit", t: "1 · Se queda." },
           { p: "roll", t: "2 · Rueda solo." },
-          { p: "vanish", t: "3 · Desaparece." }
+          { p: "vanish", t: "3 · Se va." }
         ],
         probeAsk: "¿Qué es una orden?",
         probes: [
           { v: "do", t: "1 · Una cosa que el bot hace" },
-          { v: "guess", t: "2 · Una suerte" },
-          { v: "wall", t: "3 · La sierra" }
+          { v: "guess", t: "2 · Un azar" },
+          { v: "wall", t: "3 · La pared" }
         ],
-        tests: ["El bot se movió", "Un paso a la caja", "Solo un mover"],
+        tests: ["El bot se movió", "En la caja", "Un mover"],
         help: {
-          predict: { say: "La lista está vacía. No pasa nada. Elige 1.", tap: "1 · Se queda" },
-          run: { say: "Mira. El bot debe quedarse.", tap: "Mira" },
-          investigate: { say: "Una orden es una cosa que el bot hace.", tap: "1, luego Next" },
-          modify: { say: "Toca mover. Luego GO. Eso es un programa.", tap: "mover, luego GO" }
+          predict: { say: "Lista vacía. El bot se queda. Toca 1.", tap: "1" },
+          run: { say: "Mira el dibujo.", tap: "Mira" },
+          investigate: { say: "Una orden es una cosa.", tap: "1, luego Next" },
+          modify: { say: "Toca mover. Luego GO.", tap: "mover, luego GO" }
         }
       },
       line: {
-        title: "Puerta 2 · Una fila de pasos",
-        idea: "Las órdenes van de arriba hacia abajo.",
-        ask: "Mira tres mover. ¿Dónde para el bot?",
+        title: "Puerta 2 · Más mover",
+        idea: "De arriba a abajo. Uno tras uno.",
+        ask: "Tres mover. ¿Dónde para?",
         choices: [
           { p: "short", t: "1 · Antes de la caja" },
           { p: "crate", t: "2 · En la caja" },
@@ -248,82 +254,82 @@ window.I18N = {
         probeAsk: "¿Por qué quedó corto?",
         probes: [
           { v: "few", t: "1 · Faltan mover" },
-          { v: "order", t: "2 · El orden estaba al revés" },
-          { v: "wall", t: "3 · Había una pared" }
+          { v: "order", t: "2 · Mal orden" },
+          { v: "wall", t: "3 · Una pared" }
         ],
-        tests: ["Para en la caja", "Agregó al menos un mover", "Solo mover — una fila"],
+        tests: ["En la caja", "Un mover más", "Solo mover"],
         help: {
-          predict: { say: "Tres no alcanzan. Elige 1.", tap: "1 · Antes de la caja" },
-          run: { say: "Mira los tres pasos.", tap: "Mira" },
-          investigate: { say: "Necesitamos más mover en fila.", tap: "1, luego Next" },
-          modify: { say: "Toca mover una vez más. Luego GO.", tap: "mover, luego GO" }
+          predict: { say: "Tres no alcanzan. Toca 1.", tap: "1" },
+          run: { say: "Mira tres pasos.", tap: "Mira" },
+          investigate: { say: "Agrega un mover.", tap: "1, luego Next" },
+          modify: { say: "Toca mover. Luego GO.", tap: "mover, luego GO" }
         }
       },
       loop: {
         title: "Puerta 3 · Repetir",
-        idea: "Repetir hace lo de adentro muchas veces. Toca el número dorado.",
+        idea: "Repetir hace lo de adentro muchas veces.",
         ask: "¿Cuál es el ciclo?",
         choices: [
-          { p: "repeat", t: "1 · Repetir · mover · fin" },
-          { p: "line", t: "2 · Mover, mover, mover…" },
-          { p: "stop", t: "3 · Si pared: parar" }
+          { p: "repeat", t: "1 · Repetir" },
+          { p: "line", t: "2 · Muchos mover" },
+          { p: "stop", t: "3 · Parar" }
         ],
-        probeAsk: "¿Qué significa el número dorado?",
+        probeAsk: "¿Qué es el número dorado?",
         probes: [
-          { v: "count", t: "1 · Cuántas veces hacer lo de adentro" },
-          { v: "score", t: "2 · Tu nota" },
-          { v: "speed", t: "3 · Qué tan rápido rueda" }
+          { v: "count", t: "1 · Cuántas veces" },
+          { v: "score", t: "2 · Una nota" },
+          { v: "speed", t: "3 · Velocidad" }
         ],
-        tests: ["Para en la caja", "Usó repetir", "Número en 4"],
+        tests: ["En la caja", "Hay repetir", "Número 4"],
         help: {
-          predict: { say: "El ciclo es repetir. Elige 1.", tap: "1 · Repetir" },
-          run: { say: "Mira una fila. Luego usamos un ciclo.", tap: "Mira" },
-          investigate: { say: "El número dorado es cuántas veces.", tap: "1, luego Next" },
-          modify: { say: "Toca el 2 dorado hasta 4. Luego GO.", tap: "número → 4, luego GO" }
+          predict: { say: "El ciclo es Repetir. Toca 1.", tap: "1" },
+          run: { say: "Mira la fila.", tap: "Mira" },
+          investigate: { say: "Número dorado = cuántas.", tap: "1, luego Next" },
+          modify: { say: "Toca el oro hasta 4. Luego GO.", tap: "4, luego GO" }
         }
       },
       wall: {
-        title: "Puerta 4 · No rompas el bot",
-        idea: "El bot no ve la pared si no preguntas.",
+        title: "Puerta 4 · Parar",
+        idea: "Pregunta por la pared, o el bot choca.",
         ask: "¿Qué pasa en la pared?",
         choices: [
-          { p: "stop", t: "1 · Frena" },
-          { p: "through", t: "2 · Pasa a través" },
+          { p: "stop", t: "1 · Para" },
+          { p: "through", t: "2 · Pasa" },
           { p: "forever", t: "3 · Nunca para" }
         ],
-        probeAsk: "¿Dónde está PARAR?",
+        probeAsk: "¿Dónde está Parar?",
         probes: [
-          { v: "inside", t: "1 · Dentro del ciclo" },
+          { v: "inside", t: "1 · En el ciclo" },
           { v: "outside", t: "2 · Después del ciclo" }
         ],
-        tests: ["Para en la pared", "No corre para siempre", "Pregunta si pared"],
+        tests: ["Para en la pared", "No corre siempre", "Pregunta si pared"],
         help: {
-          predict: { say: "Necesita un sensor: si pared: parar.", tap: "Mira, luego Arregla" },
-          run: { say: "Mira. ¿Se rompe?", tap: "Mira" },
-          investigate: { say: "PARAR va dentro del ciclo.", tap: "1, luego Next" },
-          modify: { say: "Deja si pared: parar dentro de repetir. Luego GO.", tap: "GO" }
+          predict: { say: "Falta Parar. Mira primero.", tap: "Mira" },
+          run: { say: "Mira la pared.", tap: "Mira" },
+          investigate: { say: "Parar va en el ciclo.", tap: "1, luego Next" },
+          modify: { say: "Deja Parar en Repetir. GO.", tap: "GO" }
         }
       },
       score: {
-        title: "Puerta 5 · Parar y sumar",
-        idea: "Un sensor puede parar y contar.",
+        title: "Puerta 5 · Sumar",
+        idea: "Parar. Luego contar.",
         ask: "Ya para. ¿Qué falta?",
         choices: [
-          { p: "score", t: "1 · Sumar cuando ve la pared" },
+          { p: "score", t: "1 · Sumar en la pared" },
           { p: "faster", t: "2 · Más velocidad" },
-          { p: "name", t: "3 · El nombre legal del bot" }
+          { p: "name", t: "3 · Un nombre legal" }
         ],
         probeAsk: "¿Cuándo corre sumar?",
         probes: [
           { v: "wall", t: "1 · Si pared: sumar" },
-          { v: "always", t: "2 · En cada mover" }
+          { v: "always", t: "2 · Cada mover" }
         ],
-        tests: ["Para en la pared", "La suma sube", "Si pared: sumar está en la lista"],
+        tests: ["Para en la pared", "La suma sube", "Hay sumar"],
         help: {
-          predict: { say: "Falta sumar en la pared. Elige 1. Nunca un nombre legal.", tap: "1" },
-          run: { say: "Mira. Para, pero la suma sigue en no.", tap: "Mira" },
-          investigate: { say: "Sumar corre si pared.", tap: "1, luego Next" },
-          modify: { say: "Toca sumar para ponerlo en la lista. Luego GO.", tap: "sumar, luego GO" }
+          predict: { say: "Falta Sumar. Toca 1.", tap: "1" },
+          run: { say: "Mira. Sumar sigue en no.", tap: "Mira" },
+          investigate: { say: "Sumar en la pared.", tap: "1, luego Next" },
+          modify: { say: "Toca sumar. Luego GO.", tap: "sumar, luego GO" }
         }
       }
     }

@@ -1,4 +1,4 @@
-/* KZ 1.8.0 juice — rolls the bot, crate, wall, shout, teaser. */
+/* KZ 1.10.0 juice — slow example loop, pictogram floor, bilingual shout. */
 (function () {
   const $ = id => document.getElementById(id);
   let animFrame = 0;
@@ -32,7 +32,6 @@
     ctx.fillRect(sim.wallX * cw, 0, 6, H);
     ctx.fillStyle = "#fff7ed";
     ctx.font = "bold 13px sans-serif";
-    ctx.fillText("SAW / WALL", sim.wallX * cw + 10, 18);
     }
     if (sim.goalX != null && sim.goalX < sim.cols) {
       const gy = (sim.goalY != null ? sim.goalY : 3) * ch;
@@ -41,9 +40,6 @@
       ctx.fillRect(gx + 10, gy + 12, cw - 20, ch - 22);
       ctx.fillStyle = "#fbbf24";
       ctx.fillRect(gx + 14, gy + 16, cw - 28, 8);
-      ctx.fillStyle = "#fff7ed";
-      ctx.font = "bold 11px sans-serif";
-      ctx.fillText("CRATE", gx + 12, gy + 40);
     }
     return { cw, ch };
   }
@@ -104,13 +100,18 @@
     if (max === path.length - 1 && sim.hitWall) drawSparks(ctx, sim.wallX * cw - 4, cy);
   };
 
+  function pack() {
+    try { return (window.I18N && I18N[localStorage.getItem("kz-lang") === "es" ? "es" : "en"]) || {}; } catch (e) { return {}; }
+  }
   function shout(text, kind) {
     const el = $("callout");
     if (!el) return;
-    el.textContent = text;
+    const p = pack();
+    const map = { SIT: p.sit || "SIT", CRATE: p.crate || "CRATE", ROLL: p.rollShout || "ROLL", SAFE: p.safe || "SAFE", BONK: p.bonk || "BONK" };
+    el.textContent = map[text] || text;
     el.className = "callout pop " + (kind || "");
     clearTimeout(shout.t);
-    shout.t = setTimeout(() => el.classList.add("hidden"), 900);
+    shout.t = setTimeout(() => el.classList.add("hidden"), 1100);
   }
   function shake() {
     const frame = document.querySelector(".stage-frame");
@@ -146,7 +147,7 @@
         return;
       }
       i += 1;
-      play.timer = setTimeout(tick, 110);
+      play.timer = setTimeout(tick, 200);
     }
     tick();
   }
@@ -197,10 +198,26 @@
       animFrame++;
       window.draw(c, sim, i);
       i = (i + 1) % Math.max(1, sim.path.length);
-      teaserTimer = setTimeout(tick, 140);
+      teaserTimer = setTimeout(tick, 260);
     }
     clearTimeout(teaserTimer);
     tick();
   }
   startTeaser();
+
+  window.loopExample = function (canvas, program, world) {
+    if (!canvas) return;
+    clearTimeout(window.loopExample.t);
+    let sim;
+    try { sim = run(program || EXAMPLE, 80, world); } catch (e) { return; }
+    let i = 0;
+    const calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function tick() {
+      window.draw(canvas, sim, calm ? (sim.path.length - 1) : i);
+      if (calm) return;
+      i = (i + 1) % Math.max(1, sim.path.length);
+      window.loopExample.t = setTimeout(tick, 240);
+    }
+    tick();
+  };
 })();

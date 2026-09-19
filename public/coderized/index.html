@@ -13,7 +13,7 @@
 </head>
 <body>
   <header class="top">
-    <div class="brand">KODER<em>IZED</em> <span class="pill" id="version-chip">KZ 1.9.0</span></div>
+    <div class="brand">KODER<em>IZED</em> <span class="pill" id="version-chip">KZ 1.10.0</span></div>
     <div class="meta" id="top-meta">Solvay MS · Technology · Chromebook</div>
     <div class="row top-tools">
       <button class="btn ghost" id="btn-lang-en" type="button" aria-pressed="true">EN</button>
@@ -30,11 +30,11 @@
       <h1 data-i18n="start">Start at zero.</h1>
       <p class="hint" data-i18n="hint">One command. Then a line. Then a loop. Door 1 this period is a win.</p>
       <ol class="ladder">
-        <li data-i18n="d1">One command</li>
-        <li data-i18n="d2">A line of steps</li>
-        <li data-i18n="d3">Repeat</li>
-        <li data-i18n="d4">Don’t wreck the bot</li>
-        <li data-i18n="d5">Stop and score</li>
+        <li><svg class="picto-svg"><use href="pics.svg#p-one"/></svg> <span data-i18n="d1">One move</span></li>
+        <li><svg class="picto-svg"><use href="pics.svg#p-line"/></svg> <span data-i18n="d2">More moves</span></li>
+        <li><svg class="picto-svg"><use href="pics.svg#p-loop"/></svg> <span data-i18n="d3">Repeat</span></li>
+        <li><svg class="picto-svg"><use href="pics.svg#p-stop"/></svg> <span data-i18n="d4">Stop</span></li>
+        <li><svg class="picto-svg"><use href="pics.svg#p-score"/></svg> <span data-i18n="d5">Score</span></li>
       </ol>
     </div>
     <div class="card join">
@@ -69,6 +69,18 @@
       <button class="btn gold" id="btn-aide" type="button" data-i18n="aide">Aide</button>
       <button class="btn go" id="btn-walk" type="button" data-i18n="walk">Walk with me</button>
     </div>
+    <div id="guide" class="guide">
+      <svg class="picto-svg xl" id="guide-icon" aria-hidden="true"><use href="pics.svg#p-bot"/></svg>
+      <div class="guide-copy">
+        <p class="guide-kicker" data-i18n="look">Look</p>
+        <p id="guide-line" class="guide-line">Tap move</p>
+        <p id="guide-sub" class="hint"></p>
+      </div>
+      <div class="guide-ex">
+        <span class="hint" data-i18n="example">Example</span>
+        <canvas id="example" width="240" height="96" aria-label="Example"></canvas>
+      </div>
+    </div>
     <aside id="aide-card" class="aide-card hidden">
       <h3 id="aide-title" data-i18n="aideTitle">Aide card</h3>
       <p><b data-i18n="say">Say</b> · <span id="aide-say"></span></p>
@@ -96,7 +108,7 @@
         <div id="choices" class="choices"></div>
         <div class="row">
           <button class="btn" id="btn-predict" type="button"><span data-i18n="lock">Lock it</span> <span class="k">Enter</span></button>
-          <button class="btn gold" id="btn-run-example" type="button"><span data-i18n="watch">Watch</span> <span class="k">Space</span></button>
+          <button class="btn gold" id="btn-run-example" type="button"><svg class="picto-svg"><use href="pics.svg#p-watch"/></svg> <span data-i18n="watch">Watch</span> <span class="k">Space</span></button>
         </div>
         <div id="probe-wrap" class="hidden">
           <h3 id="probe-ask">What is a command?</h3>
@@ -105,15 +117,15 @@
         </div>
         <div id="modify-wrap" class="hidden">
           <div class="row palette" id="palette">
-            <button class="btn navy" id="pal-move" type="button" data-i18n="move">move</button>
-            <button class="btn" id="pal-repeat" type="button" data-i18n="repeat">repeat</button>
-            <button class="btn ghost" id="pal-end" type="button" data-i18n="end">end</button>
-            <button class="btn warn" id="pal-stop" type="button" data-i18n="stop">if wall: stop</button>
-            <button class="btn gold" id="pal-score" type="button" data-i18n="score">score</button>
+            <button class="btn navy" id="pal-move" type="button"><svg class="picto-svg"><use href="pics.svg#p-move"/></svg> <span data-i18n="move">move</span></button>
+            <button class="btn" id="pal-repeat" type="button"><svg class="picto-svg"><use href="pics.svg#p-repeat"/></svg> <span data-i18n="repeat">repeat</span></button>
+            <button class="btn ghost" id="pal-end" type="button"><svg class="picto-svg"><use href="pics.svg#p-end"/></svg> <span data-i18n="end">end</span></button>
+            <button class="btn warn" id="pal-stop" type="button"><svg class="picto-svg"><use href="pics.svg#p-stop"/></svg> <span data-i18n="stop">stop</span></button>
+            <button class="btn gold" id="pal-score" type="button"><svg class="picto-svg"><use href="pics.svg#p-score"/></svg> <span data-i18n="score">score</span></button>
           </div>
           <div class="blocks" id="block-list"></div>
           <div class="row" style="margin-top:8px;">
-            <button class="btn go" id="btn-run-mine" type="button"><span data-i18n="go">GO</span> <span class="k">Space</span></button>
+            <button class="btn go" id="btn-run-mine" type="button"><svg class="picto-svg"><use href="pics.svg#p-go"/></svg> <span data-i18n="go">GO</span> <span class="k">Space</span></button>
             <button class="btn gold" id="btn-restore" type="button" data-i18n="undo">Undo</button>
           </div>
           <div id="trade-wrap" class="hidden">
@@ -163,7 +175,7 @@
       </div>
     </div>
   </section>
-  <p class="footer-note" data-i18n="footer">Koderized KZ 1.9.0 · alias only · not a district SIS · no IEP/504 in this cart</p>
+  <p class="footer-note" data-i18n="footer">Koderized KZ 1.10.0 · alias only · not a district SIS · no IEP/504 in this cart</p>
   <script src="origin.js"></script>
   <script src="i18n.js"></script>
   <script src="app.js"></script>
