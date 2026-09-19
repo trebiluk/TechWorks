@@ -12,6 +12,7 @@ export const ADMIN_GROUPS = [
   { id: "look", label: "Theme", panes: ["room"] as const },
   { id: "about", label: "About", panes: ["about"] as const },
   { id: "docs", label: "Docs", panes: ["docs"] as const },
+  { id: "door", label: "Door", panes: ["door"] as const },
 ] as const;
 
 export type AdminGroupId = (typeof ADMIN_GROUPS)[number]["id"];
@@ -29,6 +30,7 @@ export const PANE_LABEL: Record<string, string> = {
   modules: "Modules",
   about: "About",
   docs: "Map",
+  door: "Door",
 };
 
 export function groupOfPane(pane: string): (typeof ADMIN_GROUPS)[number] {
