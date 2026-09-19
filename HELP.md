@@ -76,11 +76,11 @@ Show wall fills Hour as a 2×2. Empty cells keep Enter / Listen / Crew work / Cl
 
 ### Jobs on the wall
 
-Two job lists. Agenda (Do this now) is the hour’s work — Teach writes it, Deck plays it, Wall hangs it. Cleanup jobs are the coral list (workshop tools vs classroom seats). Need (goggles / stock) is a Teach line kids see at Enter. Edit cleanup jobs on the coral pad (PIN). Caught helping extra can earn a perk — not XP.
+Two job lists. Agenda (Do this now) is the hour’s work — Teach writes it, Deck plays it, Wall hangs it. Cleanup jobs are the coral list (workshop tools vs classroom seats). Need (goggles / stock) is a Teach line kids see at Enter. Edit cleanup jobs on Teach (PIN). Extra tidy catch is teacher-only on Teach — not on the student Cleanup wall.
 
 ### Cleanup
 
-Last five minutes: coral screen. Berty points at jobs. Workshop: tools, scraps, stations. Classroom: seats and aisles. Caught helping extra can earn a perk — not XP. Between classes Berty points at ENTER → LISTEN → CREW WORK → CLEAN UP.
+Last five minutes: coral screen. One leftover clock. Berty points at jobs. Workshop: tools, scraps, stations. Classroom: seats and aisles. Extra tidy catch is on Teach (PIN), not the student wall. Between classes Berty points at ENTER → LISTEN → CREW WORK → CLEAN UP.
 
 ### English, Ukrainian, Russian
 
@@ -320,7 +320,7 @@ Desk: Nurse on the worker card stamps the clock and sets attendance to nurse. If
 
 ### Cleanup time
 
-Last minutes of a live period: the cleanup bell rings once. Wall goes coral full-screen (Workshop vs classroom jobs). Teach stays open with the same jobs pad so you can still run the room. Edit jobs and the extra tidy line (PIN). Study hall has its own list. Tap a name for +$5 wallet when you catch extra cleanup (max 2/day). Not XP. Desk button hides the wall card until the next period. Cleanup miss is still −$10 wallet, not effort.
+Last minutes of a live period: the cleanup bell rings once. Wall goes coral full-screen (Workshop vs classroom jobs, one leftover clock). Teach stays open with the same jobs pad so you can still run the room. Extra tidy / +$5 catch is on Teach (PIN), not the student Cleanup wall. Study hall has its own list. Tap a name on Teach for +$5 wallet when you catch extra cleanup (max 2/day). Not XP. Desk button hides the wall card until the next period. Cleanup miss is still −$10 wallet, not effort.
 
 ### Yearly / sessions
 

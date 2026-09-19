@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.85. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.86. -->
 
 # TechWorks changelog
 
-App version **1.92.85**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.86**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.86 — 2026-09-19
+
+- Cleanup wall: one leftover clock (fat digits, Berty beside). Workshop + Classroom fill the coral plate. Extra tidy / +$5 catch lives on Teach (PIN), not the student wall.
 
 ## 1.92.85 — 2026-09-19
 

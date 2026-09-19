@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { formatBell, leftClock, periodClock, periodNext, periodNow } from "@/lib/bells";
+import { cleanupMinsNow, formatBell, leftClock, periodClock, periodNext, periodNow } from "@/lib/bells";
 import { useShopClock } from "@/lib/use-clock";
 import { deskBellId } from "@/lib/store";
 import { todayIso } from "@/lib/calendar";
@@ -12,7 +12,6 @@ import { isPhone } from "@/lib/layout";
 import { cn } from "@/lib/utils";
 import { agendaFor, prettyStage } from "@/lib/projects";
 import { packOf, teachObjective } from "@/lib/teach";
-import { ProgressRing } from "@/components/progress-ring";
 
 export function CleanupStage({
   file,
@@ -46,17 +45,19 @@ export function CleanupStage({
   return children;
 }
 
-/** Compact job lists for Teach. Same jobs as the projector wall. */
+/** Compact job lists for Teach. Extra tidy catch stays here — not on the student wall. */
 export function CleanupJobsPad({
   file,
   unlocked,
   onChange,
   hall,
+  period,
 }: {
   file: EconomyFile;
   unlocked: boolean;
   onChange: (next: EconomyFile) => void;
   hall?: boolean;
+  period?: number;
 }) {
   const jobs = cleanupJobsOf(file);
   const [edit, setEdit] = useState(false);
@@ -85,18 +86,66 @@ export function CleanupJobsPad({
           </>
         )}
       </div>
+      {unlocked ? <ExtraTidyCatch file={file} period={period} extra={jobs.extra} writing={writing} onChange={onChange} /> : null}
+    </section>
+  );
+}
+
+function ExtraTidyCatch({
+  file,
+  period,
+  extra,
+  writing,
+  onChange,
+}: {
+  file: EconomyFile;
+  period?: number;
+  extra: string;
+  writing: boolean;
+  onChange: (next: EconomyFile) => void;
+}) {
+  const today = todayIso();
+  const kids = period != null ? liveCleanupCrew(file, period) : [];
+  return (
+    <div className="mt-2 rounded-lg bg-black/25 p-2" data-extra-tidy>
+      <p className="text-[11px] font-bold uppercase tracking-widest">
+        Extra tidy · +${CLEANUP_CASH} · not XP · teacher catch
+      </p>
       {writing ? (
         <DraftField
-          value={jobs.extra}
+          value={extra}
           editing
           onCommit={(v) => onChange(setCleanupJobs(file, { extra: v }))}
           placeholder="Extra tidy line"
           className="mt-2 min-h-10 w-full rounded-lg bg-black/25 px-2 text-sm font-semibold"
         />
       ) : (
-        <p className="mt-2 text-sm font-semibold opacity-90">{jobs.extra}</p>
+        <p className="mt-1 text-sm font-semibold opacity-90">{extra}</p>
       )}
-    </section>
+      {kids.length ? (
+        <div className="-mx-1 mt-2 flex flex-wrap gap-1 pb-1">
+          {kids.map((s) => {
+            const n = cleanupCatchOn(s, today);
+            const maxed = n >= CLEANUP_CATCH_MAX;
+            return (
+              <button
+                key={s.id}
+                type="button"
+                disabled={maxed}
+                onClick={() => !maxed && onChange(grantCleanupCatch(file, s.id, today))}
+                className={cn(
+                  "tw-tap min-h-11 shrink-0 rounded-full px-3 text-sm font-semibold",
+                  maxed ? "bg-black/50 opacity-70" : "bg-black/35",
+                )}
+              >
+                {s.first}
+                {n ? <span className="ml-1 font-mono text-[11px]">${n * CLEANUP_CASH}</span> : null}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -124,12 +173,13 @@ function CleanupWall({
   const [editJobs, setEditJobs] = useState(false);
   const tick = leftClock(clock.left);
   const hall = live === 6;
-  const kids = liveCleanupCrew(file, live);
   const agenda = agendaFor(file, live);
   const obj = teachObjective(file, today, live);
   const pack = packOf(file, today, live);
   const nxt = periodNext(bellsId, now);
-  const pct = Math.max(0, Math.min(100, clock.pct));
+  const lead = Math.max(1, cleanupMinsNow());
+  const leftPct = Math.max(0, Math.min(100, (clock.left / lead) * 100));
+  const urgent = clock.left < 1;
   const phase = prettyStage(agenda.goal) || agenda.activityName || pack.label;
   const sub = [agenda.title, phase, obj].filter((x, i, a) => Boolean(x) && a.indexOf(x) === i).join(" · ");
 
@@ -141,31 +191,49 @@ function CleanupWall({
           ? "fixed inset-0 z-[80] px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.5rem,env(safe-area-inset-top))]"
           : "min-h-0 flex-1 rounded-xl px-5 py-3",
       )}
+      data-cleanup-wall
+      data-urgent={urgent ? "1" : undefined}
       role="dialog"
       aria-label="Cleanup"
     >
-      <div className={cn("flex shrink-0 items-end", phone ? "gap-2" : "gap-4")}>
+      <header className={cn("tw-cleanup-hero flex shrink-0 items-end", phone ? "gap-2" : "gap-4")}>
         <Berty pose="point" size={phone ? "lg" : "xl"} alert />
         <div className="min-w-0 flex-1">
-          <p className={cn("tw-cleanup-kicker font-black uppercase tracking-[0.18em]")}>
+          <p className="tw-cleanup-kicker font-black uppercase tracking-[0.18em]">
             Clean up now · P{live}
             {nxt ? ` · next P${nxt.period} ${formatBell(nxt.start)}` : " · last bell"}
           </p>
           <p
             className={cn(
-              "tw-cleanup-clock font-display font-semibold tabular-nums tracking-tight",
-              clock.left < 60 ? "tw-blink" : "",
+              "tw-cleanup-clock font-display font-black tabular-nums tracking-tight",
+              urgent ? "tw-blink" : "",
             )}
           >
             {tick.label}
           </p>
-          <p className={cn("tw-cleanup-sub mt-1 font-bold uppercase tracking-widest")}>Left · cleanup score is live</p>
+          <div className="tw-cleanup-drain tw-led" aria-hidden>
+            <span style={{ width: `${leftPct}%` }} />
+          </div>
+          <p className="tw-cleanup-sub mt-1 font-bold uppercase tracking-widest">Left</p>
           {sub ? <p className="tw-cleanup-sub mt-0.5 truncate opacity-90">{sub}</p> : null}
         </div>
-        <ProgressRing pct={pct} label={tick.label} sub="left" tone="warn" size={phone ? "md" : "lg"} live />
-      </div>
+        {unlocked ? (
+          <div className="flex shrink-0 flex-col gap-1">
+            <button
+              type="button"
+              onClick={() => setEditJobs((v) => !v)}
+              className="tw-tap min-h-10 rounded-md bg-black/40 px-3 text-xs font-semibold uppercase tracking-widest"
+            >
+              {editJobs ? "Done jobs" : "Edit jobs"}
+            </button>
+            <button type="button" onClick={onDesk} className="tw-tap min-h-10 rounded-md bg-black/40 px-3 text-xs font-semibold uppercase tracking-widest">
+              Desk
+            </button>
+          </div>
+        ) : null}
+      </header>
 
-      <div className="tw-cleanup-cards mt-3" data-stack={phone || hall ? "1" : undefined}>
+      <div className="tw-cleanup-cards" data-stack={phone || hall ? "1" : undefined}>
         {hall ? (
           <JobCard title="Hall tidy" jobs={jobs.hall} editing={editJobs} onSave={(lines) => onChange(setCleanupJobs(file, { hall: lines }))} />
         ) : (
@@ -175,62 +243,6 @@ function CleanupWall({
           </>
         )}
       </div>
-
-      <footer className="mt-3 shrink-0 rounded-xl bg-black/30 px-3 py-3">
-        <div className="flex items-center gap-2">
-          <p className={cn("min-w-0 flex-1 font-black uppercase tracking-widest", phone ? "text-xs" : "text-base")}>
-            Extra tidy · +${CLEANUP_CASH} cash · not XP · go get caught
-          </p>
-          {unlocked ? (
-            <>
-              <button
-                type="button"
-                onClick={() => setEditJobs((v) => !v)}
-                className="tw-tap min-h-10 shrink-0 rounded-md bg-black/40 px-3 text-xs font-semibold uppercase tracking-widest"
-              >
-                {editJobs ? "Done jobs" : "Edit jobs"}
-              </button>
-              <button type="button" onClick={onDesk} className="tw-tap min-h-10 shrink-0 rounded-md bg-black/40 px-3 text-xs font-semibold uppercase tracking-widest">
-                Desk
-              </button>
-            </>
-          ) : null}
-        </div>
-        {editJobs && unlocked ? (
-          <DraftField
-            value={jobs.extra}
-            editing
-            onCommit={(v) => onChange(setCleanupJobs(file, { extra: v }))}
-            placeholder="Extra tidy line"
-            className="mt-2 min-h-10 w-full rounded-lg bg-black/25 px-2 text-sm font-semibold"
-          />
-        ) : null}
-        {unlocked ? (
-          <div className="-mx-1 mt-2 flex flex-wrap gap-1 pb-1">
-            {kids.map((s) => {
-              const n = cleanupCatchOn(s, today);
-              const maxed = n >= CLEANUP_CATCH_MAX;
-              return (
-                <button
-                  key={s.id}
-                  type="button"
-                  disabled={maxed}
-                  onClick={() => !maxed && onChange(grantCleanupCatch(file, s.id, today))}
-                  className={cn(
-                    "tw-tap min-h-11 shrink-0 rounded-full px-3 text-sm font-semibold",
-                    maxed ? "bg-black/50 opacity-70" : "bg-black/35",
-                  )}
-                >
-                  {s.first}
-                  {n ? <span className="ml-1 font-mono text-[11px]">${n * CLEANUP_CASH}</span> : null}
-                </button>
-              );
-            })}
-          </div>
-        ) : (
-          <p className={cn("mt-1 font-semibold", phone ? "text-sm" : "text-lg")}>{jobs.extra}</p>
-        )}
-      </footer>
     </section>
   );
 }
