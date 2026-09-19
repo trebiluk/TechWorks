@@ -22,8 +22,8 @@ export const ARCH_SECTIONS: ArchSection[] = [
     title: "One desk, four jobs",
     lead: "TechWorks is one shop PC gradebook with four kinds of number. They never average into each other. The wall is a projector of aliases. Admin is the writer.",
     lanes: [
-      { name: "Author", color: "gold", items: ["PlanIt", "Teach", "Projects / Activity"] },
-      { name: "Play", color: "accent", items: ["Deck", "Wall", "Club wall", "Hall wall"] },
+      { name: "Author", color: "gold", items: ["PlanIt"] },
+      { name: "Play", color: "accent", items: ["Teach", "Deck", "Wall", "Club wall", "Hall wall"] },
       { name: "Score", color: "crew", items: ["Crew pad 3/2/1", "Teacher Score", "Skills 1–4"] },
       { name: "Perk / after", color: "muted", items: ["Wallet $", "Store", "Prints", "Lucky", "Club IN", "Hall HERE"] },
     ],
@@ -36,18 +36,16 @@ export const ARCH_SECTIONS: ArchSection[] = [
   {
     id: "lesson-spine",
     title: "PlanIt → Teach → Deck → Wall",
-    lead: "One write. You type the hour once. Every play surface reads that hour. Deck is not a second copy.",
+    lead: "One write. PlanIt hour card is the author. Teach, Deck, and Wall read that hour.",
     flows: [
       {
         title: "How a class hour is born",
         steps: [
-          { from: "PlanIt week grid", arrow: "tap cell · type Do this · send this hour to empty slots", to: "teachDays for every P × day" },
+          { from: "PlanIt hour card", arrow: "Job · Guiding Q · Prove · beats", to: "teachDays for that P × day" },
+          { from: "PlanIt send this hour", arrow: "empty slots only", to: "same teachDays on other P or days" },
           { from: "PlanIt New unit", arrow: "name + optional question", to: "Parked unit on that period" },
-          { from: "Teach Ask / Do / Objective", arrow: "leave field or change P", to: "teachDays + the same unit" },
-          { from: "Teach Agenda 01–04", arrow: "saveAgendaLine", to: "Wall plate · Deck This hour · Plan Do/close/notes" },
-          { from: "Teach hour pack", arrow: "Workshop / Demo / …", to: "Enter · Listen · Work · Cleanup beats" },
           { from: "Deck Present", arrow: "reads teachJob + hourAgenda", to: "Slides for this P + date" },
-          { from: "Deck Edit slides", arrow: "same saveTeach* / saveAgendaLine writes", to: "Teach + PlanIt + Wall" },
+          { from: "Teach", arrow: "live mirror · Open PlanIt", to: "same hour, no second editor" },
           { from: "Wall beat", arrow: "wallMode from the bell", to: "Enter · Agenda · Cleanup · idle" },
         ],
       },
@@ -57,17 +55,17 @@ export const ARCH_SECTIONS: ArchSection[] = [
         caption: "Lesson fields — who shows them",
         head: ["Field", "Written on", "Teach", "Deck", "Wall", "PlanIt", "Family"],
         rows: [
-          ["Ask / driving question", "Teach or Activity", "Yes", "Title slide", "Idle Hour", "Unit prompt", "No"],
-          ["Agenda 01–04", "Teach Agenda", "Yes", "This hour slide", "Enter / Agenda plate", "Do / close / notes", "No"],
-          ["Do this now", "Teach or Activity.today", "Yes", "Agenda 02 + Prove", "Agenda 02", "Activity", "No"],
-          ["Objective / done", "Teach or Activity.done", "Yes", "Prove", "Done line", "Activity", "No"],
+          ["Job", "PlanIt hour card", "Mirror", "Agenda 02 + Prove Today", "Agenda 02", "Yes", "No"],
+          ["Guiding Q", "PlanIt hour card", "Mirror", "Title slide", "Idle Hour", "Yes", "No"],
+          ["Prove", "PlanIt hour card", "Mirror", "Prove Done", "Done line", "Yes", "No"],
+          ["Beats 01–04", "PlanIt hour card", "Mirror", "This hour slide", "Agenda plate", "Yes", "No"],
           ["Look-for a 3", "Activity.lookFor", "Hour line", "Prove", "Look-for", "Activity", "No"],
-          ["Rules / goggles", "Project constraints", "Listen beat", "Rules slide", "Rules", "Write the job", "No"],
-          ["Hour pack (Workshop…)", "Teach only", "Chips", "Beat kicker", "No", "No", "No"],
+          ["Rules / goggles", "Project constraints", "Listen beat", "Rules slide", "Rules", "Need", "No"],
+          ["Hour pack (Workshop…)", "Teach live", "Chips", "Beat kicker", "No", "No", "No"],
           ["STEM sentence", "Project stemLine", "Objective fallback", "Title line", "Under question", "Unit", "No"],
           ["Hang (Drive / Slides / YouTube / Canva)", "Teach Hang paste", "Yes", "Embed slide", "Under Agenda", "No", "No"],
-          ["Need / materials", "Teach Need or Plan cell", "Yes", "No", "Enter + kit chip", "Yes", "No"],
-          ["Closure / homework / mods", "Plan cell", "No", "No", "No", "Yes", "No"],
+          ["Need / materials", "PlanIt hour card", "Mirror", "No", "Enter + kit chip", "Yes", "No"],
+          ["Closure / homework / mods", "PlanIt notes", "No", "No", "No", "Yes", "No"],
           ["Skill 1–4 expected", "Activity.expect", "No", "No", "Look-for n =", "Activity", "Words after you score"],
         ],
       },
@@ -146,13 +144,14 @@ export const ARCH_SECTIONS: ArchSection[] = [
   {
     id: "learn",
     title: "Learn: Book, Projects, Skills, Words, Grades",
-    lead: "Learn is the filing cabinet. Teach is still the author of today.",
+    lead: "Learn is the filing cabinet. PlanIt is the author of today.",
     tables: [
       {
         caption: "Learn → rest of the shop",
         head: ["Learn tool", "Writes", "Feeds"],
         rows: [
-          ["Projects / Plan book", "Unit, activities, dates, belong, skill, prove", "Teach job, Wall Goals, Deck, lesson PDF"],
+          ["PlanIt", "Job · Guiding Q · Prove · beats for a P × day", "Teach mirror, Wall Goals, Deck, lesson PDF"],
+          ["Projects", "Unit, activities, dates, belong, skill", "Parked unit on a period"],
           ["Watch one skill", "skillLog 1–4 + stem", "Gold XP, Family words, Grades Skill column"],
           ["Standard 5 / NY Tech", "Same 1–4 on S1–S7", "XP, CSV"],
           ["Word Heat", "Streak this heat only", "Nothing else (not wallet, not grade)"],
@@ -321,10 +320,10 @@ How the shop is wired. In-app: **Admin → Docs**. Help **?** is the role book.
 \`\`\`mermaid
 flowchart LR
   subgraph author [Author]
-    Plan[Plan book / Activity]
-    Teach[Teach Ask / Do / pack]
+    Plan[PlanIt hour card]
   end
   subgraph play [Play]
+    Teach[Teach live mirror]
     Deck[Deck]
     Wall[Wall Goals]
     Club[Club wall]
@@ -339,9 +338,8 @@ flowchart LR
     Store[Store / Prints / Lucky]
   end
   Plan --> Teach
-  Teach <--> Deck
-  Teach --> Wall
-  Teach --> Plan
+  Plan --> Deck
+  Plan --> Wall
   Crew --> Wallet
   Skill --> XP[Gold XP]
   Wallet --> Store

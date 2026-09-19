@@ -402,6 +402,10 @@ export function teachHourFilled(day: TeachDay): boolean {
       day.close?.trim() ||
       day.mods?.trim() ||
       day.reflect?.trim() ||
+      day.agenda?.now?.trim() ||
+      day.agenda?.goal?.trim() ||
+      day.agenda?.next?.trim() ||
+      day.agenda?.behave?.trim() ||
       (day.media && day.media.length) ||
       (day.lines && Object.keys(day.lines).length),
   );

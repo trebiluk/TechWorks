@@ -11,7 +11,11 @@ import {
   planitUnitName,
   setPlanitMove,
   setPlanitTitle,
+  writePlanitHour,
 } from "./planit.ts";
+import { hourAgendaWall } from "./hour-flow.ts";
+import { hourIsSet, planCell } from "./planbook.ts";
+import { teachDeckOf } from "./teach-deck.ts";
 
 function desk(): EconomyFile {
   return {
@@ -83,5 +87,34 @@ describe("planit wall strip", () => {
     const prev = planitPreview(file, "2026-09-15", 1);
     assert.equal(prev.title, "Cut the blanks");
     assert.ok(prev.cards.some((c) => c.kicker === "Do this" && c.body.includes("Cut")));
+  });
+
+  it("Mon P1 Job · Guiding Q · Prove · beats fill Wall and Deck", () => {
+    const mon = "2026-09-21";
+    const file = writePlanitHour(desk(), mon, 1, {
+      job: "Sketch one lever.",
+      ask: "How can a small force move a bigger load?",
+      prove: "Point to the load and the force on the sketch.",
+      beats: {
+        now: "Sit with your crew.",
+        goal: "Sketch one lever.",
+        next: "Peer restyle the sketch.",
+        behave: "Choose → work → focus → cleanup.",
+      },
+    });
+    assert.equal(hourIsSet(file, mon, 1), true);
+    const cell = planCell(file, mon, 1);
+    assert.equal(cell.do, "Sketch one lever.");
+    assert.equal(cell.ask, "How can a small force move a bigger load?");
+    assert.equal(cell.objective, "Point to the load and the force on the sketch.");
+    const wall = hourAgendaWall(file, mon, 1);
+    assert.equal(wall.find((c) => c.id === "now")?.body, "Sit with your crew.");
+    assert.equal(wall.find((c) => c.id === "goal")?.body, "Sketch one lever.");
+    assert.equal(wall.find((c) => c.id === "next")?.body, "Peer restyle the sketch.");
+    const deck = teachDeckOf(file, 1, mon);
+    assert.equal(deck.slides[0]?.title, "How can a small force move a bigger load?");
+    assert.equal(deck.slides.find((s) => s.id === "agenda")?.cards?.[1]?.line, "Sketch one lever.");
+    const prove = deck.slides.find((s) => s.id === "prove");
+    assert.ok(prove?.cards?.some((c) => c.line === "Point to the load and the force on the sketch."));
   });
 });

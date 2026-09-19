@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.83 — 2026-09-19
+
+- PlanIt is the only hour writer. Job · Guiding Q · Prove · beats on the hour card fill Wall and Deck. Teach is a read-only mirror. Plan book opens PlanIt, not the Projects dead end.
+
 ## 1.92.82 — 2026-09-19
 
 - Top nav: Wall / Teach / Deck / PlanIt stay fully readable. Fake data and the clock wrap under the chips instead of covering them.

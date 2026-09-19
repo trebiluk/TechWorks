@@ -1,9 +1,9 @@
 import type { EconomyFile } from "@/lib/economy";
 import { formatSchoolDate, isSchoolDay, todayIso, weekOn } from "@/lib/calendar";
 import { createActivityPlan, gradeOfPeriod, pinDayActivity } from "@/lib/projects";
-import { hourAgenda, hourKit } from "@/lib/hour-flow";
+import { hourAgenda, hourKit, saveAgendaLine, type AgendaCard } from "@/lib/hour-flow";
 import { planCell, planitUnitName, type PlanCell } from "@/lib/planbook";
-import { saveTeachAsk, saveTeachDo } from "@/lib/plan-sync";
+import { saveTeachAsk, saveTeachDo, saveTeachObjective } from "@/lib/plan-sync";
 import { setTeachMove } from "@/lib/teach";
 
 /** ITEEA design process + shop-real extras. A tag on the hour — never the hour's name. */
@@ -90,8 +90,53 @@ export function setPlanitTitle(file: EconomyFile, date: string, period: number, 
   return saveTeachDo(file, date, period, title);
 }
 
+export function setPlanitJob(file: EconomyFile, date: string, period: number, job: string): EconomyFile {
+  return setPlanitTitle(file, date, period, job);
+}
+
 export function setPlanitQuestion(file: EconomyFile, date: string, period: number, question: string): EconomyFile {
   return saveTeachAsk(file, date, period, question);
+}
+
+export function setPlanitProve(file: EconomyFile, date: string, period: number, prove: string): EconomyFile {
+  return saveTeachObjective(file, date, period, prove);
+}
+
+export function setPlanitBeat(
+  file: EconomyFile,
+  date: string,
+  period: number,
+  id: AgendaCard["id"],
+  line: string,
+): EconomyFile {
+  return saveAgendaLine(file, date, period, id, line);
+}
+
+export type PlanitHourWrite = {
+  job?: string;
+  ask?: string;
+  prove?: string;
+  beats?: Partial<Record<AgendaCard["id"], string>>;
+};
+
+/** One PlanIt hour write. Wall + Deck read this same teachDays row. */
+export function writePlanitHour(
+  file: EconomyFile,
+  date: string,
+  period: number,
+  hour: PlanitHourWrite,
+): EconomyFile {
+  let next = file;
+  if (hour.job != null) next = setPlanitJob(next, date, period, hour.job);
+  if (hour.ask != null) next = setPlanitQuestion(next, date, period, hour.ask);
+  if (hour.prove != null) next = setPlanitProve(next, date, period, hour.prove);
+  if (hour.beats) {
+    for (const id of ["now", "goal", "next", "behave"] as const) {
+      const line = hour.beats[id];
+      if (line != null) next = setPlanitBeat(next, date, period, id, line);
+    }
+  }
+  return next;
 }
 
 export function setPlanitMove(file: EconomyFile, date: string, period: number, move: string): EconomyFile {

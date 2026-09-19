@@ -55,6 +55,7 @@ export function ActivityMaker({
   onNeedPin,
   onChange,
   onMade,
+  onPlanIt,
 }: {
   file: EconomyFile;
   period: number;
@@ -62,6 +63,7 @@ export function ActivityMaker({
   onNeedPin: () => void;
   onChange: (next: EconomyFile) => void;
   onMade?: (projectId: string) => void;
+  onPlanIt?: () => void;
 }) {
   const today = todayIso();
   const start = nextOpenDay(today);
@@ -139,16 +141,26 @@ export function ActivityMaker({
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-wider text-gold">New activity</p>
-          <p className="mt-0.5 text-sm text-muted">Name the job. Pick the days. PlanIt, Teach, and the Wall play it.</p>
+          <p className="mt-0.5 text-sm text-muted">Park a multi-day unit here. The hour itself is written on PlanIt.</p>
         </div>
-        <button
-          type="button"
-          onClick={make}
-          disabled={!ready}
-          className="tw-tap min-h-10 rounded-full bg-gold px-4 text-sm font-bold text-bg disabled:opacity-40"
-        >
-          {parked ? "Update plan" : "Save on PlanIt"}
-        </button>
+        {ready ? (
+          <button
+            type="button"
+            onClick={make}
+            className="tw-tap min-h-10 rounded-full bg-gold px-4 text-sm font-bold text-bg"
+          >
+            {parked ? "Update plan" : "Park unit"}
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => (onPlanIt ? onPlanIt() : undefined)}
+            disabled={!onPlanIt}
+            className="tw-tap min-h-10 rounded-full bg-gold px-4 text-sm font-bold text-bg disabled:opacity-40"
+          >
+            Write this hour on PlanIt
+          </button>
+        )}
       </div>
       {parked ? (
         <p className="text-sm font-semibold text-gold">On the plan · Teach, Wall, and Deck play this. Tap a day below to edit.</p>

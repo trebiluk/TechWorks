@@ -223,21 +223,21 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Teach mode",
     tags: ["teach", "lesson", "now", "slots", "objective", "demo"],
     wall: true,
-    body: "Dash → Teach. Type Ask, Do this now, and Objective — leave a field (or change period) and it saves. Same words become the Deck and the Plan book. Hang a Drive file, Slides, Doc, YouTube, or Canva on this hour (Share → Anyone with the link). Deck plays the hang as a slide. Hour packs change the beats. Arrange plates (not the cog) to drag or hide. After class, Wall hangs the scoreboard. No names on Teach.",
+    body: "Dash → Teach. Live clock and the hour PlanIt wrote. Green dots + “n of 8 hours set” mean that hour is planned. Open PlanIt to type Job · Guiding Q · Prove · beats. Hang a Drive file, Slides, Doc, YouTube, or Canva on this hour. Deck plays the hang as a slide. Arrange plates (not the cog) to drag or hide. After class, Wall hangs the scoreboard. No names on Teach.",
   },
   {
     id: "dash-plan",
     category: "Dashboard",
     title: "PlanIt",
     tags: ["plan", "planit", "planbook", "week", "copy", "materials", "homework", "closure", "sub", "objective"],
-    body: "Learn → PlanIt is the week timetable. Periods down, days across. One sentence on the block is the Wall. Click a block to write Lesson, Aim, Need, Close. Send this hour copies onto empty cells only. Arrow keys move. Print week. Teach and Wall open from the inspector.",
+    body: "Learn → PlanIt is the week timetable. Periods down, days across. Click a block and type Job · Guiding Q · Prove · beats — that write fills Wall and Deck. Teach is a live mirror. Send this hour copies onto empty cells only. Arrow keys move. Print week.",
   },
   {
     id: "dash-loop",
     category: "Dashboard",
     title: "The class loop",
     tags: ["agenda", "enter", "cleanup", "teach", "wall", "hang", "crew", "bell"],
-    body: "Arrive → Teach. Green dots + “n of 8 hours set” mean that hour is planned. Type Agenda 01–04 and Need (goggles / stock); it is the Wall, the Deck, and PlanIt. Paste a Drive or Canva link on Hang — it plays on the Wall under Agenda. See wall is next to Deck. Send this hour copies the agenda onto other empty periods or days you pick — never a week blast. Wall: Enter is sit / need / in a minute, then a chime into Agenda 2×2 with This week under it, coral Cleanup in the last minutes. After the last bell the Agenda stays. Crew lead PIN: today’s make, last marks, Buy if the catalog has perks.",
+    body: "Arrive → Teach to run the hour PlanIt wrote. Green dots + “n of 8 hours set” mean that hour is planned. Type Job · Guiding Q · Prove · beats on PlanIt — it is the Wall and the Deck. Paste a Drive or Canva link on Hang — it plays on the Wall under Agenda. See wall is next to Deck. Send this hour on PlanIt copies onto other empty periods or days you pick — never a week blast. Wall: Enter is sit / need / in a minute, then a chime into Agenda 2×2 with This week under it, coral Cleanup in the last minutes. After the last bell the Agenda stays. Crew lead PIN: today’s make, last marks, Buy if the catalog has perks.",
   },
   {
     id: "admin-crews",
@@ -441,7 +441,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Skills",
     title: "Projects",
     tags: ["project", "agenda", "activity", "plan book", "cycle", "gradebook", "stem", "driving question", "unit"],
-    body: "Learn → Projects. The desk starts empty — you type the unit. PlanIt is the week grid: name a unit there, or New Activity here for belong / dates. Teach for that day is the author; Deck only plays it. Print lesson from PlanIt or Teach makes the PDF. Floor parks the unit on a period.",
+    body: "Learn → Projects parks a multi-day unit. The hour itself is written on PlanIt: Job · Guiding Q · Prove · beats. That write fills Wall and Deck. Print lesson from PlanIt. Floor parks the unit on a period.",
   },
   {
     id: "studyhall",
@@ -564,7 +564,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Deck plays Teach",
     tags: ["deck", "slides", "projector", "theme", "navy", "violet", "powerpoint", "edit"],
     wall: true,
-    body: "Dash → Deck plays today’s Teach plan. Present is play-only (even with PIN). Edit slides, then leave a field — Ask / Do / hour lines write to Teach. Same date and period chip. E toggles edit. Hour pack still lives on Teach.",
+    body: "Dash → Deck plays this hour from PlanIt. Present is play-only (even with PIN). Same date and period chip. Write Job · Guiding Q · Prove · beats on PlanIt.",
   },
   {
     id: "roster-ids",
@@ -694,14 +694,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "App map (architecture)",
     tags: ["architecture", "map", "docs", "plan book", "teach", "deck", "wall", "club", "hall", "skills", "store"],
-    body: "Admin → Docs. Plan book and Teach write the hour; Deck and Wall play it. Crew 3/2/1 is not a skill 1–4. Wallet $ never goes on the Family sheet. Club and Hall are after-school — not Tech effort. Download architecture from Docs or from this Help panel.",
+    body: "Admin → Docs. PlanIt writes the hour; Teach, Deck, and Wall play it. Crew 3/2/1 is not a skill 1–4. Wallet $ never goes on the Family sheet. Club and Hall are after-school — not Tech effort. Download architecture from Docs or from this Help panel.",
   },
   {
     id: "teach-plan",
     category: "Dashboard",
-    title: "Plan book → Teach → Deck → Wall",
+    title: "PlanIt → Teach → Deck → Wall",
     tags: ["plan", "teach", "deck", "wall", "activity", "unit"],
-    body: "One write. Create the activity (or type Ask / Do on Teach). Dates and grade land it on the Plan book. Teach for that day is the only author. Deck plays that plan (Present for the class, Edit slides if you must type on the glass). Wall hangs the job after class. Changing period or day still keeps the draft.",
+    body: "One write. Type Job · Guiding Q · Prove · beats on the PlanIt hour card. That same row fills Wall and Deck. Teach is a read-only mirror (Open PlanIt to edit). Deck Present plays the hour. Hang still pastes on Teach.",
   },
   {
     id: "roles-it",
@@ -762,7 +762,7 @@ Web = Family web (?web=1). Globe = translate (EN / UK / RU). Cleanup coral is a 
 
 ## PlanIt → Teach → Deck → Wall
 
-One write. Type Ask / Do / Agenda on Teach (or Edit slides on Deck, or a PlanIt cell). Leave the field or change period — the draft still saves. Present is play-only. Hang a Drive / Slides / YouTube / Canva link on Teach; Deck and Wall play it. Arrange wall (drag columns) and Arrange plates live on those pages — not the cog.
+One write. Type Job · Guiding Q · Prove · beats on the PlanIt hour card. Teach is a live mirror. Present is play-only. Hang a Drive / Slides / YouTube / Canva link on Teach; Deck and Wall play it. Arrange wall (drag columns) and Arrange plates live on those pages — not the cog.
 
 ## Score, Store, Club, Hall
 
@@ -773,7 +773,7 @@ One write. Type Ask / Do / Agenda on Teach (or Edit slides on Deck, or a PlanIt 
 
 ## Monday
 
-Shop PC only. Fake data Off. Snapshot. Mint desk key. Push if this PC has workers; Pull if this PC is empty. Paste Last, First, Period (names mint aliases, then drop). Wall shows aliases. Teach: type Ask / Do. Flip to Deck — same words.
+Shop PC only. Fake data Off. Snapshot. Mint desk key. Push if this PC has workers; Pull if this PC is empty. Paste Last, First, Period (names mint aliases, then drop). Wall shows aliases. PlanIt: type Job · Guiding Q · Prove · beats. Flip to Deck — same words.
 
 ## Deploy
 

@@ -11,11 +11,20 @@ import {
   setTeachMaterials,
   setTeachMods,
   setTeachNotes,
-  setTeachObjective,
   setTeachReflect,
 } from "@/lib/teach";
 import { planWeek, weekFillCount, type PlanCell } from "@/lib/planbook";
-import { newPlanitUnit, parkPlanitUnit, planitPreview, setPlanitTitle, weekdayShort } from "@/lib/planit";
+import {
+  newPlanitUnit,
+  parkPlanitUnit,
+  planitPreview,
+  setPlanitJob,
+  setPlanitProve,
+  setPlanitQuestion,
+  setPlanitBeat,
+  weekdayShort,
+} from "@/lib/planit";
+import { hourAgendaDraft } from "@/lib/hour-flow";
 import { DraftField } from "@/components/draft-field";
 import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
 import { KitChip } from "@/components/agenda-wall";
@@ -29,6 +38,8 @@ export function PlanIt({
   onChange,
   onTeach,
   onWall,
+  date: dateProp,
+  period: periodProp,
 }: {
   file: EconomyFile;
   unlocked: boolean;
@@ -36,12 +47,23 @@ export function PlanIt({
   onChange: (next: EconomyFile) => void;
   onTeach?: (date: string, period: number) => void;
   onWall?: () => void;
+  date?: string;
+  period?: number;
 }) {
   const today = todayIso();
   const bells = shopBells(file);
   const firstP = bells[0]?.period ?? 1;
-  const [weekDate, setWeekDate] = useState(today);
-  const [open, setOpen] = useState<{ date: string; period: number }>({ date: today, period: firstP });
+  const startDate = dateProp || today;
+  const startPeriod = periodProp ?? firstP;
+  const [weekDate, setWeekDate] = useState(startDate);
+  const [open, setOpen] = useState<{ date: string; period: number }>({ date: startDate, period: startPeriod });
+  useEffect(() => {
+    if (!dateProp && periodProp == null) return;
+    const d = dateProp || today;
+    const p = periodProp ?? firstP;
+    setWeekDate(d);
+    setOpen({ date: d, period: p });
+  }, [dateProp, periodProp, today, firstP]);
   const [printOn, setPrintOn] = useState(false);
   const [notice, setNotice] = useState("");
   const week = weekOn(weekDate);
@@ -273,7 +295,7 @@ function HourDesk({
   const project = slotsOf(file, p, d)[0];
   const units = slotsOf(file, p);
   const preview = planitPreview(file, d, p);
-  const empty = !cell.set;
+  const beats = hourAgendaDraft(file, d, p);
 
   return (
     <aside className="tw-planit-desk tw-gadget tw-chamfer" data-planit-hour>
@@ -292,27 +314,66 @@ function HourDesk({
       </div>
 
       <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Lesson</span>
+        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Job</span>
         <DraftField
           value={cell.do || cell.title}
           editing={unlocked}
           multiline
-          onCommit={(v) => onEdit(setPlanitTitle(file, d, p, v))}
-          placeholder="One line. That’s the wall."
+          onCommit={(v) => onEdit(setPlanitJob(file, d, p, v))}
+          placeholder="What they do this hour — that’s the wall."
+          aria-label="Job"
           className="min-h-[4.5rem] rounded-xl bg-elevated px-3 py-2 font-display text-lg font-semibold"
         />
       </label>
 
       <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Aim</span>
+        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Guiding Q</span>
+        <DraftField
+          value={cell.ask}
+          editing={unlocked}
+          multiline
+          onCommit={(v) => onEdit(setPlanitQuestion(file, d, p, v))}
+          placeholder="How can a small force move a bigger load?"
+          aria-label="Guiding question"
+          className="min-h-11 rounded-xl bg-elevated px-3 py-2 text-sm"
+        />
+      </label>
+
+      <label className="grid gap-1">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Prove</span>
         <DraftField
           value={cell.objective}
           editing={unlocked}
-          onCommit={(v) => onEdit(setTeachObjective(file, d, p, v))}
-          placeholder="They will be able to…"
+          onCommit={(v) => onEdit(setPlanitProve(file, d, p, v))}
+          placeholder="What they show before the bell."
+          aria-label="Prove"
           className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
         />
       </label>
+
+      <div className="grid gap-2" data-planit-beats>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Beats</p>
+        {(
+          [
+            ["now", "01 Now", "Sit with your crew."],
+            ["goal", "02 Do this", "The make for this hour."],
+            ["next", "03 Then", "Second move · peer restyle"],
+            ["behave", "04 How we work", "Choose → work → focus → cleanup."],
+          ] as const
+        ).map(([id, label, ph]) => (
+          <label key={id} className="grid gap-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-muted">{label}</span>
+            <DraftField
+              value={beats.find((c) => c.id === id)?.body ?? ""}
+              editing={unlocked}
+              onCommit={(v) => onEdit(setPlanitBeat(file, d, p, id, v))}
+              placeholder={ph}
+              aria-label={label}
+              className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
+            />
+          </label>
+        ))}
+      </div>
 
       <div className="grid grid-cols-2 gap-2">
         <label className="grid gap-1">

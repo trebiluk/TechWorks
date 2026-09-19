@@ -76,7 +76,7 @@ type View = "crew" | "score" | "overview" | "week" | "year" | "data" | "wallet" 
 type DeskPanel = "score" | "schedule" | "config";
 
 function gearHint(view: string): string {
-  if (view === "teach") return "Drag plates. Hide with the eye. Typing Ask / Do is always on.";
+  if (view === "teach") return "Drag plates. Hide with the eye. The hour is written on PlanIt.";
   if (view === "overview") return "Pick a kit, hide plates, drag the grip.";
   return "";
 }
@@ -916,7 +916,7 @@ export function Board() {
           start={learnStart}
           jumpPeriod={jumpPeriod}
           jumpCrew={jumpCrew}
-          jumpDate={jumpDate}
+          jumpDate={jumpDate ?? planDate}
           onOpenSettings={() => go("admin")}
           onRankUp={rankUp}
           onTeachDay={(iso, p) => {
@@ -925,6 +925,7 @@ export function Board() {
             go("teach");
           }}
           onSeeWall={() => go("overview")}
+          onStart={setLearnStart}
         />
       ) : view === "wallet" ? (
         <WalletBoard file={wallFile} quote={quote} unlocked={unlocked} onNeedPin={() => askPin()} onChange={commitDesk} />
@@ -977,7 +978,7 @@ export function Board() {
             return;
           }
           setArrangeOn((v) => !v);
-        }} date={planDate} onDate={setPlanDate} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onBerty={() => setOpenId(HOUSE_BERTY)} onPlan={() => { setLearnStart("projects"); go("skills"); }} onWords={() => { setLearnStart("words"); go("skills"); }} onWall={() => go("overview")} onDeck={() => go("deck")} />
+        }} date={planDate} onDate={setPlanDate} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onBerty={() => setOpenId(HOUSE_BERTY)} onPlan={(iso, p) => { if (iso) setPlanDate(iso); if (p != null) setJumpPeriod(p); setLearnStart("plan"); go("skills"); }} onWords={() => { setLearnStart("words"); go("skills"); }} onWall={() => go("overview")} onDeck={() => go("deck")} />
         )
       ) : view === "polls" ? (
         <PollBoard file={file} unlocked={unlocked} onChange={commitDesk} onNeedPin={() => askPin()} />
