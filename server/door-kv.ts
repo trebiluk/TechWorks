@@ -140,6 +140,7 @@ export async function loadDoor(event: unknown): Promise<{ pack: DoorPack; store:
       return { pack: sanitizePack({ links: [] }), store: "cache" };
     }
   }
+  if (cacheOf()) return { pack: sanitizePack({ links: [] }), store: "cache" };
   return { pack: sanitizePack({ links: [] }), store: "none" };
 }
 

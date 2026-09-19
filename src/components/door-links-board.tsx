@@ -36,7 +36,7 @@ export function DoorLinksBoard({
       setUpdated(pack.updated ?? "");
       const n = (pack.links ?? []).length;
       if (pack.store === "none") {
-        setStatus("Ready. First save publishes to every Chromebook.");
+        setStatus("Door store is not bound on this host yet.");
       } else {
         setStatus(`${n} live on the Tech Room door.`);
       }
