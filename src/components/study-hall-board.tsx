@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Presentation, X } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
-import { isLiveStudent, padFirst, showFirstReal } from "@/lib/economy";
+import { padFirst, showFirstReal } from "@/lib/economy";
 import {
   abOn,
   attendOn,
@@ -9,7 +9,6 @@ import {
   hallOf,
   happenedOn,
   lineLeaderOn,
-  onAbRoster,
   pickLineLeader,
   setAbDay,
   setAffect,
@@ -32,6 +31,7 @@ import { useShopClock } from "@/lib/use-clock";
 import { QuarterChip } from "@/components/quarter-chip";
 import { HallStore } from "@/components/hall-store";
 import { TouchTimer } from "@/components/touch-timer";
+import { HALL_EMPTY_COPY, p6HallKids } from "@/lib/hall-roster";
 import { cn } from "@/lib/utils";
 
 const FACES = ["😞", "😐", "🙂", "😄", "😴"] as const;
@@ -78,13 +78,12 @@ export function StudyHallBoard({
   const hall = hallOf(file);
   const letter = abOn(file, date);
   const real = showFirstReal(file);
-  const kids = useMemo(
-    () =>
-      file.students
-        .filter((s) => s.period === P6 && isLiveStudent(s, file.meta.quarterName) && onAbRoster(s, letter))
-        .sort((a, b) => a.crewKey.localeCompare(b.crewKey) || padFirst(a, showFirstReal(file)).localeCompare(padFirst(b, showFirstReal(file)))),
-    [file, letter],
-  );
+  const kids = useMemo(() => {
+    const realNames = showFirstReal(file);
+    return p6HallKids(file, letter).sort(
+      (a, b) => a.crewKey.localeCompare(b.crewKey) || padFirst(a, realNames).localeCompare(padFirst(b, realNames)),
+    );
+  }, [file, letter]);
   const leadId = lineLeaderOn(file, date);
   const lead = kids.find((s) => s.id === leadId);
   const bell = bellForPeriod(P6, deskBellId(file));
@@ -124,7 +123,7 @@ export function StudyHallBoard({
         <h1 className="font-display text-2xl font-semibold tracking-tight">Study Hall</h1>
         <QuarterChip date={date} />
         {bell ? <span className="font-mono text-sm text-muted">{formatBell(bell.start)}–{formatBell(bell.end)}</span> : null}
-        <span className="text-sm text-muted">{hereN} here · {kids.length - hereN} out</span>
+        <span className="text-sm text-muted">{kids.length ? `${hereN} here · ${kids.length - hereN} out` : HALL_EMPTY_COPY}</span>
         <div className="ml-auto flex flex-wrap items-center gap-1">
           <button type="button" aria-label="Previous day" className="tw-tap inline-flex size-11 items-center justify-center rounded-lg bg-surface" onClick={() => setDate(stepSchoolDay(date, -1))}>
             <ChevronLeft className="size-4" />
@@ -327,7 +326,7 @@ export function StudyHallBoard({
               );
             })}
           </ul>
-          {!kids.length ? <p className="p-3 text-sm text-muted">No study hall roster for {letter} day.</p> : null}
+          {!kids.length ? <p className="p-3 text-sm text-muted">{HALL_EMPTY_COPY}</p> : null}
         </section>
       </div>
       {drawerId ? (

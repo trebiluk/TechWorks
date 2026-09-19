@@ -394,7 +394,21 @@
         "8|9|Crew A": "TW-P9-S2-01",
         "8|10|Crew A": "TW-P10-S2-01"
       },
-      "roleHistory": []
+      "roleHistory": [],
+      "classes": {
+        "p6-study-hall": {
+          "id": "p6-study-hall",
+          "period": 6,
+          "course": "STUDY HALL",
+          "section": 10,
+          "room": "136",
+          "rosterStatus": "empty",
+          "roster": {
+            "A": [],
+            "B": []
+          }
+        }
+      }
     },
     "dayLog": {},
     "ledger": [],

@@ -164,6 +164,19 @@ export type EconomyFile = {
         owes?: { id: string; item: string }[];
         shop?: { category: string; name: string; price: number }[];
       };
+      /** Solvay / desk class map. Hall reads `p6-study-hall` (or `hall`). Aliases only. */
+      classes?: Record<
+        string,
+        {
+          id?: string;
+          period?: number;
+          course?: string;
+          section?: number;
+          room?: string;
+          rosterStatus?: "empty" | "loaded";
+          roster?: { A?: string[]; B?: string[]; BOTH?: string[] };
+        }
+      >;
       lineLeaders?: Record<string, string>;
       projectByGrade?: Record<string, string>;
       /** Cycle · period · crew → project id. Empty = grade default for that cycle. */

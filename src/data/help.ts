@@ -258,7 +258,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Admin",
     title: "Fake data",
     tags: ["fake", "demo", "messy", "debug", "graph"],
-    body: "Admin → Modules → Fake data, then Off / One week / One cycle / Messy cycle. That paints Wall, Week, Year, Score, Crews, Learn, Wallet, Rosters, Cleanup, and Data. Taps on those boards do not write to the saved roster. Gold chip says Fake data · not saved. Off before you import real names. Messy on an empty desk shows a throwaway Forge/Volt shop so you can see every board.",
+    body: "Admin → Modules → Fake data, then Off / One week / One cycle / Messy cycle. That paints Wall, Week, Year, Score, Crews, Learn, Wallet, Rosters, Cleanup, Data, and Hall (demo P6 SH aliases). Taps on those boards do not write to the saved roster. Gold chip says Fake data · not saved. Off before you import real names. Messy on an empty desk shows a throwaway Forge/Volt shop so you can see every board.",
   },
   {
     id: "roles-teacher",
@@ -448,7 +448,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Study Hall",
     title: "Study Hall pad",
     tags: ["study hall", "p6", "a day", "b day", "cleanup", "hall"],
-    body: "Admin → Hall Mgr, or tap P6 on the wall (unlocked). Phone: Hall next to Admin. Check-in pad (HERE / NURSE / …). Tap a name for the drawer (ready, on-task, note). Dash → Hall is the projector wall (HERE counts). Habits ≠ Tech XP. Data → Mix is the only building rank.",
+    body: "Admin → Hall Mgr, or tap P6 SH on the wall (unlocked). Phone: Hall next to Admin. Auto-loads P6 Study Hall. Empty class says No class loaded — never Everyone is in the room. Check-in pad (HERE / NURSE / …). Tap a name for the drawer (ready, on-task, note). Dash → Hall is the projector wall (HERE counts). Habits ≠ Tech XP. Data → Mix is the only building rank. Fake data paints demo hall aliases only.",
   },
   {
     id: "studyhall-wall",
@@ -456,7 +456,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Study Hall wall",
     tags: ["hall", "p6", "here", "wall", "study hall"],
     wall: true,
-    body: "Dash → Hall is the projector: HERE counts, not Tech XP. P6 on the Wall jumps there when unlocked. Coral cleanup has its own hall list. Store on Hall is separate perks, not class effort.",
+    body: "Dash → Hall is the P6 Study Hall projector: HERE counts, not Tech XP. P6 SH on the Wall jumps to the teacher pad when unlocked. Empty class says No class loaded. Coral cleanup has its own hall list. Store on Hall is separate perks, not class effort.",
   },
   {
     id: "club",

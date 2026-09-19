@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
-import { isLiveStudent } from "@/lib/economy";
-import { abOn, attendOn, deskBellId, hallOf, happenedOn, lineLeaderOn, onAbRoster, pickLineLeader, setHallShow, setHappened, setLineLeader, specialsOn, type LinePick } from "@/lib/store";
+import { abOn, attendOn, deskBellId, hallOf, happenedOn, lineLeaderOn, pickLineLeader, setHallShow, setHappened, setLineLeader, specialsOn, type LinePick } from "@/lib/store";
+import { HALL_EMPTY_COPY, hallAwayLine, p6HallKids } from "@/lib/hall-roster";
 import { todayIso } from "@/lib/calendar";
 import { formatBell, leftClock, periodClock, periodNow } from "@/lib/bells";
 import { useShopClock } from "@/lib/use-clock";
@@ -47,13 +47,7 @@ export function StudyHallDash({
   const clock = periodClock(P6, bellsId, now);
   const live = periodNow(bellsId, now);
   const hall = hallOf(file);
-  const kids = useMemo(
-    () =>
-      file.students
-        .filter((s) => s.period === P6 && isLiveStudent(s, file.meta.quarterName) && onAbRoster(s, letter))
-        .sort((a, b) => a.first.localeCompare(b.first)),
-    [file, letter],
-  );
+  const kids = useMemo(() => p6HallKids(file, letter), [file, letter]);
   const leadId = lineLeaderOn(file, today);
   const lead = kids.find((s) => s.id === leadId);
   const here = kids.filter((s) => !OUT.has(attendOn(s, today)));
@@ -190,6 +184,9 @@ export function StudyHallDash({
       <section className="grid min-h-0 flex-1 gap-2 lg:grid-cols-[minmax(0,1.5fr)_minmax(14rem,0.7fr)]">
         <article className="rounded-3xl bg-surface px-4 py-4">
           <p className="text-lg font-semibold">With us · {here.length}</p>
+          {!kids.length ? (
+            <p className="mt-3 text-sm text-muted">{HALL_EMPTY_COPY}</p>
+          ) : (
           <ul className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
             {here.map((s) => {
               const reset = (s.trackDays ?? {})[today] === "off";
@@ -217,6 +214,7 @@ export function StudyHallDash({
               );
             })}
           </ul>
+          )}
         </article>
         <article className="rounded-3xl bg-surface px-4 py-4">
           <p className="text-lg font-semibold">With someone else · {away.length}</p>
@@ -231,7 +229,7 @@ export function StudyHallDash({
               ))}
             </ul>
           ) : (
-            <p className="mt-3 text-sm text-muted">Everyone is in the room. Nice.</p>
+            <p className="mt-3 text-sm text-muted">{hallAwayLine(kids, away.length)}</p>
           )}
         </article>
       </section>

@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.94. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.95. -->
 
 # TechWorks changelog
 
-App version **1.92.94**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.95**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.95 — 2026-09-19
+
+- Hall auto-loads P6 Study Hall on the projector and the teacher pad. Empty A-day copy is **No class loaded** — never “Everyone is in the room.” Fake data paints demo hall aliases (not saved). Solvay profile roster stays empty until Diego pastes nicknames.
 
 ## 1.92.94 — 2026-09-19
 
