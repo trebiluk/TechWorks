@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.85 — 2026-09-19
+
+- Wall hour plate shows Guiding Q and Prove from the same PlanIt teachDays row Deck already reads. 1.92.84 is the Edge Pocket nav PR.
+
 ## 1.92.84 — 2026-09-19
 
 - One thin top row. Wall / Teach / Deck / Week / Club / Hall stay on it. Fake data, Find, clock, and utilities live in More (Edge Pocket overlay) — never a second chrome row on zoom.

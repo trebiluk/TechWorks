@@ -55,9 +55,9 @@ export const ARCH_SECTIONS: ArchSection[] = [
         caption: "Lesson fields — who shows them",
         head: ["Field", "Written on", "Teach", "Deck", "Wall", "PlanIt", "Family"],
         rows: [
-          ["Job", "PlanIt hour card", "Mirror", "Agenda 02 + Prove Today", "Agenda 02", "Yes", "No"],
-          ["Guiding Q", "PlanIt hour card", "Mirror", "Title slide", "Idle Hour", "Yes", "No"],
-          ["Prove", "PlanIt hour card", "Mirror", "Prove Done", "Done line", "Yes", "No"],
+          ["Job", "PlanIt hour card", "Mirror", "Agenda 02 + Prove Today", "NOW band + Agenda 02", "Yes", "No"],
+          ["Guiding Q", "PlanIt hour card", "Mirror", "Title slide", "Hour plate", "Yes", "No"],
+          ["Prove", "PlanIt hour card", "Mirror", "Prove Done", "Hour plate", "Yes", "No"],
           ["Beats 01–04", "PlanIt hour card", "Mirror", "This hour slide", "Agenda plate", "Yes", "No"],
           ["Look-for a 3", "Activity.lookFor", "Hour line", "Prove", "Look-for", "Activity", "No"],
           ["Rules / goggles", "Project constraints", "Listen beat", "Rules slide", "Rules", "Need", "No"],

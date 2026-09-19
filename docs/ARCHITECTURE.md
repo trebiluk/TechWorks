@@ -75,10 +75,10 @@ Wall beat  —wallMode from the bell→  Enter · Agenda · Cleanup · idle
 
 | Field | Written on | Teach | Deck | Wall | PlanIt | Family |
 | --- | --- | --- | --- | --- | --- | --- |
-| Ask / driving question | Teach or Activity | Yes | Title slide | Idle Hour | Unit prompt | No |
+| Ask / driving question | Teach or Activity | Yes | Title slide | Hour plate | Unit prompt | No |
 | Agenda 01–04 | Teach Agenda | Yes | This hour slide | Enter / Agenda plate | Do / close / notes | No |
-| Do this now | Teach or Activity.today | Yes | Agenda 02 + Prove | Agenda 02 | Activity | No |
-| Objective / done | Teach or Activity.done | Yes | Prove | Done line | Activity | No |
+| Do this now | Teach or Activity.today | Yes | Agenda 02 + Prove | NOW band + Agenda 02 | Activity | No |
+| Objective / done | Teach or Activity.done | Yes | Prove | Hour plate | Activity | No |
 | Look-for a 3 | Activity.lookFor | Hour line | Prove | Look-for | Activity | No |
 | Rules / goggles | Project constraints | Listen beat | Rules slide | Rules | Write the job | No |
 | Hour pack (Workshop…) | Teach only | Chips | Beat kicker | No | No | No |
