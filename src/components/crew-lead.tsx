@@ -8,11 +8,11 @@ import { abOn, attendOn, buyShop, catalogOf, crewLeaderId, deskBellId, onAbRoste
 import { todayIso } from "@/lib/calendar";
 import { periodNow } from "@/lib/bells";
 import { CrewBanner, WorkerCard } from "@/components/shop-cards";
-import { ScoreDesk } from "@/components/score";
-import { assignCrewProject, agendaFor, crewProjectId, slotsOf } from "@/lib/projects";
-import { hourAgenda } from "@/lib/hour-flow";
+import { CrewHex, ScoreDesk } from "@/components/score";
+import { assignCrewProject, crewProjectId, slotsOf } from "@/lib/projects";
 import { currentCycleOf } from "@/lib/roles";
 import { cn } from "@/lib/utils";
+import { readOwnCrew, writeOwnCrew } from "@/lib/score-pad";
 
 const FACES = ["😞", "😐", "🙂", "😄"] as const;
 const WHERE = ["", "nurse", "library", "teacher"] as const;
@@ -33,77 +33,96 @@ export function CrewLead({
   const live = periodNow(deskBellId(file, today));
   const period = live && bells.some((b) => b.period === live) ? live : (bells[0]?.period ?? 1);
   const [pane, setPane] = useState<"score" | "crew" | "buy">("score");
-  const [crewKey, setCrewKey] = useState(() => crewsOf(file, period, today)[0]?.key ?? "Crew A");
+  const [ownCrew, setOwnCrew] = useState(() => readOwnCrew());
+  const [crewKey, setCrewKey] = useState(() => ownCrew || crewsOf(file, period, today)[0]?.key || "Crew A");
   const letter = abOn(file, today);
-  const crews = crewsOf(file, period, today);
+  const crews = crewsOf(file, period, today).filter((c) => c.kids.length > 0);
+  const locked = crews.find((c) => c.key === ownCrew) ?? null;
   const crew = crews.find((c) => c.key === crewKey) ?? crews[0];
   const rec = file.crews.find((c) => c.period === period && c.key === (crew?.key ?? crewKey));
-  const todayJob = hourAgenda(file, today, period).find((c) => c.id === "goal")?.body
-    || slotsOf(file, period)[0]?.title
-    || "";
-  const unit = agendaFor(file, period, today, crew?.key);
   const shop = catalogOf(file, period);
   const buyOn = shop.length > 0;
-  const unitLine = [unit.title, unit.activityName].filter((x) => x && x !== todayJob).join(" · ");
+
+  function pickOwn(key: string) {
+    setOwnCrew(key);
+    setCrewKey(key);
+    writeOwnCrew(key);
+  }
+
+  function signOut() {
+    writeOwnCrew("");
+    onSignOut();
+  }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-crew text-fg" data-crew="on">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-bg text-fg" data-crew="on">
       <header className="shrink-0 px-2 pt-2">
-        <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-gold px-3 py-3 text-bg ring-4 ring-gold/40">
-          <div className="min-w-0">
-            <p className="font-display text-2xl font-bold uppercase tracking-tight">Crew lead · signed in</p>
-            <p className="text-sm font-semibold opacity-80">
-              P{period}
-              {todayJob ? ` · ${todayJob}` : ""}
-              {unitLine ? ` · ${unitLine}` : ""}
-              {" · scoring + our crew only · not Admin"}
-            </p>
-          </div>
-          <button type="button" onClick={onSignOut} className="tw-tap ml-auto min-h-11 rounded-lg bg-bg px-4 text-sm font-bold text-fg">
+        <div className="flex flex-wrap items-center gap-2">
+          <nav className={cn("grid min-w-0 flex-1 gap-1", buyOn ? "grid-cols-3" : "grid-cols-2")} aria-label="Crew">
+            <button
+              type="button"
+              onClick={() => setPane("score")}
+              className={cn("tw-tap min-h-11 rounded-xl text-sm font-bold", pane === "score" ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+            >
+              1 · Score
+            </button>
+            <button
+              type="button"
+              onClick={() => setPane("crew")}
+              className={cn("tw-tap min-h-11 rounded-xl text-sm font-bold", pane === "crew" ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+            >
+              2 · Our crew
+            </button>
+            {buyOn ? (
+              <button
+                type="button"
+                onClick={() => setPane("buy")}
+                className={cn("tw-tap min-h-11 rounded-xl text-sm font-bold", pane === "buy" ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+              >
+                3 · Buy
+              </button>
+            ) : null}
+          </nav>
+          <button type="button" onClick={signOut} className="tw-tap min-h-11 rounded-lg bg-elevated px-4 text-sm font-bold">
             Sign out
           </button>
         </div>
-        <nav className={cn("mt-2 grid gap-1", buyOn ? "grid-cols-3" : "grid-cols-2")} aria-label="Crew">
-          <button
-            type="button"
-            onClick={() => setPane("score")}
-            className={cn("tw-tap min-h-14 rounded-xl text-base font-bold", pane === "score" ? "bg-accent text-accent-fg" : "bg-crew-card text-muted")}
-          >
-            1 · Daily scoring
-          </button>
-          <button
-            type="button"
-            onClick={() => setPane("crew")}
-            className={cn("tw-tap min-h-14 rounded-xl text-base font-bold", pane === "crew" ? "bg-accent text-accent-fg" : "bg-crew-card text-muted")}
-          >
-            2 · Our crew
-          </button>
-          {buyOn ? (
-            <button
-              type="button"
-              onClick={() => setPane("buy")}
-              className={cn("tw-tap min-h-14 rounded-xl text-base font-bold", pane === "buy" ? "bg-accent text-accent-fg" : "bg-crew-card text-muted")}
-            >
-              3 · Buy
-            </button>
-          ) : null}
-        </nav>
       </header>
       {pane === "score" ? (
         <div className="mt-2 min-h-0 flex-1 overflow-hidden px-2 pb-2">
-          <ScoreDesk
-            file={file}
-            onChange={onChange}
-            unlocked={false}
-            onNeedPin={onNeedPin}
-            onOpenId={() => {}}
-            jumpPeriod={period}
-            jumpCrew={crew?.key}
-            jumpDate={today}
-            onOpenSettings={() => setPane("crew")}
-            mode="crew"
-            panel="score"
-          />
+          {!locked ? (
+            <div data-crew-pick className="score-lead-card flex min-h-0 flex-1 flex-col gap-3 p-4">
+              <p className="font-display text-2xl font-semibold tracking-tight">Which crew are you?</p>
+              <p className="text-sm text-muted">Your crew only. Other crews’ marks stay hidden.</p>
+              <div className="flex flex-wrap gap-2">
+                {crews.map((c) => (
+                  <button
+                    key={c.key}
+                    type="button"
+                    onClick={() => pickOwn(c.key)}
+                    className="tw-tap inline-flex min-h-11 items-center gap-2 rounded-xl bg-elevated px-4 text-base font-semibold"
+                  >
+                    <CrewHex name={c.name || c.key} />
+                    {c.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <ScoreDesk
+              file={file}
+              onChange={onChange}
+              unlocked={false}
+              onNeedPin={onNeedPin}
+              onOpenId={() => {}}
+              jumpPeriod={period}
+              jumpCrew={locked.key}
+              jumpDate={today}
+              onOpenSettings={() => setPane("crew")}
+              mode="crew"
+              panel="score"
+            />
+          )}
         </div>
       ) : pane === "buy" ? (
         <div className="mt-2 min-h-0 flex-1 overflow-y-auto px-2 pb-3">

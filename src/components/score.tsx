@@ -1,134 +1,117 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Undo2, Users } from "lucide-react";
-import { PeriodRewardChip } from "@/components/reward-bar";
-import { BertyCueBot } from "@/components/berty";
-import type { DayCode, EconomyFile } from "@/lib/economy";
-import { dayPay, money, padFirst, shopBells, showFirstReal } from "@/lib/economy";
-import { cycleDayLabel, cycleProgress, daySlot, formatSchoolDate, isSchoolDay, quarterNow, quarterProgress, scoreDate as nearestScoreDate, stepSchoolDay, todayIso, yearProgress } from "@/lib/calendar";
+import type { LucideIcon } from "lucide-react";
 import {
-  abOn,
-  approveInvest,
-  crewLeaderId,
-  setCrewLeader,
-  isSubDay,
-  loadFocus,
-  lunchOn,
-  deskBellId,
-  deskPacks,
-  setDayBell,
-  markOn,
-  setAbDay,
-  setCrewMark,
-  setSchooltoolDone,
-  setPeriodVerified,
-  periodVerified,
-  setStudentCleanup,
-  setStudentMark,
-  setSubDay,
-  setStudentAssist,
-  studentAssist,
-  attendOn,
-  setStudentAttend,
-  passOpen,
-  bumpMoney,
-  schooltoolDone,
-  studentCleanup,
-} from "@/lib/store";
-import { attendLate, beep, bellForPeriod, formatBell, periodClock, periodNow, periodPast, SCHOOLTOOL_URL } from "@/lib/bells";
-import { WeatherChip } from "@/components/weather-chip";
-import { DayFacts } from "@/components/day-facts";
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  CircleCheck,
+  Cog,
+  Cpu,
+  Flame,
+  Lock,
+  Minus,
+  Monitor,
+  ShieldCheck,
+  Star,
+  Undo2,
+  Users,
+  Wallet,
+  Wrench,
+  Zap,
+} from "lucide-react";
+import type { DayCode, EconomyFile, RawStudent } from "@/lib/economy";
+import { shopBells } from "@/lib/economy";
+import { formatSchoolDate, isSchoolDay, scoreDate as nearestScoreDate, stepSchoolDay, todayIso } from "@/lib/calendar";
+import { deskBellId, isSubDay, loadFocus, markOn, setCrewMark } from "@/lib/store";
+import { tapeMark } from "@/lib/tape";
+import { periodNow } from "@/lib/bells";
 import { cn } from "@/lib/utils";
-import { useShopClock } from "@/lib/use-clock";
-import { PollPad } from "@/components/polls";
-import { crewDone, crewPulse, crewsOf } from "@/lib/crews";
-import { featureOn } from "@/lib/features";
-import { recentMarks } from "@/lib/tape";
-import { agendaFor } from "@/lib/projects";
+import { crewDone, crewsOf, type CrewRow } from "@/lib/crews";
+import { crewEffortMark, crewGlyphId, isEffortMark, type CrewGlyphId, type EffortMark } from "@/lib/score-pad";
 
-const PERIOD_CLASS: Record<number, string> = {
-  1: "bg-period-1",
-  2: "bg-period-2",
-  3: "bg-period-3",
-  6: "bg-period-1",
-  8: "bg-period-4",
-  9: "bg-period-5",
-  10: "bg-period-6",
+const GLYPH: Record<CrewGlyphId, LucideIcon> = {
+  flame: Flame,
+  zap: Zap,
+  wrench: Wrench,
+  cog: Cog,
+  cpu: Cpu,
+  users: Users,
 };
 
-function tone(code: string) {
-  const c = String(code).toUpperCase();
-  if (c === "H") return "bg-elevated text-gain";
-  if (c === "L") return "bg-elevated text-fg";
-  if (c === "3") return "bg-elevated text-gain";
-  if (c === "2") return "bg-elevated text-fg";
-  if (c === "1") return "bg-elevated text-muted";
-  if (c === "A") return "bg-elevated text-subtle";
-  if (c === "E") return "bg-elevated text-muted";
-  if (c === "P") return "bg-elevated text-loss";
-  if (c === "ASSIST") return "bg-work-pto text-accent-fg";
-  return "bg-elevated text-subtle";
-}
-
-function PeriodMeter({
-  clock,
-  period,
-  file,
+export function CrewHex({
+  name,
+  size = "sm",
 }: {
-  clock: NonNullable<ReturnType<typeof periodClock>>;
-  period: number;
-  file: EconomyFile;
+  name: string;
+  size?: "sm" | "lg";
 }) {
+  const Icon = GLYPH[crewGlyphId(name)];
   return (
-    <div className={cn("grid gap-3 rounded-xl p-3 sm:grid-cols-2", clock.cleanup ? "bg-cleanup text-accent-fg" : "bg-surface")}>
-      <div>
-        <div className="mb-1 flex justify-between text-sm font-medium">
-          <span>
-            P{period} {formatBell(clock.start)}–{formatBell(clock.end)}
-          </span>
-          <span className="font-mono tabular-nums">
-            {clock.live ? `${Math.max(0, Math.ceil(clock.left))} min left` : clock.pct >= 100 ? "ended" : "not yet"}
-          </span>
-        </div>
-        <div className="h-2 overflow-hidden rounded-full bg-elevated">
-          <div
-            className={cn("h-full rounded-full", clock.cleanup ? "bg-accent-fg" : clock.pct >= 100 ? "bg-muted" : "bg-gain")}
-            style={{ width: `${clock.live || clock.pct >= 100 ? clock.pct : 0}%` }}
-          />
-        </div>
-        {clock.cleanup ? (
-          <p className="mt-2 flex items-center gap-2 text-sm font-semibold uppercase tracking-widest">
-            <BertyCueBot on={false} cue={{ cleanup: true }} size="icon" />
-            Cleanup
-          </p>
-        ) : null}
-      </div>
-      <PeriodRewardChip file={file} period={period} className="self-center" />
-    </div>
+    <span data-score-hex data-score-hex-size={size} aria-hidden>
+      <Icon strokeWidth={2.2} />
+    </span>
   );
 }
 
+function padMark(s: RawStudent, date: string): string {
+  return markOn(s, date) || tapeMark(s.markTape, date);
+}
 
-function MiniBar({ label, done, total }: { label: string; done: number; total: number }) {
-  const pct = total <= 0 ? 0 : Math.min(100, Math.round((done / total) * 100));
+function markIcon(code: EffortMark, on: boolean, fat: boolean): LucideIcon {
+  if (fat) {
+    if (on) return CircleCheck;
+    if (code === "1") return Minus;
+    return Star;
+  }
+  if (on || code === "3") return Star;
+  return Check;
+}
+
+function FatMark({
+  code,
+  on,
+  fat,
+  disabled,
+  onClick,
+}: {
+  code: EffortMark;
+  on: boolean;
+  fat?: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+}) {
+  const Icon = markIcon(code, on, Boolean(fat));
   return (
-    <div className="min-w-28 flex-1">
-      <div className="mb-1 flex justify-between text-sm text-muted">
-        <span className="uppercase tracking-wide">{label}</span>
-        <span className="font-mono tabular-nums">{pct}%</span>
-      </div>
-      <div className="h-1.5 overflow-hidden rounded-full bg-elevated">
-        <div className={cn("h-full rounded-full", pct >= 100 ? "bg-gain" : "bg-work-w")} style={{ width: `${pct}%` }} />
-      </div>
-    </div>
+    <button
+      type="button"
+      aria-pressed={on}
+      aria-label={`Crew mark ${code}`}
+      data-score-mark={code}
+      data-score-on={on ? "1" : "0"}
+      disabled={disabled}
+      onClick={onClick}
+      className={cn(
+        "tw-tap relative flex min-h-11 items-center justify-center gap-1.5 font-display font-semibold",
+        fat ? "min-h-[9rem] flex-1 flex-col text-6xl sm:text-7xl" : "h-full min-h-11 text-2xl sm:text-3xl",
+      )}
+    >
+      <Icon
+        className={cn("shrink-0", fat ? "size-8 sm:size-10" : "size-4 sm:size-5")}
+        strokeWidth={on ? 2.6 : 2}
+        fill={on && !fat ? "currentColor" : "none"}
+        aria-hidden
+      />
+      <span className="font-mono tabular-nums leading-none">{code}</span>
+    </button>
   );
 }
 
 export function ScoreDesk({
   file,
   onChange,
-  unlocked,
-  onNeedPin,
-  onOpenId,
+  unlocked: _unlocked,
+  onNeedPin: _onNeedPin,
+  onOpenId: _onOpenId,
   jumpPeriod,
   jumpCrew,
   jumpDate,
@@ -156,25 +139,13 @@ export function ScoreDesk({
   const crewMode = mode === "crew";
   const [date, setDate] = useState(() => nearestScoreDate());
   const [period, setPeriod] = useState(bells[0]?.period ?? 1);
-  const periodCrews = crewsOf(file, period, date);
-  const [crewKey, setCrewKey] = useState(periodCrews[0]?.key ?? "Crew A");
-  const skipAdvance = useRef(false);
+  const periodCrews = crewsOf(file, period, date).filter((c) => c.kids.length > 0);
+  const [crewKey, setCrewKey] = useState(jumpCrew || periodCrews[0]?.key || "Crew A");
   const undoRef = useRef<EconomyFile | null>(null);
   const [canUndo, setCanUndo] = useState(false);
   const bellsId = deskBellId(file, date);
-  const now = useShopClock(bellsId, "beat");
-  const livePeriod = periodNow(bellsId, now);
-  const crewOverride = false;
-  const [allCrewsDone, setAllCrewsDone] = useState(false);
-  const [moreId, setMoreId] = useState<string | null>(null);
-  const [daily, setDaily] = useState(() => {
-    try {
-      return window.localStorage.getItem("techworks-desk-daily") === "1";
-    } catch {
-      return false;
-    }
-  });
-  const deskMode = "score";
+  const livePeriod = periodNow(bellsId);
+  const sub = isSubDay(file, date);
 
   useEffect(() => {
     if (panel === "config") onOpenSettings();
@@ -185,17 +156,15 @@ export function ScoreDesk({
       setPeriod(jumpPeriod);
       if (jumpDate) setDate(jumpDate);
       const crews = crewsOf(file, jumpPeriod, jumpDate || date);
-      const next =
-        (jumpCrew && crews.find((c) => c.key === jumpCrew)) ||
-        crews.find((c) => !crewDone(c.kids, jumpDate || date)) ||
-        crews[0];
+      const next = (jumpCrew && crews.find((c) => c.key === jumpCrew)) || crews.find((c) => !crewDone(c.kids, jumpDate || date)) || crews[0];
       if (next) setCrewKey(next.key);
       return;
     }
     const live = periodNow(bellsId);
     if (live && bells.some((b) => b.period === live)) {
       setPeriod(live);
-      const next = crewsOf(file, live, date).find((c) => !crewDone(c.kids, date)) ?? crewsOf(file, live, date)[0];
+      const crews = crewsOf(file, live, date);
+      const next = (jumpCrew && crews.find((c) => c.key === jumpCrew)) || crews.find((c) => !crewDone(c.kids, date)) || crews[0];
       setCrewKey(next?.key ?? "Crew A");
       return;
     }
@@ -203,84 +172,36 @@ export function ScoreDesk({
     if (!focus) return;
     if (bells.some((b) => b.period === focus.period)) {
       setPeriod(focus.period);
-      setCrewKey(focus.crewKey);
+      setCrewKey(jumpCrew || focus.crewKey);
     }
   }, [jumpPeriod, jumpCrew, jumpDate]);
 
   useEffect(() => {
-    if (mode === "crew") setDate(todayIso());
-  }, [mode]);
+    if (!crewMode) return;
+    setDate(isSchoolDay(todayIso()) ? todayIso() : nearestScoreDate());
+  }, [crewMode]);
 
   useEffect(() => {
-    if (!crewMode || crewOverride) return;
+    if (!crewMode) return;
     if (livePeriod && livePeriod !== 6) {
       setPeriod(livePeriod);
-      const next = crewsOf(file, livePeriod, date)[0];
-      if (next) setCrewKey(next.key);
     }
-  }, [crewMode, crewOverride, livePeriod]);
+  }, [crewMode, livePeriod]);
 
-  const p1In = schooltoolDone(file, date, 1);
-  const subDay = isSubDay(file, date);
-  const sched = bellsId;
   useEffect(() => {
-    const tick = () => {
-      if (date !== todayIso() || subDay || !isSchoolDay(date)) return;
-      if (!attendLate(1, sched)) return;
-      if (!p1In) beep(true);
-    };
-    tick();
-    const id = window.setInterval(tick, 12000);
-    return () => window.clearInterval(id);
-  }, [date, sched, p1In, subDay]);
-  const slot = daySlot(date);
-  const school = isSchoolDay(date);
-  const today = todayIso();
-  const cycle = file.meta.config?.currentCycle ?? file.meta.currentWeek ?? 1;
+    if (jumpCrew) setCrewKey(jumpCrew);
+  }, [jumpCrew]);
 
-  const crew = periodCrews.find((c) => c.key === crewKey) ?? periodCrews[0] ?? null;
-  const sub = isSubDay(file, date);
-  const letter = abOn(file, date);
-  const bell = bellForPeriod(period, bellsId);
-  const clock = periodClock(period, bellsId, now);
-  const leadId = crew ? crewLeaderId(file, period, crew.key) : "";
-  const lead = crew?.kids.find((s) => s.id === leadId);
-  const stDone = schooltoolDone(file, date, period);
-  const allDone = periodCrews.length > 0 && periodCrews.every((c) => crewDone(c.kids, date));
-  const verified = periodVerified(file, date, period);
-  const real = showFirstReal(file);
-  const p1Alarm =
-    school &&
-    !sub &&
-    date === today &&
-    period === 1 &&
-    attendLate(1, bellsId) &&
-    !schooltoolDone(file, date, 1);
+  const visibleCrews = crewMode ? periodCrews.filter((c) => c.key === (jumpCrew || crewKey)) : periodCrews;
+  const liveTech = livePeriod != null && livePeriod !== 6 && period === livePeriod;
+  const scoringLocked = crewMode && !liveTech;
 
   function pickPeriod(p: number) {
-    if (crewMode && !crewOverride && p !== livePeriod) return;
+    if (crewMode && p !== livePeriod) return;
     setPeriod(p);
     const crews = crewsOf(file, p, date);
-    const next = crews.find((c) => !crewDone(c.kids, date)) ?? crews[0];
+    const next = (jumpCrew && crews.find((c) => c.key === jumpCrew)) || crews.find((c) => !crewDone(c.kids, date)) || crews[0];
     setCrewKey(next?.key ?? "Crew A");
-  }
-
-  function goNextCrew() {
-    const mine = crewsOf(file, period, date);
-    const i = mine.findIndex((c) => c.key === (crew?.key ?? crewKey));
-    const later = mine.slice(i + 1).find((c) => !crewDone(c.kids, date));
-    if (later) {
-      setCrewKey(later.key);
-      setAllCrewsDone(false);
-      return;
-    }
-    const earlier = mine.find((c) => !crewDone(c.kids, date));
-    if (earlier) {
-      setCrewKey(earlier.key);
-      setAllCrewsDone(false);
-      return;
-    }
-    setAllCrewsDone(true);
   }
 
   function commit(next: EconomyFile) {
@@ -296,576 +217,188 @@ export function ScoreDesk({
     setCanUndo(false);
   }
 
-  function tap(id: string, code: DayCode) {
-    if (sub) return;
-    if (crewMode && code === "Assist") return;
-    if (code === "Assist") return;
-    const kid = file.students.find((s) => s.id === id);
-    const cur = kid ? markOn(kid, date) : "";
-    const nextCode = cur === code ? "" : code;
-    const before = crew ? crewDone(crew.kids, date) : false;
-    const next = setStudentMark(file, id, date, nextCode as DayCode);
-    commit(next);
-    const kids = next.students.filter((s) => s.period === period && s.crewKey === (crew?.key ?? crewKey));
-    if (!before && crewDone(kids, date) && !skipAdvance.current) {
-      window.setTimeout(() => goNextCrew(), 280);
-    }
+  function tapCrew(row: CrewRow, code: EffortMark) {
+    if (sub || scoringLocked) return;
+    const cur = crewEffortMark(row.kids.map((s) => padMark(s, date)));
+    const next = cur === code ? ("" as DayCode) : code;
+    commit(setCrewMark(file, period, row.key, date, next));
   }
 
-  function tapCrew(code: DayCode) {
-    if (sub) return;
-    if (!crew) return;
-    if (crewMode && code === "Assist") return;
-    if (code === "Assist" && !unlocked) {
-      onNeedPin();
-      return;
-    }
-    commit(setCrewMark(file, period, crew.key, date, code));
-    if (!skipAdvance.current) window.setTimeout(() => goNextCrew(), 280);
-  }
+  const n = visibleCrews.length;
+  const twoCol = !crewMode && n > 6;
 
-  if (crewMode) {
-    const kids = crew?.kids ?? [];
-    const liveTech = livePeriod != null && livePeriod !== 6 && period === livePeriod;
-    const unit = agendaFor(file, period, date, crew?.key);
-    const look = unit.activity?.lookFor?.trim() || "";
-    const unitLine = [unit.title, unit.activityName].filter(Boolean).join(" · ");
-    return (
-      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden bg-crew p-1 text-fg">
-        <p className="flex shrink-0 flex-wrap items-center gap-2 font-display text-xl font-semibold tracking-tight sm:text-2xl">
-          <BertyCueBot on cue={{ greeting: true, passing: !liveTech, cleanup: Boolean(clock?.cleanup) }} size="sm" />
-          Hi, Team Leader {lead?.first ?? "friend"}
-          <span className="ml-2 text-crew-hi">score your crew.</span>
-        </p>
-        {unitLine ? <p className="shrink-0 truncate text-sm font-semibold">{unitLine}{look ? ` · a 3 looks like: ${look}` : ""}</p> : null}
-        {crew?.motto ? <p className="shrink-0 text-sm text-muted">{crew.icon ? `${crew.icon} ` : ""}{crew.motto}</p> : null}
-        <p className="shrink-0 text-xs font-semibold uppercase tracking-wide text-muted">3 · 2 · 1 or Absent / Excused / Personal → next crew. Last marks sit under each name. No wallet.</p>
-        {clock && liveTech ? (
-          <div className="shrink-0">
-            <PeriodMeter clock={clock} period={period} file={file} />
-          </div>
-        ) : null}
-        {sub ? (
-          <p className="flex min-h-0 flex-1 items-center justify-center rounded-2xl bg-crew-card p-6 text-center text-xl font-semibold">
-            SUB day · no scores.
-          </p>
-        ) : !liveTech ? (
-          <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 rounded-2xl bg-crew-card p-6 text-center">
-            <p className="text-xl font-semibold">
-              {livePeriod === 6 ? "Study hall · Tech crews after." : livePeriod ? `P${livePeriod} only. Wait for your class.` : "Between classes. Lock when done."}
+  const pad = (
+    <div
+      className={cn("flex min-h-0 flex-1 flex-col overflow-hidden", crewMode ? "bg-bg p-2" : "")}
+      data-score-pad={crewMode ? "crew" : "teacher"}
+    >
+      <header className="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-1 px-1 pb-2">
+        {crewMode ? (
+          <>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">
+              Score <span className="text-fg/50">·</span> crew lead <span className="text-fg/50">·</span> PIN locked{" "}
+              <span className="text-fg/50">·</span> period P{period} chip
             </p>
-            <button type="button" onClick={onOpenSettings} className="tw-tap min-h-11 rounded-full bg-crew px-4 text-sm font-semibold">
-              Edit our crew
-            </button>
-          </div>
-        ) : allCrewsDone ? (
-          <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 rounded-2xl bg-crew-card p-6 text-center">
-            <p className="font-display text-2xl font-semibold">All crews scored</p>
-            <p className="text-sm text-muted">Lock this pad. Your teacher verifies.</p>
-            <div className="flex flex-wrap justify-center gap-1">
-              {periodCrews.map((c) => (
-                <button
-                  key={c.key}
-                  type="button"
-                  onClick={() => {
-                    setAllCrewsDone(false);
-                    setCrewKey(c.key);
-                  }}
-                  className="tw-tap min-h-11 rounded-full bg-crew px-4 text-sm font-semibold"
-                >
-                  {c.name}
-                </button>
-              ))}
-            </div>
-          </div>
+            <span data-score-period-chip className="ml-auto inline-flex min-h-8 items-center gap-1.5 rounded-full bg-accent px-3 text-xs font-bold text-accent-fg">
+              <Cpu className="size-3.5" aria-hidden />
+              P{period}
+            </span>
+          </>
         ) : (
           <>
-            <div className="flex shrink-0 flex-wrap gap-1">
-              {periodCrews.map((c) => (
-                <button
-                  key={c.key}
-                  type="button"
-                  onClick={() => {
-                    setAllCrewsDone(false);
-                    setCrewKey(c.key);
-                  }}
-                  className={cn(
-                    "tw-tap min-h-11 rounded-full px-4 text-sm font-semibold",
-                    crew?.key === c.key ? "bg-fg text-bg" : "bg-crew-card text-muted",
-                  )}
-                >
-                  {c.icon ? <span className="mr-1">{c.icon}</span> : null}
-                  {c.name}
-                </button>
-              ))}
-            </div>
-            <PollPad file={file} kids={kids} onChange={commit} />
-            <div className="grid min-h-0 flex-1 grid-cols-2 grid-rows-2 gap-2 overflow-hidden">
-              {Array.from({ length: 4 }, (_, i) => kids[i] ?? null).map((s, i) =>
-                s ? (
-                  <div key={s.id} className="flex min-h-0 flex-col gap-1 overflow-hidden rounded-2xl bg-crew-card p-2">
-                    <p className="truncate font-display text-xl font-semibold">{padFirst(s, real)}</p>
-                    {(() => {
-                      const hist = recentMarks(s, date, 5);
-                      return hist.length ? (
-                        <p className="truncate font-mono text-[11px] text-muted" title={hist.map((h) => `${h.date} ${h.code}`).join(" · ")}>
-                          {hist.map((h) => h.code).join(" · ")}
-                        </p>
-                      ) : null;
-                    })()}
-                    <div className="grid min-h-0 flex-1 grid-cols-3 gap-1">
-                      {(["3", "2", "1"] as const).map((code) => (
-                        <button
-                          key={code}
-                          type="button"
-                          onClick={() => tap(s.id, code)}
-                          className={cn(
-                            "tw-tap flex min-h-0 items-center justify-center rounded-xl font-display text-2xl font-semibold",
-                            markOn(s, date) === code ? "bg-crew-hi text-bg" : "bg-crew text-fg",
-                          )}
-                        >
-                          {code}
-                        </button>
-                      ))}
-                    </div>
-                    <div className="grid grid-cols-3 gap-1">
-                      {(
-                        [
-                          ["A", "ABSENT"],
-                          ["E", "EXCUSED"],
-                          ["P", "PERSONAL"],
-                        ] as const
-                      ).map(([code, label]) => (
-                        <button
-                          key={code}
-                          type="button"
-                          onClick={() => tap(s.id, code)}
-                          className={cn(
-                            "tw-tap min-h-11 rounded-xl px-1 text-center text-[11px] font-semibold uppercase leading-tight tracking-wide sm:text-sm",
-                            markOn(s, date) === code ? "bg-crew-hi text-bg" : "bg-crew text-fg",
-                          )}
-                        >
-                          {label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div key={`empty-${i}`} className="rounded-2xl bg-crew-card/40" />
-                ),
-              )}
-            </div>
-            <div className="flex shrink-0 gap-2">
-              <button type="button" disabled={!crew} onClick={() => tapCrew("3")} className="tw-tap min-h-12 flex-1 rounded-full bg-crew-card text-sm font-semibold">
-                Whole crew 3
-              </button>
-              <button type="button" onClick={() => goNextCrew()} className="tw-tap min-h-12 flex-1 rounded-full bg-crew-hi text-sm font-semibold text-bg">
-                Next crew
-              </button>
-              {allDone ? (
-                <button
-                  type="button"
-                  onClick={() => commit(setPeriodVerified(file, date, period, !verified))}
-                  className={cn("tw-tap min-h-12 flex-1 rounded-full text-sm font-semibold", verified ? "bg-gain text-bg" : "bg-gold text-bg")}
-                >
-                  {verified ? "Checked" : "Looks good"}
-                </button>
-              ) : null}
-            </div>
+            <h1 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">
+              Score <span className="text-muted">·</span> 40s
+            </h1>
+            <p className="ml-auto inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
+              <Monitor className="size-3.5" aria-hidden />
+              Chromebook · 1366×768
+            </p>
           </>
         )}
-      </div>
-    );
-  }
+      </header>
 
-  return (
-    <div className="desk-edit flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
-      <div className="flex shrink-0 flex-wrap items-center gap-2">
-        <button
-          type="button"
-          aria-label="Previous school day"
-          className="inline-flex size-9 items-center justify-center rounded-lg bg-surface text-fg"
-          onClick={() => setDate(stepSchoolDay(date, -1))}
-        >
-          <ChevronLeft className="size-4" />
-        </button>
-        <span className="text-sm font-semibold">{formatSchoolDate(date)}</span>
-        <button
-          type="button"
-          aria-label="Next school day"
-          className="inline-flex size-9 items-center justify-center rounded-lg bg-surface text-fg"
-          onClick={() => setDate(stepSchoolDay(date, 1))}
-        >
-          <ChevronRight className="size-4" />
-        </button>
-        <button
-          type="button"
-          aria-label={`Day ${letter}. Tap to switch A or B.`}
-          onClick={() => {
-            if (!unlocked) {
-              onNeedPin();
-              return;
-            }
-            onChange(setAbDay(file, date, letter === "A" ? "B" : "A"));
-          }}
-          className="min-h-9 rounded-lg bg-elevated px-3 text-xs font-semibold uppercase tracking-widest ring-1 ring-fg"
-        >
-          {letter}
-        </button>
-        {clock?.live ? (
-          <span className={cn("rounded-lg px-2 py-1 font-mono text-sm tabular-nums", clock.cleanup ? "bg-cleanup text-accent-fg" : "bg-surface text-muted")}>
-            P{period} {clock.cleanup ? "NOW" : `${Math.max(0, Math.ceil(clock.left))}m`}
-          </span>
-        ) : bell ? (
-          <span className="font-mono text-xs text-muted">
-            P{period} {formatBell(bell.start)}–{formatBell(bell.end)}
-          </span>
-        ) : null}
-        <a href={SCHOOLTOOL_URL} target="_blank" rel="noreferrer" className={cn("min-h-9 rounded-lg px-2 py-1 text-xs font-semibold", stDone ? "bg-gain text-bg" : p1Alarm ? "bg-loss text-accent-fg" : "bg-elevated text-muted")}>
-          {stDone ? "ST in" : p1Alarm ? "ST due" : "ST"}
-        </a>
-        <button
-          type="button"
-          onClick={() => {
-            const next = !daily;
-            setDaily(next);
-            try {
-              window.localStorage.setItem("techworks-desk-daily", next ? "1" : "0");
-            } catch {
-              /* */
-            }
-          }}
-          className={cn("ml-auto min-h-9 rounded-full px-3 text-xs font-semibold", daily ? "bg-gold text-bg" : "bg-surface text-muted")}
-        >
-          Daily {daily ? "−" : "+"}
-        </button>
-        <div className="flex rounded-full bg-elevated p-0.5">
-          <span className="tw-tap min-h-9 rounded-full bg-accent px-3 text-xs font-semibold text-accent-fg">Effort · pay</span>
-        </div>
-      </div>
-
-      {daily ? (
-        <div className="shrink-0 space-y-2 rounded-xl bg-surface p-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <label className="flex min-h-9 items-center gap-2 rounded-lg bg-elevated px-2">
-              <input type="date" value={date} onChange={(e) => setDate(e.target.value || date)} className="bg-transparent text-sm outline-none" />
-            </label>
-            {slot.label ? <span className="text-sm text-muted">{cycleDayLabel(slot.label, cycle)}</span> : null}
-            {featureOn(file, "weather") ? <WeatherChip compact /> : null}
-            <p className="flex min-h-9 min-w-32 flex-1 items-center gap-2 rounded-lg bg-elevated px-2 text-sm">
-              <span className="text-xs text-subtle">Lunch</span>
-              <span className="min-w-0 truncate">{lunchOn(file, date) || "Admin → Lunch"}</span>
-            </p>
-            {deskPacks(file).map((pack) => (
-              <button
-                key={pack.id}
-                type="button"
-                onClick={() => onChange(setDayBell(file, date, pack.id))}
-                className={cn("min-h-9 rounded-md px-2 text-xs font-semibold", bellsId === pack.id ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
-              >
-                {pack.label}
-              </button>
-            ))}
-            <a href={SCHOOLTOOL_URL} target="_blank" rel="noreferrer" className="min-h-9 rounded-lg bg-elevated px-2 py-1 text-xs text-muted">
-              SchoolTool
-            </a>
-            <button
-              type="button"
-              onClick={() => commit(setSchooltoolDone(file, date, period, !stDone))}
-              className={cn("min-h-9 rounded-lg px-2 text-xs font-semibold", stDone ? "bg-gain text-bg" : p1Alarm ? "bg-loss text-accent-fg" : "bg-elevated text-muted")}
-            >
-              {stDone ? "ST in" : p1Alarm ? "ST DUE" : "ST"}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                if (!unlocked) {
-                  onNeedPin();
-                  return;
-                }
-                onChange(setSubDay(file, date, !sub));
-              }}
-              className={cn("min-h-9 rounded-lg px-2 text-xs font-semibold", sub ? "bg-work-pto text-accent-fg" : "bg-elevated text-subtle")}
-            >
-              SUB
-            </button>
-          </div>
-          <div className="flex gap-3">
-            <MiniBar label="Cycle" done={cycleProgress(date).done} total={cycleProgress(date).total} />
-            <MiniBar label={quarterNow(date).label} done={quarterProgress(date).done} total={quarterProgress(date).total} />
-            <MiniBar label="Year" done={yearProgress(date).done} total={yearProgress(date).total} />
-          </div>
-          {clock ? <PeriodMeter clock={clock} period={period} file={file} /> : null}
-          <DayFacts file={file} date={date} period={period} edit unlocked={unlocked} onNeedPin={onNeedPin} onChange={commit} />
-          {crew ? (
-            <label className="flex items-center gap-2 text-sm">
-              <span className="text-subtle">Leader</span>
-              <select
-                value={leadId}
-                onChange={(e) => commit(setCrewLeader(file, period, crew.key, e.target.value))}
-                className="min-h-9 rounded-md bg-elevated px-2 text-sm outline-none"
-              >
-                <option value="">Leader</option>
-                {crew.kids.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {padFirst(s, real)}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
-        </div>
-      ) : null}
-
-      {p1Alarm && !daily ? (
-        <div className="flex shrink-0 items-center gap-2 rounded-lg bg-loss px-3 py-1 text-xs font-semibold uppercase tracking-widest text-accent-fg">
-          P1 SchoolTool · past {formatBell(bellForPeriod(1, bellsId)?.attendBy ?? "08:15")}
-        </div>
-      ) : null}
-
-      {deskMode === "score" ? (
-      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
-        <div data-periods className="flex shrink-0 flex-wrap gap-1">
+      {crewMode ? null : (
+        <div data-periods className="flex shrink-0 flex-wrap items-center gap-1.5 px-1 pb-2">
           {bells.map((b) => {
             const crews = crewsOf(file, b.period, date);
             const done = crews.filter((c) => crewDone(c.kids, date)).length;
-            const late = crews.filter((c) => crewPulse(c.kids, date, today, date, sub) === "late").length;
-            const due = crews.filter((c) => crewPulse(c.kids, date, today, date, sub) === "due").length;
             const live = livePeriod === b.period;
-            const gone = date === today && periodPast(b.period, bellsId, now);
+            const on = period === b.period;
             return (
               <button
                 key={b.period}
                 type="button"
                 onClick={() => pickPeriod(b.period)}
-                className={cn(
-                  "flex min-h-10 min-w-12 shrink-0 flex-col items-center justify-center rounded-lg px-2 text-sm font-semibold",
-                  period === b.period ? "bg-elevated text-fg ring-1 ring-fg" : gone ? "bg-elevated/50 text-subtle" : "bg-surface text-muted",
-                  live && period !== b.period ? "ring-1 ring-gain/60" : "",
-                )}
+                aria-pressed={on}
+                className={cn("tw-tap score-period-chip inline-flex min-h-11 shrink-0 items-center px-4 text-sm font-semibold", on && "is-on", live && !on && "is-live")}
+                title={`${done}/${crews.length} crews scored`}
               >
-                <span className="flex items-center gap-1">
-                  <span
-                    className={cn(
-                      "size-2 shrink-0 rounded-full",
-                      late || due ? "bg-loss" : done === crews.length && crews.length ? "bg-gain" : PERIOD_CLASS[b.period] ?? "bg-muted",
-                    )}
-                  />
-                  <span className="truncate">{`P${b.period}`}</span>
-                </span>
-                <span className="font-mono text-[11px] tabular-nums text-subtle">
-                  {done}/{crews.length}
-                </span>
+                P{b.period}
               </button>
             );
           })}
+          <div className="ml-auto flex items-center gap-1">
+            <button type="button" aria-label="Previous school day" className="inline-flex size-9 items-center justify-center rounded-lg text-muted hover:text-fg" onClick={() => setDate(stepSchoolDay(date, -1))}>
+              <ChevronLeft className="size-4" />
+            </button>
+            <span className="text-xs font-semibold text-muted">{formatSchoolDate(date)}</span>
+            <button type="button" aria-label="Next school day" className="inline-flex size-9 items-center justify-center rounded-lg text-muted hover:text-fg" onClick={() => setDate(stepSchoolDay(date, 1))}>
+              <ChevronRight className="size-4" />
+            </button>
+          </div>
         </div>
+      )}
 
-        {sub ? (
-          <div className="flex min-h-0 flex-1 items-center justify-center rounded-xl bg-surface p-8 text-center">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-work-pto">Sub day</p>
-              <p className="mt-2 font-display text-3xl font-semibold">No scores today</p>
-            </div>
+      {sub ? (
+        <div className="flex min-h-0 flex-1 items-center justify-center rounded-xl bg-surface p-8 text-center">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-work-pto">Sub day</p>
+            <p className="mt-2 font-display text-3xl font-semibold">No scores today</p>
           </div>
+        </div>
+      ) : !visibleCrews.length ? (
+        <p className="flex min-h-0 flex-1 items-center justify-center text-sm text-muted">No crews this period.</p>
+      ) : crewMode ? (
+        <LeadPad
+          crew={visibleCrews[0]!}
+          date={date}
+          locked={scoringLocked}
+          lockLine={
+            livePeriod === 6 ? "Study hall · Tech crews after." : livePeriod ? `P${livePeriod} only. Wait for your class.` : "Between classes. Lock when done."
+          }
+          onTap={(code) => tapCrew(visibleCrews[0]!, code)}
+        />
+      ) : (
+        <div
+          data-score-crews
+          className={cn("grid min-h-0 flex-1 gap-1.5 overflow-hidden px-1", twoCol ? "grid-cols-2" : "grid-cols-1")}
+          style={{ gridTemplateRows: `repeat(${twoCol ? Math.ceil(n / 2) : n}, minmax(2.75rem, 1fr))` }}
+        >
+          {visibleCrews.map((c) => {
+            const mark = crewEffortMark(c.kids.map((s) => padMark(s, date)));
+            return (
+              <div key={c.key} data-score-crew={c.key} className="score-crew-row grid min-h-11 grid-cols-[minmax(8rem,0.9fr)_repeat(3,minmax(2.75rem,1fr))] items-stretch gap-2 overflow-hidden">
+                <div className="flex min-w-0 items-center gap-3 px-1">
+                  <CrewHex name={c.name || c.key} />
+                  <p className="truncate font-display text-lg font-semibold leading-tight sm:text-xl">{c.name}</p>
+                  {isEffortMark(mark) ? <span className="sr-only">{mark}</span> : null}
+                </div>
+                {(["3", "2", "1"] as const).map((code) => (
+                  <FatMark key={code} code={code} on={mark === code} onClick={() => tapCrew(c, code)} />
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <footer className="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-1 px-1 pt-2 pb-[env(safe-area-inset-bottom)] text-[11px] font-semibold uppercase tracking-wide text-muted">
+        {crewMode ? (
+          <span className="inline-flex items-center gap-1.5">
+            <ShieldCheck className="size-3.5 text-accent" aria-hidden />
+            Your crew only <span className="text-fg/40">·</span> mark = score <span className="text-fg/40">·</span> behind PIN
+            <Lock className="size-3.5" aria-hidden />
+          </span>
         ) : (
-        <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
-          <div className="flex shrink-0 flex-wrap items-center gap-1">
-            {periodCrews.map((c) => {
-              const kind = crewPulse(c.kids, date, today, date, sub);
-              const marked = c.kids.filter((s) => markOn(s, date)).length;
-              return (
-                <button
-                  key={c.key}
-                  type="button"
-                  onClick={() => {
-                    setCrewKey(c.key);
-                    setAllCrewsDone(false);
-                  }}
-                  className={cn("inline-flex min-h-11 items-center gap-2 rounded-full px-3 text-base font-semibold", crew?.key === c.key ? "bg-gold text-bg" : "bg-surface text-muted")}
-                >
-                  {c.name}
-                  <span className="font-mono text-[11px] opacity-80">{marked}/{c.kids.length}</span>
-                  {kind === "due" || kind === "late" ? <span className="size-2 rounded-full bg-loss" /> : null}
-                </button>
-              );
-            })}
-          </div>
-          {allCrewsDone ? (
-            <p className="shrink-0 rounded-lg bg-gain/20 px-3 py-2 text-sm font-semibold">
-              P{period} done · {periodCrews.length} crews. Stay here or tap the next-job chip to save.
-            </p>
-          ) : periodCrews.length ? (
-            <p className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-muted">
-              {periodCrews.filter((c) => crewDone(c.kids, date)).length}/{periodCrews.length} crews · last score on a crew jumps to the next open one
-            </p>
-          ) : null}
-
-          <PollPad file={file} kids={crew?.kids ?? []} onChange={commit} />
-
-          <div data-score-grid className="grid min-h-0 flex-1 content-start grid-cols-1 gap-1 overflow-auto sm:grid-cols-2">
-            {(crew?.kids ?? []).map((s) => (
-                <article key={s.id} className="rounded-xl bg-surface p-1">
-                  <div className="grid grid-cols-[minmax(6.5rem,1.15fr)_repeat(3,minmax(2.75rem,1fr))] items-stretch gap-1">
-                    <button type="button" onClick={() => onOpenId(s.id)} className="tw-tap flex min-h-14 min-w-0 items-center justify-between gap-1 rounded-lg px-2 text-left">
-                      <span className="truncate font-display text-xl font-semibold leading-tight">{padFirst(s, real)}</span>
-                      <span className="shrink-0 font-mono text-xs tabular-nums text-muted">
-                        {money(dayPay(markOn(s, date) === "Assist" ? "" : markOn(s, date), file.meta.codes) + (studentAssist(s, date) ? Number(file.meta.codes.Assist ?? 10) : 0))}
-                      </span>
-                    </button>
-                    {(["3", "2", "1"] as const).map((code) => (
-                      <button
-                        key={code}
-                        type="button"
-                        onClick={() => tap(s.id, code)}
-                        className={cn("tw-tap flex min-h-14 items-center justify-center rounded-lg font-display text-3xl font-semibold", tone(code), markOn(s, date) === code ? "ring-2 ring-fg" : "")}
-                      >
-                        {code}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="mt-1 flex items-center gap-1">
-                    <div className="grid min-w-0 flex-1 grid-cols-4 gap-1">
-                    {(["A", "E", "P"] as const).map((code) => (
-                      <button
-                        key={code}
-                        type="button"
-                        onClick={() => tap(s.id, code)}
-                        className={cn("tw-tap min-h-8 rounded-md text-[11px] font-semibold uppercase", tone(code), markOn(s, date) === code ? "ring-2 ring-fg" : "")}
-                      >
-                        {code === "A" ? "Abs" : code === "E" ? "Exc" : "PTO"}
-                      </button>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const here = attendOn(s, date) === "nurse";
-                        commit(setStudentAttend(file, s.id, date, here ? "" : "nurse"));
-                      }}
-                      className={cn(
-                        "tw-tap min-h-8 rounded-md text-[10px] font-semibold uppercase leading-tight",
-                        attendOn(s, date) === "nurse" ? "bg-loss text-accent-fg" : "bg-elevated text-muted",
-                      )}
-                    >
-                      {attendOn(s, date) === "nurse" ? `Back ${passOpen(s, date)?.out ?? ""}` : "Nurse"}
-                    </button>
-                    </div>
-                  <button
-                    type="button"
-                    onClick={() => setMoreId((id) => (id === s.id ? null : s.id))}
-                    className="tw-tap min-h-8 shrink-0 rounded-md px-2 text-[10px] font-semibold uppercase tracking-wide text-muted"
-                  >
-                    {moreId === s.id ? "Less" : "More"}
-                  </button>
-                  </div>
-                  {moreId === s.id ? (
-                    <div className="mt-1 grid shrink-0 grid-cols-4 gap-1">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (!unlocked) {
-                            onNeedPin();
-                            return;
-                          }
-                          commit(setStudentAssist(file, s.id, date, !studentAssist(s, date)));
-                        }}
-                        className={cn("min-h-9 rounded-md text-[10px] font-semibold", studentAssist(s, date) ? "bg-work-pto text-accent-fg" : "bg-elevated text-muted")}
-                      >
-                        Assist
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => commit(setStudentCleanup(file, s.id, date, studentCleanup(s, date) === "done" ? "" : "done"))}
-                        className={cn("min-h-9 rounded-md text-[10px] font-semibold", studentCleanup(s, date) === "done" ? "bg-gain text-bg" : "bg-elevated text-muted")}
-                      >
-                        Clean
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (studentCleanup(s, date) === "miss") {
-                            commit(setStudentCleanup(file, s.id, date, ""));
-                            return;
-                          }
-                          if (!unlocked) {
-                            onNeedPin();
-                            return;
-                          }
-                          commit(setStudentCleanup(file, s.id, date, "miss"));
-                        }}
-                        className={cn("min-h-9 rounded-md text-[10px] font-semibold", studentCleanup(s, date) === "miss" ? "bg-loss text-accent-fg" : "bg-elevated text-muted")}
-                      >
-                        Miss
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (!unlocked) {
-                            onNeedPin();
-                            return;
-                          }
-                          commit(approveInvest(file, s.id, date));
-                        }}
-                        className={cn("min-h-9 rounded-md text-[10px] font-semibold", Number(s.investDays?.[date] || 0) > 0 ? "bg-gain/20 text-gain" : s.investAsk?.[date] ? "bg-work-pto text-accent-fg" : "bg-elevated text-muted")}
-                      >
-                        {Number(s.investDays?.[date] || 0) > 0 ? `$${s.investDays?.[date]}` : s.investAsk?.[date] ? "ASK" : "Inv"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (!unlocked) {
-                            onNeedPin();
-                            return;
-                          }
-                          commit(bumpMoney(file, s.id, "bonus", 5));
-                        }}
-                        className="min-h-9 rounded-md bg-elevated text-[10px] font-semibold text-gain"
-                      >
-                        +$5
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (!unlocked) {
-                            onNeedPin();
-                            return;
-                          }
-                          commit(bumpMoney(file, s.id, "deduct", 5));
-                        }}
-                        className="min-h-9 rounded-md bg-elevated text-[10px] font-semibold text-loss"
-                      >
-                        −$5
-                      </button>
-                    </div>
-                  ) : null}
-                </article>
-            ))}
-          </div>
-          <div className="flex shrink-0 gap-1.5 pb-[env(safe-area-inset-bottom)]">
-            <button type="button" disabled={!canUndo} onClick={undoLast} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-elevated px-3 text-sm font-medium disabled:opacity-40">
-              <Undo2 className="size-4" />
+          <>
+            <span className="inline-flex items-center gap-1.5">
+              <Star className="size-3.5 text-accent" fill="currentColor" aria-hidden />
+              Mark = crew score
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Wallet className="size-3.5" aria-hidden />
+              mark ≠ wallet
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Users className="size-3.5" aria-hidden />
+              Present only
+            </span>
+            {n >= 6 ? <span className="ml-auto">6 crews one screen</span> : null}
+            <button type="button" disabled={!canUndo} onClick={undoLast} className="inline-flex min-h-11 items-center gap-1 rounded-lg px-3 text-xs font-semibold text-muted disabled:opacity-40">
+              <Undo2 className="size-3.5" />
               Undo
             </button>
-            <button type="button" disabled={!crew} onClick={() => tapCrew("3")} className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-lg bg-elevated text-sm font-medium disabled:opacity-40">
-              <Users className="size-4" />
-              All 3s
-            </button>
-            <button
-              type="button"
-              disabled={!crew}
-              onClick={() => {
-                skipAdvance.current = false;
-                goNextCrew();
-              }}
-              className="inline-flex min-h-12 flex-1 items-center justify-center rounded-lg bg-accent text-sm font-medium text-accent-fg disabled:opacity-40"
-            >
-              Next crew
-            </button>
-          </div>
-        </div>
+          </>
         )}
-      </div>
-      ) : null}
+      </footer>
     </div>
+  );
+
+  return pad;
+}
+
+function LeadPad({
+  crew,
+  date,
+  locked,
+  lockLine,
+  onTap,
+}: {
+  crew: CrewRow;
+  date: string;
+  locked?: boolean;
+  lockLine?: string;
+  onTap: (code: EffortMark) => void;
+}) {
+  const mark = crewEffortMark(crew.kids.map((s) => padMark(s, date)));
+  const school = isSchoolDay(date);
+  return (
+    <section data-score-crews data-score-crew={crew.key} data-score-lead className="score-lead-card flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 sm:p-5">
+      <div className="flex items-center gap-3 border-b border-white/10 pb-3">
+        <CrewHex name={crew.name || crew.key} size="lg" />
+        <div className="min-w-0">
+          <p className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">{crew.name}</p>
+          <p className="text-sm text-muted">Crew · TechWorks{school ? "" : " · not a school day"}</p>
+        </div>
+      </div>
+      {locked && lockLine ? (
+        <p className="text-center text-[11px] font-semibold uppercase tracking-wide text-muted">{lockLine}</p>
+      ) : null}
+      <div className="grid min-h-0 flex-1 grid-cols-3 gap-3">
+        {(["3", "2", "1"] as const).map((code) => (
+          <FatMark key={code} code={code} fat on={mark === code} disabled={locked} onClick={() => onTap(code)} />
+        ))}
+      </div>
+    </section>
   );
 }
