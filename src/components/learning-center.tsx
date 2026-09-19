@@ -43,6 +43,7 @@ export function LearningCenter({
   onRankUp,
   onTeachDay,
   onSeeWall,
+  onStart,
 }: {
   file: EconomyFile;
   onChange: (next: EconomyFile) => void;
@@ -57,6 +58,7 @@ export function LearningCenter({
   onRankUp?: (alias: string, band: string) => void;
   onTeachDay?: (date: string, period: number) => void;
   onSeeWall?: () => void;
+  onStart?: (start: LearnStart) => void;
 }) {
   const first = splitStart(start);
   const [pane, setPane] = useState<LearnPane>(first.pane);
@@ -98,12 +100,28 @@ export function LearningCenter({
         ) : null}
         {pane === "plan" ? (
           <div className="flex h-full min-h-0 flex-col overflow-hidden p-1">
-            <PlanIt file={file} unlocked={unlocked} onNeedPin={onNeedPin} onChange={onChange} onTeach={onTeachDay} onWall={onSeeWall} />
+            <PlanIt
+              file={file}
+              unlocked={unlocked}
+              onNeedPin={onNeedPin}
+              onChange={onChange}
+              onTeach={onTeachDay}
+              onWall={onSeeWall}
+              date={_jumpDate ?? undefined}
+              period={_jumpPeriod ?? undefined}
+            />
           </div>
         ) : null}
         {pane === "projects" ? (
           <div className="h-full overflow-auto">
-            <ProjectsBoard file={file} unlocked={unlocked} onNeedPin={onNeedPin} onChange={onChange} onTeachDay={onTeachDay} />
+            <ProjectsBoard
+              file={file}
+              unlocked={unlocked}
+              onNeedPin={onNeedPin}
+              onChange={onChange}
+              onTeachDay={onTeachDay}
+              onPlanIt={() => (onStart ? onStart("plan") : setPane("plan"))}
+            />
           </div>
         ) : null}
       </div>

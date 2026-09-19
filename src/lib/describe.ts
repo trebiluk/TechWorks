@@ -109,7 +109,7 @@ const CARDS: Record<string, DescribeCard> = {
   },
   plan: {
     title: "PlanIt",
-    purpose: "Week grid. Type Do this. Copy last week or fill the other same-grade class. Wall preview on the hour.",
+    purpose: "Week grid. Type Job · Guiding Q · Prove · beats. That write fills Wall and Deck.",
     links: [{ label: "Help", href: "#help" }],
   },
   admin: {
@@ -124,12 +124,12 @@ const CARDS: Record<string, DescribeCard> = {
   },
   teach: {
     title: "Teach",
-    purpose: "Arrive here. Green dots = that hour is set. Agenda 01–04 + Need write Wall, Deck, and Plan. Hang a Drive or Canva file — Wall plays it. See wall to check. Send this hour copies onto empty periods or days you pick.",
+    purpose: "Live hour PlanIt wrote. Open PlanIt to edit Job · Guiding Q · Prove · beats. Hang a Drive or Canva file — Wall plays it.",
     links: [{ label: "Help", href: "#help" }],
   },
   deck: {
     title: "Deck",
-    purpose: "This hour’s slides. Agenda 01–04 plus Hang embeds. Edit here and Teach matches. Present from here.",
+    purpose: "This hour’s slides. Agenda 01–04 plus Hang embeds. Present from here. Edit the hour on PlanIt.",
     links: [{ label: "Help", href: "#help" }],
   },
 };

@@ -39,16 +39,11 @@ import {
   teachDay,
   teachFocusPeriod,
   teachJob,
-  teachObjective,
   hangOf,
   addTeachHang,
   dropTeachHang,
-  setTeachMaterials,
 } from "@/lib/teach";
-import { saveTeachAsk, saveTeachDo, saveTeachLine, saveTeachObjective } from "@/lib/plan-sync";
-import { dayHourStatus, hourAgenda, saveAgendaLine } from "@/lib/hour-flow";
-import { DraftField } from "@/components/draft-field";
-import { SendHour } from "@/components/send-hour";
+import { dayHourStatus, hourAgendaDraft } from "@/lib/hour-flow";
 import { cn } from "@/lib/utils";
 import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
 import { HangFrame } from "@/components/hang-frame";
@@ -79,7 +74,7 @@ export function TeachBoard({
   onNeedPin: () => void;
   onPolls?: () => void;
   onBerty?: () => void;
-  onPlan?: () => void;
+  onPlan?: (date?: string, period?: number) => void;
   onWords?: () => void;
   onWall?: () => void;
   onDeck?: () => void;
@@ -97,7 +92,6 @@ export function TeachBoard({
   const pack = packOf(file, date, period);
   const slots = laySlots(file, date, period);
   const cur = date === today ? slotNow(file, today, period, now) : null;
-  const obj = teachObjective(file, date, period);
   const day = teachDay(file, date, period);
   const cleanup = Boolean(clock?.cleanup || cur?.clean);
   const liveHere = Boolean(clock?.live);
@@ -116,7 +110,6 @@ export function TeachBoard({
         : cur?.line ?? "Sit with your crew.";
   const [layout, setLayout] = useState<TeachLayout>(() => loadTeachLayout());
   const [printOn, setPrintOn] = useState(false);
-  const [sendNote, setSendNote] = useState("");
   const sortOn = unlocked && editing !== false;
   const fileRef = useRef(file);
   fileRef.current = file;
@@ -173,80 +166,30 @@ export function TeachBoard({
               <span className={cn("ml-2", cleanup && !writing ? "opacity-80" : "text-muted")}>P{period}</span>
               <span className="ml-2 text-muted">Deck plays this</span>
             </p>
-            {unlocked ? (
-              <div className="mt-2 grid gap-2">
-                <p className="text-sm font-semibold text-gold">Agenda writes the Wall, Deck, and Plan book.</p>
-                <ol className="grid gap-2">
-                  {(
-                    [
-                      ["now", "01 Now", "Sit at a regular table."],
-                      ["goal", "02 Do this", "The make for this hour."],
-                      ["next", "03 Then", "Second move · peer restyle"],
-                      ["behave", "04 How we work", "Choose → work → focus → cleanup."],
-                    ] as const
-                  ).map(([id, label, ph]) => (
-                    <label key={id} className="grid gap-1">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">{label}</span>
-                      <DraftField
-                        key={`${id}-${date}-${period}`}
-                        value={hourAgenda(file, date, period).find((c) => c.id === id)?.body ?? ""}
-                        placeholder={ph}
-                        aria-label={label}
-                        className="tw-field"
-                        onCommit={(v) => editNow((f) => saveAgendaLine(f, date, period, id, v))}
-                      />
-                    </label>
+            {writing ? (
+              <div className="mt-2 grid gap-2" data-teach-mirror>
+                <p className="text-sm font-semibold text-gold">PlanIt writes this hour. Wall and Deck play it.</p>
+                <p className="tw-fill-hero font-display text-2xl font-semibold tracking-tight">{job.question || title}</p>
+                {job.today ? <p className="text-sm"><span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Job </span>{job.today}</p> : null}
+                {day.objective ? <p className="text-sm"><span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Prove </span>{day.objective}</p> : null}
+                <ol className="grid gap-1">
+                  {hourAgendaDraft(file, date, period).map((c) => (
+                    <li key={c.id} className="text-sm">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">{c.n} {c.kicker} </span>
+                      {c.body || "—"}
+                    </li>
                   ))}
                 </ol>
-                <label className="grid gap-1">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Need · goggles, stock, chromebooks</span>
-                  <DraftField
-                    key={`need-${date}-${period}`}
-                    value={day.materials ?? ""}
-                    placeholder="Goggles. Chromebooks. One scrap of pine."
-                    aria-label="Need today"
-                    className="tw-field"
-                    onCommit={(v) => editNow((f) => setTeachMaterials(f, date, period, v))}
-                  />
-                </label>
-                {unlocked ? (
-                  <>
-                    <SendHour
-                      file={file}
-                      date={date}
-                      period={period}
-                      unlocked={unlocked}
-                      days={weekDays}
-                      onSend={(next, note) => {
-                        edit(next);
-                        setSendNote(note);
-                      }}
-                    />
-                    {sendNote ? <p className="text-sm font-semibold text-gain">{sendNote}</p> : null}
-                  </>
+                {day.materials ? <p className="text-sm text-muted">Need · {day.materials}</p> : null}
+                {onPlan ? (
+                  <button
+                    type="button"
+                    onClick={() => onPlan(date, period)}
+                    className="tw-tap mt-1 inline-flex min-h-11 w-fit items-center rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg"
+                  >
+                    Open PlanIt
+                  </button>
                 ) : null}
-                <label className="grid gap-1">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Ask · driving question</span>
-                  <DraftField
-                    key={`ask-${date}-${period}`}
-                    value={job.question}
-                    placeholder="How can a small force move a bigger load?"
-                    aria-label="Ask the class"
-                    className="tw-field tw-fill-hero min-h-12 w-full font-display text-2xl font-semibold tracking-tight"
-                    onCommit={(v) => editNow((f) => saveTeachAsk(f, date, period, v))}
-                  />
-                </label>
-                <label className="grid gap-1">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Objective</span>
-                  <DraftField
-                    key={`obj-${date}-${period}`}
-                    value={day.objective ?? ""}
-                    placeholder={obj}
-                    aria-label="Today's objective"
-                    className="tw-field"
-                    onCommit={(v) => editNow((f) => saveTeachObjective(f, date, period, v))}
-                  />
-                </label>
               </div>
             ) : (
               <>
@@ -311,17 +254,7 @@ export function TeachBoard({
                       {minClock(s.startMin)} · {s.mins}m
                     </p>
                     <p className="tw-fill-hero font-display font-semibold">{s.title}</p>
-                    {unlocked ? (
-                      <DraftField
-                        key={`line-${date}-${period}-${s.id}`}
-                        value={s.line}
-                        aria-label={`${s.title} line`}
-                        className="tw-field mt-1 min-h-10"
-                        onCommit={(v) => editNow((f) => saveTeachLine(f, date, period, s.id, v))}
-                      />
-                    ) : (
-                      <p className="tw-fill-line opacity-80">{s.line}</p>
-                    )}
+                    <p className="tw-fill-line opacity-80">{s.line}</p>
                   </div>
                 </li>
               );
@@ -405,8 +338,8 @@ export function TeachBoard({
               Print lesson
             </button>
             {onPlan ? (
-              <button type="button" onClick={onPlan} className="tw-tap min-h-8 rounded-full px-3 text-[12px] font-medium tw-btn-2">
-                Plan book
+              <button type="button" onClick={() => onPlan(date, period)} className="tw-tap min-h-8 rounded-full px-3 text-[12px] font-medium tw-btn-2">
+                PlanIt
               </button>
             ) : null}
             {onWords ? (

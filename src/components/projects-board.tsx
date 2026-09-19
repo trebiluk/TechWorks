@@ -32,12 +32,14 @@ export function ProjectsBoard({
   onNeedPin,
   onChange,
   onTeachDay,
+  onPlanIt,
 }: {
   file: EconomyFile;
   unlocked: boolean;
   onNeedPin: () => void;
   onChange: (next: EconomyFile) => void;
   onTeachDay?: (date: string, period: number) => void;
+  onPlanIt?: () => void;
 }) {
   const bells = shopBells(file);
   const [period, setPeriod] = useState(bells[0]?.period ?? 1);
@@ -124,6 +126,7 @@ export function ProjectsBoard({
               unlocked={unlocked}
               onNeedPin={onNeedPin}
               onChange={onChange}
+              onPlanIt={onPlanIt}
               onMade={(id) => {
                 setFocusId(id);
                 setPane("plan");
@@ -140,7 +143,17 @@ export function ProjectsBoard({
                 onTeach={onTeachDay ? (iso) => onTeachDay(iso, period) : undefined}
               />
             ) : (
-              <p className="text-sm text-muted">Nothing parked this period. Park above, or type Ask / Do on Teach — it saves a unit here.</p>
+              <p className="text-sm text-muted">
+                Nothing parked this period. Write Job · Guiding Q · Prove · beats on PlanIt.
+                {onPlanIt ? (
+                  <>
+                    {" "}
+                    <button type="button" onClick={onPlanIt} className="font-semibold text-accent">
+                      Open PlanIt
+                    </button>
+                  </>
+                ) : null}
+              </p>
             )}
           </div>
         ) : null}

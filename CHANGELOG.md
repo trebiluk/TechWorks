@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.78. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.82. -->
 
 # TechWorks changelog
 
-App version **1.92.82**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.83**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.83 — 2026-09-19
+
+- PlanIt is the only hour writer. Job · Guiding Q · Prove · beats on the hour card fill Wall and Deck. Teach is a read-only mirror. Plan book opens PlanIt, not the Projects dead end.
 
 ## 1.92.82 — 2026-09-19
 
