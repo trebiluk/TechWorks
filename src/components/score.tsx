@@ -1,5 +1,24 @@
 import { useEffect, useRef, useState } from "react";
-import { Check, ChevronLeft, ChevronRight, Lock, Minus, Pencil, Star, Undo2, Users } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import {
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  CircleCheck,
+  Cog,
+  Cpu,
+  Flame,
+  Lock,
+  Minus,
+  Monitor,
+  ShieldCheck,
+  Star,
+  Undo2,
+  Users,
+  Wallet,
+  Wrench,
+  Zap,
+} from "lucide-react";
 import type { DayCode, EconomyFile } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
 import { formatSchoolDate, isSchoolDay, scoreDate as nearestScoreDate, stepSchoolDay, todayIso } from "@/lib/calendar";
@@ -7,20 +26,56 @@ import { deskBellId, isSubDay, loadFocus, markOn, setCrewMark } from "@/lib/stor
 import { periodNow } from "@/lib/bells";
 import { cn } from "@/lib/utils";
 import { crewDone, crewsOf, type CrewRow } from "@/lib/crews";
-import { crewEffortMark, isEffortMark, type EffortMark } from "@/lib/score-pad";
+import { crewEffortMark, crewGlyphId, isEffortMark, type CrewGlyphId, type EffortMark } from "@/lib/score-pad";
+
+const GLYPH: Record<CrewGlyphId, LucideIcon> = {
+  flame: Flame,
+  zap: Zap,
+  wrench: Wrench,
+  cog: Cog,
+  cpu: Cpu,
+  users: Users,
+};
+
+export function CrewHex({
+  name,
+  size = "sm",
+}: {
+  name: string;
+  size?: "sm" | "lg";
+}) {
+  const Icon = GLYPH[crewGlyphId(name)];
+  return (
+    <span data-score-hex data-score-hex-size={size} aria-hidden>
+      <Icon strokeWidth={2.2} />
+    </span>
+  );
+}
+
+function markIcon(code: EffortMark, on: boolean, fat: boolean): LucideIcon {
+  if (fat) {
+    if (on) return CircleCheck;
+    if (code === "1") return Minus;
+    return Star;
+  }
+  if (on || code === "3") return Star;
+  return Check;
+}
 
 function FatMark({
   code,
   on,
   fat,
+  disabled,
   onClick,
 }: {
   code: EffortMark;
   on: boolean;
   fat?: boolean;
+  disabled?: boolean;
   onClick: () => void;
 }) {
-  const Icon = code === "3" ? Star : code === "2" ? Check : Minus;
+  const Icon = markIcon(code, on, Boolean(fat));
   return (
     <button
       type="button"
@@ -28,28 +83,21 @@ function FatMark({
       aria-label={`Crew mark ${code}`}
       data-score-mark={code}
       data-score-on={on ? "1" : "0"}
+      disabled={disabled}
       onClick={onClick}
       className={cn(
-        "tw-tap tw-chamfer relative flex min-h-11 items-center justify-center gap-1 font-display font-semibold",
-        fat ? "min-h-[9rem] flex-1 text-6xl sm:text-7xl" : "h-full min-h-11 text-2xl sm:text-3xl",
-        on ? "bg-accent text-accent-fg tw-live ring-2 ring-fg" : "bg-elevated text-fg",
+        "tw-tap relative flex min-h-11 items-center justify-center gap-1.5 font-display font-semibold",
+        fat ? "min-h-[9rem] flex-1 flex-col text-6xl sm:text-7xl" : "h-full min-h-11 text-2xl sm:text-3xl",
       )}
     >
-      <Icon className={cn("shrink-0", fat ? "size-8 sm:size-10" : "size-4 sm:size-5")} strokeWidth={on ? 2.6 : 2} aria-hidden />
-      <span className="font-mono tabular-nums">{code}</span>
+      <Icon
+        className={cn("shrink-0", fat ? "size-8 sm:size-10" : "size-4 sm:size-5")}
+        strokeWidth={on ? 2.6 : 2}
+        fill={on && !fat ? "currentColor" : "none"}
+        aria-hidden
+      />
+      <span className="font-mono tabular-nums leading-none">{code}</span>
     </button>
-  );
-}
-
-function CrewGlyph({ crew }: { crew: CrewRow }) {
-  return (
-    <span
-      className="grid size-10 shrink-0 place-items-center rounded-xl bg-elevated font-display text-lg font-semibold"
-      style={crew.color ? { color: crew.color, boxShadow: `inset 0 0 0 1px ${crew.color}` } : undefined}
-      aria-hidden
-    >
-      {crew.icon || crew.name.slice(0, 1)}
-    </span>
   );
 }
 
@@ -140,6 +188,7 @@ export function ScoreDesk({
 
   const visibleCrews = crewMode ? periodCrews.filter((c) => c.key === (jumpCrew || crewKey)) : periodCrews;
   const liveTech = livePeriod != null && livePeriod !== 6 && period === livePeriod;
+  const scoringLocked = crewMode && !liveTech;
 
   function pickPeriod(p: number) {
     if (crewMode && p !== livePeriod) return;
@@ -163,7 +212,7 @@ export function ScoreDesk({
   }
 
   function tapCrew(row: CrewRow, code: EffortMark) {
-    if (sub) return;
+    if (sub || scoringLocked) return;
     const cur = crewEffortMark(row.kids.map((s) => markOn(s, date)));
     const next = cur === code ? ("" as DayCode) : code;
     commit(setCrewMark(file, period, row.key, date, next));
@@ -174,55 +223,65 @@ export function ScoreDesk({
 
   const pad = (
     <div
-      className={cn("flex min-h-0 flex-1 flex-col gap-2 overflow-hidden", crewMode ? "bg-bg p-2" : "")}
+      className={cn("flex min-h-0 flex-1 flex-col overflow-hidden", crewMode ? "bg-bg p-2" : "")}
       data-score-pad={crewMode ? "crew" : "teacher"}
     >
-      <div className="flex shrink-0 flex-wrap items-center gap-2">
-        <h1 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">
-          Score <span className="text-muted">·</span> 40s
-        </h1>
+      <header className="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-1 px-1 pb-2">
         {crewMode ? (
-          <p className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-muted">
-            <Lock className="size-3.5" aria-hidden />
-            crew lead · PIN locked · period P{period}
-          </p>
+          <>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">
+              Score <span className="text-fg/50">·</span> crew lead <span className="text-fg/50">·</span> PIN locked{" "}
+              <span className="text-fg/50">·</span> period P{period} chip
+            </p>
+            <span data-score-period-chip className="ml-auto inline-flex min-h-8 items-center gap-1.5 rounded-full bg-accent px-3 text-xs font-bold text-accent-fg">
+              <Cpu className="size-3.5" aria-hidden />
+              P{period}
+            </span>
+          </>
         ) : (
-          <div className="flex items-center gap-1">
-            <button type="button" aria-label="Previous school day" className="inline-flex size-9 items-center justify-center rounded-lg bg-surface text-fg" onClick={() => setDate(stepSchoolDay(date, -1))}>
+          <>
+            <h1 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">
+              Score <span className="text-muted">·</span> 40s
+            </h1>
+            <p className="ml-auto inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
+              <Monitor className="size-3.5" aria-hidden />
+              Chromebook · 1366×768
+            </p>
+          </>
+        )}
+      </header>
+
+      {crewMode ? null : (
+        <div data-periods className="flex shrink-0 flex-wrap items-center gap-1.5 px-1 pb-2">
+          {bells.map((b) => {
+            const crews = crewsOf(file, b.period, date);
+            const done = crews.filter((c) => crewDone(c.kids, date)).length;
+            const live = livePeriod === b.period;
+            const on = period === b.period;
+            return (
+              <button
+                key={b.period}
+                type="button"
+                onClick={() => pickPeriod(b.period)}
+                aria-pressed={on}
+                className={cn("tw-tap score-period-chip inline-flex min-h-11 shrink-0 items-center px-4 text-sm font-semibold", on && "is-on", live && !on && "is-live")}
+                title={`${done}/${crews.length} crews scored`}
+              >
+                P{b.period}
+              </button>
+            );
+          })}
+          <div className="ml-auto flex items-center gap-1">
+            <button type="button" aria-label="Previous school day" className="inline-flex size-9 items-center justify-center rounded-lg text-muted hover:text-fg" onClick={() => setDate(stepSchoolDay(date, -1))}>
               <ChevronLeft className="size-4" />
             </button>
-            <span className="text-sm font-semibold">{formatSchoolDate(date)}</span>
-            <button type="button" aria-label="Next school day" className="inline-flex size-9 items-center justify-center rounded-lg bg-surface text-fg" onClick={() => setDate(stepSchoolDay(date, 1))}>
+            <span className="text-xs font-semibold text-muted">{formatSchoolDate(date)}</span>
+            <button type="button" aria-label="Next school day" className="inline-flex size-9 items-center justify-center rounded-lg text-muted hover:text-fg" onClick={() => setDate(stepSchoolDay(date, 1))}>
               <ChevronRight className="size-4" />
             </button>
           </div>
-        )}
-      </div>
-
-      <div data-periods className="flex shrink-0 flex-wrap gap-1">
-        {(crewMode ? bells.filter((b) => b.period === period) : bells).map((b) => {
-          const crews = crewsOf(file, b.period, date);
-          const done = crews.filter((c) => crewDone(c.kids, date)).length;
-          const live = livePeriod === b.period;
-          const on = period === b.period;
-          return (
-            <button
-              key={b.period}
-              type="button"
-              onClick={() => pickPeriod(b.period)}
-              aria-pressed={on}
-              className={cn(
-                "tw-tap inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl px-3 text-sm font-semibold",
-                on ? "bg-accent text-accent-fg" : live ? "bg-surface text-fg ring-1 ring-gain/60" : "bg-surface text-muted",
-              )}
-              title={`${done}/${crews.length} crews scored`}
-            >
-              {on ? <Check className="size-4" strokeWidth={2.4} aria-hidden /> : null}
-              P{b.period}
-            </button>
-          );
-        })}
-      </div>
+        </div>
+      )}
 
       {sub ? (
         <div className="flex min-h-0 flex-1 items-center justify-center rounded-xl bg-surface p-8 text-center">
@@ -231,32 +290,32 @@ export function ScoreDesk({
             <p className="mt-2 font-display text-3xl font-semibold">No scores today</p>
           </div>
         </div>
-      ) : crewMode && !liveTech ? (
-        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 rounded-2xl bg-surface p-6 text-center">
-          <p className="text-xl font-semibold">
-            {livePeriod === 6 ? "Study hall · Tech crews after." : livePeriod ? `P${livePeriod} only. Wait for your class.` : "Between classes. Lock when done."}
-          </p>
-        </div>
       ) : !visibleCrews.length ? (
         <p className="flex min-h-0 flex-1 items-center justify-center text-sm text-muted">No crews this period.</p>
       ) : crewMode ? (
-        <LeadPad crew={visibleCrews[0]!} date={date} onTap={(code) => tapCrew(visibleCrews[0]!, code)} />
+        <LeadPad
+          crew={visibleCrews[0]!}
+          date={date}
+          locked={scoringLocked}
+          lockLine={
+            livePeriod === 6 ? "Study hall · Tech crews after." : livePeriod ? `P${livePeriod} only. Wait for your class.` : "Between classes. Lock when done."
+          }
+          onTap={(code) => tapCrew(visibleCrews[0]!, code)}
+        />
       ) : (
         <div
           data-score-crews
-          className={cn("grid min-h-0 flex-1 gap-1.5 overflow-hidden", twoCol ? "grid-cols-2" : "grid-cols-1")}
+          className={cn("grid min-h-0 flex-1 gap-1.5 overflow-hidden px-1", twoCol ? "grid-cols-2" : "grid-cols-1")}
           style={{ gridTemplateRows: `repeat(${twoCol ? Math.ceil(n / 2) : n}, minmax(2.75rem, 1fr))` }}
         >
           {visibleCrews.map((c) => {
             const mark = crewEffortMark(c.kids.map((s) => markOn(s, date)));
             return (
-              <div key={c.key} data-score-crew={c.key} className="tw-gadget grid min-h-11 grid-cols-[minmax(7rem,0.85fr)_repeat(3,minmax(2.75rem,1fr))] items-stretch gap-1 overflow-hidden p-1">
-                <div className="flex min-w-0 items-center gap-2 px-1">
-                  <CrewGlyph crew={c} />
-                  <div className="min-w-0">
-                    <p className="truncate font-display text-lg font-semibold leading-tight sm:text-xl">{c.name}</p>
-                    {isEffortMark(mark) ? <p className="font-mono text-[11px] text-muted">{mark}</p> : null}
-                  </div>
+              <div key={c.key} data-score-crew={c.key} className="score-crew-row grid min-h-11 grid-cols-[minmax(8rem,0.9fr)_repeat(3,minmax(2.75rem,1fr))] items-stretch gap-2 overflow-hidden">
+                <div className="flex min-w-0 items-center gap-3 px-1">
+                  <CrewHex name={c.name || c.key} />
+                  <p className="truncate font-display text-lg font-semibold leading-tight sm:text-xl">{c.name}</p>
+                  {isEffortMark(mark) ? <span className="sr-only">{mark}</span> : null}
                 </div>
                 {(["3", "2", "1"] as const).map((code) => (
                   <FatMark key={code} code={code} on={mark === code} onClick={() => tapCrew(c, code)} />
@@ -267,37 +326,35 @@ export function ScoreDesk({
         </div>
       )}
 
-      <div className="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-1 pb-[env(safe-area-inset-bottom)] text-[11px] font-semibold uppercase tracking-wide text-muted">
+      <footer className="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-1 px-1 pt-2 pb-[env(safe-area-inset-bottom)] text-[11px] font-semibold uppercase tracking-wide text-muted">
         {crewMode ? (
-          <>
-            <span className="inline-flex items-center gap-1">
-              <Users className="size-3.5" aria-hidden /> Your crew only
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <Pencil className="size-3.5" aria-hidden /> mark = score
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <Lock className="size-3.5" aria-hidden /> behind PIN
-            </span>
-          </>
+          <span className="inline-flex items-center gap-1.5">
+            <ShieldCheck className="size-3.5 text-accent" aria-hidden />
+            Your crew only <span className="text-fg/40">·</span> mark = score <span className="text-fg/40">·</span> behind PIN
+            <Lock className="size-3.5" aria-hidden />
+          </span>
         ) : (
           <>
-            <span className="inline-flex items-center gap-1">
-              <Pencil className="size-3.5" aria-hidden /> Mark = crew score
+            <span className="inline-flex items-center gap-1.5">
+              <Star className="size-3.5 text-accent" fill="currentColor" aria-hidden />
+              Mark = crew score
             </span>
-            <span>mark ≠ wallet</span>
-            <span className="inline-flex items-center gap-1">
-              <Users className="size-3.5" aria-hidden /> Present only
+            <span className="inline-flex items-center gap-1.5">
+              <Wallet className="size-3.5" aria-hidden />
+              mark ≠ wallet
             </span>
-            <span>≥44px Chromebook</span>
+            <span className="inline-flex items-center gap-1.5">
+              <Users className="size-3.5" aria-hidden />
+              Present only
+            </span>
             {n >= 6 ? <span className="ml-auto">6 crews one screen</span> : null}
-            <button type="button" disabled={!canUndo} onClick={undoLast} className="ml-auto inline-flex min-h-11 items-center gap-1 rounded-lg bg-elevated px-3 text-xs font-semibold text-fg disabled:opacity-40">
+            <button type="button" disabled={!canUndo} onClick={undoLast} className="inline-flex min-h-11 items-center gap-1 rounded-lg px-3 text-xs font-semibold text-muted disabled:opacity-40">
               <Undo2 className="size-3.5" />
               Undo
             </button>
           </>
         )}
-      </div>
+      </footer>
     </div>
   );
 
@@ -307,26 +364,33 @@ export function ScoreDesk({
 function LeadPad({
   crew,
   date,
+  locked,
+  lockLine,
   onTap,
 }: {
   crew: CrewRow;
   date: string;
+  locked?: boolean;
+  lockLine?: string;
   onTap: (code: EffortMark) => void;
 }) {
   const mark = crewEffortMark(crew.kids.map((s) => markOn(s, date)));
   const school = isSchoolDay(date);
   return (
-    <section data-score-crews data-score-crew={crew.key} className="tw-gadget flex min-h-0 flex-1 flex-col gap-3 overflow-hidden p-3">
-      <div className="flex items-center gap-3">
-        <CrewGlyph crew={crew} />
+    <section data-score-crews data-score-crew={crew.key} data-score-lead className="score-lead-card flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 sm:p-5">
+      <div className="flex items-center gap-3 border-b border-white/10 pb-3">
+        <CrewHex name={crew.name || crew.key} size="lg" />
         <div className="min-w-0">
-          <p className="font-display text-3xl font-semibold tracking-tight">{crew.name}</p>
+          <p className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">{crew.name}</p>
           <p className="text-sm text-muted">Crew · TechWorks{school ? "" : " · not a school day"}</p>
         </div>
       </div>
-      <div className="grid min-h-0 flex-1 grid-cols-3 gap-2">
+      {locked && lockLine ? (
+        <p className="text-center text-[11px] font-semibold uppercase tracking-wide text-muted">{lockLine}</p>
+      ) : null}
+      <div className="grid min-h-0 flex-1 grid-cols-3 gap-3">
         {(["3", "2", "1"] as const).map((code) => (
-          <FatMark key={code} code={code} fat on={mark === code} onClick={() => onTap(code)} />
+          <FatMark key={code} code={code} fat on={mark === code} disabled={locked} onClick={() => onTap(code)} />
         ))}
       </div>
     </section>

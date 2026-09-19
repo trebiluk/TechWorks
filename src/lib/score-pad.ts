@@ -3,6 +3,19 @@
 export const EFFORT_MARKS = ["3", "2", "1"] as const;
 export type EffortMark = (typeof EFFORT_MARKS)[number];
 
+/** Hex badge pictogram from the crew name. Lucide ids, never emoji. */
+export type CrewGlyphId = "flame" | "zap" | "wrench" | "cog" | "cpu" | "users";
+
+export function crewGlyphId(name: string): CrewGlyphId {
+  const t = name.toLowerCase();
+  if (/forge|flame|fire|heat/.test(t)) return "flame";
+  if (/spark|volt|flux|zap|bolt/.test(t)) return "zap";
+  if (/rivet|wrench|fix/.test(t)) return "wrench";
+  if (/sprocket|gear|cog/.test(t)) return "cog";
+  if (/bit|chip|cpu|circuit/.test(t)) return "cpu";
+  return "users";
+}
+
 const AWAY = new Set(["A", "E", "P"]);
 
 export function isAwayMark(code: string): boolean {

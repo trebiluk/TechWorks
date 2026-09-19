@@ -8,13 +8,11 @@ import { abOn, attendOn, buyShop, catalogOf, crewLeaderId, deskBellId, onAbRoste
 import { todayIso } from "@/lib/calendar";
 import { periodNow } from "@/lib/bells";
 import { CrewBanner, WorkerCard } from "@/components/shop-cards";
-import { ScoreDesk } from "@/components/score";
-import { assignCrewProject, agendaFor, crewProjectId, slotsOf } from "@/lib/projects";
-import { hourAgenda } from "@/lib/hour-flow";
+import { CrewHex, ScoreDesk } from "@/components/score";
+import { assignCrewProject, crewProjectId, slotsOf } from "@/lib/projects";
 import { currentCycleOf } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 import { readOwnCrew, writeOwnCrew } from "@/lib/score-pad";
-import { Lock } from "lucide-react";
 
 const FACES = ["😞", "😐", "🙂", "😄"] as const;
 const WHERE = ["", "nurse", "library", "teacher"] as const;
@@ -42,13 +40,8 @@ export function CrewLead({
   const locked = crews.find((c) => c.key === ownCrew) ?? null;
   const crew = crews.find((c) => c.key === crewKey) ?? crews[0];
   const rec = file.crews.find((c) => c.period === period && c.key === (crew?.key ?? crewKey));
-  const todayJob = hourAgenda(file, today, period).find((c) => c.id === "goal")?.body
-    || slotsOf(file, period)[0]?.title
-    || "";
-  const unit = agendaFor(file, period, today, crew?.key);
   const shop = catalogOf(file, period);
   const buyOn = shop.length > 0;
-  const unitLine = [unit.title, unit.activityName].filter((x) => x && x !== todayJob).join(" · ");
 
   function pickOwn(key: string) {
     setOwnCrew(key);
@@ -64,53 +57,41 @@ export function CrewLead({
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-bg text-fg" data-crew="on">
       <header className="shrink-0 px-2 pt-2">
-        <div className="tw-gadget flex flex-wrap items-center gap-2 px-3 py-2">
-          <div className="min-w-0">
-            <p className="flex items-center gap-2 font-display text-lg font-semibold tracking-tight">
-              <Lock className="size-4 text-accent" aria-hidden />
-              Score · crew lead · PIN locked
-            </p>
-            <p className="text-sm text-muted">
-              P{period}
-              {todayJob ? ` · ${todayJob}` : ""}
-              {unitLine ? ` · ${unitLine}` : ""}
-              {" · your crew only · not Admin"}
-            </p>
-          </div>
-          <button type="button" onClick={signOut} className="tw-tap ml-auto min-h-11 rounded-lg bg-elevated px-4 text-sm font-bold">
+        <div className="flex flex-wrap items-center gap-2">
+          <nav className={cn("grid min-w-0 flex-1 gap-1", buyOn ? "grid-cols-3" : "grid-cols-2")} aria-label="Crew">
+            <button
+              type="button"
+              onClick={() => setPane("score")}
+              className={cn("tw-tap min-h-11 rounded-xl text-sm font-bold", pane === "score" ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+            >
+              1 · Score
+            </button>
+            <button
+              type="button"
+              onClick={() => setPane("crew")}
+              className={cn("tw-tap min-h-11 rounded-xl text-sm font-bold", pane === "crew" ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+            >
+              2 · Our crew
+            </button>
+            {buyOn ? (
+              <button
+                type="button"
+                onClick={() => setPane("buy")}
+                className={cn("tw-tap min-h-11 rounded-xl text-sm font-bold", pane === "buy" ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+              >
+                3 · Buy
+              </button>
+            ) : null}
+          </nav>
+          <button type="button" onClick={signOut} className="tw-tap min-h-11 rounded-lg bg-elevated px-4 text-sm font-bold">
             Sign out
           </button>
         </div>
-        <nav className={cn("mt-2 grid gap-1", buyOn ? "grid-cols-3" : "grid-cols-2")} aria-label="Crew">
-          <button
-            type="button"
-            onClick={() => setPane("score")}
-            className={cn("tw-tap min-h-11 rounded-xl text-sm font-bold", pane === "score" ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
-          >
-            1 · Score
-          </button>
-          <button
-            type="button"
-            onClick={() => setPane("crew")}
-            className={cn("tw-tap min-h-11 rounded-xl text-sm font-bold", pane === "crew" ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
-          >
-            2 · Our crew
-          </button>
-          {buyOn ? (
-            <button
-              type="button"
-              onClick={() => setPane("buy")}
-              className={cn("tw-tap min-h-11 rounded-xl text-sm font-bold", pane === "buy" ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
-            >
-              3 · Buy
-            </button>
-          ) : null}
-        </nav>
       </header>
       {pane === "score" ? (
         <div className="mt-2 min-h-0 flex-1 overflow-hidden px-2 pb-2">
           {!locked ? (
-            <div data-crew-pick className="tw-gadget flex min-h-0 flex-1 flex-col gap-3 p-4">
+            <div data-crew-pick className="score-lead-card flex min-h-0 flex-1 flex-col gap-3 p-4">
               <p className="font-display text-2xl font-semibold tracking-tight">Which crew are you?</p>
               <p className="text-sm text-muted">Your crew only. Other crews’ marks stay hidden.</p>
               <div className="flex flex-wrap gap-2">
@@ -121,7 +102,7 @@ export function CrewLead({
                     onClick={() => pickOwn(c.key)}
                     className="tw-tap inline-flex min-h-11 items-center gap-2 rounded-xl bg-elevated px-4 text-base font-semibold"
                   >
-                    {c.icon ? <span>{c.icon}</span> : null}
+                    <CrewHex name={c.name || c.key} />
                     {c.name}
                   </button>
                 ))}

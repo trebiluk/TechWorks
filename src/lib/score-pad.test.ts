@@ -5,7 +5,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { EconomyFile, RawStudent } from "./economy.ts";
 import { markOn, setCrewMark, setStudentMark } from "./store.ts";
-import { crewEffortMark, isAwayMark, isEffortMark } from "./score-pad.ts";
+import { crewEffortMark, crewGlyphId, isAwayMark, isEffortMark } from "./score-pad.ts";
 
 function kid(partial: Partial<RawStudent> & Pick<RawStudent, "id" | "first" | "period" | "crewKey">): RawStudent {
   return {
@@ -116,5 +116,29 @@ describe("Score · 40s surfaces", () => {
     assert.match(lead, /writeOwnCrew/);
     assert.match(lead, /Your crew only/);
     assert.doesNotMatch(lead, /bg-gold px-3 py-3 text-bg ring-4/);
+  });
+
+  it("paints StyleBot hex glyphs and Chromebook 6-up chrome", () => {
+    const css = readFileSync(join(root, "styles.css"), "utf8");
+    assert.match(score, /data-score-hex/);
+    assert.match(score, /Chromebook · 1366×768/);
+    assert.match(score, /Mark = crew score/);
+    assert.match(score, /score-lead-card/);
+    assert.match(score, /CircleCheck/);
+    assert.doesNotMatch(score, /Tech Club/);
+    assert.doesNotMatch(score, /club-board/);
+    assert.match(css, /\[data-score-mark\]\[data-score-on="1"\]/);
+    assert.match(css, /clip-path: polygon\(50% 0%/);
+  });
+});
+
+describe("crew hex glyph", () => {
+  it("maps shop names to pictograms, never a default letter", () => {
+    assert.equal(crewGlyphId("Forge"), "flame");
+    assert.equal(crewGlyphId("Spark2"), "zap");
+    assert.equal(crewGlyphId("Rivet1"), "wrench");
+    assert.equal(crewGlyphId("Sprocket"), "cog");
+    assert.equal(crewGlyphId("Bit1"), "cpu");
+    assert.equal(crewGlyphId("Crew A"), "users");
   });
 });
