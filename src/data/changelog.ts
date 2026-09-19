@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.89 — 2026-09-19
+
+- TEACH tools live in a left Edge Pocket. One thin period row. PlanIt writes; Teach is the live board; Deck plays it; Projector is the kid wall. Plan Book dead end is gone.
+
 ## 1.92.88 — 2026-09-19
 
 - PlanIt hour persistence. Job · Guiding Q · Prove · beats survive reload and a chip bump. TEACH and Deck read that same hour.

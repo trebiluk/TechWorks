@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.88. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.89. -->
 
 # TechWorks changelog
 
-App version **1.92.88**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.89**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.89 — 2026-09-19
+
+- TEACH tools live in a left Edge Pocket. One thin period row. PlanIt writes; Teach is the live board; Deck plays it; Projector is the kid wall. Plan Book dead end is gone.
 
 ## 1.92.88 — 2026-09-19
 

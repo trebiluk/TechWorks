@@ -223,7 +223,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Teach mode",
     tags: ["teach", "lesson", "now", "slots", "objective", "demo"],
     wall: true,
-    body: "Dash → Teach. Live clock and the hour PlanIt wrote. Green dots + “n of 8 hours set” mean that hour is planned. Open PlanIt to type Job · Guiding Q · Prove · beats. Hang a Drive file, Slides, Doc, YouTube, or Canva on this hour. Deck plays the hang as a slide. Arrange plates (not the cog) to drag or hide. After class, Wall hangs the scoreboard. No names on Teach.",
+    body: "Dash → Teach. Live clock and the hour PlanIt wrote. Green dots + “n of 8 hours set” mean that hour is planned. Tools (PlanIt · Deck · Projector · Hang · Arrange · Print) live in the left Edge Pocket — one thin period row, no right ribbon. Open PlanIt to type Job · Guiding Q · Prove · beats. Hang a Drive file, Slides, Doc, YouTube, or Canva on this hour. Deck plays that hour. Projector is the kid wall. No names on Teach.",
   },
   {
     id: "dash-plan",
@@ -658,7 +658,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Top chrome (Lock, Help, Web, language)",
     tags: ["chrome", "web", "help", "lock", "settings", "cog", "translate", "now", "chips", "hud", "globe"],
     wall: true,
-    body: "The top bar is one thin row. TECHWORKS goes to the Wall. Classroom chips stay on that row: Wall · Teach · Deck · Week · Club · Hall. More (Edge Pocket) holds Fake data, Find, NOW P#, Lock, Cog, Help, Web, language, cloud, and the version chip — tap to open an overlay, not a second row and not a side rail. Wall looks, ROLL THE DICE, holiday themes, and Theme Tools may paint this bar — they cannot cover it, steal taps, or resize those buttons.",
+    body: "The top bar is one thin row. TECHWORKS goes to the Wall. Classroom chips stay on that row: Wall · Teach · Deck · Week · Club · Hall. More (Edge Pocket) holds Fake data, Find, NOW P#, Lock, Cog, Help, Web, language, cloud, and the version chip — tap to open an overlay, not a second row and not a side rail. Teach’s own tools (PlanIt · Deck · Projector · Hang) live in Teach’s left Edge Pocket. Wall looks, ROLL THE DICE, holiday themes, and Theme Tools may paint this bar — they cannot cover it, steal taps, or resize those buttons.",
   },
   {
     id: "period-now",
@@ -701,7 +701,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Dashboard",
     title: "PlanIt → Teach → Deck → Wall",
     tags: ["plan", "teach", "deck", "wall", "activity", "unit"],
-    body: "One write. Type Job · Guiding Q · Prove · beats on the PlanIt hour card. Tap up to three skills — Watch opens on the first. That same teachDays row fills Wall (NOW + Guiding Q + Prove + Agenda 2×2) and Deck. Teach is a read-only mirror (Open PlanIt to edit). Deck Present plays the hour. Hang still pastes on Teach.",
+    body: "One write. Type Job · Guiding Q · Prove · beats on the PlanIt hour card. Tap up to three skills — Watch opens on the first. Teach is the live period board (tools in the left Edge Pocket). Deck plays that same hour. Projector is the kid wall. Hang still pastes on Teach.",
   },
   {
     id: "roles-it",

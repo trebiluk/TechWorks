@@ -68,7 +68,6 @@ const WeekBoard = lazy(() => import("@/components/week-board").then((m) => ({ de
 const YearBoard = lazy(() => import("@/components/year-board").then((m) => ({ default: m.YearBoard })));
 const DataBoard = lazy(() => import("@/components/data-board").then((m) => ({ default: m.DataBoard })));
 const TeachBoard = lazy(() => import("@/components/teach-board").then((m) => ({ default: m.TeachBoard })));
-const LessonBoard = lazy(() => import("@/components/lesson-board").then((m) => ({ default: m.LessonBoard })));
 const PollBoard = lazy(() => import("@/components/polls").then((m) => ({ default: m.PollBoard })));
 const DeckBoard = lazy(() => import("@/components/deck-board").then((m) => ({ default: m.DeckBoard })));
 
@@ -100,7 +99,6 @@ export function Board() {
   const bells = useMemo(() => bellFor(wallFile), [wallFile]);
   const [view, setView] = useState<View>("overview");
   const [learnStart, setLearnStart] = useState<LearnStart>("projects");
-  const [teachStart, setTeachStart] = useState<"now" | "plans">("now");
   const [deskPanel] = useState<DeskPanel>("score");
   const [pendingView, setPendingView] = useState<View | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
@@ -977,18 +975,6 @@ export function Board() {
       ) : view === "club" ? (
         <ClubBoard unlocked={unlocked} onNeedPin={() => askPin()} onWall={() => go("clubwall")} desk={file} onDesk={commitDesk} />
       ) : view === "teach" ? (
-        teachStart === "plans" ? (
-          <LessonBoard
-            file={graphFile}
-            unlocked={unlocked}
-            onChange={commitDesk}
-            onNeedPin={() => askPin()}
-            onNow={() => {
-              setTeachStart("now");
-              go("teach");
-            }}
-          />
-        ) : (
         <TeachBoard file={graphFile} unlocked={unlocked} editing={unlocked && arrangeOn} onArrange={() => {
           if (!unlocked) {
             askPin();
@@ -996,7 +982,6 @@ export function Board() {
           }
           setArrangeOn((v) => !v);
         }} date={planDate} onDate={setPlanDate} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onBerty={() => setOpenId(HOUSE_BERTY)} onPlan={(iso, p) => { if (iso) setPlanDate(iso); if (p != null) setJumpPeriod(p); setLearnStart("plan"); go("skills"); }} onWords={() => { setLearnStart("words"); go("skills"); }} onWall={() => go("overview")} onDeck={() => go("deck")} />
-        )
       ) : view === "polls" ? (
         <PollBoard file={file} unlocked={unlocked} onChange={commitDesk} onNeedPin={() => askPin()} />
       ) : view === "deck" ? (
@@ -1042,7 +1027,6 @@ export function Board() {
           onBoard={() => go("overview")}
           onCrew={() => goSection("crew")}
           onTeach={() => {
-            setTeachStart("now");
             go("teach");
           }}
           onOther={() => goSection("admin")}

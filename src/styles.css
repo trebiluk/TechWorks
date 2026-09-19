@@ -3164,6 +3164,88 @@ html[dir="rtl"] .board-root { direction: rtl; }
   padding: 0 0.12em;
 }
 
+/* TEACH left Edge Pocket — overlay tools, one thin top row, content fills. */
+.tw-teach-stage {
+  position: relative;
+  min-height: 0;
+  padding: 0.25rem;
+}
+.tw-teach-top {
+  flex: none;
+  min-width: 0;
+}
+.tw-teach-top > div {
+  min-height: 2.75rem;
+}
+.tw-teach-pocket {
+  position: relative;
+  z-index: 26;
+  flex: none;
+}
+.tw-teach-pocket-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  padding: 0 0.7rem;
+  border-radius: 0.75rem;
+  background: var(--color-elevated);
+  color: var(--color-fg);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.tw-teach-pocket.is-open .tw-teach-pocket-tab {
+  background: var(--color-accent);
+  color: var(--color-accent-fg);
+}
+.tw-teach-pocket-rail {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: calc(100% + 0.35rem);
+  z-index: 28;
+  width: 10.5rem;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.5rem;
+  border-radius: 14px;
+  background: var(--color-surface);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #fff 16%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 28%, transparent),
+    0 18px 36px -18px color-mix(in oklab, #000 55%, transparent);
+}
+.tw-teach-pocket.is-open .tw-teach-pocket-rail {
+  display: flex;
+}
+.tw-teach-pocket-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  width: 100%;
+  padding: 0 0.7rem;
+  border-radius: 0.75rem;
+  background: var(--color-elevated);
+  color: var(--color-fg);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: left;
+}
+.tw-teach-pocket-btn[data-on="on"] {
+  background: var(--color-accent);
+  color: var(--color-accent-fg);
+}
+.tw-teach-pocket-extra {
+  margin-top: 0.35rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+
 
 
 

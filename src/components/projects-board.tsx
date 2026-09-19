@@ -20,7 +20,6 @@ import {
 import { currentCycleOf } from "@/lib/roles";
 import { CtrlSeg } from "@/components/ctrl";
 import { JobWrite } from "@/components/job-write";
-import { PlanBook } from "@/components/plan-book";
 import { ActivityMaker } from "@/components/activity-maker";
 import { cn } from "@/lib/utils";
 
@@ -31,7 +30,6 @@ export function ProjectsBoard({
   unlocked,
   onNeedPin,
   onChange,
-  onTeachDay,
   onPlanIt,
 }: {
   file: EconomyFile;
@@ -132,29 +130,17 @@ export function ProjectsBoard({
                 setPane("plan");
               }}
             />
-            {project ? (
-              <PlanBook
-                file={file}
-                project={project}
-                period={period}
-                unlocked={unlocked}
-                onNeedPin={onNeedPin}
-                onChange={onChange}
-                onTeach={onTeachDay ? (iso) => onTeachDay(iso, period) : undefined}
-              />
-            ) : (
-              <p className="text-sm text-muted">
-                Nothing parked this period. Write Job · Guiding Q · Prove · beats on PlanIt.
-                {onPlanIt ? (
-                  <>
-                    {" "}
-                    <button type="button" onClick={onPlanIt} className="font-semibold text-accent">
-                      Open PlanIt
-                    </button>
-                  </>
-                ) : null}
+            <div className="tw-gadget p-4">
+              <p className="font-display text-lg font-semibold">The hour lives on PlanIt</p>
+              <p className="mt-1 text-sm text-muted">
+                Job · Guiding Q · Prove · beats. Teach and Deck play that write. This page parks a multi-day unit only.
               </p>
-            )}
+              {onPlanIt ? (
+                <button type="button" onClick={onPlanIt} className="tw-tap mt-3 inline-flex min-h-11 items-center rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">
+                  Open PlanIt
+                </button>
+              ) : null}
+            </div>
           </div>
         ) : null}
         {pane === "floor" ? (

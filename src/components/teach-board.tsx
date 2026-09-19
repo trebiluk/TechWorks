@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import { RotateCcw } from "lucide-react";
+import { BookOpen, CalendarDays, GripVertical, Megaphone, PanelsTopLeft, Paperclip, Presentation, Printer, RotateCcw } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
 import { periodClock, periodNow, formatBell } from "@/lib/bells";
@@ -10,7 +10,6 @@ import { BertyCueBot } from "@/components/berty";
 import { ProgressRing } from "@/components/progress-ring";
 import { DashTools } from "@/components/dash-tools";
 import { PollWall } from "@/components/polls";
-import { livePoll } from "@/lib/polls";
 import { featureOn } from "@/lib/features";
 import {
   DEFAULT_TEACH_LAYOUT,
@@ -48,6 +47,7 @@ import { cn } from "@/lib/utils";
 import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
 import { HangFrame } from "@/components/hang-frame";
 import { CleanupJobsPad } from "@/components/cleanup-wall";
+import { TeachPocket, type TeachTool } from "@/components/teach-pocket";
 
 export function TeachBoard({
   file,
@@ -152,6 +152,24 @@ export function TeachBoard({
   const hourRows = dayHourStatus(file, date, shop);
   const hoursSet = hourRows.filter((r) => r.set).length;
   const hidden = layout.order.filter((id) => !teachRowOn(layout, id));
+
+  function focusHang() {
+    commitLayout(hideTeachRow(layout, "hang", true));
+    window.requestAnimationFrame(() => {
+      document.querySelector("[data-teach-hang]")?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    });
+  }
+
+  const tools: TeachTool[] = [
+    ...(onPlan ? [{ id: "plan", label: "PlanIt", title: "Write the hour", icon: CalendarDays, onClick: () => onPlan(date, period) }] : []),
+    ...(onDeck ? [{ id: "deck", label: "Deck", title: "Play this hour", icon: Presentation, onClick: onDeck }] : []),
+    ...(onWall ? [{ id: "wall", label: "Projector", title: "Kid wall — this hour", icon: PanelsTopLeft, onClick: onWall }] : []),
+    { id: "hang", label: "Hang", title: "Drive / Slides / YouTube on this hour", icon: Paperclip, onClick: focusHang },
+    ...(onArrange ? [{ id: "arrange", label: "Arrange", title: sortOn ? "Done arranging" : "Arrange plates", on: sortOn, icon: GripVertical, onClick: onArrange }] : []),
+    { id: "print", label: "Print", title: "Print this lesson", icon: Printer, onClick: () => setPrintOn(true) },
+    ...(onWords ? [{ id: "words", label: "Words", title: "Word Heat", icon: BookOpen, onClick: onWords }] : []),
+    ...(onPolls ? [{ id: "polls", label: "Polls", title: "Class poll", icon: Megaphone, onClick: onPolls }] : []),
+  ];
 
   function plateOf(id: TeachRowId) {
     if (id === "hero") {
@@ -276,130 +294,92 @@ export function TeachBoard({
       const hangs = hangOf(file, date, period);
       if (!hangs.length && !unlocked && !sortOn) return null;
       return (
+        <div data-teach-hang>
         <HangFrame
           items={hangs}
           unlocked={unlocked}
           onHang={(raw) => editNow((f) => addTeachHang(f, date, period, raw))}
           onDrop={(hid) => editNow((f) => dropTeachHang(f, date, period, hid))}
         />
+        </div>
       );
     }
     return null;
   }
 
   return (
-    <div className={cn("flex min-h-0 flex-1 flex-col gap-2 overflow-auto p-1")} data-wall-stage={sortOn ? "edit" : "show"}>
+    <div className="tw-teach-stage flex min-h-0 flex-1 flex-col" data-wall-stage={sortOn ? "edit" : "show"}>
       {printOn ? <LessonPlanSheet file={file} period={period} dates={weekDays} onClose={() => setPrintOn(false)} /> : null}
-      <header className="flex shrink-0 flex-col gap-2">
-        <div className="flex flex-wrap items-center gap-2">
+      <header className="tw-teach-top">
+        <div className="flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto">
+          <TeachPocket
+            tools={tools}
+            extra={
+              <div className="grid gap-1">
+                <p className="px-1 text-[11px] font-bold uppercase tracking-wider text-muted">Day</p>
+                <div className="flex flex-wrap gap-1">
+                  <button type="button" onClick={() => goDate(stepSchoolDay(date, -1))} className="tw-tap grid size-11 place-items-center rounded-xl bg-elevated text-lg font-semibold" aria-label="Previous school day">
+                    ‹
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => goDate(nextOpenDay(today))}
+                    className={cn("tw-tap min-h-11 rounded-xl px-3 text-xs font-semibold", date === today || date === nextOpenDay(today) ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+                  >
+                    {isSchoolDay(today) ? "Today" : "Next"}
+                  </button>
+                  <button type="button" onClick={() => goDate(stepSchoolDay(date, 1))} className="tw-tap grid size-11 place-items-center rounded-xl bg-elevated text-lg font-semibold" aria-label="Next school day">
+                    ›
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {weekDays.map((d) => {
+                    const school = isSchoolDay(d);
+                    return (
+                      <button
+                        key={d}
+                        type="button"
+                        disabled={!school}
+                        onClick={() => school && goDate(d)}
+                        className={cn(
+                          "tw-tap min-h-11 rounded-xl px-2.5 text-left text-xs font-semibold",
+                          d === date ? "bg-fg text-bg" : school ? "bg-elevated text-muted" : "opacity-40",
+                        )}
+                      >
+                        {formatSchoolDate(d).replace(/,.*/, "")}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            }
+          />
           {shop.length ? (
             hourRows.map((row) => (
-            <button
-              key={row.period}
-              type="button"
-              onClick={() => choose(row.period)}
-              className={cn("tw-tap min-h-10 rounded-full px-3 text-xs font-semibold", period === row.period ? "bg-fg text-bg" : "bg-elevated text-muted")}
-              title={row.set ? (row.title || "Set") : "No plan yet"}
-            >
-              P{row.period}
-              {live === row.period ? <span className="ml-1 text-[10px]">now</span> : null}
-              <span className={cn("ml-1 inline-block size-1.5 rounded-full", row.set ? "bg-gain" : "bg-fg/30")} />
-            </button>
+              <button
+                key={row.period}
+                type="button"
+                onClick={() => choose(row.period)}
+                className={cn("tw-tap min-h-11 shrink-0 rounded-xl px-3 text-xs font-semibold", period === row.period ? "bg-fg text-bg" : "bg-elevated text-muted")}
+                title={row.set ? (row.title || "Set") : "No plan yet"}
+              >
+                P{row.period}
+                {live === row.period ? <span className="ml-1 text-[10px]">now</span> : null}
+                <span className={cn("ml-1 inline-block size-1.5 rounded-full", row.set ? "bg-gain" : "bg-fg/30")} />
+              </button>
             ))
           ) : (
             <p className="text-sm text-muted">No shop periods. Admin → Day.</p>
           )}
-          {shop.length ? (
-            <p className="text-xs font-semibold text-muted">{hoursSet} of {shop.length} hours set</p>
-          ) : null}
-          <span className="ml-auto flex flex-wrap items-center gap-1 font-mono text-sm text-muted">
+          {shop.length ? <p className="shrink-0 text-xs font-semibold text-muted">{hoursSet} of {shop.length} hours set</p> : null}
+          <p className="ml-auto shrink-0 font-mono text-sm text-muted">
             {clock ? `${formatBell(clock.start)}-${formatBell(clock.end)}` : formatSchoolDate(date)}
             {clock?.cleanup ? (
-              <span className="rounded-full bg-cleanup px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-accent-fg">
+              <span className="ml-2 rounded-full bg-cleanup px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-accent-fg">
                 Cleanup {Math.max(0, Math.ceil(clock.left))}m
               </span>
             ) : null}
-            {onDeck ? (
-              <button type="button" onClick={onDeck} className="tw-tap min-h-8 rounded-full bg-gold px-3 text-[12px] font-semibold text-bg">
-                Deck
-              </button>
-            ) : null}
-            {onWall ? (
-              <button type="button" onClick={onWall} className="tw-tap min-h-8 rounded-full bg-accent px-3 text-[12px] font-semibold text-accent-fg">
-                See wall
-              </button>
-            ) : null}
-            {onArrange ? (
-              <button type="button" onClick={onArrange} className={cn("tw-tap min-h-8 rounded-full px-3 text-[12px] font-semibold", sortOn ? "bg-gold text-bg" : "tw-btn-2")}>
-                {sortOn ? "Done arranging" : "Arrange plates"}
-              </button>
-            ) : null}
-            <button type="button" onClick={() => setPrintOn(true)} className="tw-tap min-h-8 rounded-full px-3 text-[12px] font-medium tw-btn-2">
-              Print lesson
-            </button>
-            {onPlan ? (
-              <button type="button" onClick={() => onPlan(date, period)} className="tw-tap min-h-8 rounded-full px-3 text-[12px] font-medium tw-btn-2">
-                PlanIt
-              </button>
-            ) : null}
-            {onWords ? (
-              <button type="button" onClick={onWords} className="tw-tap min-h-8 rounded-full px-3 text-[12px] font-medium tw-btn-2">
-                Word Heat
-              </button>
-            ) : null}
-          {onPolls ? (
-            <button
-              type="button"
-              onClick={onPolls}
-              className={cn("tw-tap min-h-8 rounded-full px-3 text-[12px] font-medium", livePoll(file) ? "bg-accent text-accent-fg" : "tw-btn-2")}
-            >
-              Polls
-            </button>
-          ) : null}
-        </span>
-        </div>
-        <div className="flex flex-wrap items-center gap-1">
-          <button
-            type="button"
-            onClick={() => goDate(stepSchoolDay(date, -1))}
-            className="tw-tap grid size-10 place-items-center rounded-xl bg-elevated text-lg font-semibold"
-            aria-label="Previous school day"
-          >
-            ‹
-          </button>
-          <button
-            type="button"
-            onClick={() => goDate(nextOpenDay(today))}
-            className={cn("tw-tap min-h-10 rounded-xl px-3 text-xs font-semibold", date === today || date === nextOpenDay(today) ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
-          >
-            {isSchoolDay(today) ? "Today" : "Next class"}
-          </button>
-          {weekDays.map((d) => {
-            const school = isSchoolDay(d);
-            return (
-              <button
-                key={d}
-                type="button"
-                disabled={!school}
-                onClick={() => school && goDate(d)}
-                className={cn(
-                  "tw-tap min-h-10 rounded-xl px-2.5 text-left text-xs font-semibold",
-                  d === date ? "bg-fg text-bg" : school ? "bg-elevated text-muted" : "opacity-40",
-                )}
-              >
-                {formatSchoolDate(d)}
-              </button>
-            );
-          })}
-          <button
-            type="button"
-            onClick={() => goDate(stepSchoolDay(date, 1))}
-            className="tw-tap grid size-10 place-items-center rounded-xl bg-elevated text-lg font-semibold"
-            aria-label="Next school day"
-          >
-            ›
-          </button>
-          <p className="ml-1 text-sm font-semibold text-gold">Writing {formatSchoolDate(date)} · P{period}</p>
+          </p>
         </div>
       </header>
 
