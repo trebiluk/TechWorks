@@ -10,11 +10,26 @@ const teachLive = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "..
 const teachBoard = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../components/teach-board.tsx"), "utf8");
 
 describe("PlanIt Mr Fortnite chrome", () => {
-  it("locks Plan 40 / TEACH 60 on the hour spine", () => {
-    const stage = css.match(/\.tw-planit-mf \.tw-planit-stage \{[^}]+\}/);
-    assert.ok(stage, "mf stage rule");
-    assert.match(stage[0], /40%/);
-    assert.match(stage[0], /60%/);
+  it("keeps PlanIt week as the timetable — no TEACH live mount in the stage", () => {
+    const stage = css.match(/\.tw-planit-stage \{[^}]+\}/);
+    assert.ok(stage, "stage rule");
+    assert.match(stage[0], /overflow:\s*hidden/);
+    assert.match(stage[0], /minmax\(0,\s*1fr\)/);
+    assert.match(css, /\.tw-planit-stage\[data-week="on"\] \{[\s\S]*?minmax\(0,\s*1fr\)/);
+    assert.match(css, /\.tw-planit-cell \{[\s\S]*?overflow:\s*hidden/);
+    assert.match(css, /\.tw-planit-mf \.tw-planit-stage \{[\s\S]*?overflow:\s*hidden/);
+    assert.doesNotMatch(planit, /<TeachLive/);
+    assert.match(planit, /tw-planit-board/);
+    assert.match(planit, /data-week=\{gridOn \? "on" : "off"\}/);
+    assert.match(teachBoard, /<TeachLive/);
+  });
+
+  it("clips Hang and rank cards inside TEACH so they cannot float over PlanIt rails", () => {
+    assert.match(css, /\.tw-mf-action,\s*\.tw-mf-rank \{[\s\S]*?overflow:\s*hidden/);
+    assert.match(css, /\.tw-mf-action,\s*\.tw-mf-rank \{[\s\S]*?z-index:\s*0/);
+    assert.match(css, /\.tw-teach-live \{[\s\S]*?min-width:\s*0/);
+    assert.match(css, /\.tw-teach-live \{[\s\S]*?overflow:\s*auto/);
+    assert.match(css, /\[data-teach-mf\] \{[\s\S]*?overflow:\s*hidden/);
   });
 
   it("paints LCARS L-rails with open corners", () => {
@@ -37,9 +52,8 @@ describe("PlanIt Mr Fortnite chrome", () => {
     assert.doesNotMatch(teachLive, /baboo|stark/i);
   });
 
-  it("names the right pane TEACH, not a second Wall chrome", () => {
+  it("names TEACH as the live board, not a second Wall chrome", () => {
     assert.match(planit, /data-planit-mf/);
-    assert.match(planit, /<TeachLive/);
     assert.match(teachLive, /data-teach-live/);
     assert.match(teachLive, /LIVE_BOARD_TABS/);
     assert.match(teachBoard, /<TeachLive/);

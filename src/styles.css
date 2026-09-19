@@ -2589,7 +2589,12 @@ html[dir="rtl"] .board-root { direction: rtl; }
   grid-template-columns: minmax(0, 1fr) minmax(18.5rem, 23rem);
   gap: 0.7rem;
   flex: 1 1 0;
+  min-width: 0;
   min-height: 0;
+  overflow: hidden;
+}
+.tw-planit-stage[data-week="on"] {
+  grid-template-columns: minmax(0, 1fr);
 }
 .tw-planit-board {
   display: grid;
@@ -2653,7 +2658,9 @@ html[dir="rtl"] .board-root { direction: rtl; }
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
+  min-width: 0;
   min-height: 5.4rem;
+  overflow: hidden;
   padding: 0.5rem 0.55rem;
   text-align: left;
   background: color-mix(in oklab, var(--color-elevated) 70%, transparent);
@@ -3290,8 +3297,14 @@ html[dir="rtl"] .board-root { direction: rtl; }
   color: #eef2ff;
 }
 .tw-planit-mf .tw-planit-stage {
-  grid-template-columns: minmax(16.5rem, 40%) minmax(0, 60%);
+  overflow: hidden;
+  min-width: 0;
   gap: 0.65rem;
+}
+.tw-planit-mf .tw-planit-stage > * {
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
 }
 .tw-planit-mf .tw-planit-top,
 .tw-planit-mf .tw-planit-desk,
@@ -3390,9 +3403,19 @@ html[dir="rtl"] .board-root { direction: rtl; }
 .tw-mf-beat[data-on="on"] {
   background: color-mix(in oklab, var(--mf-gold) 18%, var(--mf-elev));
 }
+[data-teach-mf] {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
 .tw-teach-live {
   display: flex;
+  min-width: 0;
   min-height: 0;
+  max-width: 100%;
+  flex: 1 1 0;
   flex-direction: column;
   gap: 0.55rem;
   padding: 0.7rem 0.75rem 0.8rem;
@@ -3447,8 +3470,9 @@ html[dir="rtl"] .board-root { direction: rtl; }
 }
 .tw-mf-job-row {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(12rem, 0.9fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   gap: 0.5rem;
+  min-width: 0;
 }
 .tw-mf-tool-map {
   display: flex;
@@ -3486,6 +3510,14 @@ html[dir="rtl"] .board-root { direction: rtl; }
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.45rem;
+  min-width: 0;
+}
+.tw-mf-action,
+.tw-mf-rank {
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 0;
 }
 .tw-mf-hint {
   margin: 0.15rem 0 0.4rem;
@@ -3502,6 +3534,9 @@ html[dir="rtl"] .board-root { direction: rtl; }
   display: grid;
   gap: 0.45rem;
   margin-top: auto;
+  min-width: 0;
+  position: relative;
+  z-index: 0;
 }
 .tw-mf-stats {
   display: grid;
@@ -3535,6 +3570,7 @@ html[dir="rtl"] .board-root { direction: rtl; }
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.2fr);
   gap: 0.45rem;
+  min-width: 0;
 }
 .tw-mf-rank[data-gold="on"] {
   background:
@@ -3611,6 +3647,12 @@ html[dir="rtl"] .board-root { direction: rtl; }
 .tw-teach-live textarea,
 .tw-teach-live input {
   color: inherit;
+  min-width: 0;
+}
+.tw-teach-live .tw-field,
+.tw-teach-live .tw-gadget {
+  min-width: 0;
+  max-width: 100%;
 }
 @media (max-width: 1099px) {
   .tw-mf-actions,
@@ -3623,6 +3665,7 @@ html[dir="rtl"] .board-root { direction: rtl; }
 @media (max-width: 899px) {
   .tw-planit-mf .tw-planit-stage {
     grid-template-columns: minmax(0, 1fr);
+    overflow: auto;
   }
   .tw-mf-beats,
   .tw-mf-actions,
