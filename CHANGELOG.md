@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.96. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.97. -->
 
 # TechWorks changelog
 
-App version **1.92.96**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.97**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.97 — 2026-09-20
+
+- Door school links: optional door line (80 chars), skip duplicate https, up/down order. Chromebooks actually load the feed (wake + ~40s while the tab is open). Cache-friendly GET.
 
 ## 1.92.96 — 2026-09-20
 

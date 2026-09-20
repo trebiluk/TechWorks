@@ -13,6 +13,7 @@ export type DoorLink = {
 export type DoorPack = {
   kind: "tech-room-included";
   updated: string;
+  note: string;
   links: DoorLink[];
 };
 
@@ -31,6 +32,7 @@ const ICONS = new Set([
   "school",
 ]);
 const MAX = 24;
+const MAX_NOTE = 80;
 const DATA_KEY = "door-links";
 const LOCK_KEY = "door-links-auth";
 const CACHE_DATA = "https://tw.kulibert.net/__kv/door-links";
@@ -63,10 +65,35 @@ function cleanUrl(raw: string): string | null {
   return url.href;
 }
 
+function hrefKey(href: string) {
+  try {
+    const url = new URL(href);
+    const path = url.pathname.replace(/\/+$/, "");
+    return `${url.protocol}//${url.host.toLowerCase()}${path}${url.search}`.toLowerCase();
+  } catch {
+    return href.replace(/\/+$/, "").toLowerCase();
+  }
+}
+
+export function sanitizeNote(raw: unknown) {
+  if (typeof raw !== "string") return "";
+  return raw
+    .replace(/<[^>]*>/g, "")
+    .replace(/[\u0000-\u001f]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, MAX_NOTE);
+}
+
+export function packEtag(pack: DoorPack) {
+  return `"tw-door-${pack.updated}-${pack.links.length}-${pack.note.length}"`;
+}
+
 export function sanitizePack(raw: unknown): DoorPack {
   const src = raw && typeof raw === "object" ? (raw as Partial<DoorPack>) : {};
   const links: DoorLink[] = [];
-  const seen = new Set<string>();
+  const seenId = new Set<string>();
+  const seenHref = new Set<string>();
   const rows = Array.isArray(src.links) ? src.links : [];
   for (const item of rows) {
     if (!item || typeof item !== "object") continue;
@@ -77,12 +104,15 @@ export function sanitizePack(raw: unknown): DoorPack {
       .slice(0, 24);
     const href = cleanUrl(String(row.href ?? ""));
     if (!name || !href) continue;
+    const key = hrefKey(href);
+    if (seenHref.has(key)) continue;
     const id =
       typeof row.id === "string" && row.id.startsWith("cut-")
         ? row.id.slice(0, 24)
         : `cut-${links.length + 1}`;
-    if (seen.has(id)) continue;
-    seen.add(id);
+    if (seenId.has(id)) continue;
+    seenId.add(id);
+    seenHref.add(key);
     const icon = ICONS.has(String(row.icon)) ? String(row.icon) : "link";
     links.push({ id, name, href, icon });
     if (links.length >= MAX) break;
@@ -90,6 +120,7 @@ export function sanitizePack(raw: unknown): DoorPack {
   return {
     kind: "tech-room-included",
     updated: typeof src.updated === "string" ? src.updated.slice(0, 40) : new Date().toISOString(),
+    note: sanitizeNote(src.note),
     links,
   };
 }

@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
   setHeader(event, "cache-control", "no-store");
 
   const auth = getHeader(event, "authorization") ?? "";
-  const body = await readBody<{ keyHash?: string; links?: unknown }>(event);
+  const body = await readBody<{ keyHash?: string; links?: unknown; note?: unknown }>(event);
   const token = (
     (auth.toLowerCase().startsWith("bearer ") ? auth.slice(7) : "") ||
     (getHeader(event, "x-tw-desk") ?? "") ||
@@ -27,9 +27,17 @@ export default defineEventHandler(async (event) => {
   const pack = sanitizePack({
     updated: new Date().toISOString(),
     links: body?.links,
+    note: body?.note,
   });
   const used = await saveDoor(event, pack);
   if (used === "none") throw createError({ statusCode: 503, statusMessage: "no-store" });
   await claimDoorWrite(event, token);
-  return { ok: true, store: used, n: pack.links.length, updated: pack.updated, links: pack.links };
+  return {
+    ok: true,
+    store: used,
+    n: pack.links.length,
+    updated: pack.updated,
+    note: pack.note,
+    links: pack.links,
+  };
 });

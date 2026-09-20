@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.97 — 2026-09-20
+
+- Door school links: optional door line (80 chars), skip duplicate https, up/down order. Chromebooks actually load the feed (wake + ~40s while the tab is open). Cache-friendly GET.
+
 ## 1.92.96 — 2026-09-20
 
 - Wall frame sandwich: weather · temp · lunch on a 48px header, ticker footer 44px. Open-Meteo for Solvay (Hancock fallback). Bearcat Bistro cycle + last-good cache. Teacher lunch still wins.
