@@ -529,7 +529,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Schedule",
     title: "Bells, delay, A/B, SUB, lunch",
     tags: ["bell", "delay", "a day", "b day", "sub", "lunch", "snow"],
-    body: "Desk → Schedule: Regular / 1-hour / 2-hour / half / Assembly. A/B chip is the live letter; next school day infers the other. Snow · reset A/B (PIN). SUB voids that date and does not rewind the cycle. Specials: Admin Today → add Grade 6/7/8/All assemblies even if they are not during Tech. The wall shows every period and gold-rings the assembly window.",
+    body: "Desk → Schedule: Regular / 1-hour / 2-hour / half / Assembly. A/B chip is the live letter; next school day infers the other. Snow · reset A/B (PIN). SUB voids that date and does not rewind the cycle. Specials: Admin Today → add Grade 6/7/8/All assemblies even if they are not during Tech. The wall shows every period and gold-rings the assembly window. Lunch on the wall frame comes from Bearcat Bistro (cycle + last-good). Type Admin → Lunch to override today.",
   },
   {
     id: "nurse-pass",
@@ -659,7 +659,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Top chrome (Lock, Help, Web, language)",
     tags: ["chrome", "web", "help", "lock", "settings", "cog", "translate", "now", "chips", "hud", "globe"],
     wall: true,
-    body: "The top bar is one thin row. TECHWORKS goes to the Wall. Classroom chips stay on that row: Wall · Teach · Deck · Week · Club · Hall. More (Edge Pocket) holds Fake data, Find, NOW P#, Lock, Cog, Help, Web, language, cloud, and the version chip — tap to open an overlay, not a second row and not a side rail. Teach’s own tools (PlanIt · Deck · Projector · Hang) live in Teach’s left Edge Pocket. Wall looks, ROLL THE DICE, holiday themes, and Theme Tools may paint this bar — they cannot cover it, steal taps, or resize those buttons.",
+    body: "The top bar is one thin row. TECHWORKS goes to the Wall. Classroom chips stay on that row: Wall · Teach · Deck · Week · Club · Hall. More (Edge Pocket) holds Fake data, Find, NOW P#, Lock, Cog, Help, Web, language, cloud, and the version chip — tap to open an overlay, not a second row and not a side rail. Teach’s own tools (PlanIt · Deck · Projector · Hang) live in Teach’s left Edge Pocket. The wall itself wears a frame sandwich: weather · °F · lunch on a 48px header, ticker at 44px. Wall looks, ROLL THE DICE, holiday themes, and Theme Tools may paint this bar — they cannot cover it, steal taps, or resize those buttons.",
   },
   {
     id: "period-now",

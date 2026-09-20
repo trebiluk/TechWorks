@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
 import { lunchOn, setLunch } from "@/lib/store";
-import { LUNCH_PAGE, guessMiddlePdf, pullLunch } from "@/lib/lunch";
+import { BISTRO_DOOR, LUNCH_PAGE, guessMiddlePdf, pullLunch } from "@/lib/lunch";
 import { todayIso } from "@/lib/calendar";
 
 export function LunchPanel({
@@ -51,7 +51,7 @@ export function LunchPanel({
   return (
     <section>
       <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">Lunch</h2>
-      <p className="mt-1 text-sm text-muted">Solvay MS entrée. Pull the monthly PDF, or type today. Shows on the Now chip.</p>
+      <p className="mt-1 text-sm text-muted">Solvay MS entrée from Bearcat Bistro. The wall frame shows it. Type today to override. Pull fills empty days.</p>
       <label className="mt-3 block">
         <span className="text-xs font-semibold uppercase tracking-wider text-subtle">Today</span>
         <input
@@ -80,6 +80,9 @@ export function LunchPanel({
         </button>
         <a href={pdf} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center rounded-md bg-elevated px-3 text-sm">
           Month PDF
+        </a>
+        <a href={BISTRO_DOOR} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center rounded-md bg-elevated px-3 text-sm">
+          Bearcat Bistro
         </a>
         <a href={LUNCH_PAGE} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center rounded-md bg-elevated px-3 text-sm">
           Food services

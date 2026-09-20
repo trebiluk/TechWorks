@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.96 — 2026-09-20
+
+- Wall frame sandwich: weather · temp · lunch on a 48px header, ticker footer 44px. Open-Meteo for Solvay (Hancock fallback). Bearcat Bistro cycle + last-good cache. Teacher lunch still wins.
+
 ## 1.92.95 — 2026-09-19
 
 - Hall auto-loads P6 Study Hall on the projector and the teacher pad. Empty A-day copy is **No class loaded** — never “Everyone is in the room.” Fake data paints demo hall aliases (not saved). Solvay profile roster stays empty until Diego pastes nicknames.

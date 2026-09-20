@@ -9,7 +9,7 @@ import { applySort, byCombo } from "@/lib/rank";
 import { XpBit, PerkBit } from "@/components/marks";
 import { RewardBar } from "@/components/reward-bar";
 import { DayStrip } from "@/components/day-strip";
-import { WeatherChip } from "@/components/weather-chip";
+import { WallFrame } from "@/components/wall-frame";
 import { Berty } from "@/components/berty";
 import { Fold } from "@/components/fold";
 import { dayCardsOn, deskBellId, isSubDay, schooltoolDone, setSchooltoolDone, specialsOn, visitOn, cycleVisit } from "@/lib/store";
@@ -233,12 +233,11 @@ export const Dashboard = memo(function Dashboard({
           </p>
         </div>
       </div>
-      {!clock?.live && arrange ? (
+      {arrange && live == null ? (
         <div className="mt-auto pt-2">
           <ProgressTrio cycle={cyc} quarter={qtr} year={yr} />
         </div>
       ) : null}
-      {arrange && featureOn(file, "weather") && live == null ? <div className="mt-2"><WeatherChip /></div> : null}
     </article>
   );
 
@@ -467,6 +466,19 @@ export const Dashboard = memo(function Dashboard({
   }
 
   return (
+    <WallFrame
+      file={file}
+      date={today}
+      arrange={arrange}
+      tickerBits={[
+        `P${shown}`,
+        wallSpine.job || wallSpine.ask || periodTitle(shown, bells),
+        hourKit(file, wallDate, shown) ? `Need ${hourKit(file, wallDate, shown)}` : "Need —",
+        clock?.live ? (clock.cleanup ? "Cleanup" : `${Math.max(0, Math.ceil(clock.left))}m left`) : nxt ? `Next P${nxt.period}` : "Shop",
+        nxt ? `P${nxt.period} ${formatBell(nxt.start)}` : "Last bell",
+        formatSchoolDate(wallDate),
+      ]}
+    >
     <div className={cn("tw-web-wall relative flex w-full flex-1 flex-col gap-1.5", arrange ? "overflow-auto" : "min-h-0 overflow-hidden")} data-wall-stage={arrange ? "edit" : "show"}>
       {unlocked && !arrange && onArrange ? (
         <div className="flex shrink-0 justify-end">
@@ -528,47 +540,10 @@ export const Dashboard = memo(function Dashboard({
           ))}
         </SortableList>
       </div>
-      {!arrange ? (
-        <WallTicker
-          period={shown}
-          title={wallSpine.job || wallSpine.ask || periodTitle(shown, bells)}
-          kit={hourKit(file, wallDate, shown)}
-          left={clock?.live ? (clock.cleanup ? "Cleanup" : `${Math.max(0, Math.ceil(clock.left))}m left`) : nxt ? `Next P${nxt.period}` : "Shop"}
-          next={nxt ? `P${nxt.period} ${formatBell(nxt.start)}` : "Last bell"}
-          date={formatSchoolDate(wallDate)}
-        />
-      ) : null}
     </div>
+    </WallFrame>
   );
 });
-
-function WallTicker({
-  period,
-  title,
-  kit,
-  left,
-  next,
-  date,
-}: {
-  period: number;
-  title: string;
-  kit: string;
-  left: string;
-  next: string;
-  date: string;
-}) {
-  const line = [`P${period}`, title, kit ? `Need ${kit}` : "Need —", left, next, date].join("  ·  ");
-  return (
-    <div className="tw-ticker" data-wall-ticker>
-      <div className="tw-ticker-track">
-        <span>{line}</span>
-        <span aria-hidden>{line}</span>
-        <span aria-hidden>{line}</span>
-        <span aria-hidden>{line}</span>
-      </div>
-    </div>
-  );
-}
 
 function LayoutBar({
   dash,

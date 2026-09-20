@@ -114,6 +114,36 @@ function djiaPlugin(): Plugin {
   };
 }
 
+function lunchPlugin(): Plugin {
+  return {
+    name: "techworks-lunch-proxy",
+    configureServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        const raw = req.url ?? "";
+        const pathOnly = raw.split("?", 1)[0] ?? "";
+        if (pathOnly !== "/api/lunch") {
+          next();
+          return;
+        }
+        try {
+          const q = new URL(raw, "http://local").searchParams.get("date") ?? "";
+          const iso = /^\d{4}-\d{2}-\d{2}$/.test(q) ? q : new Date().toISOString().slice(0, 10);
+          const mod = (await server.ssrLoadModule("/src/lib/lunch.ts")) as {
+            pullBistroLunch: (date: string) => Promise<unknown>;
+          };
+          const row = await mod.pullBistroLunch(iso);
+          jsonOk(res, JSON.stringify(row), 600);
+        } catch (err) {
+          console.error("[lunch]", err);
+          res.statusCode = 502;
+          res.setHeader("content-type", "application/json; charset=utf-8");
+          res.end(JSON.stringify({ error: "lunch unavailable" }));
+        }
+      });
+    },
+  };
+}
+
 function weatherPlugin(): Plugin {
   return {
     name: "techworks-weather-proxy",
@@ -430,6 +460,7 @@ export default defineConfig(({ command, isPreview }) => {
     pgliteBootstrapPlugin(),
     djiaPlugin(),
     weatherPlugin(),
+    lunchPlugin(),
     livePlugin(),
     deskCloudPlugin(),
     doorLinksPlugin(),

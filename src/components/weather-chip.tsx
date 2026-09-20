@@ -1,6 +1,7 @@
 import { Cloud, CloudDrizzle, CloudFog, CloudLightning, CloudRain, CloudSnow, CloudSun, Sun, Wind } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Sky } from "@/lib/weather";
+import { readLastSky, writeLastSky } from "@/lib/weather";
 import { useLang } from "@/lib/i18n-hook";
 import { cn } from "@/lib/utils";
 
@@ -16,34 +17,26 @@ const ICON = {
   storm: CloudLightning,
 };
 
-export function WeatherChip({ className, compact }: { className?: string; compact?: boolean }) {
-  const [sky, setSky] = useState<Sky | null>(null);
-  const { t } = useLang();
+export function useSky(on = true): Sky | null {
+  const [sky, setSky] = useState<Sky | null>(() => (on ? readLastSky() : null));
 
   useEffect(() => {
-    let alive = true;
-    try {
-      const raw = sessionStorage.getItem("tw-sky");
-      if (raw) {
-        const cached = JSON.parse(raw) as Sky;
-        if (Number.isFinite(cached.f)) setSky(cached);
-      }
-    } catch {
-      /* */
+    if (!on) {
+      setSky(null);
+      return;
     }
+    let alive = true;
+    const cached = readLastSky();
+    if (cached) setSky(cached);
     async function load() {
       try {
         const res = await fetch("/api/weather");
         const data = (await res.json()) as Sky & { error?: string };
         if (!alive || data.error || !Number.isFinite(data.f)) return;
+        writeLastSky(data);
         setSky(data);
-        try {
-          sessionStorage.setItem("tw-sky", JSON.stringify(data));
-        } catch {
-          /* */
-        }
       } catch {
-        /* stay hidden */
+        /* keep last-good */
       }
     }
     void load();
@@ -52,7 +45,15 @@ export function WeatherChip({ className, compact }: { className?: string; compac
       alive = false;
       window.clearInterval(id);
     };
-  }, []);
+  }, [on]);
+
+  return sky;
+}
+
+export function WeatherChip({ className, compact, sky: given }: { className?: string; compact?: boolean; sky?: Sky | null }) {
+  const fetched = useSky(given === undefined);
+  const sky = given === undefined ? fetched : given;
+  const { t } = useLang();
 
   if (!sky) return null;
   const Icon = ICON[sky.icon] ?? CloudSun;
@@ -81,3 +82,4 @@ export function WeatherChip({ className, compact }: { className?: string; compac
   );
 }
 
+export { ICON as SKY_ICON };

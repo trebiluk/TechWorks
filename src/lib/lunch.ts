@@ -1,13 +1,27 @@
-/** Solvay UFSD Food Services. Blue (#0000cd) month PDFs on the district page. */
+/** Solvay UFSD Food Services + Bearcat Bistro cycle. Blue month PDFs; Bistro is the wall line. */
+
+import { ttlGet } from "@/lib/ttl-cache";
 
 export const LUNCH_PAGE = "https://www.solvayschools.org/districtpage.cfm?pageid=1934";
+export const BISTRO_DOOR = "https://apps.kulibert.net/bistro/";
+export const BISTRO_TODAY = "https://apps.kulibert.net/bistro-today.json";
+export function bistroMonthUrl(ym: string): string {
+  return `https://apps.kulibert.net/bistro-lunch-${ym}.json`;
+}
 
 export type LunchPull = {
   pdf: string;
   label: string;
   month: string;
   byDate: Record<string, string>;
-  source: "live" | "cache";
+  source: "live" | "cache" | "bistro" | "cycle";
+};
+
+export type BistroLine = {
+  date: string;
+  line: string;
+  label: string;
+  source: "desk" | "bistro" | "cycle" | "cache";
 };
 
 const MONTHS = [
@@ -24,6 +38,8 @@ const MONTHS = [
   "November",
   "December",
 ];
+
+const LUNCH_KEY = "tw-bistro";
 
 export function monthName(iso: string): string {
   const m = Number(iso.slice(5, 7));
@@ -105,8 +121,121 @@ export const FALLBACK_SEP_2026: Record<string, string> = {
   "2026-09-30": "BBQ Rib Sandwich",
 };
 
+/** Monday before first serve day. Same anchor Bearcat Bistro uses. */
+export const BISTRO_ANCHOR = "2026-09-07";
+
+/** Four-week MS entrée cycle. Mon–Fri. Soft Taco keeps the classroom line. */
+export const BISTRO_WEEKS: string[][] = [
+  ["Chicken Poppers w/ Dippin' Sauce", "Chicken Poppers w/ Dippin' Sauce", "Mac & Cheese", "Cheeseburger or Hamburger", "Stuffed Crust Pizza"],
+  ["ABC Chicken Nuggets", "Toasted Cheese Sandwich", "Pasta w/ Meat Sauce", "Beef Nachos Grande", "WG Pizza Crunchers"],
+  ["Shrimp Poppers", "General Tso's Chicken", "Chicken Patty Sandwich", "Soft Taco w/ cheese and lettuce", "Personal Pan Pizza"],
+  ["Chicken & Waffles", "French Toast Sticks", "BBQ Rib Sandwich", "Chef's Choice", "Chicken Tenders"],
+];
+
+function atNoon(iso: string): Date {
+  return new Date(`${iso}T12:00:00`);
+}
+
+function ymd(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+export function weekdayShort(iso: string): string {
+  return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][atNoon(iso).getDay()] ?? "";
+}
+
+/** Entrée for a school day from the Bistro 4-week cycle. Weekend / out of year → "". */
+export function bistroCycleOf(iso: string): string {
+  const day = atNoon(iso);
+  const dow = (day.getDay() + 6) % 7; // Mon = 0
+  if (dow > 4) return "";
+  if (iso < "2026-09-08" || iso > "2027-06-24") return "";
+  const origin = atNoon(BISTRO_ANCHOR).getTime();
+  const days = Math.floor((day.getTime() - origin) / 86_400_000);
+  const week = Math.floor(days / 7);
+  const row = BISTRO_WEEKS[(week % 4 + 4) % 4];
+  return row?.[dow] ?? "";
+}
+
+export function nextServeDay(iso: string): string {
+  let cur = iso;
+  for (let i = 0; i < 14; i++) {
+    if (bistroCycleOf(cur)) return cur;
+    const d = atNoon(cur);
+    d.setDate(d.getDate() + 1);
+    cur = ymd(d);
+  }
+  return iso;
+}
+
+export function bistroLabel(iso: string, line: string, today: string): string {
+  if (!line) return "";
+  if (iso === today) return line;
+  return `${weekdayShort(iso)} · ${line}`;
+}
+
+function parseBistroJson(raw: unknown): Record<string, string> {
+  if (!raw || typeof raw !== "object") return {};
+  const row = raw as Record<string, unknown>;
+  const out: Record<string, string> = {};
+  if (row.byDate && typeof row.byDate === "object") {
+    for (const [k, v] of Object.entries(row.byDate as Record<string, unknown>)) {
+      if (typeof v === "string" && v.trim()) out[k] = v.trim().slice(0, 80);
+    }
+  }
+  const date = typeof row.date === "string" ? row.date : "";
+  const line = (typeof row.entree === "string" ? row.entree : typeof row.line === "string" ? row.line : "").trim();
+  if (date && line) out[date] = line.slice(0, 80);
+  return out;
+}
+
+export function readLastBistro(): BistroLine | null {
+  if (typeof localStorage === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(LUNCH_KEY);
+    if (!raw) return null;
+    const cached = JSON.parse(raw) as BistroLine;
+    return cached?.line ? cached : null;
+  } catch {
+    return null;
+  }
+}
+
+export function writeLastBistro(row: BistroLine): void {
+  if (typeof localStorage === "undefined") return;
+  try {
+    localStorage.setItem(LUNCH_KEY, JSON.stringify(row));
+  } catch {
+    /* quota */
+  }
+}
+
+async function fetchJson(url: string): Promise<unknown | null> {
+  try {
+    const r = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch {
+    return null;
+  }
+}
+
 export async function pullLunch(iso: string): Promise<LunchPull> {
   const ym = iso.slice(0, 7);
+  const live = await fetchJson(bistroMonthUrl(ym));
+  const liveMap = parseBistroJson(live);
+  if (Object.keys(liveMap).length) {
+    return {
+      pdf: guessMiddlePdf(iso),
+      label: `Bearcat Bistro · ${monthName(iso)} ${iso.slice(0, 4)}`,
+      month: ym,
+      byDate: liveMap,
+      source: "bistro",
+    };
+  }
   try {
     const r = await fetch(`/lunch-${ym}.json`, { cache: "force-cache" });
     if (r.ok) {
@@ -133,11 +262,48 @@ export async function pullLunch(iso: string): Promise<LunchPull> {
       source: "cache",
     };
   }
+  const cycle: Record<string, string> = {};
+  for (let d = 1; d <= 31; d++) {
+    const isoDay = `${ym}-${String(d).padStart(2, "0")}`;
+    if (isoDay.slice(0, 7) !== ym) break;
+    const line = bistroCycleOf(isoDay);
+    if (line) cycle[isoDay] = line;
+  }
   return {
     pdf: guessMiddlePdf(iso),
-    label: `Middle School Menu · ${monthName(iso)} ${iso.slice(0, 4)}`,
+    label: `Bearcat Bistro · ${monthName(iso)} ${iso.slice(0, 4)}`,
     month: ym,
-    byDate: {},
-    source: "cache",
+    byDate: cycle,
+    source: "cycle",
   };
+}
+
+/** Today's wall line. Teacher dayLog wins. Bistro JSON, then cycle. Weekend → next serve day. */
+export function lunchLineOf(iso: string, deskLunch?: string): BistroLine {
+  const typed = deskLunch?.trim() ?? "";
+  if (typed) return { date: iso, line: typed, label: typed, source: "desk" };
+  const serve = nextServeDay(iso);
+  const line = bistroCycleOf(serve);
+  return { date: serve, line, label: bistroLabel(serve, line, iso), source: "cycle" };
+}
+
+export async function pullBistroLunch(iso: string, deskLunch?: string): Promise<BistroLine> {
+  const typed = deskLunch?.trim() ?? "";
+  if (typed) return { date: iso, line: typed, label: typed, source: "desk" };
+  return ttlGet(`bistro:${iso}`, 10 * 60_000, async () => {
+    const todayHit = parseBistroJson(await fetchJson(BISTRO_TODAY));
+    if (todayHit[iso]) {
+      return { date: iso, line: todayHit[iso]!, label: todayHit[iso]!, source: "bistro" as const };
+    }
+    const pulled = await pullLunch(iso);
+    const serve = nextServeDay(iso);
+    const line = pulled.byDate[iso] || pulled.byDate[serve] || bistroCycleOf(serve);
+    const date = pulled.byDate[iso] ? iso : serve;
+    return {
+      date,
+      line,
+      label: bistroLabel(date, line, iso),
+      source: pulled.source === "bistro" ? "bistro" : pulled.source === "cycle" ? "cycle" : "cache",
+    };
+  });
 }

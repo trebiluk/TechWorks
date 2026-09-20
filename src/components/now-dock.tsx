@@ -33,7 +33,7 @@ export function NowDock({
       <span className="font-display text-sm font-semibold">{live != null ? `P${live}` : "—"}</span>
       {hot ? <BertyPeek pose="point" /> : null}
       <span className="font-mono text-sm tabular-nums">{clock?.live ? tick : t("idle")}</span>
-      {lunch ? <span className="hidden max-w-[9rem] truncate text-xs opacity-80 xl:inline">{lunch}</span> : null}
+      {lunch ? <span className="hidden max-w-[9rem] truncate text-xs opacity-80 sm:inline">{lunch}</span> : null}
     </button>
   );
 }

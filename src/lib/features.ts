@@ -1,7 +1,7 @@
 import type { EconomyFile } from "@/lib/economy";
 
 export const FEATURES = [
-  { id: "weather", label: "Weather", group: "Wall", hint: "Icon + °F on Dashboard" },
+  { id: "weather", label: "Weather", group: "Wall", hint: "Icon + °F on the wall frame" },
   { id: "berty", label: "BertyBot", group: "Wall", hint: "Mascot on the wall and pad" },
   { id: "teach", label: "Teach", group: "Wall", hint: "Do this now · lesson slots" },
   { id: "polls", label: "Polls", group: "Wall", hint: "Live class vote · bars on the wall" },
@@ -53,7 +53,7 @@ export const FEATURE_GROUPS: FeatureGroup[] = ["Wall", "Crew", "Learn", "Tools",
 
 /** Where Off actually hides something. Tests fail if a card is a no-op. */
 export const FEATURE_HIDES: Record<FeatureId, string> = {
-  weather: "WeatherChip",
+  weather: "WallFrame",
   berty: "BertyBot",
   teach: "Teach tab",
   polls: "Poll wall plate",

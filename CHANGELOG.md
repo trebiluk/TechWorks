@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.95. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.96. -->
 
 # TechWorks changelog
 
-App version **1.92.95**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.96**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.96 — 2026-09-20
+
+- Wall frame sandwich: weather · temp · lunch on a 48px header, ticker footer 44px. Open-Meteo for Solvay (Hancock fallback). Bearcat Bistro cycle + last-good cache. Teacher lunch still wins.
 
 ## 1.92.95 — 2026-09-19
 

@@ -3063,9 +3063,67 @@ html[dir="rtl"] .board-root { direction: rtl; }
   letter-spacing: -0.03em;
   color: var(--color-title);
 }
+.tw-wall-frame {
+  min-height: 0;
+}
+.tw-wall-frame-bar {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 3rem;
+  padding: 0.35rem 0.75rem;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, color-mix(in oklab, var(--color-accent) 18%, transparent), transparent 62%),
+    color-mix(in oklab, var(--color-surface) 88%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #fff 16%, transparent),
+    inset 0 -1px 0 color-mix(in oklab, var(--color-accent) 28%, transparent);
+}
+.tw-wall-frame-bar a {
+  pointer-events: auto;
+}
+.tw-wall-frame-sky,
+.tw-wall-frame-lunch {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  color: var(--color-title);
+  text-decoration: none;
+}
+.tw-wall-frame-sky strong,
+.tw-wall-frame-lunch strong {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.tw-wall-frame-sky em,
+.tw-wall-frame-lunch span {
+  font-style: normal;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+.tw-wall-frame-lunch {
+  margin-left: auto;
+  max-width: min(28rem, 58%);
+}
+.tw-wall-frame-lunch strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .tw-ticker {
   flex: 0 0 auto;
-  height: 2.35rem;
+  min-height: 2.75rem;
+  height: 2.75rem;
   overflow: hidden;
   --cut: 10px;
   clip-path: polygon(var(--cut) 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%);

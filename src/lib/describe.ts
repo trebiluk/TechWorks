@@ -14,7 +14,7 @@ const SITE = "https://www.solvayschools.org/";
 const CARDS: Record<string, DescribeCard> = {
   overview: {
     title: "Dashboard",
-    purpose: "Class projector after Teach. Hour plate: Job · Guiding Q · Prove, then Agenda 2×2. Enter = sit / need / coming up. Hung Drive/Canva under Agenda. Coral Cleanup in the last minutes: one leftover clock, two job lists. Aliases only.",
+    purpose: "Class projector after Teach. Hour plate: Job · Guiding Q · Prove, then Agenda 2×2. Frame sandwich: weather · temp · lunch. Coral Cleanup in the last minutes: one leftover clock, two job lists. Aliases only.",
     links: [{ label: "Help", href: "#help" }, { label: "District", href: SITE }],
   },
   week: {
