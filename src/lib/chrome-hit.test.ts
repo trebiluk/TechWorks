@@ -40,6 +40,25 @@ describe("chrome hit layer", () => {
     assert.match(css, /header\.desk-chrome button,[\s\S]*?touch-action:\s*manipulation/);
   });
 
+  it("gives Theme look cards and hover tiles a real plate, not inline text", () => {
+    const grid = css.match(/\.tw-look-grid \{[^}]+\}/);
+    assert.ok(grid, "look grid");
+    assert.match(grid[0], /display:\s*grid/);
+    const card = css.match(/\.tw-look-card \{[^}]+\}/);
+    assert.ok(card, "look card");
+    assert.match(card[0], /display:\s*flex/);
+    assert.match(card[0], /min-height:\s*2\.75rem/);
+    const tiles = css.match(/\.tw-theme-grid \{[^}]+\}/);
+    assert.ok(tiles, "theme grid");
+    assert.match(tiles[0], /display:\s*grid/);
+    const tile = css.match(/\.tw-theme-tile \{[^}]+\}/);
+    assert.ok(tile, "theme tile");
+    assert.match(tile[0], /min-height:\s*2\.75rem/);
+    const picker = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../components/theme-picker.tsx"), "utf8");
+    assert.match(picker, /onMouseEnter/);
+    assert.match(picker, /paintTheme/);
+  });
+
   it("keeps one thin chrome row; status lives in the Edge Pocket overlay", () => {
     const cluster = css.match(/header\.desk-chrome \.nav-cluster \{[^}]+\}/);
     assert.ok(cluster, "nav-cluster rule");

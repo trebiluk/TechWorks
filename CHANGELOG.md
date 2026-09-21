@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.100. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.101. -->
 
 # TechWorks changelog
 
-App version **1.92.100**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.101**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.101 — 2026-09-21
+
+- Theme tiles are plates again. Wall looks and Holiday chips were running together as one line, so hover preview had nothing to hit. Mini wall + color stripe stay paint-only; tap still keeps the look.
 
 ## 1.92.100 — 2026-09-21
 

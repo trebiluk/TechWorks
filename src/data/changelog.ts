@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.101 — 2026-09-21
+
+- Theme tiles are plates again. Wall looks and Holiday chips were running together as one line, so hover preview had nothing to hit. Mini wall + color stripe stay paint-only; tap still keeps the look.
+
 ## 1.92.100 — 2026-09-21
 
 - Dropped crew comes back. **+ Crew A** restores the missing letter even when the period is at max — Deal still caps new tables. Crews also live on Records (Backups · Roster · Crews). Roster class book seats crews, Bench, and the restore chip.
