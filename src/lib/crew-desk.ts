@@ -229,14 +229,26 @@ export function addCrewException(file: EconomyFile, a: string, b: string, date: 
   return next;
 }
 
-export function addPeriodCrew(file: EconomyFile, period: number): EconomyFile {
-  const next = cloneFile(file);
-  const have = next.crews.filter((c) => c.period === period);
-  if (have.length >= crewRulesOf(file).crewsMax) return file;
-  const letters = ["A", "B", "C", "D", "E", "F", "G", "H"];
+export const CREW_LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"] as const;
+
+/** Next empty letter (A–H). Restores a dropped hole even at max; will not grow past max when the row is already dense. */
+export function nextPeriodCrewKey(file: EconomyFile, period: number): string | null {
+  const have = file.crews.filter((c) => c.period === period);
   const used = new Set(have.map((c) => c.key));
-  const letter = letters.find((l) => !used.has(`Crew ${l}`)) ?? String(have.length + 1);
-  const key = `Crew ${letter}`;
+  const gap = CREW_LETTERS.find((l) => !used.has(`Crew ${l}`));
+  if (!gap) return null;
+  if (have.length >= crewRulesOf(file).crewsMax) {
+    const i = CREW_LETTERS.indexOf(gap);
+    const hole = CREW_LETTERS.slice(i + 1).some((l) => used.has(`Crew ${l}`));
+    if (!hole) return null;
+  }
+  return `Crew ${gap}`;
+}
+
+export function addPeriodCrew(file: EconomyFile, period: number): EconomyFile {
+  const key = nextPeriodCrewKey(file, period);
+  if (!key) return file;
+  const next = cloneFile(file);
   next.crews = [...next.crews, { period, key, name: key }];
   return next;
 }

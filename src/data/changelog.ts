@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.100 — 2026-09-21
+
+- Dropped crew comes back. **+ Crew A** restores the missing letter even when the period is at max — Deal still caps new tables. Crews also live on Records (Backups · Roster · Crews). Roster class book seats crews, Bench, and the restore chip.
+
 ## 1.92.99 — 2026-09-21
 
 - Day → Meeting keeps spaces while you type. Open house is **OPEN HOUSE 6-8PM**, not OPENHOUSE6-8PM. Blank still clears the pin.

@@ -3,8 +3,7 @@ import type { AdminPane } from "@/components/settings";
 /** Top Admin chips. Records is the gradebook (backups + roster). Modules is its own chip — not buried in Class. */
 export const ADMIN_GROUPS = [
   { id: "today", label: "Today", panes: ["today"] as const },
-  { id: "records", label: "Records", panes: ["vault", "roster", "cloud"] as const },
-  { id: "people", label: "Crews", panes: ["crews"] as const },
+  { id: "records", label: "Records", panes: ["vault", "roster", "crews", "cloud"] as const },
   { id: "wall", label: "Wall", panes: ["wall"] as const },
   { id: "day", label: "Day", panes: ["day"] as const },
   { id: "class", label: "Rewards", panes: ["economy"] as const },

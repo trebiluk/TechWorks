@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.99. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.100. -->
 
 # TechWorks changelog
 
-App version **1.92.99**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.100**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.100 — 2026-09-21
+
+- Dropped crew comes back. **+ Crew A** restores the missing letter even when the period is at max — Deal still caps new tables. Crews also live on Records (Backups · Roster · Crews). Roster class book seats crews, Bench, and the restore chip.
 
 ## 1.92.99 — 2026-09-21
 

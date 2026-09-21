@@ -18,6 +18,7 @@ import {
   dealCrews,
   dropCrewBan,
   dropPeriodCrew,
+  nextPeriodCrewKey,
   placeBlock,
   readCrewLogo,
   renameCrew,
@@ -63,6 +64,7 @@ export function CrewDesk({
   const picked = pick ? kids.find((s) => s.id === pick) : null;
   const packId = CREW_PACKS.find((p) => p.min === rules.min && p.max === rules.max && p.crewsMax === rules.crewsMax)?.id;
   const real = showFirstReal(file);
+  const nextCrew = nextPeriodCrewKey(file, period);
 
   function place(dest: string, force = false) {
     if (!picked) return;
@@ -85,7 +87,7 @@ export function CrewDesk({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto">
-      <header className="tw-gadget p-3">
+      <header className="tw-gadget sticky top-0 z-[2] p-3">
         <p className="text-[11px] font-bold uppercase tracking-wider text-gold">Crew tools</p>
         <p className="font-display text-2xl font-semibold tracking-tight">Who sits with whom</p>
         <p className="mt-1 text-sm text-muted">
@@ -119,9 +121,9 @@ export function CrewDesk({
           <button type="button" onClick={() => onChange(copyCrewLooksToShop(file, period))} className="tw-tap min-h-10 rounded-md bg-elevated px-3 text-xs font-semibold">
             Copy look → all periods
           </button>
-          {crews.length < rules.crewsMax ? (
-            <button type="button" onClick={() => onChange(addPeriodCrew(file, period))} className="tw-tap min-h-10 rounded-md bg-elevated px-3 text-xs font-semibold">
-              + Crew
+          {nextCrew ? (
+            <button type="button" onClick={() => onChange(addPeriodCrew(file, period))} className="tw-tap min-h-10 rounded-md bg-accent px-3 text-xs font-semibold text-accent-fg">
+              + {nextCrew}
             </button>
           ) : null}
         </div>

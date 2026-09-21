@@ -26,7 +26,7 @@ import { auditStudentIds } from "@/lib/ids";
 import { emptyRoster, snapshotNow } from "@/lib/vault";
 import { publicHandle } from "@/lib/live";
 import { todayIso } from "@/lib/calendar";
-import { bansOf, dropCrewBan, placeBlock, rosterLabel, separatePair, setStudentCrew, whoOf } from "@/lib/crew-desk";
+import { bansOf, BENCH, addPeriodCrew, dropCrewBan, nextPeriodCrewKey, placeBlock, rosterLabel, separatePair, setStudentCrew, whoOf } from "@/lib/crew-desk";
 import { MarkChip } from "@/components/ui";
 import { markOf } from "@/lib/nav-marks";
 import { cn } from "@/lib/utils";
@@ -391,6 +391,7 @@ function AddKid({
   const [classId, setClassId] = useState(cohort?.id ?? YEAR_CLASSES[0]?.id ?? "");
   const target = cohort ?? YEAR_CLASSES.concat(YEAR_GROUPS).find((c) => c.id === classId) ?? YEAR_CLASSES[0];
   const crews = file.crews.filter((c) => c.period === (target?.period ?? 0));
+  const nextCrew = target?.period ? nextPeriodCrewKey(file, target.period) : null;
 
   function add() {
     if (!target) return;
@@ -459,8 +460,18 @@ function AddKid({
                 {c.name || c.key}
               </option>
             ))}
+            <option value={BENCH}>Bench</option>
           </select>
         </label>
+      ) : null}
+      {target?.period && nextCrew ? (
+        <button
+          type="button"
+          onClick={() => onChange(addPeriodCrew(file, target.period))}
+          className="tw-tap min-h-11 rounded-md bg-accent px-3 text-sm font-semibold text-accent-fg"
+        >
+          + {nextCrew}
+        </button>
       ) : null}
       <button type="submit" className="tw-tap min-h-11 rounded-md bg-fg px-4 text-sm font-semibold text-bg">
         Add
@@ -524,13 +535,25 @@ function ClassBook({
   const slots = cohort.kind === "tech" ? gradeSlots(file, cohort.grade) : [];
   const cycle = currentCycleOf(file);
   const crews = file.crews.filter((c) => c.period === cohort.period);
+  const nextCrew = cohort.period ? nextPeriodCrewKey(file, cohort.period) : null;
   return (
     <table className="w-full text-left text-sm">
       <thead className="text-[11px] uppercase tracking-wider text-subtle">
         <tr>
           <th className="sticky left-0 bg-surface px-2 py-1 font-semibold">Alias</th>
           <th className="px-2 py-1 font-semibold">Id</th>
-          <th className="px-2 py-1 font-semibold">Crew</th>
+          <th className="px-2 py-1 font-semibold">
+            Crew
+            {nextCrew ? (
+              <button
+                type="button"
+                onClick={() => onChange(addPeriodCrew(file, cohort.period))}
+                className="tw-tap ml-1 min-h-8 rounded-md bg-accent px-2 text-[10px] font-semibold uppercase tracking-wide text-accent-fg"
+              >
+                + {nextCrew.replace(/^Crew /, "")}
+              </button>
+            ) : null}
+          </th>
           {["D1", "D2", "D3", "D4"].map((d) => (
             <th key={d} className="px-1 py-1 text-center font-semibold">
               C{cycle} {d}
@@ -564,9 +587,8 @@ function ClassBook({
                 {publicHandle(s.id)}
               </td>
               <td className="px-2 py-1.5">
-                {crews.length ? (
                   <select
-                    value={s.crewKey}
+                    value={s.crewKey || BENCH}
                     onChange={(e) => {
                       const dest = e.target.value;
                       const date = todayIso();
@@ -584,13 +606,11 @@ function ClassBook({
                         {c.name || c.key}
                       </option>
                     ))}
-                    {!crews.some((c) => c.key === s.crewKey) && s.crewKey ? (
+                    <option value={BENCH}>Bench</option>
+                    {!crews.some((c) => c.key === s.crewKey) && s.crewKey && s.crewKey !== BENCH ? (
                       <option value={s.crewKey}>{s.crewKey}</option>
                     ) : null}
                   </select>
-                ) : (
-                  <span className="text-muted">{s.crewKey || "—"}</span>
-                )}
               </td>
               {codes.map((code, i) => (
                 <td key={i} className="px-1 py-1.5 text-center font-mono tabular-nums">

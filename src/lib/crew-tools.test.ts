@@ -9,6 +9,7 @@ import {
   crewRulesOf,
   dealCrews,
   dropPeriodCrew,
+  nextPeriodCrewKey,
   setCrewProfile,
   setCrewRules,
   setStudentCrew,
@@ -58,6 +59,20 @@ describe("crew tools", () => {
     file = dropPeriodCrew(file, 1, "Crew A", "2026-09-14");
     assert.equal(crewAt(file.students[0], "2026-09-14"), BENCH);
     assert.equal(file.crews.some((c) => c.key === "Crew A" && c.period === 1), false);
+  });
+
+  it("restores a dropped letter even when the period is at max", () => {
+    let file = dropPeriodCrew(blank(), 1, "Crew A", "2026-09-14");
+    file = setCrewRules(file, { min: 2, max: 4, crewsMax: 1 });
+    assert.equal(nextPeriodCrewKey(file, 1), "Crew A");
+    file = addPeriodCrew(file, 1);
+    assert.equal(file.crews.some((c) => c.period === 1 && c.key === "Crew A"), true);
+  });
+
+  it("does not grow past max when there is no hole", () => {
+    const file = setCrewRules(blank(), { min: 2, max: 4, crewsMax: 2 });
+    assert.equal(nextPeriodCrewKey(file, 1), null);
+    assert.equal(addPeriodCrew(file, 1), file);
   });
 
   it("copy look paints the same key on another period", () => {

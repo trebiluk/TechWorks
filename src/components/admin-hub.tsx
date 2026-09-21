@@ -132,12 +132,13 @@ export function AdminHub({
     ...ADMIN_GROUPS.map((g) => ({
       id: g.id,
       label: g.label,
-      on: group.id === g.id,
+      on: g.id === "records" ? pane === "vault" || pane === "roster" || pane === "cloud" : group.id === g.id,
       go: () => {
         pickPane(g.panes[0] as AdminPane);
       },
       show: true,
     })),
+    { id: "people", label: "Crews", on: pane === "crews", go: () => pickPane("crews"), show: true },
     { id: "club", label: "Club", on: false, go: () => onClub?.(), show: featureOn(file, "club") && Boolean(onClub) },
     { id: "hall", label: "Hall", on: false, go: () => onStudyHall(), show: featureOn(file, "studyhall") },
     { id: "data", label: "Data", on: false, go: () => onData?.(), show: Boolean(onData) },

@@ -245,7 +245,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Admin",
     title: "Crew manager",
     tags: ["crew", "group", "separate", "roster", "history"],
-    body: "Admin → Crews (desk PIN). Size pack first (pairs / 3–4 / tables). Deal even seats the period. Look is name, color, mark, motto, logo — Copy look paints every period. Crown a lead on the card. Tap a worker, tap Here. Each move is dated. Separate rules live on Roster. Never on the wall.",
+    body: "Admin → Crews, or Records → Crews. Size pack first (pairs / 3–4 / tables). Deal even seats the period. Drop parks kids on the bench and removes the card — **+ Crew A** (the missing letter) puts that table back, even at max. Look is name, color, mark, motto, logo — Copy look paints every period. Crown a lead on the card. Tap a worker, tap Here. Each move is dated. Roster class book also seats crew / Bench. Separate rules live on Roster. Never on the wall.",
   },
   {
     id: "admin-backup",
@@ -572,7 +572,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Admin",
     title: "Roster ids and aliases",
     tags: ["roster", "id", "alias", "add", "save", "ferpa", "separate"],
-    body: "Admin → Records → Roster. Add an alias, or Import / CSV (Last, First, Period). The paste is used once to mint Shop IDs and aliases, then the real names are dropped. Separate: pick two aliases already on the list; they will not sit in the same crew. Clear workers snapshots first. Edit alias and crew in the table. Scores, XP, and $ stay on the id. Auto-save on this device; tap the Save chip to write now. Backups is the other Records chip: snapshot, download full, restore.",
+    body: "Admin → Records → Roster. Add an alias, or Import / CSV (Last, First, Period). The paste is used once to mint Shop IDs and aliases, then the real names are dropped. Separate: pick two aliases already on the list; they will not sit in the same crew. Clear workers snapshots first. Edit alias and crew in the table — Bench is a seat, **+ Crew A** restores a dropped table for that class. Crews is the third Records chip (Deal / Look / Crown). Scores, XP, and $ stay on the id. Auto-save on this device; tap the Save chip to write now. Backups is the other Records chip: snapshot, download full, restore.",
   },
   {
     id: "profile-house",
