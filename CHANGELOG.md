@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.102. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.103. -->
 
 # TechWorks changelog
 
-App version **1.92.102**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.103**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.103 — 2026-09-21
+
+- Wall Berty keeps both mitts. Paint no longer crops the pose box; he stands in a reserved hour-corner so the 2×2 can fill. Agenda plates stretch and type sits in the middle of each cell.
 
 ## 1.92.102 — 2026-09-21
 

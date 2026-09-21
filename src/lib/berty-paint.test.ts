@@ -36,11 +36,11 @@ describe("berty hands and color", () => {
     assert.equal(b.includes("twwavingBody-head"), false);
   });
 
-  it("keeps Berty inside a tight box so he cannot sit on the agenda", () => {
-    const raw = readFileSync(join(DIR, "bertybot_point.svg"), "utf8");
-    const painted = paintBertySvg(raw, "#2ee6ff", "pt");
-    assert.match(painted, /viewBox="0 0 200 260"/);
-    assert.match(painted, /overflow="hidden"/);
+  it("keeps the pose viewBox so both mitts stay in frame", () => {
+    const raw = readFileSync(join(DIR, "bertybot_waving.svg"), "utf8");
+    const painted = paintBertySvg(raw, "#2ee6ff", "wv");
+    assert.match(painted, /viewBox="-40 -40 280 340"/);
+    assert.match(painted, /overflow="visible"/);
     assert.equal(countBertyHands(painted), 2);
   });
 

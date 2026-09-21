@@ -45,11 +45,11 @@ export function AgendaWall({
   return (
     <ol className="tw-agenda grid min-h-0 flex-1 gap-2" data-agenda data-n="4">
       {shown.map((c) => (
-        <li key={c.id} data-on={c.id === onId ? "on" : undefined} className={cn("tw-agenda-card tw-chamfer flex min-h-0 items-start gap-3 px-3 py-3", c.id === onId && "tw-agenda-on")}>
+        <li key={c.id} data-on={c.id === onId ? "on" : undefined} className={cn("tw-agenda-card tw-chamfer flex min-h-0 items-center gap-3", c.id === onId && "tw-agenda-on")}>
           <span className="tw-agenda-n grid size-11 shrink-0 place-items-center rounded-full bg-accent text-sm font-black text-accent-fg">
             {Number(c.n)}
           </span>
-          <div className="min-w-0 flex-1">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-1">
             <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gold">{c.kicker}</p>
             {write ? (
               <DraftField
@@ -58,10 +58,10 @@ export function AgendaWall({
                 multiline={c.id !== "now"}
                 onCommit={(v) => onChange!(saveAgendaLine(file, date, period, c.id, v))}
                 placeholder={c.id === "now" ? "Sit at a regular table." : c.id === "goal" ? "The make for this hour." : c.id === "next" ? "Second move · peer help" : "Choose → work → focus → cleanup."}
-                className="mt-1 min-h-11 w-full rounded-xl bg-bg px-2 py-1 text-base font-semibold"
+                className="mt-1 min-h-11 w-full flex-1 rounded-xl bg-bg px-2 py-1 text-base font-semibold"
               />
             ) : (
-              <p className="tw-agenda-body mt-0.5 font-display font-semibold leading-snug">{c.body}</p>
+              <p className="tw-agenda-body font-display font-semibold leading-snug">{c.body}</p>
             )}
           </div>
         </li>

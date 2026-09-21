@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.103 — 2026-09-21
+
+- Wall Berty keeps both mitts. Paint no longer crops the pose box; he stands in a reserved hour-corner so the 2×2 can fill. Agenda plates stretch and type sits in the middle of each cell.
+
 ## 1.92.102 — 2026-09-21
 
 - PlanIt Send saves onto hours you already sent. First Send stamps a shared assignment id; later edits Save onto the slots you pick (Linked re-selects them). Unpicked hours stay. Gradebook activity pin still copies with the hour.

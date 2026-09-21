@@ -2,7 +2,6 @@
 
 const BODY_STOPS = ["#9af4ff", "#7ae8ff", "#2ee6ff", "#1ab8e0", "#0d7a9a"] as const;
 const SHOP_CYAN = "#2ee6ff";
-const TIGHT_BOX = 'viewBox="0 0 200 260"';
 
 function hexRgb(hex: string): [number, number, number] {
   const h = hex.replace("#", "");
@@ -47,18 +46,9 @@ export function stampSvgIds(svg: string, stamp: string): string {
   return out;
 }
 
-function fitViewBox(attrs: string): string {
-  let a = String(attrs);
-  a = a.replace(/overflow="visible"/g, 'overflow="hidden"');
-  if (!/overflow=/.test(a)) a += ' overflow="hidden"';
-  a = a.replace(/viewBox="[^"]+"/, TIGHT_BOX);
-  if (!/viewBox=/.test(a) && !/bertybot_icon/.test(a)) a += ` ${TIGHT_BOX}`;
-  return a;
-}
-
 export function paintBertySvg(svg: string, body: string, stamp = "b"): string {
   const hex = /^#([0-9a-f]{6})$/i.test(body) ? body.toLowerCase() : SHOP_CYAN;
-  let out = svg.replace(/<svg\b([^>]*)>/, (_m, attrs: string) => `<svg${fitViewBox(attrs)}>`);
+  let out = svg;
   if (hex !== SHOP_CYAN) {
     const shade = shadeBody(hex);
     for (const stop of BODY_STOPS) out = out.split(stop).join(shade[stop]);
