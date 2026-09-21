@@ -12,6 +12,7 @@ import {
   copyPrevWeek,
   hourIsSet,
   hourTargets,
+  linkedHourTargets,
   planCell,
   sameGradePeriods,
   sendHour,
@@ -99,16 +100,21 @@ describe("planbook week", () => {
     assert.equal(teachDay(file, "2026-09-15", 1).do, "Keep me.");
   });
 
-  it("sends one hour to picked empty slots and skips a filled hour", () => {
+  it("sends one hour to picked empty slots and saves onto a filled hour", () => {
     let file = setTeachDo(desk(), "2026-09-14", 1, "Cut the blanks.");
     file = setTeachDo(file, "2026-09-14", 3, "Keep me.");
     const hit = sendHour(file, "2026-09-14", 1, hourTargets("2026-09-14", 1, [2, 3], ["2026-09-15"]));
     assert.equal(teachDay(hit.file, "2026-09-14", 2).do, "Cut the blanks.");
-    assert.equal(teachDay(hit.file, "2026-09-14", 3).do, "Keep me.");
+    assert.equal(teachDay(hit.file, "2026-09-14", 3).do, "Cut the blanks.");
     assert.equal(teachDay(hit.file, "2026-09-15", 1).do, "Cut the blanks.");
     assert.equal(teachDay(hit.file, "2026-09-15", 2).do, undefined);
     assert.deepEqual(hit.sent.map((t) => `${t.period}@${t.date}`), ["2@2026-09-14", "1@2026-09-15"]);
-    assert.deepEqual(hit.skipped.map((t) => t.period), [3]);
+    assert.deepEqual(hit.updated.map((t) => t.period), [3]);
+    const share = teachDay(hit.file, "2026-09-14", 1).share;
+    assert.ok(share?.startsWith("h-"));
+    assert.equal(teachDay(hit.file, "2026-09-14", 2).share, share);
+    assert.equal(teachDay(hit.file, "2026-09-14", 3).share, share);
+    assert.equal(teachDay(hit.file, "2026-09-15", 1).share, share);
   });
 
   it("does not send a empty source onto a filled dest", () => {
@@ -116,5 +122,39 @@ describe("planbook week", () => {
     const hit = sendHour(file, "2026-09-14", 1, [{ date: "2026-09-14", period: 3 }]);
     assert.equal(teachDay(hit.file, "2026-09-14", 3).do, "Keep me.");
     assert.equal(hit.sent.length, 0);
+    assert.equal(hit.updated.length, 0);
+  });
+
+  it("second send keeps the share and saves edits onto picked hours", () => {
+    let file = setTeachDo(desk(), "2026-09-14", 1, "First.");
+    const first = sendHour(file, "2026-09-14", 1, [{ date: "2026-09-14", period: 3 }]);
+    const share = teachDay(first.file, "2026-09-14", 1).share;
+    file = setTeachDo(first.file, "2026-09-14", 1, "Edited.");
+    const hit = sendHour(file, "2026-09-14", 1, [{ date: "2026-09-14", period: 3 }]);
+    assert.equal(teachDay(hit.file, "2026-09-14", 3).do, "Edited.");
+    assert.equal(teachDay(hit.file, "2026-09-14", 1).share, share);
+    assert.equal(teachDay(hit.file, "2026-09-14", 3).share, share);
+    assert.deepEqual(hit.updated.map((t) => t.period), [3]);
+    assert.equal(hit.sent.length, 0);
+  });
+
+  it("does not write an unpicked hour even when it is empty", () => {
+    let file = setTeachDo(desk(), "2026-09-14", 1, "Cut the blanks.");
+    file = setTeachDo(file, "2026-09-14", 2, "Old P2.");
+    const hit = sendHour(file, "2026-09-14", 1, [{ date: "2026-09-14", period: 3 }]);
+    assert.equal(teachDay(hit.file, "2026-09-14", 3).do, "Cut the blanks.");
+    assert.equal(teachDay(hit.file, "2026-09-14", 2).do, "Old P2.");
+    assert.equal(teachDay(hit.file, "2026-09-14", 2).share, undefined);
+  });
+
+  it("linkedHourTargets lists same-share hours, not the source", () => {
+    let file = setTeachDo(desk(), "2026-09-14", 1, "Cut the blanks.");
+    const hit = sendHour(file, "2026-09-14", 1, hourTargets("2026-09-14", 1, [3], ["2026-09-15"]));
+    const linked = linkedHourTargets(hit.file, "2026-09-14", 1);
+    assert.deepEqual(
+      linked.map((t) => `${t.period}@${t.date}`),
+      ["3@2026-09-14", "1@2026-09-15"],
+    );
+    assert.equal(linkedHourTargets(hit.file, "2026-09-14", 2).length, 0);
   });
 });

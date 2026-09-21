@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.102 — 2026-09-21
+
+- PlanIt Send saves onto hours you already sent. First Send stamps a shared assignment id; later edits Save onto the slots you pick (Linked re-selects them). Unpicked hours stay. Gradebook activity pin still copies with the hour.
+
 ## 1.92.101 — 2026-09-21
 
 - Theme tiles are plates again. Wall looks and Holiday chips were running together as one line, so hover preview had nothing to hit. Mini wall + color stripe stay paint-only; tap still keeps the look.

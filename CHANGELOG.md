@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.101. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.102. -->
 
 # TechWorks changelog
 
-App version **1.92.101**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.102**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.102 — 2026-09-21
+
+- PlanIt Send saves onto hours you already sent. First Send stamps a shared assignment id; later edits Save onto the slots you pick (Linked re-selects them). Unpicked hours stay. Gradebook activity pin still copies with the hour.
 
 ## 1.92.101 — 2026-09-21
 

@@ -231,14 +231,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Dashboard",
     title: "PlanIt",
     tags: ["plan", "planit", "planbook", "week", "copy", "materials", "homework", "closure", "sub", "objective"],
-    body: "Learn → PlanIt is the week timetable. Periods down, days across. Click a block and type Job · Guiding Q · Prove · beats in the hour inspector — that write fills Teach, Wall, and Deck. Teach is the live board (Hang, Top XP / Top $). Tap Week for the full grid. Tap up to three skills — Watch opens on the first. Send this hour copies onto empty cells only. Arrow keys move. Print week.",
+    body: "Learn → PlanIt is the week timetable. Periods down, days across. Click a block and type Job · Guiding Q · Prove · beats in the hour inspector — that write fills Teach, Wall, and Deck. Teach is the live board (Hang, Top XP / Top $). Tap Week for the full grid. Tap up to three skills — Watch opens on the first. Send this hour copies onto the periods and days you pick. After Send, Save writes edits onto those slots (Linked re-selects them). Unpicked hours stay. Arrow keys move. Print week.",
   },
   {
     id: "dash-loop",
     category: "Dashboard",
     title: "The class loop",
     tags: ["agenda", "enter", "cleanup", "teach", "wall", "hang", "crew", "bell"],
-    body: "Arrive → Teach to run the hour PlanIt wrote. Green dots + “n of 8 hours set” mean that hour is planned. Type Job · Guiding Q · Prove · beats on PlanIt — it is the Wall and the Deck. Paste a Drive or Canva link on Hang — it plays on the Wall under Agenda. See wall is next to Deck. Send this hour on PlanIt copies onto other empty periods or days you pick — never a week blast. Wall hour plate shows Job, Guiding Q, and Prove from that same teachDays row, then Agenda 2×2 beats. Enter is sit / need / in a minute. Coral Cleanup in the last minutes. After the last bell the Agenda stays. Crew lead PIN: today’s make, last marks, Buy if the catalog has perks.",
+    body: "Arrive → Teach to run the hour PlanIt wrote. Green dots + “n of 8 hours set” mean that hour is planned. Type Job · Guiding Q · Prove · beats on PlanIt — it is the Wall and the Deck. Paste a Drive or Canva link on Hang — it plays on the Wall under Agenda. See wall is next to Deck. Send this hour on PlanIt copies onto other periods or days you pick — Save writes later edits onto those slots. Never a week blast of unpicked hours. Wall hour plate shows Job, Guiding Q, and Prove from that same teachDays row, then Agenda 2×2 beats. Enter is sit / need / in a minute. Coral Cleanup in the last minutes. After the last bell the Agenda stays. Crew lead PIN: today’s make, last marks, Buy if the catalog has perks.",
   },
   {
     id: "admin-crews",

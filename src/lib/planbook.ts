@@ -2,7 +2,7 @@ import type { EconomyFile } from "@/lib/economy";
 import { periodTitle, shopBells } from "@/lib/economy";
 import { formatSchoolDate, instructionalWeeks, isSchoolDay, todayIso, weekOn } from "@/lib/calendar";
 import { activitiesOf, gradeOfPeriod, pinDayActivity, pinnedActivityId, slotsOf } from "@/lib/projects";
-import { copyTeachHour, packOf, teachDay, teachHourFilled, type TeachDay } from "@/lib/teach";
+import { copyTeachHour, mintHourShare, packOf, setHourShare, teachDay, teachHourFilled, type TeachDay } from "@/lib/teach";
 
 export type PlanCell = {
   date: string;
@@ -121,39 +121,65 @@ export function hourLabel(t: HourTarget): string {
   return `P${t.period} ${formatSchoolDate(t.date).replace(/,.*/, "")}`;
 }
 
-/** One planned hour onto the slots you pick. Skips any hour that already has a plan. */
+/** One planned hour onto the slots you pick. Empty hours are sent; planned hours you pick are saved. Unpicked hours stay. */
 export function sendHour(
   file: EconomyFile,
   fromDate: string,
   fromPeriod: number,
   targets: HourTarget[],
-): { file: EconomyFile; sent: HourTarget[]; skipped: HourTarget[] } {
+): { file: EconomyFile; sent: HourTarget[]; updated: HourTarget[] } {
   const sent: HourTarget[] = [];
-  const skipped: HourTarget[] = [];
-  if (!hourIsSet(file, fromDate, fromPeriod)) return { file, sent, skipped };
+  const updated: HourTarget[] = [];
+  if (!hourIsSet(file, fromDate, fromPeriod)) return { file, sent, updated };
   let next = file;
+  if (!teachDay(next, fromDate, fromPeriod).share?.trim()) {
+    next = setHourShare(next, fromDate, fromPeriod, mintHourShare());
+  }
   const seen = new Set<string>();
   for (const t of targets) {
     if (t.date === fromDate && t.period === fromPeriod) continue;
+    if (!isSchoolDay(t.date)) continue;
     const k = `${t.date}|${t.period}`;
     if (seen.has(k)) continue;
     seen.add(k);
-    if (hourIsSet(next, t.date, t.period)) {
-      skipped.push(t);
-      continue;
-    }
+    const wasSet = hourIsSet(next, t.date, t.period);
     next = copyHour(next, fromDate, fromPeriod, t.date, t.period);
-    sent.push(t);
+    if (wasSet) updated.push(t);
+    else sent.push(t);
   }
-  return { file: next, sent, skipped };
+  return { file: next, sent, updated };
 }
 
-export function sendHourNote(sent: HourTarget[], skipped: HourTarget[]): string {
-  if (!sent.length && !skipped.length) return "Pick an empty hour first.";
+export function sendHourNote(sent: HourTarget[], updated: HourTarget[]): string {
+  if (!sent.length && !updated.length) return "Pick hours first.";
   const bits: string[] = [];
   if (sent.length) bits.push(`Sent to ${sent.map(hourLabel).join(", ")}.`);
-  if (skipped.length) bits.push(`Kept ${skipped.map(hourLabel).join(", ")} — already planned.`);
+  if (updated.length) bits.push(`Saved onto ${updated.map(hourLabel).join(", ")}.`);
   return bits.join(" ");
+}
+
+export function hourShareOf(file: EconomyFile, date: string, period: number): string {
+  return teachDay(file, date, period).share?.trim() ?? "";
+}
+
+/** Other hours that already share this PlanIt assignment. Source is omitted. */
+export function linkedHourTargets(file: EconomyFile, date: string, period: number): HourTarget[] {
+  const share = hourShareOf(file, date, period);
+  if (!share) return [];
+  const out: HourTarget[] = [];
+  const days = file.meta.config?.teachDays ?? {};
+  for (const [d, row] of Object.entries(days)) {
+    if (!row) continue;
+    for (const [p, day] of Object.entries(row)) {
+      const n = Number(p);
+      if (!Number.isFinite(n) || n < 1) continue;
+      if (d === date && n === period) continue;
+      if (day?.share?.trim() !== share) continue;
+      out.push({ date: d, period: n });
+    }
+  }
+  out.sort((a, b) => a.date.localeCompare(b.date) || a.period - b.period);
+  return out;
 }
 
 export function copyHourToSameGrade(file: EconomyFile, date: string, period: number): EconomyFile {

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Copy } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
@@ -9,11 +9,19 @@ import {
   hourIsSet,
   hourLabel,
   hourTargets,
+  linkedHourTargets,
   sameGradePeriods,
   sendHour,
   sendHourNote,
 } from "@/lib/planbook";
 import { cn } from "@/lib/utils";
+
+function linkedPicks(linked: { date: string; period: number }[], date: string, period: number) {
+  return {
+    periods: [...new Set(linked.filter((t) => t.date === date).map((t) => t.period))],
+    days: [...new Set(linked.filter((t) => t.period === period).map((t) => t.date))],
+  };
+}
 
 export function SendHour({
   file,
@@ -37,12 +45,30 @@ export function SendHour({
   const twins = sameGradePeriods(file, period);
   const grade = gradeOfPeriod(file, period);
   const sourceOn = hourIsSet(file, date, period);
+  const linked = useMemo(() => linkedHourTargets(file, date, period), [file, date, period]);
+  const shareKey = linked.map((t) => `${t.date}|${t.period}`).join(",");
+  const fileRef = useRef(file);
+  fileRef.current = file;
   const [pickedP, setPickedP] = useState<number[]>([]);
   const [pickedD, setPickedD] = useState<string[]>([]);
+
+  useEffect(() => {
+    const next = linkedPicks(linkedHourTargets(fileRef.current, date, period), date, period);
+    setPickedP(next.periods);
+    setPickedD(next.days);
+  }, [date, period, shareKey]);
 
   const targets = useMemo(() => hourTargets(date, period, pickedP, pickedD), [date, period, pickedP, pickedD]);
   const empty = targets.filter((t) => !hourIsSet(file, t.date, t.period));
   const filled = targets.filter((t) => hourIsSet(file, t.date, t.period));
+  const saving = filled.length > 0;
+  const linkedPick = linkedPicks(linked, date, period);
+  const linkedOn =
+    linked.length > 0 &&
+    linkedPick.periods.length === pickedP.length &&
+    linkedPick.days.length === pickedD.length &&
+    linkedPick.periods.every((p) => pickedP.includes(p)) &&
+    linkedPick.days.every((d) => pickedD.includes(d));
 
   function toggleP(p: number) {
     setPickedP((cur) => (cur.includes(p) ? cur.filter((x) => x !== p) : [...cur, p]));
@@ -51,12 +77,19 @@ export function SendHour({
     setPickedD((cur) => (cur.includes(d) ? cur.filter((x) => x !== d) : [...cur, d]));
   }
 
+  function pickLinked() {
+    const next = linkedPicks(linked, date, period);
+    setPickedP(next.periods);
+    setPickedD(next.days);
+  }
+
   function send() {
-    if (!unlocked || !sourceOn || !empty.length) return;
+    if (!unlocked || !sourceOn || !targets.length) return;
     const hit = sendHour(file, date, period, targets);
-    setPickedP([]);
-    setPickedD([]);
-    onSend(hit.file, sendHourNote(hit.sent, hit.skipped));
+    const next = linkedPicks(linkedHourTargets(hit.file, date, period), date, period);
+    setPickedP(next.periods);
+    setPickedD(next.days);
+    onSend(hit.file, sendHourNote(hit.sent, hit.updated));
   }
 
   function pullYesterday() {
@@ -70,7 +103,7 @@ export function SendHour({
     <div className="grid gap-2" data-send-hour>
       <p className="text-[11px] font-bold uppercase tracking-wide text-subtle">Send this hour</p>
       {!sourceOn ? (
-        <p className="text-sm text-muted">Type the job first. Then send this hour to other periods or days — empty hours only.</p>
+        <p className="text-sm text-muted">Type the job first. Then send this hour to other periods or days. Save writes edits onto hours you already sent.</p>
       ) : null}
       {sourceOn ? (
         <>
@@ -87,7 +120,7 @@ export function SendHour({
                       type="button"
                       onClick={() => toggleP(b.period)}
                       className={cn("tw-tap min-h-11 rounded-xl px-3 text-sm font-semibold", on ? "bg-fg text-bg" : "bg-elevated text-muted")}
-                      title={set ? `P${b.period} already has a plan — Send will skip it` : `P${b.period}`}
+                      title={set ? `P${b.period} already has a plan — Save will overwrite` : `P${b.period}`}
                     >
                       P{b.period}
                       {set ? <span className="ml-1 text-[10px] opacity-70">set</span> : null}
@@ -126,7 +159,7 @@ export function SendHour({
                       type="button"
                       onClick={() => toggleD(d)}
                       className={cn("tw-tap min-h-11 rounded-xl px-3 text-sm font-semibold", on ? "bg-fg text-bg" : "bg-elevated text-muted")}
-                      title={set ? `${formatSchoolDate(d)} already has a plan — Send will skip it` : formatSchoolDate(d)}
+                      title={set ? `${formatSchoolDate(d)} already has a plan — Save will overwrite` : formatSchoolDate(d)}
                     >
                       {formatSchoolDate(d).replace(/,.*/, "")}
                       {set ? <span className="ml-1 text-[10px] opacity-70">set</span> : null}
@@ -143,13 +176,24 @@ export function SendHour({
               </div>
             </div>
           ) : null}
+          {linked.length ? (
+            <button
+              type="button"
+              onClick={pickLinked}
+              className={cn("tw-tap min-h-11 w-fit rounded-xl px-3 text-sm font-semibold", linkedOn ? "bg-fg text-bg" : "bg-elevated text-muted")}
+              title="Hours that already share this assignment"
+            >
+              Linked {linked.length}
+            </button>
+          ) : null}
           {targets.length ? (
             <p className="text-xs font-semibold text-muted">
-              {empty.length ? `Will write ${empty.map(hourLabel).join(", ")}.` : "Those hours already have a plan."}
-              {filled.length ? ` Keep ${filled.map(hourLabel).join(", ")}.` : ""}
+              {empty.length ? `Will write ${empty.map(hourLabel).join(", ")}.` : ""}
+              {empty.length && filled.length ? " " : ""}
+              {filled.length ? `Will save onto ${filled.map(hourLabel).join(", ")}.` : ""}
             </p>
           ) : (
-            <p className="text-xs font-semibold text-muted">Pick periods or days. Send never overwrites a planned hour.</p>
+            <p className="text-xs font-semibold text-muted">Pick periods or days. Save overwrites a planned hour you pick. Unpicked hours stay.</p>
           )}
         </>
       ) : null}
@@ -157,11 +201,13 @@ export function SendHour({
         {sourceOn ? (
           <button
             type="button"
-            disabled={!empty.length}
+            disabled={!targets.length}
             onClick={send}
+            data-send-mode={saving ? "save" : "send"}
             className="tw-tap min-h-11 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg disabled:opacity-40"
           >
-            Send{empty.length ? ` ${empty.length}` : ""}
+            {saving ? "Save" : "Send"}
+            {targets.length ? ` ${targets.length}` : ""}
           </button>
         ) : null}
         <button type="button" onClick={pullYesterday} className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-elevated px-3 text-sm font-semibold">

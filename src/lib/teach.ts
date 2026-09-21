@@ -116,8 +116,9 @@ export type TeachDay = {
   move?: string;
   /** Shop / soft skill ids for this hour. Max 3. Watch opens on the first. */
   skills?: string[];
+  /** Shared assignment id. PlanIt is the editor; Send / Save writes this hour onto linked slots. */
+  share?: string;
 };
-
 
 export type LaidSlot = TeachSlot & { startMin: number; endMin: number; mins: number };
 
@@ -395,7 +396,17 @@ function slimTeach(day: TeachDay): TeachDay {
   }
   if (day.lines && Object.keys(day.lines).length) out.lines = day.lines;
   if (day.media?.length) out.media = day.media;
+  if (day.share?.trim()) out.share = day.share.trim().slice(0, 24);
   return out;
+}
+
+export function mintHourShare(): string {
+  return `h-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`.slice(0, 24);
+}
+
+export function setHourShare(file: EconomyFile, date: string, period: number, share: string): EconomyFile {
+  const id = share.trim().slice(0, 24);
+  return putDay(file, date, period, { share: id || undefined });
 }
 
 /** Replace the hour. Live pin (which beat is on) stays off the copy. */
