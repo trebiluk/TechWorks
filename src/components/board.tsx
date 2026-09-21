@@ -78,7 +78,7 @@ type View = "crew" | "score" | "overview" | "week" | "year" | "data" | "wallet" 
 type DeskPanel = "score" | "schedule" | "config";
 
 function gearHint(view: string): string {
-  if (view === "teach") return "Drag plates. Hide with the eye. The hour is written on PlanIt.";
+  if (view === "teach") return "The hour is written on PlanIt. Deck plays it.";
   if (view === "overview") return "Pick a kit, hide plates, drag the grip.";
   return "";
 }
@@ -980,13 +980,7 @@ export function Board() {
       ) : view === "club" ? (
         <ClubBoard unlocked={unlocked} onNeedPin={() => askPin()} onWall={() => go("clubwall")} desk={file} onDesk={commitDesk} />
       ) : view === "teach" ? (
-        <TeachBoard file={graphFile} unlocked={unlocked} editing={unlocked && arrangeOn} onArrange={() => {
-          if (!unlocked) {
-            askPin();
-            return;
-          }
-          setArrangeOn((v) => !v);
-        }} date={planDate} onDate={setPlanDate} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onBerty={() => setOpenId(HOUSE_BERTY)} onPlan={(iso, p) => { if (iso) setPlanDate(iso); if (p != null) setJumpPeriod(p); setLearnStart("plan"); go("skills"); }} onWords={() => { setLearnStart("words"); go("skills"); }} onWall={() => go("overview")} onDeck={() => go("deck")} />
+        <TeachBoard file={graphFile} unlocked={unlocked} date={planDate} onDate={setPlanDate} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onPlan={(iso, p) => { if (iso) setPlanDate(iso); if (p != null) setJumpPeriod(p); setLearnStart("plan"); go("skills"); }} onWords={() => { setLearnStart("words"); go("skills"); }} onWall={() => go("overview")} onDeck={() => go("deck")} />
       ) : view === "polls" ? (
         <PollBoard file={file} unlocked={unlocked} onChange={commitDesk} onNeedPin={() => askPin()} />
       ) : view === "deck" ? (

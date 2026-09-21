@@ -204,6 +204,19 @@ export function readLastBistro(): BistroLine | null {
   }
 }
 
+/** Paint last-good only when it is this serve day. Recompute the weekday prefix so Sunday's "Mon · …" does not stick on Monday. */
+export function relabelBistro(cached: BistroLine, iso: string): BistroLine | null {
+  if (!cached?.line) return null;
+  if (cached.date !== iso && cached.date !== nextServeDay(iso)) return null;
+  return { ...cached, label: bistroLabel(cached.date, cached.line, iso) };
+}
+
+export function seedLastBistro(iso: string): BistroLine | null {
+  const cached = readLastBistro();
+  if (!cached) return null;
+  return relabelBistro(cached, iso);
+}
+
 export function writeLastBistro(row: BistroLine): void {
   if (typeof localStorage === "undefined") return;
   try {

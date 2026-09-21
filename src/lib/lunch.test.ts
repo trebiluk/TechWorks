@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { bistroCycleOf, bistroLabel, lunchLineOf, nextServeDay } from "./lunch.ts";
+import { bistroCycleOf, bistroLabel, lunchLineOf, nextServeDay, relabelBistro } from "./lunch.ts";
 
 describe("Bearcat Bistro cycle", () => {
   it("serves the four-week MS entrée on school days", () => {
@@ -34,5 +34,12 @@ describe("Bearcat Bistro cycle", () => {
     const row = lunchLineOf("2026-09-21", "Field trip — bag lunch");
     assert.equal(row.line, "Field trip — bag lunch");
     assert.equal(row.source, "desk");
+  });
+
+  it("recomputes a Sunday last-good label on Monday", () => {
+    const sun = { date: "2026-09-21", line: "Shrimp Poppers", label: "Mon · Shrimp Poppers", source: "cycle" as const };
+    assert.equal(relabelBistro(sun, "2026-09-21")?.label, "Shrimp Poppers");
+    assert.equal(relabelBistro(sun, "2026-09-20")?.label, "Mon · Shrimp Poppers");
+    assert.equal(relabelBistro({ date: "2026-09-18", line: "Pasta w/ Meat Sauce", label: "Pasta w/ Meat Sauce", source: "cycle" }, "2026-09-21"), null);
   });
 });

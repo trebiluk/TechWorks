@@ -1,14 +1,17 @@
 import { useEffect, useState, type ReactNode } from "react";
 import type { EconomyFile } from "@/lib/economy";
 import { lunchOn } from "@/lib/store";
-import { BISTRO_DOOR, lunchLineOf, readLastBistro, writeLastBistro, type BistroLine } from "@/lib/lunch";
+import { BISTRO_DOOR, lunchLineOf, seedLastBistro, writeLastBistro, type BistroLine } from "@/lib/lunch";
 import { todayIso } from "@/lib/calendar";
 import { featureOn } from "@/lib/features";
 import { SKY_ICON, useSky } from "@/components/weather-chip";
 
 function useBistroLunch(file: EconomyFile, date: string): BistroLine {
   const desk = lunchOn(file, date);
-  const [row, setRow] = useState<BistroLine>(() => lunchLineOf(date, desk) || readLastBistro() || lunchLineOf(date, desk));
+  const [row, setRow] = useState<BistroLine>(() => {
+    if (desk.trim()) return lunchLineOf(date, desk);
+    return seedLastBistro(date) ?? lunchLineOf(date, desk);
+  });
 
   useEffect(() => {
     if (desk.trim()) {
@@ -16,8 +19,7 @@ function useBistroLunch(file: EconomyFile, date: string): BistroLine {
       return;
     }
     let alive = true;
-    const seed = readLastBistro() ?? lunchLineOf(date, desk);
-    setRow(seed);
+    setRow(seedLastBistro(date) ?? lunchLineOf(date, desk));
     async function load() {
       try {
         const res = await fetch(`/api/lunch?date=${date}`);
@@ -66,8 +68,8 @@ export function WallFrame({
           {weatherOn && sky && Icon ? (
             <span className="tw-wall-frame-sky" title={`Solvay · ${sky.word} · ${sky.f}°F`}>
               <Icon className="size-4 shrink-0" aria-hidden />
-              <strong>{sky.f}°</strong>
-              <em>{sky.word}</em>
+              <span>Sky</span>
+              <strong>{sky.f}° {sky.word}</strong>
             </span>
           ) : null}
           {lunchBit ? (

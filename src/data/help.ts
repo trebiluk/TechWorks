@@ -144,7 +144,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Menu (Dash · Learn · Crew · Admin)",
     tags: ["menu", "nav", "tabs", "classic"],
     wall: true,
-    body: "Bottom dock: Dash · Learn · Crew · Rosters · Admin. Dash strip: Wall · Teach · Deck · Week · Club · Hall. Teach is the lesson. Deck plays that lesson. After class, Wall is the projector. Top chrome: Lock, Cog (Settings), Help, Web (family), language globe, NOW clock. Arrange wall / Arrange plates live on those pages.",
+    body: "Bottom dock: Dash · Learn · Crew · Rosters · Admin. Dash strip: Wall · Teach · Deck · Week · Club · Hall. Teach is the lesson. Deck plays that lesson. After class, Wall is the projector. Top chrome: Lock, Cog (Settings), Help, Web (family), language globe, NOW clock. Arrange wall lives on the projector.",
   },
   {
     id: "wall-polls",
@@ -342,7 +342,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Admin",
     title: "Unlock is Admin",
     tags: ["admin", "pin", "lock", "score", "unlock"],
-    body: "The cog is Settings — it opens Admin (Today, Day, Records, Crews, Theme). Unlock with the PIN you set. Arrange the projector from Wall → Arrange wall, or Teach → Arrange plates. Kids never see Admin.",
+    body: "The cog is Settings — it opens Admin (Today, Day, Records, Crews, Theme). Unlock with the PIN you set. Arrange the projector from Wall → Arrange wall. Kids never see Admin.",
   },
   {
     id: "admin-year",
@@ -363,7 +363,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "Menu map",
     tags: ["menu", "dashboard", "crew", "stocks", "skills", "desk", "data"],
-    body: "Bottom dock: Dash · Learn · Crew · Rosters · Admin (PIN on the last three). Dash strip: Wall · Teach · Deck · Week · Club · Hall. Year and Data sit on Week. Polls sit on Teach and on the wall when a vote is live. Cog is Settings (Admin). Arrange wall is on Wall. Arrange plates is on Teach. Edit slides is on Deck. Dash Club is the projector. Admin Club is the desk.",
+    body: "Bottom dock: Dash · Learn · Crew · Rosters · Admin (PIN on the last three). Dash strip: Wall · Teach · Deck · Week · Club · Hall. Year and Data sit on Week. Polls sit on Teach and on the wall when a vote is live. Cog is Settings (Admin). Arrange wall is on Wall. Edit slides is on Deck. Dash Club is the projector. Admin Club is the desk.",
   },
   {
     id: "rank",
@@ -644,7 +644,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "One desk",
     tags: ["web", "mobile", "ipad", "projector", "layout", "dock"],
-    body: "One layout. Bottom dock is Dash · Learn · Crew · Rosters · Admin. Dash strip is Wall · Teach · Deck · Week · Club · Hall. Teach during class. After class, Wall is the projector — no grips. Unlocked: Wall → Arrange wall (kits, hide, drag). Teach → Arrange plates. Cog always opens Admin. Rosters is the yearbook (aliases). Shop IDs print from Records. Google Site embed hides the dock.",
+    body: "One layout. Bottom dock is Dash · Learn · Crew · Rosters · Admin. Dash strip is Wall · Teach · Deck · Week · Club · Hall. Teach during class. After class, Wall is the projector — no grips. Unlocked: Wall → Arrange wall (kits, hide, drag). Teach is the live board. Cog always opens Admin. Rosters is the yearbook (aliases). Shop IDs print from Records. Google Site embed hides the dock.",
   },
   {
     id: "themes",
@@ -659,7 +659,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Top chrome (Lock, Help, Web, language)",
     tags: ["chrome", "web", "help", "lock", "settings", "cog", "translate", "now", "chips", "hud", "globe"],
     wall: true,
-    body: "The top bar is one thin row. TECHWORKS goes to the Wall. Classroom chips stay on that row: Wall · Teach · Deck · Week · Club · Hall. More (Edge Pocket) holds Fake data, Find, NOW P#, Lock, Cog, Help, Web, language, cloud, and the version chip — tap to open an overlay, not a second row and not a side rail. Teach’s own tools (PlanIt · Deck · Projector · Hang) live in Teach’s left Edge Pocket. The wall itself wears a frame sandwich: weather · °F · lunch on a 48px header, ticker at 44px. Wall looks, ROLL THE DICE, holiday themes, and Theme Tools may paint this bar — they cannot cover it, steal taps, or resize those buttons.",
+    body: "The top bar is one thin row. TECHWORKS goes to the Wall. Classroom chips stay on that row: Wall · Teach · Deck · Week · Club · Hall. More (Edge Pocket) holds Fake data, Find, NOW P#, Lock, Cog, Help, Web, language, cloud, and the version chip — tap to open an overlay, not a second row and not a side rail. Teach’s own tools (PlanIt · Deck · Projector · Hang) live in Teach’s left Edge Pocket. The wall itself wears a frame sandwich: Sky · °F word · lunch on a 48px header, ticker at 44px. Wall looks, ROLL THE DICE, holiday themes, and Theme Tools may paint this bar — they cannot cover it, steal taps, or resize those buttons.",
   },
   {
     id: "period-now",
@@ -681,7 +681,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "The cog is Settings",
     tags: ["settings", "gear", "cog", "admin", "arrange"],
-    body: "The cog always opens Admin (Today, Day, Records, Crews, Theme, Docs, Modules). It does not jump you off Deck or flash “this page is this page.” Theme is wall looks + color chips + Type. Modules hide Club / Hall / Store / games. Arrange the projector from Wall → Arrange wall (drag plates left or right). Teach → Arrange plates (drag / hide). Deck → Edit slides. Unlock first if the lock is on.",
+    body: "The cog always opens Admin (Today, Day, Records, Crews, Theme, Docs, Modules). It does not jump you off Deck or flash “this page is this page.” Theme is wall looks + color chips + Type. Modules hide Club / Hall / Store / games. Arrange the projector from Wall → Arrange wall (drag plates left or right). Teach is the live board — PlanIt writes it. Deck → Edit slides. Unlock first if the lock is on.",
   },
   {
     id: "data-copies",
@@ -763,7 +763,7 @@ Web = Family web (?web=1). Globe = translate (EN / UK / RU). Cleanup coral is a 
 
 ## PlanIt → Teach → Deck → Wall
 
-One write. Type Job · Guiding Q · Prove · beats on the PlanIt hour card. Teach is a live mirror. Present is play-only. Hang a Drive / Slides / YouTube / Canva link on Teach; Deck and Wall play it. Arrange wall (drag columns) and Arrange plates live on those pages — not the cog.
+One write. Type Job · Guiding Q · Prove · beats on the PlanIt hour card. Teach is a live mirror. Present is play-only. Hang a Drive / Slides / YouTube / Canva link on Teach; Deck and Wall play it. Arrange wall (drag columns) lives on the projector — not the cog.
 
 ## Score, Store, Club, Hall
 

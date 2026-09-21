@@ -1,7 +1,7 @@
 import type { EconomyFile } from "@/lib/economy";
 
 export const FEATURES = [
-  { id: "weather", label: "Weather", group: "Wall", hint: "Icon + °F on the wall frame" },
+  { id: "weather", label: "Weather", group: "Wall", hint: "Sky · °F · word on the wall frame" },
   { id: "berty", label: "BertyBot", group: "Wall", hint: "Mascot on the wall and pad" },
   { id: "teach", label: "Teach", group: "Wall", hint: "Do this now · lesson slots" },
   { id: "polls", label: "Polls", group: "Wall", hint: "Live class vote · bars on the wall" },

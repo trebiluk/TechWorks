@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.97. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.98. -->
 
 # TechWorks changelog
 
-App version **1.92.97**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.98**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.98 — 2026-09-21
+
+- Wall frame polish: Sky kicker + readable °F word (not a jammed kicker). Last-good Bistro recomputes the weekday prefix so Sunday’s “Mon · …” does not stick on Monday. Dead TEACH plate drag / leftover ring gone — TeachLive is the board.
 
 ## 1.92.97 — 2026-09-20
 

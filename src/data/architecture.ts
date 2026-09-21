@@ -28,7 +28,7 @@ export const ARCH_SECTIONS: ArchSection[] = [
       { name: "Perk / after", color: "muted", items: ["Wallet $", "Store", "Prints", "Lucky", "Club IN", "Hall HERE"] },
     ],
     notes: [
-      "Cog = Settings (Admin). Arrange wall / Arrange plates live on those pages.",
+      "Cog = Settings (Admin). Arrange wall lives on the projector.",
       "Shop PC writes. Cloud is a locked copy. Drive is a download, not a live sync.",
       "HUD chrome (Lock, Help, Web, language, NOW) stays tappable after any premade theme or wall look. Chip scale is for plates, not the top bar. Theme picker shows mini wall previews; those previews are paint-only.",
     ],

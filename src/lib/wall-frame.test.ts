@@ -36,4 +36,13 @@ describe("Wall frame sandwich", () => {
     assert.match(lunch, /tw-bistro/);
     assert.match(weather, /tw-sky/);
   });
+
+  it("paints Sky kicker + °F word, and reseeds last-good lunch", () => {
+    assert.match(frame, />Sky</);
+    assert.match(frame, /sky\.f\}° \{sky\.word\}/);
+    assert.match(frame, /seedLastBistro/);
+    assert.doesNotMatch(frame, /<em>\{sky\.word\}<\/em>/);
+    assert.match(lunch, /function relabelBistro/);
+    assert.match(css, /\.tw-wall-frame-sky span,/);
+  });
 });

@@ -22,12 +22,15 @@ describe("TEACH Edge Pocket", () => {
     assert.match(css, /\.tw-teach-pocket-btn \{[\s\S]*?min-height:\s*2\.75rem/);
   });
 
-  it("puts PlanIt · Deck · Projector · Arrange in the pocket, not a second header row", () => {
+  it("puts PlanIt · Deck · Projector · Hang in the pocket, not a second header row", () => {
     assert.match(teach, /<TeachPocket/);
     assert.match(teach, /label:\s*"PlanIt"/);
     assert.match(teach, /label:\s*"Deck"/);
     assert.match(teach, /label:\s*"Projector"/);
-    assert.match(teach, /label:\s*"Arrange"/);
+    assert.match(teach, /label:\s*"Hang"/);
+    assert.doesNotMatch(teach, /label:\s*"Arrange"/);
+    assert.doesNotMatch(teach, /function plateOf/);
+    assert.doesNotMatch(teach, /function TeachRing/);
     const header = teach.slice(teach.indexOf('className="tw-teach-top"'), teach.indexOf("</header>"));
     assert.doesNotMatch(header, />Deck</);
     assert.doesNotMatch(header, />See wall</);
