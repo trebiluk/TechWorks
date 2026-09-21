@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.99 — 2026-09-21
+
+- Day → Meeting keeps spaces while you type. Open house is **OPEN HOUSE 6-8PM**, not OPENHOUSE6-8PM. Blank still clears the pin.
+
 ## 1.92.98 — 2026-09-21
 
 - Wall frame polish: Sky kicker + readable °F word (not a jammed kicker). Last-good Bistro recomputes the weekday prefix so Sunday’s “Mon · …” does not stick on Monday. Dead TEACH plate drag / leftover ring gone — TeachLive is the board.

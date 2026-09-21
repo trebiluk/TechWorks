@@ -349,7 +349,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Admin",
     title: "Year plan and copy a quarter",
     tags: ["year", "plan", "day", "copy", "quarter", "deck", "projects", "june"],
-    body: "Admin → Day. Pick the date. Sub and bells are for that day. Lunch and two wall cards sit next to it. Copy this day onto the next school day, the rest of the quarter, or June. Q1 → Q2 (also Q2 → Q3, Q3 → Q4) copies projects, planned days, and the Deck. Shop defaults (usual bells, cycle, cleanup, A/B, Teach pack) stay folded under that. Passes stay on Admin → Today. Units live on Learn → Projects → Plan.",
+    body: "Admin → Day. Pick the date. Sub and bells are for that day. Lunch, meeting, and two wall cards sit next to it — Space types a space in those fields. Copy this day onto the next school day, the rest of the quarter, or June. Q1 → Q2 (also Q2 → Q3, Q3 → Q4) copies projects, planned days, and the Deck. Shop defaults (usual bells, cycle, cleanup, A/B, Teach pack) stay folded under that. Passes stay on Admin → Today. Units live on Learn → Projects → Plan.",
   },
   {
     id: "pins",

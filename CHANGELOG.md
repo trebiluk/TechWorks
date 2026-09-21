@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.98. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.99. -->
 
 # TechWorks changelog
 
-App version **1.92.98**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.99**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.99 — 2026-09-21
+
+- Day → Meeting keeps spaces while you type. Open house is **OPEN HOUSE 6-8PM**, not OPENHOUSE6-8PM. Blank still clears the pin.
 
 ## 1.92.98 — 2026-09-21
 

@@ -360,8 +360,8 @@ export function meetingsOn(file: EconomyFile, date: string): Meeting[] {
 export function setTodayMeeting(file: EconomyFile, date: string, title: string, time?: string): EconomyFile {
   const next = clone(file);
   const rest = meetingsOf(next).filter((m) => m.date !== date);
-  const name = title.trim();
-  if (name) rest.push({ title: name.slice(0, 48), date, time: time?.trim() || undefined });
+  const name = title.slice(0, 48);
+  if (name.trim()) rest.push({ title: name, date, time: time?.trim() || undefined });
   next.meta.config = { ...(next.meta.config ?? {}), meetings: rest };
   return next;
 }

@@ -10,6 +10,7 @@ import {
   isPlannedDay,
   schoolDaysInQuarter,
 } from "./year-plan.ts";
+import { meetingsOn, setTodayMeeting } from "./store.ts";
 
 function desk(over: Partial<EconomyFile["meta"]> = {}): EconomyFile {
   return {
@@ -72,6 +73,16 @@ describe("year plan", () => {
     assert.ok(next.meta.config?.meetings?.some((m) => m.date === "2026-09-09" && m.title === "Faculty"));
     assert.equal(isPlannedDay(src, "2026-09-08"), true);
     assert.equal(isPlannedDay(src, "2026-09-10"), false);
+  });
+
+  it("keeps spaces in a Day meeting title while typing", () => {
+    let file = desk();
+    file = setTodayMeeting(file, "2026-09-24", "OPEN ");
+    assert.equal(meetingsOn(file, "2026-09-24")[0]?.title, "OPEN ");
+    file = setTodayMeeting(file, "2026-09-24", "OPEN HOUSE 6-8PM");
+    assert.equal(meetingsOn(file, "2026-09-24")[0]?.title, "OPEN HOUSE 6-8PM");
+    file = setTodayMeeting(file, "2026-09-24", "   ");
+    assert.equal(meetingsOn(file, "2026-09-24").length, 0);
   });
 
   it("copy through the quarter stamps every later school day", () => {
