@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BookOpen, CalendarDays, Megaphone, PanelsTopLeft, Paperclip, Presentation, Printer } from "lucide-react";
+import { BookOpen, Box, CalendarDays, Megaphone, PanelsTopLeft, Paperclip, Presentation, Printer } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
 import { periodClock, periodNow, formatBell } from "@/lib/bells";
@@ -25,6 +25,7 @@ export function TeachBoard({
   onPolls,
   onPlan,
   onWords,
+  onCrib,
   onWall,
   onDeck,
 }: {
@@ -37,6 +38,7 @@ export function TeachBoard({
   onPolls?: () => void;
   onPlan?: (date?: string, period?: number) => void;
   onWords?: () => void;
+  onCrib?: (date?: string, period?: number) => void;
   onWall?: () => void;
   onDeck?: () => void;
 }) {
@@ -88,6 +90,7 @@ export function TeachBoard({
     { id: "hang", label: "Hang", title: "Drive / Slides / YouTube on this hour", icon: Paperclip, onClick: focusHang },
     { id: "print", label: "Print", title: "Print this lesson", icon: Printer, onClick: () => setPrintOn(true) },
     ...(onWords ? [{ id: "words", label: "Words", title: "Shop words", icon: BookOpen, onClick: onWords }] : []),
+    ...(onCrib ? [{ id: "crib", label: "Crib", title: "Shop crib — tools, PPE, stock", icon: Box, onClick: () => onCrib(date, period) }] : []),
     ...(onPolls ? [{ id: "polls", label: "Polls", title: "Class poll", icon: Megaphone, onClick: onPolls }] : []),
   ];
 

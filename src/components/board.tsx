@@ -61,6 +61,7 @@ const Dossier = lazy(() => import("@/components/dossier").then((m) => ({ default
 const HelpPanel = lazy(() => import("@/components/help").then((m) => ({ default: m.HelpPanel })));
 const StoreBoard = lazy(() => import("@/components/store-board").then((m) => ({ default: m.StoreBoard })));
 const PrintsBoard = lazy(() => import("@/components/prints-board").then((m) => ({ default: m.PrintsBoard })));
+const InventoryBoard = lazy(() => import("@/components/inventory-board").then((m) => ({ default: m.InventoryBoard })));
 const FamilyWeb = lazy(() => import("@/components/family-web").then((m) => ({ default: m.FamilyWeb })));
 const StudyHallBoard = lazy(() => import("@/components/study-hall-board").then((m) => ({ default: m.StudyHallBoard })));
 const StudyHallDash = lazy(() => import("@/components/study-hall-dash").then((m) => ({ default: m.StudyHallDash })));
@@ -74,7 +75,7 @@ const DeckBoard = lazy(() => import("@/components/deck-board").then((m) => ({ de
 
 const RANK_KEY = "techworks-rank-board";
 
-type View = "crew" | "score" | "overview" | "week" | "year" | "data" | "wallet" | "lucky" | "skills" | "store" | "prints" | "portal" | "grades" | "studyhall" | "hallwall" | "club" | "clubwall" | "projects" | "admin" | "teach" | "polls" | "deck" | "roster";
+type View = "crew" | "score" | "overview" | "week" | "year" | "data" | "wallet" | "lucky" | "skills" | "store" | "prints" | "crib" | "portal" | "grades" | "studyhall" | "hallwall" | "club" | "clubwall" | "projects" | "admin" | "teach" | "polls" | "deck" | "roster";
 type DeskPanel = "score" | "schedule" | "config";
 
 function gearHint(view: string): string {
@@ -202,6 +203,10 @@ export function Board() {
       }
       if (next === "prints" && !featureOn(file, "prints")) {
         flashMsg("Prints is off · Admin");
+        return;
+      }
+      if (next === "crib" && !featureOn(file, "crib")) {
+        flashMsg("Crib is off · Admin");
         return;
       }
       if (next === "portal") {
@@ -570,6 +575,7 @@ export function Board() {
               { id: "club", label: t("Club"), on: view === "club", onClick: () => go("club"), hidden: !featureOn(file, "club") },
               { id: "hall", label: t("Hall"), on: view === "studyhall", onClick: () => go("studyhall"), hidden: !featureOn(file, "studyhall") },
               { id: "prints", label: t("Prints"), on: view === "prints", onClick: () => go("prints"), hidden: !featureOn(file, "prints") },
+              { id: "crib", label: t("Crib"), on: view === "crib", onClick: () => go("crib"), hidden: !featureOn(file, "crib") },
               { id: "stocks", label: t("Stocks"), on: view === "wallet", onClick: () => go("wallet"), hidden: !featureOn(file, "stocks") },
               { id: "lucky", label: t("Lucky"), on: view === "lucky", onClick: () => go("lucky"), hidden: !featureOn(file, "lucky") },
               { id: "store", label: t("Store"), on: view === "store", onClick: () => go("store"), hidden: !featureOn(file, "store") },
@@ -626,6 +632,7 @@ export function Board() {
             if (id === "teach") go("teach");
             else if (id === "polls") go("polls");
             else if (id === "prints") go("prints");
+            else if (id === "crib") go("crib");
             else if (id === "lucky") go("lucky");
             else if (id === "store") go("store");
             else if (id === "stocks") go("wallet");
@@ -875,6 +882,7 @@ export function Board() {
           onLucky={() => go("lucky")}
           onStore={() => go("store")}
           onPrints={() => go("prints")}
+          onCrib={() => go("crib")}
           onStudyHall={() => go("studyhall")}
           onClub={() => go("club")}
           onData={() => go("data")}
@@ -955,6 +963,8 @@ export function Board() {
         <StoreBoard file={wallFile} unlocked={unlocked} onNeedPin={() => askPin()} onChange={commitDesk} onFlash={(m) => flashMsg(m, m.includes("can't") ? "loss" : "ok")} />
       ) : view === "prints" ? (
         <PrintsBoard file={file} unlocked={unlocked} onNeedPin={() => askPin()} onChange={commitDesk} onFlash={(m) => flashMsg(m, m.includes("can't") ? "loss" : "ok")} />
+      ) : view === "crib" ? (
+        <InventoryBoard file={file} unlocked={unlocked} onNeedPin={() => askPin()} onChange={commitDesk} onFlash={(m) => flashMsg(m, m.toLowerCase().includes("can't") ? "loss" : "ok")} date={planDate} period={jumpPeriod} />
       ) : view === "hallwall" ? (
         <StudyHallDash
           file={wallFile}
@@ -980,7 +990,7 @@ export function Board() {
       ) : view === "club" ? (
         <ClubBoard unlocked={unlocked} onNeedPin={() => askPin()} onWall={() => go("clubwall")} desk={file} onDesk={commitDesk} />
       ) : view === "teach" ? (
-        <TeachBoard file={graphFile} unlocked={unlocked} date={planDate} onDate={setPlanDate} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onPlan={(iso, p) => { if (iso) setPlanDate(iso); if (p != null) setJumpPeriod(p); setLearnStart("plan"); go("skills"); }} onWords={() => { setLearnStart("words"); go("skills"); }} onWall={() => go("overview")} onDeck={() => go("deck")} />
+        <TeachBoard file={graphFile} unlocked={unlocked} date={planDate} onDate={setPlanDate} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onPlan={(iso, p) => { if (iso) setPlanDate(iso); if (p != null) setJumpPeriod(p); setLearnStart("plan"); go("skills"); }} onWords={() => { setLearnStart("words"); go("skills"); }} onCrib={unlocked && featureOn(file, "crib") ? (iso, p) => { if (iso) setPlanDate(iso); if (p != null) setJumpPeriod(p); go("crib"); } : undefined} onWall={() => go("overview")} onDeck={() => go("deck")} />
       ) : view === "polls" ? (
         <PollBoard file={file} unlocked={unlocked} onChange={commitDesk} onNeedPin={() => askPin()} />
       ) : view === "deck" ? (

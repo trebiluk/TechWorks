@@ -42,6 +42,7 @@ describe("features pass", () => {
     assert.equal(featureOn(file, "studyhall"), true);
     assert.equal(featureOn(file, "picker"), true);
     assert.equal(featureOn(file, "timer"), true);
+    assert.equal(featureOn(file, "crib"), true);
     assert.equal(featureOn(file, "crews"), true);
     assert.equal(featureOn(file, "grades"), true);
     assert.equal(featureOn(file, "achievements"), true);

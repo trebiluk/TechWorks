@@ -42,6 +42,11 @@ const CARDS: Record<string, DescribeCard> = {
     purpose: "Fidget gallery. Variants, wild cards, released vs in-wild vs bin. Buy/trade/bin need PIN. 2 rare or 3 shiny smalls = one large.",
     links: [{ label: "Help", href: "#help" }],
   },
+  crib: {
+    title: "Crib",
+    purpose: "Shop inventory. Check out tools and PPE to a crew letter or shop alias — never a legal name. Consumables Take. Need this hour writes PlanIt materials. Not a grade, not wallet, not on the wall.",
+    links: [{ label: "Help", href: "#help" }],
+  },
   crew: {
     title: "Crew",
     purpose: "Kiosk. Crew lead PIN opens Score for your crew only, plus Our crew and Buy. Fat 3/2/1. No other crews’ marks. Projector stays the wall.",

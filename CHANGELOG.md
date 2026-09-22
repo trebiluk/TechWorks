@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.105. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.106. -->
 
 # TechWorks changelog
 
-App version **1.92.105**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.106**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.106 — 2026-09-21
+
+- Shop crib is the inventory. Teach → Crib (or Admin → More → Crib): tools / PPE / kits / machines check out to a crew letter, shop alias, or station — never a legal name. Consumables Take (count down). Low = below par or broken. Need this hour writes the name onto PlanIt materials. First open shows the shop kit; an empty crib you saved stays empty. Not Prints, not Store, not a grade, not on the student wall.
 
 ## 1.92.105 — 2026-09-21
 

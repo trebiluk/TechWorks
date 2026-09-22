@@ -45,6 +45,7 @@ const OPEN_MOD: Record<string, string> = {
   club: "club",
   studyhall: "studyhall",
   prints: "prints",
+  crib: "crib",
   stocks: "wallet",
   lucky: "lucky",
   store: "store",

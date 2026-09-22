@@ -238,6 +238,34 @@ export type EconomyFile = {
         }[];
         log: { ts: string; kind: string; pieceId: string; qty: number; studentId?: string; note?: string }[];
       };
+      /** Shop crib — tools, PPE, stock. Alias / crew / station only. */
+      crib?: {
+        items: {
+          id: string;
+          name: string;
+          kind: "ppe" | "tool" | "machine" | "consumable" | "material" | "kit";
+          qty: number;
+          par?: number;
+          bin?: string;
+          station?: string;
+          unit?: string;
+          note?: string;
+          broken?: boolean;
+        }[];
+        holds: {
+          id: string;
+          itemId: string;
+          qty: number;
+          who: string;
+          whoKind: "alias" | "crew" | "station";
+          studentId?: string;
+          crewKey?: string;
+          period?: number;
+          outAt: string;
+          note?: string;
+        }[];
+        log: { ts: string; kind: string; itemId: string; qty: number; who?: string; note?: string }[];
+      };
     };
     mst?: {
       standard?: string;

@@ -111,6 +111,7 @@ export const NAV_MARK: Record<string, LucideIcon> = {
   lucky: Dices,
   store: Store,
   prints: Printer,
+  crib: Box,
   now: Clock,
   proc: ListOrdered,
   strip: CalendarClock,

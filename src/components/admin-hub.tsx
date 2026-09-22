@@ -40,6 +40,7 @@ export function AdminHub({
   onLucky,
   onStore,
   onPrints,
+  onCrib,
   onStudyHall,
   onClub,
   onExport,
@@ -67,6 +68,7 @@ export function AdminHub({
   onLucky?: () => void;
   onStore: () => void;
   onPrints?: () => void;
+  onCrib?: () => void;
   onStudyHall: () => void;
   onClub?: () => void;
   onExport: () => void;
@@ -143,6 +145,7 @@ export function AdminHub({
     { id: "hall", label: "Hall", on: false, go: () => onStudyHall(), show: featureOn(file, "studyhall") },
     { id: "data", label: "Data", on: false, go: () => onData?.(), show: Boolean(onData) },
     { id: "prints", label: "Prints", on: false, go: () => onPrints?.(), show: featureOn(file, "prints") && Boolean(onPrints) },
+    { id: "crib", label: "Crib", on: false, go: () => onCrib?.(), show: featureOn(file, "crib") && Boolean(onCrib) },
     { id: "lucky", label: "Lucky", on: false, go: () => onLucky?.(), show: featureOn(file, "lucky") && Boolean(onLucky) },
     { id: "stocks", label: "Stocks", on: false, go: () => onStocks(), show: featureOn(file, "stocks") },
     { id: "store", label: "Rewards", on: false, go: () => onStore(), show: featureOn(file, "store") },
@@ -228,6 +231,7 @@ export function AdminHub({
               if (id === "club") onClub?.();
               else if (id === "studyhall") onStudyHall();
               else if (id === "prints") onPrints?.();
+              else if (id === "crib") onCrib?.();
               else if (id === "wallet") onStocks();
               else if (id === "lucky") onLucky?.();
               else if (id === "store") onStore();

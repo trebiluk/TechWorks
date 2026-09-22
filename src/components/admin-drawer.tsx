@@ -7,7 +7,7 @@ export function gearTabFor(view: string): SettingsTab {
     return "day";
   if (view === "skills" || view === "projects" || view === "grades") return "economy";
   if (view === "score" || view === "crew") return "day";
-  if (view === "club" || view === "studyhall" || view === "prints" || view === "wallet" || view === "lucky" || view === "store")
+  if (view === "club" || view === "studyhall" || view === "prints" || view === "crib" || view === "wallet" || view === "lucky" || view === "store")
     return "modules";
   return "day";
 }

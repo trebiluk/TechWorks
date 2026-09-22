@@ -575,6 +575,13 @@ export const HELP_ARTICLES: HelpArticle[] = [
     body: "Admin → Records → Roster. Add an alias, or Import / CSV (Last, First, Period). The paste is used once to mint Shop IDs and aliases, then the real names are dropped. Separate: pick two aliases already on the list; they will not sit in the same crew. Clear workers snapshots first. Edit alias and crew in the table — Bench is a seat, **+ Crew A** restores a dropped table for that class. Crews is the third Records chip (Deal / Look / Crown). Scores, XP, and $ stay on the id. Auto-save on this device; tap the Save chip to write now. Backups is the other Records chip: snapshot, download full, restore.",
   },
   {
+    id: "crib",
+    category: "Admin",
+    title: "Shop crib",
+    tags: ["crib", "inventory", "tools", "ppe", "stock", "checkout", "par", "bin", "kit"],
+    body: "Teach → Crib (or Admin → More → Crib). Tools, PPE, machines, and kits check out to a crew letter, shop alias, or station — never a legal name. Consumables and materials Take (count down, no hold). Low = on-hand below par, or a broken machine. Need this hour writes the name onto PlanIt materials (wall Need chip). PIN to add, edit, adjust, or drop. First open shows the shop kit; an empty crib you saved stays empty until Load shop kit. Not Prints, not Store, not a grade, not on the student wall. Off in Modules if you don't want it.",
+  },
+  {
     id: "profile-house",
     category: "Profiles",
     title: "Berty and Mr. K",

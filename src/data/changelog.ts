@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.106 — 2026-09-21
+
+- Shop crib is the inventory. Teach → Crib (or Admin → More → Crib): tools / PPE / kits / machines check out to a crew letter, shop alias, or station — never a legal name. Consumables Take (count down). Low = below par or broken. Need this hour writes the name onto PlanIt materials. First open shows the shop kit; an empty crib you saved stays empty. Not Prints, not Store, not a grade, not on the student wall.
+
 ## 1.92.105 — 2026-09-21
 
 - Room desk pack on the school door: closed banner, hide/spotlight tiles, shortcut policy, lockup/search/bells, density. Writes still take the Cloud desk key (first writer). Old Door saves merge so they do not wipe the new fields.
