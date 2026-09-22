@@ -15,6 +15,34 @@ export type DoorPack = {
   updated: string;
   note: string;
   links: DoorLink[];
+  hidden: string[];
+  club: string;
+  doors: string;
+  lastBell: string;
+  search: string;
+  footer: string;
+  closed: boolean;
+  closedMsg: string;
+  staffEdit: boolean;
+  shortcuts: boolean;
+  paste: boolean;
+  maxCuts: number;
+  welcome: string;
+  period: string;
+  showNote: boolean;
+  recents: boolean;
+  pins: boolean;
+  searchOn: boolean;
+  bellsOn: boolean;
+  aliasOn: boolean;
+  staffLane: boolean;
+  hotkeys: boolean;
+  categories: boolean;
+  newTab: boolean;
+  lockup: boolean;
+  density: "roomy" | "compact";
+  focus: string;
+  chips: boolean;
 };
 
 export type DoorStore = "kv" | "cache" | "none";
@@ -33,6 +61,22 @@ const ICONS = new Set([
 ]);
 const MAX = 24;
 const MAX_NOTE = 80;
+const APP_IDS = new Set([
+  "techworks",
+  "baboo",
+  "koderized",
+  "bertycad",
+  "bertybots",
+  "berty-run",
+  "paperlab",
+  "logolab",
+  "sprocket",
+  "den",
+  "bistro",
+  "housekit",
+  "drift",
+]);
+const ALIAS: Record<string, string> = { "bearcat-den": "den", "bearcat-bistro": "bistro" };
 const DATA_KEY = "door-links";
 const LOCK_KEY = "door-links-auth";
 const CACHE_DATA = "https://tw.kulibert.net/__kv/door-links";
@@ -86,7 +130,35 @@ export function sanitizeNote(raw: unknown) {
 }
 
 export function packEtag(pack: DoorPack) {
-  return `"tw-door-${pack.updated}-${pack.links.length}-${pack.note.length}"`;
+  return `"tw-door-${pack.updated}-${pack.links.length}-${pack.note.length}-${pack.hidden.length}-${pack.closed ? 1 : 0}-${pack.focus}-${pack.density}"`;
+}
+
+function clip(raw: unknown, max: number) {
+  if (typeof raw !== "string") return "";
+  return raw
+    .replace(/<[^>]*>/g, "")
+    .replace(/[\u0000-\u001f]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, max);
+}
+
+function flag(raw: unknown, fallback: boolean) {
+  if (typeof raw === "boolean") return raw;
+  if (raw === "true" || raw === 1) return true;
+  if (raw === "false" || raw === 0) return false;
+  return fallback;
+}
+
+function sanitizeHidden(value: unknown) {
+  if (!Array.isArray(value)) return [];
+  const next: string[] = [];
+  for (const item of value) {
+    const id = ALIAS[String(item)] ?? String(item ?? "");
+    if (!APP_IDS.has(id) || next.includes(id)) continue;
+    next.push(id);
+  }
+  return next;
 }
 
 export function sanitizePack(raw: unknown): DoorPack {
@@ -117,11 +189,41 @@ export function sanitizePack(raw: unknown): DoorPack {
     links.push({ id, name, href, icon });
     if (links.length >= MAX) break;
   }
+  const maxCuts = Number(src.maxCuts);
+  const focusId = ALIAS[clip((src as { focus?: unknown }).focus, 24)] ?? clip((src as { focus?: unknown }).focus, 24);
   return {
     kind: "tech-room-included",
     updated: typeof src.updated === "string" ? src.updated.slice(0, 40) : new Date().toISOString(),
     note: sanitizeNote(src.note),
     links,
+    hidden: sanitizeHidden((src as { hidden?: unknown }).hidden),
+    club: clip((src as { club?: unknown }).club, 80),
+    doors: clip((src as { doors?: unknown }).doors, 24),
+    lastBell: clip((src as { lastBell?: unknown }).lastBell, 24),
+    search: clip((src as { search?: unknown }).search, 40),
+    footer: clip((src as { footer?: unknown }).footer, 80),
+    closed: flag((src as { closed?: unknown }).closed, false),
+    closedMsg: clip((src as { closedMsg?: unknown }).closedMsg, 80),
+    staffEdit: flag((src as { staffEdit?: unknown }).staffEdit, true),
+    shortcuts: flag((src as { shortcuts?: unknown }).shortcuts, true),
+    paste: flag((src as { paste?: unknown }).paste, true),
+    maxCuts: Number.isFinite(maxCuts) ? Math.min(18, Math.max(1, Math.round(maxCuts))) : 18,
+    welcome: clip((src as { welcome?: unknown }).welcome, 60),
+    period: clip((src as { period?: unknown }).period, 24),
+    showNote: flag((src as { showNote?: unknown }).showNote, true),
+    recents: flag((src as { recents?: unknown }).recents, true),
+    pins: flag((src as { pins?: unknown }).pins, true),
+    searchOn: flag((src as { searchOn?: unknown }).searchOn, true),
+    bellsOn: flag((src as { bellsOn?: unknown }).bellsOn, true),
+    aliasOn: flag((src as { aliasOn?: unknown }).aliasOn, true),
+    staffLane: flag((src as { staffLane?: unknown }).staffLane, true),
+    hotkeys: flag((src as { hotkeys?: unknown }).hotkeys, true),
+    categories: flag((src as { categories?: unknown }).categories, true),
+    newTab: flag((src as { newTab?: unknown }).newTab, true),
+    lockup: flag((src as { lockup?: unknown }).lockup, true),
+    density: (src as { density?: unknown }).density === "compact" ? "compact" : "roomy",
+    focus: APP_IDS.has(focusId) ? focusId : "",
+    chips: flag((src as { chips?: unknown }).chips, true),
   };
 }
 

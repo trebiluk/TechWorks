@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.105 — 2026-09-21
+
+- Room desk pack on the school door: closed banner, hide/spotlight tiles, shortcut policy, lockup/search/bells, density. Writes still take the Cloud desk key (first writer). Old Door saves merge so they do not wipe the new fields.
+
 ## 1.92.104 — 2026-09-21
 
 - Words plays more than Heat. Match pairs term and meaning. Flash is projector cards (Got it / Again — Heat the again pile). Spell types the shop word. Same bank, not a grade, not wallet. Shop words added: kickback, push stick, fence, jig, Forstner, countersink, bevel, miter, rabbet, template, CAM, brad.

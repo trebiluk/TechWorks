@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.104. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.105. -->
 
 # TechWorks changelog
 
-App version **1.92.104**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.105**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.105 — 2026-09-21
+
+- Room desk pack on the school door: closed banner, hide/spotlight tiles, shortcut policy, lockup/search/bells, density. Writes still take the Cloud desk key (first writer). Old Door saves merge so they do not wipe the new fields.
 
 ## 1.92.104 — 2026-09-21
 
