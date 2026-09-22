@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.106. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.107. -->
 
 # TechWorks changelog
 
-App version **1.92.106**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.107**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.107 — 2026-09-21
+
+- Teach Hang can pin Berty's Botz (Open Shop, Forces, Measure, Roll Out). Deck plays the live shop at apps.kulibert.net/bertybots — not a copy on this desk. No names.
 
 ## 1.92.106 — 2026-09-21
 

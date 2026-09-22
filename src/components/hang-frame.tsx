@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { HangItem } from "@/lib/hang";
-import { hangKindLabel, hangSrc } from "@/lib/hang";
+import { BERTY_HANGS, hangKindLabel, hangSrc } from "@/lib/hang";
 import { cn } from "@/lib/utils";
 
 export function HangFrame({
@@ -59,6 +59,20 @@ export function HangFrame({
             Hang
           </button>
         </form>
+      ) : null}
+      {unlocked && !play ? (
+        <div className="flex flex-wrap gap-1">
+          {BERTY_HANGS.map((row) => (
+            <button
+              key={row.url}
+              type="button"
+              className="tw-tap min-h-9 rounded-full bg-elevated px-3 text-xs font-semibold"
+              onClick={() => onHang(row.url)}
+            >
+              {row.label}
+            </button>
+          ))}
+        </div>
       ) : null}
       {unlocked && !play ? (
         <p className="text-xs text-muted">Share → Anyone with the link can view. Folders open as a link, not an embed.</p>

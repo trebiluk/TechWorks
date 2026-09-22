@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.107 — 2026-09-21
+
+- Teach Hang can pin Berty's Botz (Open Shop, Forces, Measure, Roll Out). Deck plays the live shop at apps.kulibert.net/bertybots — not a copy on this desk. No names.
+
 ## 1.92.106 — 2026-09-21
 
 - Shop crib is the inventory. Teach → Crib (or Admin → More → Crib): tools / PPE / kits / machines check out to a crew letter, shop alias, or station — never a legal name. Consumables Take (count down). Low = below par or broken. Need this hour writes the name onto PlanIt materials. First open shows the shop kit; an empty crib you saved stays empty. Not Prints, not Store, not a grade, not on the student wall.

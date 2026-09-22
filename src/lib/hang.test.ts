@@ -39,6 +39,11 @@ describe("hang", () => {
     const link = parseHang("https://example.com/handout.pdf");
     assert.equal(link?.kind, "link");
     assert.equal(hangSrc(link!), null);
+    const shop = parseHang("https://apps.kulibert.net/bertybots/?course=forces");
+    assert.equal(shop?.kind, "bertybots");
+    assert.match(hangSrc(shop!) ?? "", /embed=1/);
+    assert.match(hangSrc(shop!) ?? "", /tw=1/);
+    assert.match(hangSrc(shop!) ?? "", /course=forces/);
   });
 
   it("stores on the Teach hour and will not double-hang", () => {

@@ -1,6 +1,6 @@
-/** Projector hang: Drive / Docs / Slides / Sheets / YouTube / Canva / a link. Store the share URL; compute the embed at paint. */
+/** Projector hang: Drive / Docs / Slides / Sheets / YouTube / Canva / Berty's Botz / a link. Store the share URL; compute the embed at paint. */
 
-export type HangKind = "drive" | "doc" | "slides" | "sheet" | "youtube" | "canva" | "link";
+export type HangKind = "drive" | "doc" | "slides" | "sheet" | "youtube" | "canva" | "bertybots" | "link";
 
 export type HangItem = {
   id: string;
@@ -16,6 +16,14 @@ const SHEET_RE = /\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/;
 const OPEN_RE = /[?&]id=([a-zA-Z0-9_-]+)/;
 const YT_RE = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{6,})/;
 const CANVA_RE = /canva\.com\/design\/([a-zA-Z0-9_-]+)/;
+const BERTYBOTS_LIVE = "https://apps.kulibert.net/bertybots/";
+
+export const BERTY_HANGS = [
+  { label: "Open Shop", url: `${BERTYBOTS_LIVE}?course=open` },
+  { label: "Forces", url: `${BERTYBOTS_LIVE}?course=forces` },
+  { label: "Measure", url: `${BERTYBOTS_LIVE}?course=measure` },
+  { label: "Roll Out", url: `${BERTYBOTS_LIVE}?course=roll` },
+] as const;
 
 export function hangKindLabel(kind: HangKind): string {
   if (kind === "drive") return "Drive";
@@ -24,6 +32,7 @@ export function hangKindLabel(kind: HangKind): string {
   if (kind === "sheet") return "Sheet";
   if (kind === "youtube") return "YouTube";
   if (kind === "canva") return "Canva";
+  if (kind === "bertybots") return "Berty's Botz";
   return "Link";
 }
 
@@ -52,6 +61,16 @@ export function hangSrc(item: HangItem): string | null {
   if (item.kind === "canva") {
     const id = url.match(CANVA_RE)?.[1];
     return id ? `https://www.canva.com/design/${id}/view?embed` : null;
+  }
+  if (item.kind === "bertybots") {
+    try {
+      const next = new URL(url);
+      next.searchParams.set("embed", "1");
+      next.searchParams.set("tw", "1");
+      return next.toString();
+    } catch {
+      return `${BERTYBOTS_LIVE}?embed=1&tw=1`;
+    }
   }
   return null;
 }
@@ -103,6 +122,10 @@ export function parseHang(raw: string): HangItem | null {
     const file = hrefs.match(FILE_RE)?.[1] || hrefs.match(OPEN_RE)?.[1];
     if (file) return { id: `drive-${file}`, url: hrefs, kind: "drive", title: "Drive" };
     return { id: `link-${hash(hrefs)}`, url: hrefs, kind: "link", title: "Drive folder" };
+  }
+  if (host === "apps.kulibert.net" && /^\/bertybots\/?$/.test(url.pathname)) {
+    const course = url.searchParams.get("course") || "open";
+    return { id: `bb-${course}`, url: hrefs, kind: "bertybots", title: `Berty's Botz · ${course}` };
   }
   return { id: `link-${hash(hrefs)}`, url: hrefs, kind: "link", title: host || "Link" };
 }
