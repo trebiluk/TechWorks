@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.103. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.104. -->
 
 # TechWorks changelog
 
-App version **1.92.103**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.104**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.104 — 2026-09-21
+
+- Words plays more than Heat. Match pairs term and meaning. Flash is projector cards (Got it / Again — Heat the again pile). Spell types the shop word. Same bank, not a grade, not wallet. Shop words added: kickback, push stick, fence, jig, Forstner, countersink, bevel, miter, rabbet, template, CAM, brad.
 
 ## 1.92.103 — 2026-09-21
 

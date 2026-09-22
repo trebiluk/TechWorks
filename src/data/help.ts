@@ -419,9 +419,9 @@ export const HELP_ARTICLES: HelpArticle[] = [
   {
     id: "vocab",
     category: "Skills",
-    title: "Word Heat",
-    tags: ["vocab", "glossary", "words", "quiz", "blooket", "heat"],
-    body: "Learn → Words → Word Heat. Shop vocab from the bank. Projector-size. Keys 1–4. Streak score is this heat, not wallet, not a grade. Review misses at the end. Off is Modules → Word Heat.",
+    title: "Word games",
+    tags: ["vocab", "glossary", "words", "quiz", "blooket", "heat", "match", "flash", "spell"],
+    body: "Learn → Words → Games. Same shop bank as the glossary. Word Heat is timed 1–4. Match pairs a term with its meaning. Flash is projector cards — Got it / Again, then Heat the again pile. Spell types the shop word (kerf is kerf; the say-alike does not count). Scores stay in the run — not wallet, not a grade. Off is Modules → Word games.",
   },
   {
     id: "watch",
@@ -472,7 +472,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Shop words",
     tags: ["glossary", "vocabulary", "kerf", "grit", "proficient", "words"],
     wall: true,
-    body: "Learn → Words. Search or tap a letter. Categories: Safety, Measure, Tools, Materials, Process, Design, Crew, Grades, Class. Kid definition plus an in-the-shop sentence. STEM, driving question, and evidence stem live here. Project the card. Not a grade.",
+    body: "Learn → Words. Search or tap a letter. Categories: Safety, Measure, Tools, Materials, Process, Design, Crew, Grades, Class. Kid definition plus an in-the-shop sentence. STEM, driving question, and evidence stem live here. Games (Heat · Match · Flash · Spell) play the same bank. Project the card. Not a grade.",
   },
   {
     id: "version",

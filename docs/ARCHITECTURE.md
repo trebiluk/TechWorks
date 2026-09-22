@@ -158,7 +158,7 @@ Learn is the filing cabinet. Teach is still the author of today.
 | Projects / Plan book | Unit, activities, dates, belong, skill, prove | Teach job, Wall Goals, Deck, lesson PDF |
 | Watch one skill | skillLog 1–4 + stem | Gold XP, Family words, Grades Skill column |
 | Standard 5 / NY Tech | Same 1–4 on S1–S7 | XP, CSV |
-| Word Heat | Streak this heat only | Nothing else (not wallet, not grade) |
+| Word games | This run only | Nothing else (not wallet, not grade) |
 | Grades | Optional override; else calculated | Classroom CSV, Family mark |
 | Book | Reference | Stems / why a 3 |
 
@@ -218,7 +218,7 @@ Locked chrome is the projector. PIN opens the writer. Crew 2222 is the kiosk, no
 | Deck | Open to Present | Slides | Edit slides → Teach |
 | Week / Year | Open | Race, rings | Archive on Year |
 | Club wall / Hall wall | Open | Agenda / HERE counts | On the desk |
-| Learn Words | Open | Shop vocab | Bank |
+| Learn Words | Open | Shop vocab · games | Bank |
 | Crew pad | 2222 / live P | Teal 3/2/1 | — |
 | Score / Rosters / Admin / Store / Grades | Teacher PIN | Never | Yes |
 | Family sheet | Tap alias; family web uses Shop ID | Project mark, skill words | — |

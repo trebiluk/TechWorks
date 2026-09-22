@@ -8,7 +8,7 @@ import type { EconomyFile } from "@/lib/economy";
 import { cn } from "@/lib/utils";
 
 export function GlossaryDesk({ file }: { file?: EconomyFile }) {
-  const [mode, setMode] = useState<"bank" | "heat">("bank");
+  const [mode, setMode] = useState<"bank" | "games">("bank");
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<GlossaryCat | "All">("All");
   const [pick, setPick] = useState<string>("ppe");
@@ -27,10 +27,11 @@ export function GlossaryDesk({ file }: { file?: EconomyFile }) {
   }, [q, cat, lang, gloss]);
   const letters = useMemo(() => glossaryLetters(), []);
   const card = hits.find((e) => e.id === pick) ?? hits[0] ?? null;
+  const gamesOn = Boolean(file && featureOn(file, "vocab"));
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-2 overflow-hidden">
-      {file && featureOn(file, "vocab") ? (
+      {gamesOn ? (
         <div className="flex shrink-0 gap-1">
           <button
             type="button"
@@ -41,14 +42,14 @@ export function GlossaryDesk({ file }: { file?: EconomyFile }) {
           </button>
           <button
             type="button"
-            onClick={() => setMode("heat")}
-            className={cn("tw-tap min-h-10 rounded-xl px-3 text-sm font-semibold", mode === "heat" ? "bg-gold text-bg" : "bg-elevated text-muted")}
+            onClick={() => setMode("games")}
+            className={cn("tw-tap min-h-10 rounded-xl px-3 text-sm font-semibold", mode === "games" ? "bg-gold text-bg" : "bg-elevated text-muted")}
           >
-            Word Heat
+            Games
           </button>
         </div>
       ) : null}
-      {mode === "heat" && file && featureOn(file, "vocab") ? (
+      {mode === "games" && gamesOn ? (
         <div className="min-h-0 flex-1 overflow-y-auto">
           <VocabGame />
         </div>

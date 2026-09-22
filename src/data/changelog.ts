@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.104 — 2026-09-21
+
+- Words plays more than Heat. Match pairs term and meaning. Flash is projector cards (Got it / Again — Heat the again pile). Spell types the shop word. Same bank, not a grade, not wallet. Shop words added: kickback, push stick, fence, jig, Forstner, countersink, bevel, miter, rabbet, template, CAM, brad.
+
 ## 1.92.103 — 2026-09-21
 
 - Wall Berty keeps both mitts. Paint no longer crops the pose box; he stands in a reserved hour-corner so the 2×2 can fill. Agenda plates stretch and type sits in the middle of each cell.

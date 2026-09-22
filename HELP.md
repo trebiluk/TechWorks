@@ -258,9 +258,9 @@ Attendance lives in SchoolTool, not here. Dashboard shows a dashed SCHOOLTOOL OP
 
 ## Skills
 
-### Word Heat
+### Word games
 
-Learn → Words → Word Heat. Shop vocab from the bank. Projector-size. Keys 1–4. Streak score is this heat, not wallet, not a grade. Review misses at the end. Off is Modules → Word Heat.
+Learn → Words → Games. Same shop bank as the glossary. Word Heat is timed 1–4. Match pairs a term with its meaning. Flash is projector cards — Got it / Again, then Heat the again pile. Spell types the shop word (kerf is kerf; the say-alike does not count). Scores stay in the run — not wallet, not a grade. Off is Modules → Word games.
 
 ### Watch one skill
 
@@ -276,7 +276,7 @@ Learn → Projects. The desk starts empty — you type the unit. PlanIt is the w
 
 ### Shop words
 
-Learn → Words. Search or tap a letter. Categories: Safety, Measure, Tools, Materials, Process, Design, Crew, Grades, Class. Kid definition plus an in-the-shop sentence. STEM, driving question, and evidence stem live here. Project the card. Not a grade.
+Learn → Words. Search or tap a letter. Categories: Safety, Measure, Tools, Materials, Process, Design, Crew, Grades, Class. Kid definition plus an in-the-shop sentence. STEM, driving question, and evidence stem live here. Games (Heat · Match · Flash · Spell) play the same bank. Project the card. Not a grade.
 
 ### XP
 

@@ -87,7 +87,7 @@ export function TeachBoard({
     ...(onWall ? [{ id: "wall", label: "Projector", title: "Kid wall — this hour", icon: PanelsTopLeft, onClick: onWall }] : []),
     { id: "hang", label: "Hang", title: "Drive / Slides / YouTube on this hour", icon: Paperclip, onClick: focusHang },
     { id: "print", label: "Print", title: "Print this lesson", icon: Printer, onClick: () => setPrintOn(true) },
-    ...(onWords ? [{ id: "words", label: "Words", title: "Word Heat", icon: BookOpen, onClick: onWords }] : []),
+    ...(onWords ? [{ id: "words", label: "Words", title: "Shop words", icon: BookOpen, onClick: onWords }] : []),
     ...(onPolls ? [{ id: "polls", label: "Polls", title: "Class poll", icon: Megaphone, onClick: onPolls }] : []),
   ];
 

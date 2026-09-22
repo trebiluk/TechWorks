@@ -32,6 +32,8 @@ export const GLOSSARY: GlossaryEntry[] = [
   { id: "clamp", term: "Clamp", cat: "Safety", def: "Holds the work so your hands are not the vise.", use: "Clamp before a cut if the part can spin.", skill: "safety" },
   { id: "pass", term: "Pass", cat: "Safety", def: "Hand a tool handle-first. Never toss.", use: "Pass the square handle-first.", skill: "share" },
   { id: "license", term: "Tool license", cat: "Safety", def: "Teacher says you may use that tool today.", use: "No license, stay at the bench.", skill: "safety" },
+  { id: "kickback", term: "Kickback", cat: "Safety", def: "The work or saw jumps at you when the blade binds.", use: "Fence and push stick — that’s how we stop kickback.", skill: "safety" },
+  { id: "pushstick", term: "Push stick", cat: "Safety", def: "A stick that feeds the work so fingers stay off the blade.", use: "Last six inches — push stick, not a thumb.", skill: "safety" },
 
   { id: "rule", term: "Rule", cat: "Measure", def: "A straight stick with inches or millimeters. Not a “ruler” in this shop — we say rule.", use: "Hook the rule on the end, then mark.", skill: "measure" },
   { id: "square", term: "Square", cat: "Measure", def: "A tool that checks or marks a 90° corner.", use: "Square the end before you measure length.", skill: "measure" },
@@ -57,6 +59,10 @@ export const GLOSSARY: GlossaryEntry[] = [
   { id: "sander", term: "Sander", cat: "Tools", def: "Moves abrasive to flatten or smooth.", use: "Keep the sander moving. Don’t dig a dish.", skill: "finish" },
   { id: "hotglue", term: "Hot glue", cat: "Tools", def: "Fast hold. Not structural. Burns.", use: "Hot glue for a mock-up, wood glue for keepers.", skill: "model" },
   { id: "vise", term: "Vise", say: "vice", cat: "Tools", def: "Bench jaws that hold work.", use: "Pad the vise so you don’t dent the face.", skill: "tools" },
+  { id: "fence", term: "Fence", cat: "Tools", def: "The straight wall you run stock against so the cut stays true.", use: "Lock the fence, then rip.", skill: "tools" },
+  { id: "jig", term: "Jig", cat: "Tools", def: "A helper that holds or guides the work the same way every time.", use: "The dowel jig keeps the holes in line.", skill: "tools" },
+  { id: "forstner", term: "Forstner", say: "FORST-ner", cat: "Tools", def: "A bit that bores a clean flat-bottom hole.", use: "Forstner for a hinge cup, not a twist bit.", skill: "tools" },
+  { id: "countersink", term: "Countersink", cat: "Tools", def: "A cone cut so a screw head sits flush.", use: "Pilot, then countersink, then drive.", skill: "model" },
 
   { id: "grain", term: "Grain", cat: "Materials", def: "The direction wood fibers run.", use: "Sand with the grain, not across.", skill: "material" },
   { id: "stock", term: "Stock", cat: "Materials", def: "The piece you start with, before cuts.", use: "Pick stock a little over size.", skill: "material" },
@@ -67,6 +73,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   { id: "filament", term: "Filament", cat: "Materials", def: "Plastic string a 3-D printer melts.", use: "PLA is our default filament.", skill: "digital" },
   { id: "scrap", term: "Scrap", cat: "Materials", def: "Too small for the job, still useful for a test.", use: "Test the stain on scrap first.", skill: "material" },
   { id: "fastener", term: "Fastener", cat: "Materials", def: "Screw, nail, bolt — anything that holds parts.", use: "Pilot hole before the fastener.", skill: "model" },
+  { id: "brad", term: "Brad", cat: "Materials", def: "A thin nail with almost no head. Easy to hide.", use: "Brad the back, then fill the holes.", skill: "model" },
   { id: "pilot", term: "Pilot hole", cat: "Materials", def: "A small hole that guides a screw so the wood does not split.", use: "Pilot, then drive.", skill: "model" },
 
   { id: "layout", term: "Layout", cat: "Process", def: "Marking all cuts and holes before you make them.", use: "Layout the whole face, then cut.", skill: "measure" },
@@ -81,6 +88,9 @@ export const GLOSSARY: GlossaryEntry[] = [
   { id: "cure", term: "Cure", cat: "Process", def: "Finish getting hard, not just dry to the touch.", use: "Cure overnight before you handle it.", skill: "finish" },
   { id: "stain", term: "Stain", cat: "Process", def: "Color that soaks in. Wipe the extra.", use: "Wipe stain with the grain.", skill: "finish" },
   { id: "run", term: "Run", cat: "Process", def: "Paint that dripped and dried as a bump.", use: "Sand the run, then a thin coat.", skill: "finish" },
+  { id: "bevel", term: "Bevel", say: "BEV-el", cat: "Process", def: "An edge cut at an angle, not 90°.", use: "Bevel the box lid so it opens easy.", skill: "tools" },
+  { id: "miter", term: "Miter", say: "MY-ter", cat: "Process", def: "A 45° cut that meets another to make a corner.", use: "Two miters make the frame corner.", skill: "tools" },
+  { id: "rabbet", term: "Rabbet", say: "RAB-it", cat: "Process", def: "A step cut along an edge so another part can sit in it.", use: "Rabbet the back so the panel sits flush.", skill: "tools" },
 
   { id: "brief", term: "Brief", cat: "Design", def: "The job in one sentence: who, what, constraints.", use: "Read the brief before you sketch.", skill: "draw" },
   { id: "constraint", term: "Constraint", cat: "Design", def: "A limit you must obey — size, time, material.", use: "Six inches is a constraint, not a suggestion.", skill: "draw" },
@@ -90,6 +100,8 @@ export const GLOSSARY: GlossaryEntry[] = [
   { id: "cad", term: "CAD", say: "cad", cat: "Design", def: "Computer-aided design — a drawing the machine or crew can follow.", use: "Export the CAD before you cut.", skill: "digital" },
   { id: "exploded", term: "Exploded view", cat: "Design", def: "Parts drawn apart so you can see the order.", use: "Exploded view for the assembly.", skill: "draw" },
   { id: "prototype2", term: "Mock-up", cat: "Design", def: "Cheap stand-in for size and feel.", use: "Paper mock-up of the handle.", skill: "model" },
+  { id: "template", term: "Template", cat: "Design", def: "A pattern you trace or follow so every part matches.", use: "Trace the template, then cut.", skill: "draw" },
+  { id: "cam", term: "CAM", say: "cam", cat: "Design", def: "Computer-aided manufacturing — the file that tells a machine how to cut.", use: "CAD is the drawing. CAM is the cut path.", skill: "digital" },
 
   { id: "crew", term: "Crew", cat: "Crew", def: "Your 3–4 person team for the cycle.", use: "Sit with your crew.", skill: "team" },
   { id: "lead", term: "Crew lead", cat: "Crew", def: "The person who scores 3 / 2 / 1 and keeps the crew moving.", use: "Lead names the next step.", skill: "leadsoft" },
