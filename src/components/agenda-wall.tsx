@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef } from "react";
 import type { EconomyFile } from "@/lib/economy";
 import { hourAgendaDraft, hourAgendaWall, saveAgendaLine, type AgendaCard } from "@/lib/hour-flow";
 import { DraftField } from "@/components/draft-field";
@@ -17,6 +18,43 @@ export function KitChip({ kit }: { kit: string }) {
   return (
     <p className="tw-kit shrink-0 truncate" data-kit>
       <span>Need</span> {kit}
+    </p>
+  );
+}
+
+function fitAgendaLine(box: HTMLElement, line: HTMLElement) {
+  if (box.clientHeight < 32) return;
+  const cap = Math.min(72, Math.max(20, box.clientHeight * 0.58));
+  let lo = 16;
+  let hi = cap;
+  let best = 16;
+  for (let i = 0; i < 8; i++) {
+    const mid = (lo + hi) / 2;
+    line.style.fontSize = `${mid}px`;
+    line.style.lineHeight = "1.12";
+    if (box.scrollHeight <= box.clientHeight + 1) {
+      best = mid;
+      lo = mid;
+    } else hi = mid;
+  }
+  line.style.fontSize = `${Math.round(best * 10) / 10}px`;
+}
+
+function AgendaBody({ text }: { text: string }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  useLayoutEffect(() => {
+    const line = ref.current;
+    const box = line?.parentElement;
+    if (!line || !box) return;
+    const fit = () => fitAgendaLine(box, line);
+    fit();
+    const watch = new ResizeObserver(fit);
+    watch.observe(box);
+    return () => watch.disconnect();
+  }, [text]);
+  return (
+    <p ref={ref} className="tw-agenda-body font-display font-semibold">
+      {text}
     </p>
   );
 }
@@ -45,12 +83,12 @@ export function AgendaWall({
   return (
     <ol className="tw-agenda grid min-h-0 flex-1 gap-2" data-agenda data-n="4">
       {shown.map((c) => (
-        <li key={c.id} data-on={c.id === onId ? "on" : undefined} className={cn("tw-agenda-card tw-chamfer flex min-h-0 items-center gap-3", c.id === onId && "tw-agenda-on")}>
-          <span className="tw-agenda-n grid size-11 shrink-0 place-items-center rounded-full bg-accent text-sm font-black text-accent-fg">
+        <li key={c.id} data-on={c.id === onId ? "on" : undefined} className={cn("tw-agenda-card tw-chamfer flex min-h-0 items-stretch gap-3", c.id === onId && "tw-agenda-on")}>
+          <span className="tw-agenda-n grid size-11 shrink-0 place-items-center self-center rounded-full bg-accent text-sm font-black text-accent-fg">
             {Number(c.n)}
           </span>
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-1">
-            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gold">{c.kicker}</p>
+          <div className="tw-agenda-copy flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-1 overflow-hidden">
+            <p className="tw-agenda-kicker font-bold uppercase tracking-[0.16em] text-gold">{c.kicker}</p>
             {write ? (
               <DraftField
                 value={c.body}
@@ -61,7 +99,7 @@ export function AgendaWall({
                 className="mt-1 min-h-11 w-full flex-1 rounded-xl bg-bg px-2 py-1 text-base font-semibold"
               />
             ) : (
-              <p className="tw-agenda-body font-display font-semibold leading-snug">{c.body}</p>
+              <AgendaBody text={c.body} />
             )}
           </div>
         </li>

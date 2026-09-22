@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.109 — 2026-09-22
+
+- Wall 2×2 type fills the plate. Short beats grow so the back row can read them. Long beats shrink so they stay inside the card on a Chromebook — no spill onto the next beat.
+
 ## 1.92.108 — 2026-09-22
 
 - PlanIt opens as PlanIt. Teach → PLANIT asks the teacher PIN instead of dumping you on Words. Week title is the dates (Sep 21 – 25), not a bare Mon – Fri. Send/Save stays on the hour inspector while Job · beats scroll. Rest of today / Other G# / Later this week add to the pick — they do not wipe Linked. Words bank is term plates with the category as a kicker. TEACH daily-goal chips scroll on one row. Hang still uses a Drive share link (Anyone with the link) — no Google login on the kid wall.

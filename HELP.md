@@ -72,7 +72,7 @@ Berty is the workshop mascot. On the wall he takes the hour corner. He waves at 
 
 ### Wall looks
 
-Show wall fills Hour as a 2×2. Empty cells keep Enter / Listen / Crew work / Clean up — no empty Now slivers, no second Do this now plate. Looks change the wall paint. Oswego stays hunter + sunset gold. Shop wall is the usual navy. Back row is bigger type so the back of the room can read it. Holiday looks are for fun days. Your scores stay. Gold is still XP. Coral is still cleanup. The top buttons (Help, Lock, Web) still work.
+Show wall fills Hour as a 2×2. Empty cells keep Enter / Listen / Crew work / Clean up — no empty Now slivers, no second Do this now plate. Looks change the wall paint. Oswego stays hunter + sunset gold. Shop wall is the usual navy. Short beats grow so the back row can read them. Long beats shrink so they stay inside the plate. Holiday looks are for fun days. Your scores stay. Gold is still XP. Coral is still cleanup. The top buttons (Help, Lock, Web) still work.
 
 ### Jobs on the wall
 
