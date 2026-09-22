@@ -247,6 +247,26 @@ export function formatSchoolDate(iso: string): string {
   return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 }
 
+/** Week title: "Sep 21 – 25". Not "Mon – Fri" (the grid already names the days). */
+export function weekRangeLabel(days: string[]): string {
+  const start = days[0];
+  if (!start) return "This week";
+  const end = days[days.length - 1] ?? start;
+  const a = atNoon(start);
+  const left = a.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  if (start === end) return left;
+  const b = atNoon(end);
+  const sameMonth = a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear();
+  const right = sameMonth ? String(b.getDate()) : b.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return `${left} – ${right}`;
+}
+
+/** Send chips: "Tue 22", not a bare weekday. */
+export function dayChipLabel(iso: string): string {
+  const d = atNoon(iso);
+  return `${d.toLocaleDateString("en-US", { weekday: "short" })} ${d.getDate()}`;
+}
+
 export function nextOpenDay(iso: string, afterBell = false): string {
   if (isSchoolDay(iso) && !afterBell) return iso;
   return stepSchoolDay(iso, 1);

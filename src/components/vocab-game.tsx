@@ -93,7 +93,7 @@ function GamePicker({ onPick }: { onPick: (id: GameId) => void }) {
             key={g.id}
             type="button"
             onClick={() => onPick(g.id)}
-            className="tw-tap min-h-24 rounded-2xl bg-elevated px-4 py-3 text-left"
+            className="tw-tap tw-chamfer min-h-24 bg-elevated px-4 py-3 text-left"
           >
             <p className="font-display text-2xl font-semibold tracking-tight text-gold">{g.name}</p>
             <p className="mt-1 text-sm text-muted">{g.blurb}</p>

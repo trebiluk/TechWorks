@@ -2928,7 +2928,25 @@ html[dir="rtl"] .board-root { direction: rtl; }
   gap: 0.75rem;
   padding: 0.9rem;
   min-height: 0;
+  overflow: hidden;
+}
+.tw-planit-hour-scroll {
+  display: flex;
+  flex: 1 1 0;
+  min-height: 0;
+  flex-direction: column;
+  gap: 0.75rem;
   overflow: auto;
+}
+.tw-planit-send-dock {
+  display: grid;
+  flex: 0 1 auto;
+  gap: 0.55rem;
+  max-height: 42%;
+  min-height: 0;
+  overflow: auto;
+  padding-top: 0.55rem;
+  box-shadow: 0 -1px 0 color-mix(in oklab, var(--color-accent) 22%, transparent);
 }
 .tw-planit-preview {
   padding: 0.65rem 0.7rem;
@@ -3943,6 +3961,9 @@ html[dir="rtl"] .board-root { direction: rtl; }
 .tw-planit-mf .tw-planit-desk {
   gap: 0.55rem;
 }
+.tw-planit-mf .tw-planit-hour-scroll {
+  gap: 0.55rem;
+}
 .tw-planit-mf textarea,
 .tw-planit-mf input,
 .tw-teach-live textarea,
@@ -4132,5 +4153,54 @@ html[data-theme="new-look"] .tw-gadget {
       var(--tw-shine);
     --tw-active-pill: 0 0 0 1px color-mix(in srgb, #ffd700 55%, transparent);
   }
+}
+
+.tw-goal-scroll {
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.15rem;
+}
+.tw-goal-scroll > div {
+  flex-wrap: nowrap;
+  width: max-content;
+}
+
+.tw-word-bank {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-height: 0;
+  padding: 0.35rem;
+  background: color-mix(in oklab, var(--color-surface) 88%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 18%, transparent);
+}
+.tw-word-hit {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.12rem;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.7rem 0.5rem;
+  background: color-mix(in oklab, var(--color-elevated) 82%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 16%, transparent);
+}
+.tw-word-hit.is-on {
+  background: color-mix(in oklab, var(--color-accent) 16%, var(--color-elevated));
+  box-shadow: inset 0 0 0 1.5px var(--color-accent);
+}
+.tw-word-cat {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-subtle, var(--color-muted));
+}
+.tw-word-term {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 650;
+  line-height: 1.2;
+  color: var(--color-title, var(--color-fg));
 }
 

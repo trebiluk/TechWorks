@@ -102,6 +102,7 @@ export function Board() {
   const bells = useMemo(() => bellFor(wallFile), [wallFile]);
   const [view, setView] = useState<View>("overview");
   const [learnStart, setLearnStart] = useState<LearnStart>("projects");
+  const [pendingLearn, setPendingLearn] = useState<LearnStart | null>(null);
   const [deskPanel] = useState<DeskPanel>("score");
   const [pendingView, setPendingView] = useState<View | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
@@ -167,8 +168,12 @@ export function Board() {
       return;
     }
     if (next === "skills" && !unlocked) {
-      setLearnStart("words");
-      startTransition(() => setView("skills"));
+      if (learnStart === "words") {
+        startTransition(() => setView("skills"));
+        return;
+      }
+      setPendingLearn(learnStart);
+      askPin("skills");
       return;
     }
     if (crewOn && next !== "crew") {
@@ -519,7 +524,12 @@ export function Board() {
     if (crewOn) return;
     if (next === "dash") go("overview");
     else if (next === "learn") {
-      setLearnStart(unlocked ? "plan" : "words");
+      if (!unlocked) {
+        setLearnStart("words");
+        startTransition(() => setView("skills"));
+        return;
+      }
+      setLearnStart("plan");
       go("skills");
     } else if (next === "crew") {
       if (unlocked) {
@@ -990,7 +1000,7 @@ export function Board() {
       ) : view === "club" ? (
         <ClubBoard unlocked={unlocked} onNeedPin={() => askPin()} onWall={() => go("clubwall")} desk={file} onDesk={commitDesk} />
       ) : view === "teach" ? (
-        <TeachBoard file={graphFile} unlocked={unlocked} date={planDate} onDate={setPlanDate} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onPlan={(iso, p) => { if (iso) setPlanDate(iso); if (p != null) setJumpPeriod(p); setLearnStart("plan"); go("skills"); }} onWords={() => { setLearnStart("words"); go("skills"); }} onCrib={unlocked && featureOn(file, "crib") ? (iso, p) => { if (iso) setPlanDate(iso); if (p != null) setJumpPeriod(p); go("crib"); } : undefined} onWall={() => go("overview")} onDeck={() => go("deck")} />
+        <TeachBoard file={graphFile} unlocked={unlocked} date={planDate} onDate={setPlanDate} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onPlan={(iso, p) => { if (iso) setPlanDate(iso); if (p != null) setJumpPeriod(p); setLearnStart("plan"); if (!unlocked) { setPendingLearn("plan"); askPin("skills"); return; } go("skills"); }} onWords={() => { setLearnStart("words"); go("skills"); }} onCrib={unlocked && featureOn(file, "crib") ? (iso, p) => { if (iso) setPlanDate(iso); if (p != null) setJumpPeriod(p); go("crib"); } : undefined} onWall={() => go("overview")} onDeck={() => go("deck")} />
       ) : view === "polls" ? (
         <PollBoard file={file} unlocked={unlocked} onChange={commitDesk} onNeedPin={() => askPin()} />
       ) : view === "deck" ? (
@@ -1077,7 +1087,14 @@ export function Board() {
             const next = pendingView;
             if (next === "score" || next === "crew") setView("score");
             else if (next === "grades" || next === "projects" || next === "skills") {
-              setLearnStart(next === "grades" ? "grades" : next === "projects" ? "projects" : "skills");
+              setLearnStart(
+                next === "grades"
+                  ? "grades"
+                  : next === "projects"
+                    ? "projects"
+                    : pendingLearn ?? "plan",
+              );
+              setPendingLearn(null);
               setView("skills");
             } else if (next && next !== view) setView(next);
             if (pendingId) {

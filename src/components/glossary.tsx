@@ -90,18 +90,19 @@ export function GlossaryDesk({ file }: { file?: EconomyFile }) {
           ))}
         </div>
       </div>
-      <div className="grid min-h-0 flex-1 gap-2 overflow-hidden lg:grid-cols-[minmax(0,1fr)_18rem]">
+      <div className="grid min-h-0 flex-1 gap-2 overflow-hidden lg:grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)]">
         {card ? <TermCard entry={card} /> : <p className="text-sm text-muted">{t("No words match.")}</p>}
-        <ul className="min-h-0 overflow-auto rounded-xl bg-surface p-2">
+        <ul className="tw-word-bank min-h-0 overflow-auto" data-word-bank>
           {hits.map((e) => (
             <li key={e.id}>
               <button
                 type="button"
                 onClick={() => setPick(e.id)}
-                className={cn("tw-tap flex w-full items-baseline justify-between gap-2 rounded-md px-2 py-2 text-left", card?.id === e.id ? "bg-elevated text-fg" : "text-muted")}
+                aria-label={e.term}
+                className={cn("tw-tap tw-word-hit tw-chamfer w-full text-left", card?.id === e.id ? "is-on" : undefined)}
               >
-                <span className="font-semibold">{e.term}</span>
-                <span className="text-[10px] uppercase tracking-wider text-subtle">{t(e.cat)}</span>
+                <span className="tw-word-cat">{t(e.cat)}</span>
+                <span className="tw-word-term">{e.term}</span>
               </button>
             </li>
           ))}

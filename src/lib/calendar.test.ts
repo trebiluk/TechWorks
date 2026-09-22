@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { daySlot, instructionalWeeks, isSchoolDay, schoolDays, sessions } from "./calendar.ts";
+import { daySlot, dayChipLabel, instructionalWeeks, isSchoolDay, schoolDays, sessions, weekRangeLabel } from "./calendar.ts";
 
 describe("Solvay 2026-27", () => {
   it("first and last student days are school", () => {
@@ -49,5 +49,13 @@ describe("Solvay 2026-27", () => {
     assert.equal(blocks[0].weeks.length, 8);
     assert.equal(blocks[3].weeks.length, 8);
     assert.ok(weeks.length > 32);
+  });
+
+  it("week title is the dates, not Mon – Fri", () => {
+    assert.equal(weekRangeLabel(["2026-09-21", "2026-09-22", "2026-09-23", "2026-09-24", "2026-09-25"]), "Sep 21 – 25");
+    assert.equal(weekRangeLabel(["2026-09-21"]), "Sep 21");
+    assert.equal(weekRangeLabel([]), "This week");
+    assert.equal(weekRangeLabel(["2026-09-28", "2026-10-02"]), "Sep 28 – Oct 2");
+    assert.equal(dayChipLabel("2026-09-22"), "Tue 22");
   });
 });

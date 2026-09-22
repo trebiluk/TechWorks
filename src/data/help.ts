@@ -231,7 +231,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Dashboard",
     title: "PlanIt",
     tags: ["plan", "planit", "planbook", "week", "copy", "materials", "homework", "closure", "sub", "objective"],
-    body: "Learn → PlanIt is the week timetable. Periods down, days across. Click a block and type Job · Guiding Q · Prove · beats in the hour inspector — that write fills Teach, Wall, and Deck. Teach is the live board (Hang, Top XP / Top $). Tap Week for the full grid. Tap up to three skills — Watch opens on the first. Send this hour copies onto the periods and days you pick. After Send, Save writes edits onto those slots (Linked re-selects them). Unpicked hours stay. Arrow keys move. Print week.",
+    body: "Learn → PlanIt is the week timetable. Periods down, days across. The week title is the dates, not just Mon – Fri. Teach → PLANIT asks the teacher PIN, then opens PlanIt — it does not dump you on Words. Click a block and type Job · Guiding Q · Prove · beats in the hour inspector — that write fills Teach, Wall, and Deck. Send/Save stays on the inspector while the hour scrolls. Rest of today / Other G# / Later this week add to the pick (they do not wipe Linked). After Send, Save writes edits onto those slots. Unpicked hours stay. Teach is the live board (Hang, Top XP / Top $). Hang a Drive / Slides / Doc with a share link (Anyone with the link) — no Google login on the kid wall. Tap Week for the full grid. Tap up to three skills — Watch opens on the first. Arrow keys move. Print week.",
   },
   {
     id: "dash-loop",
@@ -472,7 +472,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Shop words",
     tags: ["glossary", "vocabulary", "kerf", "grit", "proficient", "words"],
     wall: true,
-    body: "Learn → Words. Search or tap a letter. Categories: Safety, Measure, Tools, Materials, Process, Design, Crew, Grades, Class. Kid definition plus an in-the-shop sentence. STEM, driving question, and evidence stem live here. Games (Heat · Match · Flash · Spell) play the same bank. Project the card. Not a grade.",
+    body: "Learn → Words. Search or tap a letter. The bank is term plates — category sits as a kicker, not jammed onto the word. Categories: Safety, Measure, Tools, Materials, Process, Design, Crew, Grades, Class. Kid definition plus an in-the-shop sentence. STEM, driving question, and evidence stem live here. Games (Heat · Match · Flash · Spell) play the same bank. Project the card. Not a grade.",
   },
   {
     id: "version",

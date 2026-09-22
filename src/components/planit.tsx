@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, PanelsTopLeft, Presentation, Printer } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
-import { formatSchoolDate, instructionalWeeks, isSchoolDay, todayIso, weekOn } from "@/lib/calendar";
+import { instructionalWeeks, isSchoolDay, todayIso, weekOn, weekRangeLabel } from "@/lib/calendar";
 import { activitiesOf, pinDayActivity, slotsOf } from "@/lib/projects";
 import {
   dropTeachDay,
@@ -146,8 +146,7 @@ export function PlanIt({
             PlanIt
           </p>
           <h1 className="font-display text-[1.65rem] font-semibold leading-none tracking-tight">
-            {days[0] ? formatSchoolDate(days[0]).replace(/,.*/, "") : "This week"}
-            {days.length > 1 ? ` – ${formatSchoolDate(days[days.length - 1]!).replace(/,.*/, "")}` : ""}
+            {weekRangeLabel(days)}
           </h1>
         </div>
         <div className="ml-auto flex flex-wrap items-center gap-1">
@@ -336,6 +335,7 @@ function HourDesk({
 
   return (
     <aside className="tw-planit-desk tw-lcars" data-planit-hour>
+      <div className="tw-planit-hour-scroll">
       <div className="flex flex-wrap items-center gap-2">
         <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">
@@ -444,38 +444,6 @@ function HourDesk({
         </label>
       </div>
 
-      <div className="flex flex-wrap gap-1">
-        {onTeach ? (
-          <button type="button" onClick={() => onTeach(d, p)} className="tw-tap inline-flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">
-            <Presentation className="size-3.5" />
-            Teach
-          </button>
-        ) : null}
-        {onWall ? (
-          <button type="button" onClick={onWall} className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-elevated px-3 text-sm font-semibold">
-            <PanelsTopLeft className="size-3.5" />
-            Wall
-          </button>
-        ) : null}
-        {onDeck ? (
-          <button type="button" onClick={onDeck} className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-elevated px-3 text-sm font-semibold">
-            Deck
-          </button>
-        ) : null}
-      </div>
-
-      <SendHour
-        file={file}
-        date={d}
-        period={p}
-        unlocked={unlocked}
-        days={days}
-        onSend={(next, note) => {
-          commit(next);
-          onNote(note);
-        }}
-      />
-
       {cell.set ? <WallPreview preview={preview} /> : null}
 
       <button type="button" onClick={() => setMore((v) => !v)} className="tw-tap min-h-9 text-left text-[11px] font-bold uppercase tracking-wider text-muted">
@@ -552,6 +520,41 @@ function HourDesk({
           ) : null}
         </div>
       ) : null}
+      </div>
+
+      <div className="tw-planit-send-dock" data-planit-send>
+      <div className="flex flex-wrap gap-1">
+        {onTeach ? (
+          <button type="button" onClick={() => onTeach(d, p)} className="tw-tap inline-flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">
+            <Presentation className="size-3.5" />
+            Teach
+          </button>
+        ) : null}
+        {onWall ? (
+          <button type="button" onClick={onWall} className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-elevated px-3 text-sm font-semibold">
+            <PanelsTopLeft className="size-3.5" />
+            Wall
+          </button>
+        ) : null}
+        {onDeck ? (
+          <button type="button" onClick={onDeck} className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-elevated px-3 text-sm font-semibold">
+            Deck
+          </button>
+        ) : null}
+      </div>
+
+      <SendHour
+        file={file}
+        date={d}
+        period={p}
+        unlocked={unlocked}
+        days={days}
+        onSend={(next, note) => {
+          commit(next);
+          onNote(note);
+        }}
+      />
+      </div>
     </aside>
   );
 }

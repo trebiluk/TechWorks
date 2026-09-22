@@ -51,13 +51,15 @@ export function DayFacts({
     <div className={cn("flex min-w-0 flex-col gap-2", className)} data-day-facts="">
       <div data-daily-goal="">
         <p className="mb-1 text-mast uppercase tracking-wider text-subtle">Daily goal · Grade {grade}</p>
-        <GoalChips
-          value={STAGES.includes(goal as (typeof STAGES)[number]) ? goal : STAGES[0]}
-          onPick={(v) => {
-            if (!gate()) return;
-            onChange?.(setPeriodGoal(file, date, period, v));
-          }}
-        />
+        <div className="tw-goal-scroll">
+          <GoalChips
+            value={STAGES.includes(goal as (typeof STAGES)[number]) ? goal : STAGES[0]}
+            onPick={(v) => {
+              if (!gate()) return;
+              onChange?.(setPeriodGoal(file, date, period, v));
+            }}
+          />
+        </div>
       </div>
       <label className="block" data-happened="">
         <span className="text-mast uppercase tracking-wider text-subtle">Happened</span>

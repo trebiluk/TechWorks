@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Copy } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
-import { formatSchoolDate, isSchoolDay, weekOn } from "@/lib/calendar";
+import { dayChipLabel, formatSchoolDate, isSchoolDay, weekOn } from "@/lib/calendar";
 import { gradeOfPeriod } from "@/lib/projects";
 import {
   copyYesterday,
@@ -21,6 +21,14 @@ function linkedPicks(linked: { date: string; period: number }[], date: string, p
     periods: [...new Set(linked.filter((t) => t.date === date).map((t) => t.period))],
     days: [...new Set(linked.filter((t) => t.period === period).map((t) => t.date))],
   };
+}
+
+/** Add the set, or drop it if every chip is already on — never wipe the other axis. */
+function mergePick<T>(cur: T[], add: T[]): T[] {
+  if (!add.length) return cur;
+  const have = add.every((x) => cur.includes(x));
+  if (have) return cur.filter((x) => !add.includes(x));
+  return [...new Set([...cur, ...add])];
 }
 
 export function SendHour({
@@ -129,7 +137,7 @@ export function SendHour({
                 })}
                 <button
                   type="button"
-                  onClick={() => setPickedP(otherPeriods.map((b) => b.period))}
+                  onClick={() => setPickedP((cur) => mergePick(cur, otherPeriods.map((b) => b.period)))}
                   className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold"
                 >
                   Rest of today
@@ -137,7 +145,7 @@ export function SendHour({
                 {twins.length ? (
                   <button
                     type="button"
-                    onClick={() => setPickedP(twins)}
+                    onClick={() => setPickedP((cur) => mergePick(cur, twins))}
                     className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold"
                   >
                     Other G{grade}
@@ -161,14 +169,14 @@ export function SendHour({
                       className={cn("tw-tap min-h-11 rounded-xl px-3 text-sm font-semibold", on ? "bg-fg text-bg" : "bg-elevated text-muted")}
                       title={set ? `${formatSchoolDate(d)} already has a plan — Save will overwrite` : formatSchoolDate(d)}
                     >
-                      {formatSchoolDate(d).replace(/,.*/, "")}
+                      {dayChipLabel(d)}
                       {set ? <span className="ml-1 text-[10px] opacity-70">set</span> : null}
                     </button>
                   );
                 })}
                 <button
                   type="button"
-                  onClick={() => setPickedD(otherDays)}
+                  onClick={() => setPickedD((cur) => mergePick(cur, otherDays))}
                   className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold"
                 >
                   Later this week
