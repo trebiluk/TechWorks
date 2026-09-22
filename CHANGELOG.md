@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.109. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.110. -->
 
 # TechWorks changelog
 
-App version **1.92.109**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.110**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.110 — 2026-09-22
+
+- Default wall paint is the Dream chip (navy / cyan). Same desk, named Dream. TW Deluxe stays optional. Theme tiles stay four across on a Chromebook until the window is wide.
 
 ## 1.92.109 — 2026-09-22
 

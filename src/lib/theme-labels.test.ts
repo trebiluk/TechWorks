@@ -14,6 +14,7 @@ describe("theme labels", () => {
 
   it("keeps Dream TechWorks default and offers TW Deluxe as an optional chip", () => {
     assert.equal(THEMES[0]?.id, "solvay");
+    assert.equal(THEMES[0]?.label, "Dream");
     const neu = THEMES.find((t) => t.id === "new-look");
     assert.ok(neu);
     assert.equal(neu!.label, "TW Deluxe");

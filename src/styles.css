@@ -1963,7 +1963,7 @@ header.desk-chrome .size-11 {
 @media (min-width: 640px) {
   .tw-theme-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .tw-theme-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 }
 .tw-theme-tile {
@@ -1971,8 +1971,8 @@ header.desk-chrome .size-11 {
   min-width: 0;
   flex-direction: column;
   gap: 0.28rem;
-  min-height: 2.75rem;
-  padding: 0.35rem;
+  min-height: 4.75rem;
+  padding: 0.45rem;
   text-align: left;
   border-radius: 12px;
   background: var(--color-elevated);

@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.110 — 2026-09-22
+
+- Default wall paint is the Dream chip (navy / cyan). Same desk, named Dream. TW Deluxe stays optional. Theme tiles stay four across on a Chromebook until the window is wide.
+
 ## 1.92.109 — 2026-09-22
 
 - Wall 2×2 type fills the plate. Short beats grow so the back row can read them. Long beats shrink so they stay inside the card on a Chromebook — no spill onto the next beat.
