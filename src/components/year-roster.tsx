@@ -372,7 +372,9 @@ export function YearRoster({
             </tbody>
           </table>
           )}
-          {!rows.length ? <p className="p-3 text-sm text-muted">No one in this filter.</p> : null}
+          {!rows.length ? (
+            <p className="p-3 text-sm text-muted">{q.trim() || period != null ? "No one matches." : "No aliases yet."}</p>
+          ) : null}
 
           {orphans.length ? (
             <ul className="mt-3 space-y-1 border-t border-border/40 px-2 pt-2">

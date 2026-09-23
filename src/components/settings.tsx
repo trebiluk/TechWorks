@@ -248,31 +248,29 @@ export function SettingsBody({
                   </>
                 ) : (
                   <>
-                    <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">People</h2>
-                    <p className="mt-1 text-sm text-muted">Workers are aliases + Shop ID. Real names, IEP, and 504 are not stored.</p>
+                    <h2 className="text-sm font-semibold">Privacy</h2>
+                    <p className="mt-1 text-sm text-muted">Shop names only. Legal names stay off the wall.</p>
+                    <p className="mt-4 text-sm font-medium">Portal PIN</p>
+                    <p className="mt-1 text-sm text-muted">Only if the portal module is on. Not the teacher PIN.</p>
+                    <PinField
+                      value={portalPin}
+                      onChange={setPortalPin}
+                      className="mt-2"
+                      placeholder="portal PIN"
+                      label="Worker portal PIN"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        savePortalPin(portalPin);
+                        setPortalPin(storedPortalPin());
+                      }}
+                      className="tw-tap mt-2 min-h-11 rounded-md bg-elevated px-3 text-sm font-semibold"
+                    >
+                      Save portal PIN
+                    </button>
                   </>
                 )}
-                <p className="mt-6 text-sm font-medium uppercase tracking-wider text-subtle">Privacy</p>
-                <p className="mt-1 text-sm text-muted">Wall and desk are shop names only. Teacher PIN is the one you set on the lock bar — Set teacher PIN. Never 1111.</p>
-                <p className="mt-4 text-sm font-medium uppercase tracking-wider text-subtle">Worker portal PIN</p>
-                <p className="mt-1 text-sm text-muted">Only if the portal module is on. Default 2627. Not the teacher PIN.</p>
-                <PinField
-                  value={portalPin}
-                  onChange={setPortalPin}
-                  className="mt-2"
-                  placeholder="portal PIN"
-                  label="Worker portal PIN"
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    savePortalPin(portalPin);
-                    setPortalPin(storedPortalPin());
-                  }}
-                  className="mt-2 min-h-11 rounded-md bg-elevated px-3 text-sm font-semibold"
-                >
-                  Save portal PIN
-                </button>
               </section>
             ) : null}
 
