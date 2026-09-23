@@ -276,7 +276,7 @@ export const Dashboard = memo(function Dashboard({
                     live: shopLive,
                     slot: step,
                   })}
-                  size="xl"
+                  size="lg"
                 />
               </aside>
             ) : null}
@@ -407,7 +407,7 @@ export const Dashboard = memo(function Dashboard({
 
   const sortOn = arrange;
   const showLeft: DashRowId[] = arrange ? layout.left : ["class"];
-  const showRight: DashRowId[] = arrange ? layout.right : pulse ? ["now", "strip", "club", "kpis"] : ["now", "strip", "kpis"];
+  const showRight: DashRowId[] = arrange ? layout.right : pulse ? ["now", "club"] : ["now"];
 
   function ghost(label: string) {
     return (

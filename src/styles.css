@@ -1411,14 +1411,22 @@ html[data-contrast="high"] {
   gap: 0.45rem;
 }
 .tw-hour-body:has(.tw-berty-corner) {
-  grid-template-columns: minmax(0, 1fr) clamp(10rem, 24cqi, 18rem);
-  column-gap: clamp(0.4rem, 1.2cqi, 0.85rem);
+  position: relative;
+  grid-template-columns: minmax(0, 1fr);
+}
+.tw-hour-body:has(.tw-berty-corner) .tw-agenda-card:last-child .tw-agenda-copy {
+  padding-right: clamp(4.75rem, 13cqi, 7rem);
 }
 .tw-berty-corner {
+  position: absolute;
+  right: 0.2rem;
+  bottom: 0.15rem;
+  z-index: 2;
   display: flex;
   align-items: flex-end;
-  justify-content: center;
-  align-self: stretch;
+  justify-content: flex-end;
+  width: clamp(4.25rem, 11cqi, 6.5rem);
+  height: clamp(5.25rem, 16cqh, 8rem);
   min-width: 0;
   min-height: 0;
   pointer-events: none;

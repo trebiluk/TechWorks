@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.113 — 2026-09-23
+
+- Wall Berty sits in a small corner so the hour can use the plate. The projector side is just Now. Schedule and the empty lead board stay in Arrange.
+
 ## 1.92.112 — 2026-09-23
 
 - People opens on Add a class, search, and period chips. Portal PIN sits on Privacy, not under the alias list. Empty class says “No aliases yet.”
