@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.111 — 2026-09-23
+
+- Admin top row is five chips: Today, People, Money, Room, Data. People opens on Add a class. Rosters stays the yearbook. Search and period chips come first. Club hold and the rest sit under More. Rollback is 1.92.110.
+
 ## 1.92.110 — 2026-09-22
 
 - Default wall paint is the Dream chip (navy / cyan). Same desk, named Dream. TW Deluxe stays optional. Theme tiles stay four across on a Chromebook until the window is wide.

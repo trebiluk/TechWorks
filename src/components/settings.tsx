@@ -233,9 +233,19 @@ export function SettingsBody({
             {tab === "lunch" ? <LunchPanel file={file} onChange={onChange} /> : null}
 
             {tab === "roster" || tab === "privacy" ? (
-              <section>
+              <section className="flex min-h-0 flex-1 flex-col gap-3">
                 {tab === "roster" ? (
-                  <YearRoster file={file} onChange={onChange} onOpenId={onOpenId} onImport={() => setRosterOpen(true)} />
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setRosterOpen(true)}
+                      className="tw-tap min-h-11 w-full rounded-xl bg-accent px-4 text-base font-semibold text-accent-fg"
+                    >
+                      Add a class
+                    </button>
+                    <p className="text-sm font-semibold">Search & edit</p>
+                    <YearRoster file={file} onChange={onChange} onOpenId={onOpenId} />
+                  </>
                 ) : (
                   <>
                     <h2 className="text-sm font-semibold uppercase tracking-wider text-subtle">People</h2>

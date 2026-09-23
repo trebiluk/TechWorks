@@ -102,6 +102,7 @@ export const NAV_MARK: Record<string, LucideIcon> = {
   day: Clock,
   class: Target,
   economy: Coins,
+  money: Coins,
   modules: Puzzle,
   look: Palette,
   room: Palette,

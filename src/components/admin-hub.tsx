@@ -13,7 +13,7 @@ import { abOn, deskBellId, deskPacks, exportedThisPeriod, isSubDay, lunchOn, mee
 import type { EconomyFile } from "@/lib/economy";
 import { CloudBoard } from "@/components/cloud-board";
 import { CrewDesk } from "@/components/crew-desk";
-import { CtrlHud, CtrlRail, CtrlSeg } from "@/components/ctrl";
+import { CtrlRail, CtrlSeg } from "@/components/ctrl";
 import { markOf } from "@/lib/nav-marks";
 import { MarkChip } from "@/components/ui";
 import { cn } from "@/lib/utils";
@@ -129,21 +129,20 @@ export function AdminHub({
   const away = outNow(file, today);
   const real = showFirstReal(file);
   const group = groupOfPane(pane);
-  const inner = group.panes.filter((id) => id !== "cloud");
+  const inner = group.panes;
   const rooms: { id: string; label: string; on: boolean; go: () => void; show: boolean }[] = [
     ...ADMIN_GROUPS.map((g) => ({
       id: g.id,
       label: g.label,
-      on: g.id === "records" ? pane === "vault" || pane === "roster" || pane === "cloud" : group.id === g.id,
+      on: group.id === g.id,
       go: () => {
         pickPane(g.panes[0] as AdminPane);
       },
       show: true,
     })),
-    { id: "people", label: "Crews", on: pane === "crews", go: () => pickPane("crews"), show: true },
     { id: "club", label: "Club", on: false, go: () => onClub?.(), show: featureOn(file, "club") && Boolean(onClub) },
     { id: "hall", label: "Hall", on: false, go: () => onStudyHall(), show: featureOn(file, "studyhall") },
-    { id: "data", label: "Data", on: false, go: () => onData?.(), show: Boolean(onData) },
+    { id: "charts", label: "Charts", on: false, go: () => onData?.(), show: Boolean(onData) },
     { id: "prints", label: "Prints", on: false, go: () => onPrints?.(), show: featureOn(file, "prints") && Boolean(onPrints) },
     { id: "crib", label: "Crib", on: false, go: () => onCrib?.(), show: featureOn(file, "crib") && Boolean(onCrib) },
     { id: "lucky", label: "Lucky", on: false, go: () => onLucky?.(), show: featureOn(file, "lucky") && Boolean(onLucky) },
@@ -151,7 +150,7 @@ export function AdminHub({
     { id: "store", label: "Rewards", on: false, go: () => onStore(), show: featureOn(file, "store") },
   ];
 
-  const dailyIds = new Set(["today", "day", "records", "people", "wall", "door"]);
+  const dailyIds = new Set(["today", "people", "money", "room", "data"]);
   const dailyRooms = rooms.filter((r) => r.show && dailyIds.has(r.id));
   const moreRooms = rooms.filter((r) => r.show && !dailyIds.has(r.id));
   const cloud = cloudStatus();
@@ -166,17 +165,10 @@ export function AdminHub({
               {r.label}
             </MarkChip>
           ))}
-          <CtrlHud
-            mark={markOf("cloud")}
-            title={cloudDue ? "Save status · not bound" : "Save status"}
-            alarm={cloudDue}
-            on={pane === "cloud"}
-            onClick={() => pickPane("cloud")}
-          />
           <button
             type="button"
             onClick={() => setMore((v) => !v)}
-            className={cn("tw-tap inline-flex min-h-9 shrink-0 items-center rounded-lg px-2.5 text-xs font-semibold", more ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+            className={cn("tw-tap inline-flex min-h-11 shrink-0 items-center rounded-lg px-3 text-sm font-semibold", more ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
           >
             {more ? "Less" : "More"}
           </button>
@@ -278,7 +270,7 @@ export function AdminHub({
             <button
               type="button"
               onClick={() => pickPane("cloud")}
-              className="mt-3 w-full rounded-xl bg-cleanup px-3 py-2 text-left text-sm font-semibold text-accent-fg"
+              className="tw-tap mt-3 min-h-11 w-full rounded-xl bg-cleanup px-3 py-2 text-left text-sm font-semibold text-accent-fg"
             >
               Cloud is not bound. Tap for tonight’s save status.
             </button>

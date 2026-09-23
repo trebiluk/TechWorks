@@ -28,6 +28,7 @@ import { publicHandle } from "@/lib/live";
 import { todayIso } from "@/lib/calendar";
 import { bansOf, BENCH, addPeriodCrew, dropCrewBan, nextPeriodCrewKey, placeBlock, rosterLabel, separatePair, setStudentCrew, whoOf } from "@/lib/crew-desk";
 import { MarkChip } from "@/components/ui";
+import { Fold } from "@/components/fold";
 import { markOf } from "@/lib/nav-marks";
 import { cn } from "@/lib/utils";
 
@@ -47,6 +48,8 @@ export function YearRoster({
   const [club, setClub] = useState(() => loadClub());
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
+  const [period, setPeriod] = useState<number | null>(null);
+  const [more, setMore] = useState(false);
   const [pick, setPick] = useState<string | null>(null);
   const [st, setSt] = useState(false);
   const [pending, setPending] = useState(false);
@@ -54,10 +57,16 @@ export function YearRoster({
   const counts = useMemo(() => yearCounts(file, club), [file, club]);
   const ids = useMemo(() => auditStudentIds(file.students), [file.students]);
   const cohort = YEAR_CLASSES.concat(YEAR_GROUPS).find((c) => c.id === pick) ?? null;
+  const focus = more ? cohort : null;
   const rows = useMemo(() => {
-    const list = cohort ? kidsInCohort(file, cohort, club) : allYearKids(file, club);
+    const list = focus ? kidsInCohort(file, focus, club) : allYearKids(file, club);
     const needle = q.trim().toLowerCase();
     return list.filter((k) => {
+      if (period != null && k.period !== period) return false;
+      if (!more) {
+        if (needle && !k.first.toLowerCase().includes(needle) && !String(k.period).includes(needle) && !k.id.toLowerCase().includes(needle)) return false;
+        return true;
+      }
       if (filter === "live" && !k.live) return false;
       if (filter === "club" && !k.club) return false;
       if (filter === "hall" && !k.hall) return false;
@@ -69,7 +78,7 @@ export function YearRoster({
       if (needle && !k.first.toLowerCase().includes(needle) && !String(k.period).includes(needle) && !k.id.toLowerCase().includes(needle)) return false;
       return true;
     });
-  }, [file, club, cohort, filter, q]);
+  }, [file, club, focus, filter, more, period, q]);
   const orphans = unlinkedClub(club, file);
   const bells = shopBells(file);
   const periods = [...new Set(YEAR_CLASSES.map((c) => c.period))];
@@ -91,7 +100,37 @@ export function YearRoster({
 
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-3">
-      <header className="flex flex-wrap items-end justify-between gap-2">
+      <div className="flex flex-col gap-2">
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Search alias"
+          aria-label="Search alias"
+          className="min-h-11 w-full rounded-xl bg-elevated px-3 text-base outline-none"
+        />
+        <div className="flex flex-wrap gap-1" aria-label="Period">
+          <button
+            type="button"
+            onClick={() => setPeriod(null)}
+            className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-bold", period == null ? "bg-fg text-bg" : "bg-elevated text-muted")}
+          >
+            All
+          </button>
+          {periods.map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => setPeriod(p)}
+              className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-bold", period === p ? "bg-fg text-bg" : "bg-elevated text-muted")}
+            >
+              P{p}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <Fold label="More" open={more} onToggle={() => setMore((v) => !v)}>
+      <header className="flex flex-wrap items-end justify-between gap-2 p-3">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gold">Roster · year</p>
           <p className="font-display text-2xl font-semibold leading-none">SchoolTool · 24 Tech + Study Hall</p>
@@ -141,7 +180,7 @@ export function YearRoster({
           <p className="text-muted">Hold them so skills stay on one id until they have a Tech class.</p>
           <button
             type="button"
-            className="mt-2 min-h-10 rounded-md bg-fg px-3 text-xs font-semibold text-bg"
+            className="mt-2 min-h-11 rounded-md bg-fg px-3 text-sm font-semibold text-bg"
             onClick={() => {
               const out = holdAllClub(file, club);
               setClub(out.club);
@@ -184,9 +223,10 @@ export function YearRoster({
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Find alias or id"
-          className="min-h-9 min-w-[10rem] flex-1 rounded-md bg-elevated px-3 text-sm outline-none"
+          className="min-h-11 min-w-[10rem] flex-1 rounded-md bg-elevated px-3 text-sm outline-none"
         />
       </div>
+      </Fold>
 
       {st ? (
         <div className="tw-gadget overflow-auto p-2">
@@ -217,7 +257,8 @@ export function YearRoster({
         </div>
       ) : null}
 
-      <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-[16rem_minmax(0,1fr)]">
+      <div className={cn("grid min-h-0 flex-1 gap-3", more && "lg:grid-cols-[16rem_minmax(0,1fr)]")}>
+        {more ? (
         <div className="space-y-2 overflow-auto">
           {periods.map((p) => (
             <div key={p}>
@@ -260,13 +301,14 @@ export function YearRoster({
             })}
           </div>
         </div>
+        ) : null}
 
         <div className="tw-gadget min-h-0 overflow-auto p-2">
           <p className="sticky top-0 z-[1] bg-surface px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-subtle">
-            {cohort ? `${cohort.course} · Sec ${cohort.section} · ${cohort.quarter === "YEAR" ? "year" : cohort.quarter} · Rm ${cohort.room}` : "Every kid this year"} · {rows.length}
+            {focus ? `${focus.course} · Sec ${focus.section} · ${focus.quarter === "YEAR" ? "year" : focus.quarter} · Rm ${focus.room}` : "Aliases"} · {rows.length}
           </p>
-          {cohort && cohort.kind !== "club" ? (
-            <ClassBook file={file} cohort={cohort} onChange={onChange} onOpenId={onOpenId} onPlace={place} onNotice={setNotice} />
+          {focus && focus.kind !== "club" ? (
+            <ClassBook file={file} cohort={focus} onChange={onChange} onOpenId={onOpenId} onPlace={place} onNotice={setNotice} />
           ) : (
             <table className="w-full text-left text-sm">
             <thead className="text-[11px] uppercase tracking-wider text-subtle">
@@ -339,7 +381,7 @@ export function YearRoster({
                   <span>{m.name} <span className="text-subtle">club only</span></span>
                   <button
                     type="button"
-                    className="tw-tap min-h-8 rounded-full bg-elevated px-3 text-[11px] font-semibold"
+                    className="tw-tap min-h-11 rounded-full bg-elevated px-3 text-sm font-semibold"
                     onClick={() => {
                       const out = holdClubKid(file, club, m.id);
                       setClub(out.club);

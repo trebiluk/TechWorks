@@ -50,8 +50,8 @@ export function RosterWall({
           {n ? `${n} on the board` : "No aliases yet."} · tap a card
         </p>
         {unlocked && onRecords ? (
-          <button type="button" onClick={onRecords} className="mt-1 text-xs font-semibold text-accent">
-            Records · roster
+          <button type="button" onClick={onRecords} className="tw-tap mt-2 min-h-11 rounded-xl bg-accent px-4 text-sm font-semibold text-accent-fg">
+            Add a class
           </button>
         ) : null}
       </header>
