@@ -13,7 +13,7 @@
 </head>
 <body>
   <header class="top">
-    <div class="brand">KODER<em>IZED</em> <span class="pill" id="version-chip">KZ 1.11.0</span></div>
+    <div class="brand">KODER<em>IZED</em> <span class="pill" id="version-chip">KZ 1.16.1</span></div>
     <div class="meta" id="top-meta">Solvay MS · Technology · Chromebook</div>
     <div class="row top-tools">
       <button class="btn ghost" id="btn-lang-en" type="button" aria-pressed="true">EN</button>
@@ -22,32 +22,32 @@
       <button class="btn ghost" id="btn-home" type="button" data-i18n="home">Home</button>
     </div>
   </header>
-  <section id="screen-landing" class="wrap">
-    <div class="hero">
-      <div class="hero-bot" aria-hidden="true">
-        <canvas id="teaser" width="420" height="160"></canvas>
-      </div>
-      <h1 data-i18n="start">Start at zero.</h1>
-      <p class="hint" data-i18n="hint">One command. Then a line. Then a loop. Door 1 this period is a win.</p>
-      <ol class="ladder">
-        <li><svg class="picto-svg"><use href="pics.svg#p-one"/></svg> <span data-i18n="d1">One move</span></li>
-        <li><svg class="picto-svg"><use href="pics.svg#p-line"/></svg> <span data-i18n="d2">More moves</span></li>
-        <li><svg class="picto-svg"><use href="pics.svg#p-loop"/></svg> <span data-i18n="d3">Repeat</span></li>
-        <li><svg class="picto-svg"><use href="pics.svg#p-stop"/></svg> <span data-i18n="d4">Stop</span></li>
-        <li><svg class="picto-svg"><use href="pics.svg#p-score"/></svg> <span data-i18n="d5">Score</span></li>
-      </ol>
+  <section id="screen-landing" class="wrap arena-door">
+    <div class="arena-stage" aria-hidden="true">
+      <canvas id="teaser" width="720" height="360"></canvas>
+      <p class="arena-tag" data-i18n="start">Start at zero.</p>
     </div>
-    <div class="card join">
-      <label for="join-code" data-i18n="classCode">Class code</label>
-      <input id="join-code" value="QUEST4" maxlength="12" autocomplete="off" />
-      <label for="join-alias" data-i18n="alias">Alias (not your legal name)</label>
-      <input id="join-alias" data-i18n-ph="aliasPh" placeholder="Scout" maxlength="20" autocomplete="off" />
-      <div class="row" style="margin-top:16px;">
-        <button class="btn go" id="btn-student" type="button"><span data-i18n="roll">Roll out</span> <span class="k">Enter</span></button>
-        <button class="btn navy" id="btn-teacher" type="button" data-i18n="teacher">Teacher</button>
+    <div class="card join arena-join">
+      <button class="btn go xl" id="btn-student" type="button"><span data-i18n="roll">Join quest</span></button>
+      <details class="join-more">
+        <summary data-i18n="classCode">Class code · alias</summary>
+        <label for="join-code" data-i18n="classCode">Class code</label>
+        <input id="join-code" value="QUEST4" maxlength="12" autocomplete="off" />
+        <label for="join-alias" data-i18n="alias">Alias (not your legal name)</label>
+        <input id="join-alias" data-i18n-ph="aliasPh" placeholder="Scout" maxlength="20" autocomplete="off" />
+      </details>
+      <p class="hint doors-strip" aria-label="Doors">
+        <span data-i18n="d1">One move</span> ·
+        <span data-i18n="d2">More moves</span> ·
+        <span data-i18n="d3">Repeat</span> ·
+        <span data-i18n="d4">Stop</span> ·
+        <span data-i18n="d5">Score</span>
+      </p>
+      <div class="row teacher-row">
+        <button class="btn ghost" id="btn-teacher" type="button" data-i18n="teacher">Teacher</button>
+        <a class="hint" href="teacher.html" data-i18n="notes">Notes</a>
       </div>
-      <p class="hint" style="margin-top:12px;" data-i18n="ferpaJoin">Chrome on a Chromebook. Alias only. Do not type IEP, 504, or a legal name.</p>
-      <p class="hint"><a href="teacher.html" data-i18n="notes">Notes</a> · Aide / teacher</p>
+      <p class="hint" data-i18n="ferpaJoin">Chrome on a Chromebook. Alias only. Do not type IEP, 504, or a legal name.</p>
     </div>
   </section>
   <section id="screen-student" class="wrap one-board hidden">
@@ -56,7 +56,13 @@
     <div class="quest-bar">
       <div>
         <h2 id="quest-title">Door 1 · One command</h2>
-        <p class="hint" id="door-idea">A command is one thing the bot does.</p>
+        <div class="idea-row">
+          <p class="hint" id="door-idea">A command is one thing the bot does.</p>
+          <button class="btn speak" id="btn-speak" type="button" aria-pressed="false">
+            <svg class="picto-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06a9 9 0 0 0 0-17.54z"/></svg>
+            <span id="speak-label">Speak</span>
+          </button>
+        </div>
       </div>
       <div class="heat" title="Shop heat">
         <span id="door-n">Door 1 / 5</span>
@@ -175,7 +181,8 @@
       </div>
     </div>
   </section>
-  <p class="footer-note" data-i18n="footer">Koderized KZ 1.11.0 · alias only · not a district SIS · no IEP/504 in this cart</p>
+  <p class="footer-note" data-i18n="footer">Koderized KZ 1.16.1 · alias only · not a district SIS · no IEP/504 in this cart</p>
+  <script src="speak.js"></script>
   <script src="origin.js"></script>
   <script src="i18n.js"></script>
   <script src="app.js"></script>

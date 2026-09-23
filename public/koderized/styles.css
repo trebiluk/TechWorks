@@ -84,6 +84,21 @@ body.big-type h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); }
   padding: 10px 14px; margin: 0 0 12px;
 }
 .guide-copy { flex: 1; min-width: 160px; }
+.btn.speak {
+  min-width: 44px; min-height: 44px; padding: 8px 12px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  background: var(--gold); color: var(--navy-2); flex-shrink: 0;
+}
+.btn.speak.on { background: var(--navy); color: #fff; }
+.btn.speak .picto-svg { width: 22px; height: 22px; }
+.idea-row { display: flex; align-items: center; gap: 8px; }
+.idea-row .hint { margin: 0; flex: 1; }
+#door-idea.speaking, .guide-line.speaking, .guide-sub.speaking {
+  background: rgba(224, 180, 90, .22);
+  border-radius: 6px;
+  box-shadow: inset 3px 0 0 var(--gold);
+}
+
 .guide-kicker { margin: 0; font-size: 12px; font-weight: 800; color: var(--gold); text-transform: uppercase; }
 .guide-line { margin: 2px 0 0; font-size: clamp(1.15rem, 3vw, 1.5rem); font-weight: 900; color: #fff; }
 .guide-ex { text-align: center; }
@@ -291,3 +306,144 @@ body.big-type canvas#world {
   max-height: min(26vh, 200px);
 }
 body.big-type .top-tools .btn { min-height: 48px; }
+
+
+/* CUT A touch-first — hide keycaps (KZ 1.16.1: also phone-width + any-pointer coarse) */
+@media (pointer: coarse), (any-pointer: coarse), (hover: none), (max-width: 640px) {
+  .k { display: none !important; }
+}
+body.touch-ui .k { display: none !important; }
+body.touch-ui .btn.go,
+body.touch-ui .btn.gold,
+body.touch-ui #btn-predict,
+body.touch-ui #btn-run-example,
+body.touch-ui #btn-run-mine,
+body.touch-ui #btn-probe,
+body.touch-ui #btn-student {
+  min-height: 52px;
+  min-width: 48px;
+  font-size: 1.05rem;
+  padding: 12px 16px;
+}
+body.touch-ui .student-tools {
+  gap: 10px;
+}
+@media (max-width: 640px) and (orientation: landscape) {
+  body.touch-ui .student-tools {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    background: var(--paper, #fff);
+    padding: 8px 0 env(safe-area-inset-bottom, 8px);
+  }
+}
+
+
+/* CUT B arena door */
+.arena-door {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  min-height: calc(100dvh - 72px);
+}
+.arena-stage {
+  position: relative;
+  min-height: min(55dvh, 420px);
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2px solid #234;
+  background: #071018;
+}
+.arena-stage canvas {
+  width: 100%;
+  height: 100%;
+  min-height: min(55dvh, 420px);
+  display: block;
+  object-fit: cover;
+}
+.arena-tag {
+  position: absolute;
+  left: 16px;
+  bottom: 12px;
+  margin: 0;
+  font-weight: 900;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  color: #e8f7ff;
+  text-shadow: 0 2px 0 #000;
+  pointer-events: none;
+}
+.arena-join {
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: center;
+}
+.btn.xl {
+  width: 100%;
+  min-height: 56px;
+  font-size: 1.25rem;
+  font-weight: 900;
+  padding: 14px 18px;
+}
+.join-more {
+  margin: 14px 0 8px;
+  text-align: left;
+}
+.join-more summary {
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--muted, #64748b);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.join-more[open] summary { margin-bottom: 8px; }
+.doors-strip {
+  margin: 8px 0 4px;
+  font-size: 0.9rem;
+}
+.teacher-row {
+  justify-content: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+@media (min-width: 900px) {
+  .arena-door {
+    grid-template-columns: 1.4fr 0.9fr;
+    align-items: center;
+  }
+  .arena-stage { min-height: min(62dvh, 520px); }
+  .arena-stage canvas { min-height: min(62dvh, 520px); }
+}
+/* student: stage bias */
+.one-board .play {
+  display: grid;
+  gap: 12px;
+}
+@media (min-width: 900px) {
+  .one-board .play {
+    grid-template-columns: 1.3fr 0.9fr;
+    align-items: start;
+  }
+  .one-board .card.stage {
+    min-height: 55dvh;
+  }
+}
+
+
+/* CUT C plate */
+.callout {
+  font-size: clamp(1.35rem, 4vw, 2rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: rgba(7, 16, 24, 0.82);
+  border: 2px solid #345;
+}
+.callout.good {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+}
+.callout.bad {
+  border-color: #f87171;
+}

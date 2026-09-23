@@ -1,4 +1,4 @@
-/* KZ 1.11.0 juice — slow example loop, pictogram floor, bilingual shout. */
+/* KZ 1.16.1 juice — slow example loop, pictogram floor, bilingual shout. */
 (function () {
   const $ = id => document.getElementById(id);
   let animFrame = 0;
@@ -107,11 +107,21 @@
     const el = $("callout");
     if (!el) return;
     const p = pack();
-    const map = { SIT: p.sit || "SIT", CRATE: p.crate || "CRATE", ROLL: p.rollShout || "ROLL", SAFE: p.safe || "SAFE", BONK: p.bonk || "BONK" };
+    /* CUT C run-loop */
+    const map = {
+      SIT: p.sit || "SITS",
+      CRATE: p.crate || "CLEAR",
+      ROLL: p.rollShout || "ROLL",
+      SAFE: p.safe || "SAFE",
+      BONK: p.bonk || "BONK",
+      CLEAR: p.clear || "CLEAR",
+      TRY: p.tryAgain || "TRY AGAIN"
+    };
     el.textContent = map[text] || text;
     el.className = "callout pop " + (kind || "");
     clearTimeout(shout.t);
-    shout.t = setTimeout(() => el.classList.add("hidden"), 1100);
+    const hold = text === "CLEAR" || text === "CRATE" ? 1600 : text === "TRY" || text === "BONK" ? 1200 : 1100;
+    shout.t = setTimeout(() => el.classList.add("hidden"), hold);
   }
   function shake() {
     const frame = document.querySelector(".stage-frame");
@@ -126,9 +136,9 @@
     if (calm) {
       window.draw($("world"), sim);
       const atCrate = sim.goalX != null && sim.x === sim.goalX;
-      if (atCrate) shout("CRATE", "good");
+      if (atCrate) shout("CLEAR", "good");
       else if (sim.stopped && sim.hitWall) shout("SAFE", "good");
-      else if (sim.hitWall) shout("BONK", "bad");
+      else if (sim.hitWall) { shout("BONK", "bad"); setTimeout(function(){ shout("TRY", "bad"); }, 900); }
       else if ((sim.path || []).length <= 1) shout("SIT", "");
       else shout("ROLL", "good");
       return;
@@ -139,15 +149,15 @@
       const last = i >= sim.path.length - 1;
       if (last) {
         const atCrate = sim.goalX != null && sim.x === sim.goalX;
-        if (atCrate) shout("CRATE", "good");
+        if (atCrate) shout("CLEAR", "good");
         else if (sim.stopped && sim.hitWall) shout("SAFE", "good");
-        else if (sim.hitWall) { shout("BONK", "bad"); shake(); }
+        else if (sim.hitWall) { shout("BONK", "bad"); shake(); setTimeout(function(){ shout("TRY", "bad"); }, 900); }
         else if ((sim.path || []).length <= 1) shout("SIT", "");
         else shout("ROLL", "good");
         return;
       }
       i += 1;
-      play.timer = setTimeout(tick, 200);
+      play.timer = setTimeout(tick, 280); /* CUT C slower Watch */
     }
     tick();
   }

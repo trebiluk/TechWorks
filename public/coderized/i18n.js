@@ -1,4 +1,4 @@
-/* KZ 1.11.0 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
+/* KZ 1.16.1 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
 window.I18N = {
   en: {
     lang: "en",
@@ -48,9 +48,13 @@ window.I18N = {
     score: "score",
     cost: "One cost",
     look: "Look",
+    speak: "Speak",
+    stopSpeak: "Stop",
     example: "Example",
-    footer: "Koderized KZ 1.11.0 · alias only · not a SIS · no IEP/504",
+    footer: "Koderized KZ 1.16.1 · alias only · not a SIS · no IEP/504",
     sit: "SIT", crate: "CRATE", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
+    clear: "CLEAR",
+    tryAgain: "TRY AGAIN",
     doors: {
       zero: {
         title: "Door 1 · One move",
@@ -215,8 +219,10 @@ window.I18N = {
     score: "sumar",
     cost: "Un costo",
     look: "Mira",
+    speak: "Leer",
+    stopSpeak: "Parar",
     example: "Ejemplo",
-    footer: "Koderized KZ 1.11.0 · solo apodo · no es SIS · sin IEP/504",
+    footer: "Koderized KZ 1.16.1 · solo apodo · no es SIS · sin IEP/504",
     sit: "SIT", crate: "CAJA", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     doors: {
       zero: {
