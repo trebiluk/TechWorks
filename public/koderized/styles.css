@@ -308,7 +308,7 @@ body.big-type canvas#world {
 body.big-type .top-tools .btn { min-height: 48px; }
 
 
-/* CUT A touch-first — hide keycaps (KZ 1.16.1: also phone-width + any-pointer coarse) */
+/* CUT A touch-first — hide keycaps (KZ 1.18.0: also phone-width + any-pointer coarse) */
 @media (pointer: coarse), (any-pointer: coarse), (hover: none), (max-width: 640px) {
   .k { display: none !important; }
 }
@@ -446,4 +446,70 @@ body.touch-ui .student-tools {
 }
 .callout.bad {
   border-color: #f87171;
+}
+
+/* KZ 1.18.0 — OK and Watch stay fat. Keycaps hide on a phone. */
+#btn-predict,
+#btn-run-example {
+  min-height: 48px;
+  min-width: 88px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+}
+@media (max-width: 900px) {
+  .k { display: none !important; }
+}
+
+/* KZ 1.18.0 — Guess Door 1 plates. Code, then Options, then Output. */
+.one-board .play,
+.zones {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+@media (min-width: 900px) {
+  .one-board .play {
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: none;
+  }
+  .one-board .card.stage {
+    min-height: 0;
+  }
+}
+.zone {
+  border: 2px solid #1b365d;
+  margin: 0;
+}
+.zone-label {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0 10px;
+  min-height: 32px;
+  padding: 4px 12px;
+  border-radius: 8px;
+  background: #e0b45a;
+  color: #1b365d;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.zone-ask { margin: 0 0 8px; }
+#zone-options .choice,
+#zone-options .palette .btn {
+  min-height: 48px;
+}
+.block.empty.blank-code {
+  min-height: 48px;
+  padding: 14px 12px;
+  background: #f8fafc;
+  color: #1b365d;
+  border: 2px dashed #1b365d;
+  font-weight: 800;
+  text-align: center;
+  justify-content: center;
 }
