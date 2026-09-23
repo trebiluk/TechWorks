@@ -1,4 +1,4 @@
-/* KZ 1.18.0 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
+/* KZ 1.19.0 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
 window.I18N = {
   en: {
     lang: "en",
@@ -54,7 +54,7 @@ window.I18N = {
     speak: "Speak",
     stopSpeak: "Stop",
     example: "Example",
-    footer: "Koderized KZ 1.18.0 · alias only",
+    footer: "Koderized KZ 1.19.0 · alias only",
     ferpaTeacher: "Teachers only. Alias only. Do not store an IEP, a 504, or a legal name.",
     sit: "SIT", crate: "CRATE", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     clear: "CLEAR",
@@ -229,7 +229,7 @@ window.I18N = {
     speak: "Leer",
     stopSpeak: "Parar",
     example: "Ejemplo",
-    footer: "Koderized KZ 1.18.0 · solo apodo",
+    footer: "Koderized KZ 1.19.0 · solo apodo",
     ferpaTeacher: "Solo maestros. Solo apodo. No guardes un IEP, un 504, ni un nombre legal.",
     sit: "SIT", crate: "CAJA", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     doors: {
