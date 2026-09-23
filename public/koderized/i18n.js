@@ -1,4 +1,4 @@
-/* KZ 1.16.1 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
+/* KZ 1.18.0 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
 window.I18N = {
   en: {
     lang: "en",
@@ -8,7 +8,7 @@ window.I18N = {
     classCode: "Class code",
     alias: "Alias (not a legal name)",
     aliasPh: "Scout",
-    ferpaJoin: "Alias only. No IEP, 504, or legal name.",
+    ferpaJoin: "Alias only. Not a real name.",
     roll: "Start",
     teacher: "Teacher",
     aide: "Aide",
@@ -38,9 +38,12 @@ window.I18N = {
     aideTitle: "Aide card",
     say: "Say",
     tap: "Tap",
-    ferpaAide: "Alias only. No IEP, 504, or legal name.",
+    ferpaAide: "Alias only. Not a real name.",
     winPeriod: "Door 1 is a win today.",
-    emptyList: "Empty. Add one.",
+    emptyList: "No code yet — this program is blank. Pick what the bot does.",
+    zoneCode: "Current code",
+    zoneOptions: "Options",
+    zoneOutput: "Output",
     move: "move",
     repeat: "repeat",
     end: "end",
@@ -51,7 +54,8 @@ window.I18N = {
     speak: "Speak",
     stopSpeak: "Stop",
     example: "Example",
-    footer: "Koderized KZ 1.16.1 · alias only · not a SIS · no IEP/504",
+    footer: "Koderized KZ 1.18.0 · alias only",
+    ferpaTeacher: "Teachers only. Alias only. Do not store an IEP, a 504, or a legal name.",
     sit: "SIT", crate: "CRATE", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     clear: "CLEAR",
     tryAgain: "TRY AGAIN",
@@ -59,7 +63,7 @@ window.I18N = {
       zero: {
         title: "Door 1 · One move",
         idea: "One picture. One tap. The bot does that.",
-        ask: "The list is empty. What does the bot do?",
+        ask: "",
         choices: [
           { p: "sit", t: "1 · It sits." },
           { p: "roll", t: "2 · It rolls alone." },
@@ -73,7 +77,7 @@ window.I18N = {
         ],
         tests: ["Bot moved", "On the crate", "One move"],
         help: {
-          predict: { say: "Empty list. Bot sits. Tap 1.", tap: "1" },
+          predict: { say: "No code yet. Tap 1.", tap: "1" },
           run: { say: "Watch the picture.", tap: "Watch" },
           investigate: { say: "A command is one thing.", tap: "1, then Next" },
           modify: { say: "Tap move. Then GO.", tap: "move, then GO" }
@@ -179,7 +183,7 @@ window.I18N = {
     classCode: "Código de clase",
     alias: "Apodo (no un nombre legal)",
     aliasPh: "Scout",
-    ferpaJoin: "Solo apodo. No IEP, 504, ni nombre legal.",
+    ferpaJoin: "Solo apodo. No es un nombre real.",
     roll: "Empezar",
     teacher: "Maestro",
     aide: "Asistente",
@@ -209,9 +213,12 @@ window.I18N = {
     aideTitle: "Tarjeta",
     say: "Di",
     tap: "Toca",
-    ferpaAide: "Solo apodo. No IEP, 504, ni nombre legal.",
+    ferpaAide: "Solo apodo. No es un nombre real.",
     winPeriod: "La Puerta 1 ya es un logro hoy.",
-    emptyList: "Vacío. Agrega uno.",
+    emptyList: "Aún no hay código — este programa está en blanco. Elige qué hace el bot.",
+    zoneCode: "Código actual",
+    zoneOptions: "Opciones",
+    zoneOutput: "Salida",
     move: "mover",
     repeat: "repetir",
     end: "fin",
@@ -222,13 +229,14 @@ window.I18N = {
     speak: "Leer",
     stopSpeak: "Parar",
     example: "Ejemplo",
-    footer: "Koderized KZ 1.16.1 · solo apodo · no es SIS · sin IEP/504",
+    footer: "Koderized KZ 1.18.0 · solo apodo",
+    ferpaTeacher: "Solo maestros. Solo apodo. No guardes un IEP, un 504, ni un nombre legal.",
     sit: "SIT", crate: "CAJA", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     doors: {
       zero: {
         title: "Puerta 1 · Un mover",
         idea: "Un dibujo. Un toque. El bot lo hace.",
-        ask: "La lista está vacía. ¿Qué hace el bot?",
+        ask: "",
         choices: [
           { p: "sit", t: "1 · Se queda." },
           { p: "roll", t: "2 · Rueda solo." },
@@ -242,7 +250,7 @@ window.I18N = {
         ],
         tests: ["El bot se movió", "En la caja", "Un mover"],
         help: {
-          predict: { say: "Lista vacía. El bot se queda. Toca 1.", tap: "1" },
+          predict: { say: "Aún no hay código. Toca 1.", tap: "1" },
           run: { say: "Mira el dibujo.", tap: "Mira" },
           investigate: { say: "Una orden es una cosa.", tap: "1, luego Next" },
           modify: { say: "Toca mover. Luego GO.", tap: "mover, luego GO" }

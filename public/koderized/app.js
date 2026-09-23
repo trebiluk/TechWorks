@@ -1,4 +1,4 @@
-/* Koderized KZ 1.16.1 — Speak beside the line. Not red until GO. One board. No IEP stored. */
+/* Koderized KZ 1.18.0 — Speak beside the line. Not red until GO. One board. No IEP stored. */
 
 function preferTouchUi() {
   const coarse = window.matchMedia("(pointer: coarse)").matches
@@ -22,7 +22,7 @@ const DOORS = [
     n: 1,
     title: "Door 1 · One command",
     idea: "A command is one thing the bot does.",
-    ask: "The list is empty. What does the bot do?",
+    ask: "",
     choices: [
       { p: "sit", t: "1 · It sits. Nothing happens." },
       { p: "roll", t: "2 · It rolls by itself." },
@@ -170,7 +170,7 @@ const DOORS = [
 /* CUT D — quest packs */
 async function loadQuestPacks() {
   try {
-    const res = await fetch("quests.json?v=1.16.1", { cache: "no-store" });
+    const res = await fetch("quests.json?v=1.18.0", { cache: "no-store" });
     if (!res.ok) return;
     const data = await res.json();
     const packs = (data && data.quests) || [];
@@ -669,8 +669,8 @@ function renderBlocks(el, program, editable) {
   });
   if (!program.length) {
     const empty = document.createElement("div");
-    empty.className = "block empty";
-    empty.textContent = L().emptyList || "Empty list. Add a command.";
+    empty.className = "block empty blank-code";
+    empty.textContent = L().emptyList || "No code yet — this program is blank. Pick what the bot does.";
     el.appendChild(empty);
   }
 }
@@ -709,7 +709,7 @@ function renderStudent() {
   $("btn-predict").disabled = s.predicted || st.frozen || !s.predict;
   $("btn-run-example").disabled = !s.predicted || st.frozen;
   $("choices").classList.toggle("hidden", walk || s.predicted || s.phase !== "predict");
-  if ($("ask")) $("ask").classList.toggle("hidden", walk);
+  if ($("ask")) $("ask").classList.toggle("hidden", walk || !(loc.ask && String(loc.ask).trim()));
   $("probe-wrap").classList.toggle("hidden", walk || s.phase !== "investigate");
   if ($("btn-predict")) $("btn-predict").parentElement.classList.toggle("hidden", walk);
   $("modify-wrap").classList.toggle("hidden", !(s.phase === "modify" || s.phase === "make"));

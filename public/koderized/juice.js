@@ -1,4 +1,4 @@
-/* KZ 1.16.1 juice — slow example loop, pictogram floor, bilingual shout. */
+/* KZ 1.18.0 juice — slow example loop, pictogram floor, bilingual shout. */
 (function () {
   const $ = id => document.getElementById(id);
   let animFrame = 0;
