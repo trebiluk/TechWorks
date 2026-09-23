@@ -2,7 +2,7 @@
   "name": "Koderized",
   "short_name": "Koderized",
   "id": "https://tw.kulibert.net/koderized/",
-  "description": "Chromebook coding arena for middle school CTE/STEM. Start here. Alias only. Version KZ 1.18.0.",
+  "description": "Chromebook coding arena for middle school CTE/STEM. Start here. Alias only. Version KZ 1.19.0.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

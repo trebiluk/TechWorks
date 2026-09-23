@@ -1,4 +1,4 @@
-/* Koderized KZ 1.18.0 — Speak beside the line. Not red until GO. One board. No IEP stored. */
+/* Koderized KZ 1.19.0 — Speak beside the line. Not red until GO. One board. No IEP stored. */
 
 function preferTouchUi() {
   const coarse = window.matchMedia("(pointer: coarse)").matches
@@ -170,7 +170,7 @@ const DOORS = [
 /* CUT D — quest packs */
 async function loadQuestPacks() {
   try {
-    const res = await fetch("quests.json?v=1.18.0", { cache: "no-store" });
+    const res = await fetch("quests.json?v=1.19.0", { cache: "no-store" });
     if (!res.ok) return;
     const data = await res.json();
     const packs = (data && data.quests) || [];
