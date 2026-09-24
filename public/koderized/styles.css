@@ -308,7 +308,7 @@ body.big-type canvas#world {
 body.big-type .top-tools .btn { min-height: 48px; }
 
 
-/* CUT A touch-first — hide keycaps (KZ 1.19.0: also phone-width + any-pointer coarse) */
+/* CUT A touch-first — hide keycaps (KZ 1.20.0: also phone-width + any-pointer coarse) */
 @media (pointer: coarse), (any-pointer: coarse), (hover: none), (max-width: 640px) {
   .k { display: none !important; }
 }
@@ -448,7 +448,7 @@ body.touch-ui .student-tools {
   border-color: #f87171;
 }
 
-/* KZ 1.19.0 — OK and Watch stay fat. Keycaps hide on a phone. */
+/* KZ 1.20.0 — OK and Watch stay fat. Keycaps hide on a phone. */
 #btn-predict,
 #btn-run-example {
   min-height: 48px;
@@ -463,7 +463,7 @@ body.touch-ui .student-tools {
   .k { display: none !important; }
 }
 
-/* KZ 1.19.0 — Guess Door 1 plates. Code, then Options, then Output. */
+/* KZ 1.20.0 — Guess Door 1 plates. Code, then Options, then Output. */
 .one-board .play,
 .zones {
   display: flex;

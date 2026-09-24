@@ -1,4 +1,4 @@
-/* KZ 1.19.0 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
+/* KZ 1.20.0 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
 window.I18N = {
   en: {
     lang: "en",
@@ -40,6 +40,7 @@ window.I18N = {
     tap: "Tap",
     ferpaAide: "Alias only. Not a real name.",
     winPeriod: "Door 1 is a win today.",
+    didIt: "You did it.",
     emptyList: "No code yet — this program is blank. Pick what the bot does.",
     zoneCode: "Current code",
     zoneOptions: "Options",
@@ -54,7 +55,7 @@ window.I18N = {
     speak: "Speak",
     stopSpeak: "Stop",
     example: "Example",
-    footer: "Koderized KZ 1.19.0 · alias only",
+    footer: "Koderized KZ 1.20.0 · alias only",
     ferpaTeacher: "Teachers only. Alias only. Do not store an IEP, a 504, or a legal name.",
     sit: "SIT", crate: "CRATE", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     clear: "CLEAR",
@@ -77,7 +78,7 @@ window.I18N = {
         ],
         tests: ["Bot moved", "On the crate", "One move"],
         help: {
-          predict: { say: "No code yet. Tap 1.", tap: "1" },
+          predict: { say: "No code yet. Tap 1.", tap: "Tap 1" },
           run: { say: "Watch the picture.", tap: "Watch" },
           investigate: { say: "A command is one thing.", tap: "1, then Next" },
           modify: { say: "Tap move. Then GO.", tap: "move, then GO" }
@@ -215,6 +216,7 @@ window.I18N = {
     tap: "Toca",
     ferpaAide: "Solo apodo. No es un nombre real.",
     winPeriod: "La Puerta 1 ya es un logro hoy.",
+    didIt: "Lo lograste.",
     emptyList: "Aún no hay código — este programa está en blanco. Elige qué hace el bot.",
     zoneCode: "Código actual",
     zoneOptions: "Opciones",
@@ -229,7 +231,7 @@ window.I18N = {
     speak: "Leer",
     stopSpeak: "Parar",
     example: "Ejemplo",
-    footer: "Koderized KZ 1.19.0 · solo apodo",
+    footer: "Koderized KZ 1.20.0 · solo apodo",
     ferpaTeacher: "Solo maestros. Solo apodo. No guardes un IEP, un 504, ni un nombre legal.",
     sit: "SIT", crate: "CAJA", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     doors: {
@@ -250,7 +252,7 @@ window.I18N = {
         ],
         tests: ["El bot se movió", "En la caja", "Un mover"],
         help: {
-          predict: { say: "Aún no hay código. Toca 1.", tap: "1" },
+          predict: { say: "Aún no hay código. Toca 1.", tap: "Toca 1" },
           run: { say: "Mira el dibujo.", tap: "Mira" },
           investigate: { say: "Una orden es una cosa.", tap: "1, luego Next" },
           modify: { say: "Toca mover. Luego GO.", tap: "mover, luego GO" }
