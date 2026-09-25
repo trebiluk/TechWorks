@@ -23,14 +23,12 @@ export function ClubPulseCard({ pulse, onOpen }: { pulse: ClubPulse; onOpen?: ()
       type="button"
       onClick={onOpen}
       className={cn(
-        "flex w-full items-center gap-3 rounded-full px-3 py-1.5 text-left",
+        "tw-tap flex min-h-11 w-full flex-col items-start justify-center gap-0.5 rounded-2xl px-3 py-2 text-left",
         cancel ? "bg-elevated" : hot ? (pulse.kind === "cleanup" ? "bg-cleanup text-accent-fg" : "bg-accent text-bg") : "bg-elevated",
       )}
     >
-      <span className="min-w-0 truncate font-display text-sm font-semibold">
-        {pulse.title}
-        <span className={cn("ml-2 font-sans text-xs font-medium", hot || cancel ? "opacity-80" : "text-muted")}>{pulse.sub}</span>
-      </span>
+      <span className="w-full truncate font-display text-sm font-semibold">{pulse.title}</span>
+      <span className={cn("w-full truncate font-sans text-xs font-medium", hot || cancel ? "opacity-80" : "text-muted")}>{pulse.sub}</span>
     </button>
   );
 }

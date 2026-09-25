@@ -6,6 +6,11 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.116 — 2026-09-25
+
+- Next club puts the day on one line and the time on the next.
+- A phone stacks the hour over the clock so beat 4 is readable. The period name stays inside the Now bar. The white sweep on that bar is off.
+
 ## 1.92.115 — 2026-09-25
 
 - The bottom ticker fades at the edges instead of chopping the first letters. It still moves, and it holds still if motion is reduced.

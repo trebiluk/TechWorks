@@ -1,8 +1,13 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.115. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.116. -->
 
 # TechWorks changelog
 
-App version **1.92.115**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.116**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.116 — 2026-09-25
+
+- Next club puts the day on one line and the time on the next.
+- A phone stacks the hour over the clock so beat 4 is readable. The period name stays inside the Now bar. The white sweep on that bar is off.
 
 ## 1.92.115 — 2026-09-25
 
