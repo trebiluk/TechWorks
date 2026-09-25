@@ -3314,13 +3314,13 @@ html[dir="rtl"] .board-root { direction: rtl; }
   min-height: 2.75rem;
   height: 2.75rem;
   overflow: hidden;
-  --cut: 10px;
-  clip-path: polygon(var(--cut) 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%);
   background:
     linear-gradient(90deg, color-mix(in oklab, var(--color-accent) 24%, var(--color-bg)), var(--color-bg) 42%, color-mix(in oklab, var(--color-accent) 18%, var(--color-bg)));
   box-shadow:
     inset 0 1px 0 color-mix(in oklab, var(--color-accent) 72%, transparent),
     0 -14px 30px -12px color-mix(in oklab, var(--color-accent) 55%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 1.35rem, #000 calc(100% - 1.35rem), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 1.35rem, #000 calc(100% - 1.35rem), transparent);
 }
 .tw-now-sub {
   font-size: 0.95rem;
@@ -3343,23 +3343,43 @@ html[dir="rtl"] .board-root { direction: rtl; }
 }
 .tw-ticker-track {
   display: flex;
-  gap: 2.75rem;
   width: max-content;
-  padding: 0.5rem 1.5rem;
+  padding: 0.55rem 0;
   font-family: var(--font-display);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-accent);
-  animation: tw-ticker 180s linear infinite;
+  animation: tw-ticker 90s linear infinite;
 }
 .tw-ticker-track span {
   white-space: nowrap;
+  padding-inline: 2.75rem;
 }
 @keyframes tw-ticker {
   from { transform: translateX(0); }
-  to { transform: translateX(-25%); }
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tw-ticker {
+    -webkit-mask-image: none;
+    mask-image: none;
+    padding-inline: 0.85rem;
+  }
+  .tw-ticker-track {
+    animation: none;
+    width: 100%;
+  }
+  .tw-ticker-track span[aria-hidden] {
+    display: none;
+  }
+  .tw-ticker-track span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-inline: 0;
+  }
 }
 .tw-kit {
   font-size: clamp(0.85rem, 3.2cqh, 1.15rem);

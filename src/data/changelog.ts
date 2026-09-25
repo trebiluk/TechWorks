@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.115 — 2026-09-25
+
+- The bottom ticker fades at the edges instead of chopping the first letters. It still moves, and it holds still if motion is reduced.
+
 ## 1.92.114 — 2026-09-24
 
 - Wall beats stay one size. A long line shrinks to fit the card instead of getting cut off. Zoom no longer blows the type up.

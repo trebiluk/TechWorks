@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.114. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.115. -->
 
 # TechWorks changelog
 
-App version **1.92.114**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.115**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.115 — 2026-09-25
+
+- The bottom ticker fades at the edges instead of chopping the first letters. It still moves, and it holds still if motion is reduced.
 
 ## 1.92.114 — 2026-09-24
 

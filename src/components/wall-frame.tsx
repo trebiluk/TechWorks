@@ -91,8 +91,6 @@ export function WallFrame({
           <div className="tw-ticker-track">
             <span>{line}</span>
             <span aria-hidden>{line}</span>
-            <span aria-hidden>{line}</span>
-            <span aria-hidden>{line}</span>
           </div>
         </div>
       ) : null}
