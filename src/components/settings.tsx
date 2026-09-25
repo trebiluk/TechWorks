@@ -28,6 +28,40 @@ import { VaultBoard } from "@/components/vault-board";
 import { TEACH_PACKS, setDefaultTeachPack } from "@/lib/teach";
 import { Fold } from "@/components/fold";
 
+const TABLE_CARD_HTML = `<!doctype html><html><head><meta charset="utf-8"><title>Mr. K table card</title>
+<style>
+@page { size: letter landscape; margin: 0.4in; }
+body { margin: 0; font-family: Arial, sans-serif; color: #0b1c33; }
+.sheet { display: flex; flex-direction: column; min-height: 7.6in; }
+.face { flex: 1; padding: 0.28in 0.2in; background: linear-gradient(#0b1c33,#0b1c33) left / 0.16in 100% no-repeat, #f6f3ec; }
+.back { transform: rotate(180deg); }
+.bar { display: flex; justify-content: space-between; border-bottom: 3px solid #22d3ee; padding-bottom: 6px; font-weight: 700; letter-spacing: 0.14em; font-size: 12px; }
+h1 { margin: 10px 0 0; font-size: 64px; line-height: 0.9; }
+.legal { margin: 8px 0 0; font-size: 20px; font-weight: 700; }
+.role { margin: 4px 0 0; font-size: 14px; }
+.chips { margin-top: 16px; }
+.chip { display: inline-block; border: 1.5px solid #0b1c33; border-radius: 999px; padding: 4px 10px; margin-right: 6px; font-weight: 700; font-size: 12px; }
+.fold { border-top: 1px dashed #89a; }
+</style></head><body><div class="sheet">
+<section class="face back"><div class="bar"><span>TECHWORKS</span><span>OPEN HOUSE · ROOM 13</span></div><h1>Mr. K</h1><p class="legal">Richard Kulibert</p><p class="role">Technology Education · Solvay</p><p class="chips"><span class="chip">Tech 6</span><span class="chip">Tech 7</span><span class="chip">Tech 8</span><span class="chip">Study Hall</span></p></section>
+<div class="fold"></div>
+<section class="face"><div class="bar"><span>TECHWORKS</span><span>OPEN HOUSE · ROOM 13</span></div><h1>Mr. K</h1><p class="legal">Richard Kulibert</p><p class="role">Technology Education · Solvay</p><p class="chips"><span class="chip">Tech 6</span><span class="chip">Tech 7</span><span class="chip">Tech 8</span><span class="chip">Study Hall</span></p></section>
+</div></body></html>`;
+
+function printTableCard(onNote: (note: string) => void) {
+  const card = window.open("", "_blank", "noopener,noreferrer");
+  if (!card) {
+    onNote("Pop-up blocked. Allow pop-ups, then tap Print table card again.");
+    return;
+  }
+  card.document.open();
+  card.document.write(TABLE_CARD_HTML);
+  card.document.close();
+  card.focus();
+  window.setTimeout(() => card.print(), 300);
+  onNote("Print dialog open. Fold on the dashed line.");
+}
+
 export const SETTINGS_TABS = [
   { id: "vault", label: "Records" },
   { id: "roster", label: "Roster" },
@@ -87,6 +121,7 @@ export function SettingsBody({
   const [leadXp, setLeadXp] = useState(() => storedLeadXp());
   const [demoId, setDemoId] = useState<DemoId>(() => storedDemo());
   const [rosterOpen, setRosterOpen] = useState(false);
+  const [printNote, setPrintNote] = useState("");
   const [shopOpen, setShopOpen] = useState(false);
 
   return (
@@ -444,8 +479,16 @@ export function SettingsBody({
                     <button type="button" onClick={() => onOpenId(HOUSE_MRK)} className="tw-tap min-h-11 rounded-full bg-elevated px-4 text-sm font-semibold">
                       Mr. K
                     </button>
+                    <button type="button" onClick={() => printTableCard(setPrintNote)} className="tw-tap min-h-11 rounded-full bg-accent px-4 text-sm font-semibold text-accent-fg">
+                      Print table card
+                    </button>
                   </div>
-                ) : null}
+                ) : (
+                  <button type="button" onClick={() => printTableCard(setPrintNote)} className="tw-tap mt-3 min-h-11 rounded-full bg-accent px-4 text-sm font-semibold text-accent-fg">
+                    Print table card
+                  </button>
+                )}
+                {printNote ? <p className="mt-2 text-sm font-semibold">{printNote}</p> : null}
                 <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted">{COPYRIGHT_LONG}</p>
                 <p className="mt-3 text-sm text-muted">Help <strong>?</strong> is for every role. Teachers: Download help file and Download technical manual from that panel. Teacher PIN is the one you set — never 1111. Crew 2222 stays off the student About card.</p>
                 <p className="mt-6 text-sm text-muted">Workshop noise for the projector. Opens in a new tab.</p>

@@ -23,21 +23,16 @@ export function KitChip({ kit }: { kit: string }) {
 }
 
 function fitAgendaLine(box: HTMLElement, line: HTMLElement) {
-  if (box.clientHeight < 32) return;
-  const cap = Math.min(72, Math.max(20, box.clientHeight * 0.58));
-  let lo = 16;
-  let hi = cap;
-  let best = 16;
-  for (let i = 0; i < 8; i++) {
-    const mid = (lo + hi) / 2;
-    line.style.fontSize = `${mid}px`;
-    line.style.lineHeight = "1.12";
-    if (box.scrollHeight <= box.clientHeight + 1) {
-      best = mid;
-      lo = mid;
-    } else hi = mid;
+  line.style.fontSize = "";
+  const room = box.clientHeight - line.offsetTop;
+  if (room < 24) return;
+  let size = parseFloat(getComputedStyle(line).fontSize);
+  if (!Number.isFinite(size)) return;
+  line.style.lineHeight = "1.15";
+  for (let i = 0; i < 10 && line.scrollHeight > room + 1 && size > 15; i++) {
+    size = Math.max(15, size * 0.88);
+    line.style.fontSize = `${Math.round(size * 10) / 10}px`;
   }
-  line.style.fontSize = `${Math.round(best * 10) / 10}px`;
 }
 
 function AgendaBody({ text }: { text: string }) {

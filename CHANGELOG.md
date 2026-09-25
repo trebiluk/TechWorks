@@ -1,8 +1,13 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.113. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.114. -->
 
 # TechWorks changelog
 
-App version **1.92.113**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.114**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.114 — 2026-09-24
+
+- Wall beats stay one size. A long line shrinks to fit the card instead of getting cut off. Zoom no longer blows the type up.
+- Teachers can print an open-house table card from Admin → Data → About. Kids never see that card.
 
 ## 1.92.113 — 2026-09-23
 

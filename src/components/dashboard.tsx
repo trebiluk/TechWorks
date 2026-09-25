@@ -224,7 +224,7 @@ export const Dashboard = memo(function Dashboard({
           <p className="tw-fill-hero mt-0.5 font-display font-semibold tracking-tight">
             {clock?.live ? `P${live}` : nxt ? `P${nxt.period}` : wallJob.question ? `P${shown}` : t("done")}
           </p>
-          <p className="tw-fill-line mt-1 truncate text-muted">
+          <p className="tw-now-sub mt-1 text-muted">
             {clock?.live
               ? `${periodTitle(live!, bells)} · ${formatBell(clock.start)}–${formatBell(clock.end)}`
               : nxt

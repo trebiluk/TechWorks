@@ -6,6 +6,11 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.114 — 2026-09-24
+
+- Wall beats stay one size. A long line shrinks to fit the card instead of getting cut off. Zoom no longer blows the type up.
+- Teachers can print an open-house table card from Admin → Data → About. Kids never see that card.
+
 ## 1.92.113 — 2026-09-23
 
 - Wall Berty sits in a small corner so the hour can use the plate. The projector side is just Now. Schedule and the empty lead board stay in Arrange.
