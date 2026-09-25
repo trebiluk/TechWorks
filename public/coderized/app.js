@@ -1,4 +1,4 @@
-/* Koderized KZ 1.16.1 — Speak beside the line. Not red until GO. One board. No IEP stored. */
+/* Koderized KZ 1.21.0 — Speak beside the line. Not red until GO. One board. No IEP stored. */
 
 function preferTouchUi() {
   const coarse = window.matchMedia("(pointer: coarse)").matches
@@ -22,7 +22,7 @@ const DOORS = [
     n: 1,
     title: "Door 1 · One command",
     idea: "A command is one thing the bot does.",
-    ask: "The list is empty. What does the bot do?",
+    ask: "",
     choices: [
       { p: "sit", t: "1 · It sits. Nothing happens." },
       { p: "roll", t: "2 · It rolls by itself." },
@@ -170,7 +170,7 @@ const DOORS = [
 /* CUT D — quest packs */
 async function loadQuestPacks() {
   try {
-    const res = await fetch("quests.json?v=1.16.1", { cache: "no-store" });
+    const res = await fetch("quests.json?v=1.21.0", { cache: "no-store" });
     if (!res.ok) return;
     const data = await res.json();
     const packs = (data && data.quests) || [];
@@ -293,29 +293,29 @@ function walkHint(s) {
   if (d.id === "zero") {
     if (!p.some(b => b.t === "move")) return { say: loc.help.modify && loc.help.modify.say, tap: tapMove, id: "pal-move" };
     if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: tapGo, id: "btn-run-mine" };
-    return { say: pack.winPeriod, tap: tapNext, id: "btn-next-door" };
+    return { say: tapNext, tap: (pack.didIt || "You did it."), id: "btn-next-door" };
   }
   if (d.id === "line") {
     const moves = p.filter(b => b.t === "move").length;
     if (moves < 4) return { say: loc.help.modify && loc.help.modify.say, tap: tapMove, id: "pal-move" };
     if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: tapGo, id: "btn-run-mine" };
-    return { say: pack.winPeriod, tap: tapNext, id: "btn-next-door" };
+    return { say: tapNext, tap: (pack.didIt || "You did it."), id: "btn-next-door" };
   }
   if (d.id === "loop") {
     const rep = p.find(b => b.t === "repeat");
     if (!rep) return { say: loc.help.modify && loc.help.modify.say, tap: tapRep, id: "pal-repeat" };
     if (Number(rep.n) !== 4) return { say: loc.help.modify && loc.help.modify.say, tap: "4", id: null, poke: true };
     if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: tapGo, id: "btn-run-mine" };
-    return { say: pack.winPeriod, tap: tapNext, id: "btn-next-door" };
+    return { say: tapNext, tap: (pack.didIt || "You did it."), id: "btn-next-door" };
   }
   if (d.id === "wall") {
     if (!p.some(b => b.t === "if-wall-stop")) return { say: loc.help.modify && loc.help.modify.say, tap: tapStop, id: "pal-stop" };
     if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: tapGo, id: "btn-run-mine" };
-    return { say: pack.winPeriod, tap: tapNext, id: "btn-next-door" };
+    return { say: tapNext, tap: (pack.didIt || "You did it."), id: "btn-next-door" };
   }
   if (!p.some(b => b.t === "if-wall-score")) return { say: loc.help.modify && loc.help.modify.say, tap: tapScore, id: "pal-score" };
   if (!ready) return { say: loc.help.modify && loc.help.modify.say, tap: tapGo, id: "btn-run-mine" };
-  return { say: pack.winPeriod, tap: tapDone, id: null };
+  return { say: tapDone, tap: (pack.didIt || "You did it."), id: null };
 }
 function glow(id, poke) {
   document.querySelectorAll(".glow").forEach(el => el.classList.remove("glow"));
@@ -590,10 +590,11 @@ function renderChoices(d, s) {
   const loc = doorL(d);
   const box = $("choices");
   box.innerHTML = "";
-  loc.choices.forEach(c => {
+  loc.choices.forEach((c, i) => {
     const b = document.createElement("button");
     b.className = "choice" + (s.predict === c.p ? " picked" : "");
     b.type = "button";
+    if (i === 0) b.id = "choices-next";
     b.setAttribute("data-p", c.p);
     b.appendChild(pictoSvg(PIC[c.p] || "bot"));
     const span = document.createElement("span");
@@ -605,10 +606,11 @@ function renderChoices(d, s) {
   const pb = $("probe-choices") || $("probe-wrap").querySelector(".choices");
   if (pb) {
     pb.innerHTML = "";
-    loc.probes.forEach(c => {
+    loc.probes.forEach((c, i) => {
       const b = document.createElement("button");
       b.className = "choice probe" + (s.probe === c.v ? " picked" : "");
       b.type = "button";
+      if (i === 0) b.id = "probe-next";
       b.setAttribute("data-v", c.v);
       b.appendChild(pictoSvg(PIC[c.v] || "bot"));
       const span = document.createElement("span");
@@ -669,8 +671,8 @@ function renderBlocks(el, program, editable) {
   });
   if (!program.length) {
     const empty = document.createElement("div");
-    empty.className = "block empty";
-    empty.textContent = L().emptyList || "Empty list. Add a command.";
+    empty.className = "block empty blank-code";
+    empty.textContent = L().emptyList || "No code yet — this program is blank. Pick what the bot does.";
     el.appendChild(empty);
   }
 }
@@ -691,10 +693,7 @@ function renderStudent() {
   setTxt("door-idea", loc.idea);
   renderChoices(d, s);
   const walk = s.mode === "walk";
-  if ($("guide")) {
-    const hideGuide = !walk && s.phase === "predict" && s.help !== "aide";
-    $("guide").classList.toggle("hidden", hideGuide);
-  }
+  if ($("guide")) $("guide").classList.remove("hidden");
   if ($("phase-chips")) $("phase-chips").classList.toggle("hidden", walk);
   if ($("btn-aide")) $("btn-aide").setAttribute("aria-pressed", s.help === "aide" ? "true" : "false");
   if ($("btn-walk")) $("btn-walk").setAttribute("aria-pressed", walk ? "true" : "false");
@@ -703,13 +702,19 @@ function renderStudent() {
   const phaseHelp = loc.help[s.phase] || loc.help.modify || { say: "", tap: "" };
   let hint;
   if (walk || s.phase === "modify" || s.phase === "make") hint = walkHint(s);
-  else hint = { say: phaseHelp.say, tap: phaseHelp.tap, id: s.phase === "run" ? "btn-run-example" : null };
+  else {
+    let id = null;
+    if (s.phase === "run") id = "btn-run-example";
+    else if (s.phase === "predict") id = s.predict ? "btn-predict" : "choices-next";
+    else if (s.phase === "investigate") id = s.probe ? "btn-probe" : "probe-next";
+    hint = { say: phaseHelp.say, tap: phaseHelp.tap, id: id };
+  }
   setTxt("aide-say", hint.say || "");
   setTxt("aide-tap", hint.tap || "");
   $("btn-predict").disabled = s.predicted || st.frozen || !s.predict;
   $("btn-run-example").disabled = !s.predicted || st.frozen;
   $("choices").classList.toggle("hidden", walk || s.predicted || s.phase !== "predict");
-  if ($("ask")) $("ask").classList.toggle("hidden", walk);
+  if ($("ask")) $("ask").classList.toggle("hidden", walk || !(loc.ask && String(loc.ask).trim()));
   $("probe-wrap").classList.toggle("hidden", walk || s.phase !== "investigate");
   if ($("btn-predict")) $("btn-predict").parentElement.classList.toggle("hidden", walk);
   $("modify-wrap").classList.toggle("hidden", !(s.phase === "modify" || s.phase === "make"));
