@@ -1,0 +1,602 @@
+{
+  "version": 1,
+  "quests": [
+    {
+      "id": "zero",
+      "n": 1,
+      "title": "Door 1 \u00b7 One command",
+      "idea": "A command is one thing the bot does.",
+      "ask": "",
+      "choices": [
+        {
+          "p": "sit",
+          "t": "1 \u00b7 It sits. Nothing happens."
+        },
+        {
+          "p": "roll",
+          "t": "2 \u00b7 It rolls by itself."
+        },
+        {
+          "p": "vanish",
+          "t": "3 \u00b7 It vanishes."
+        }
+      ],
+      "probeAsk": "What is a command?",
+      "probes": [
+        {
+          "v": "do",
+          "t": "1 \u00b7 One thing the bot does"
+        },
+        {
+          "v": "guess",
+          "t": "2 \u00b7 A lucky guess"
+        },
+        {
+          "v": "wall",
+          "t": "3 \u00b7 The saw wall"
+        }
+      ],
+      "example": [],
+      "starter": [],
+      "palette": [
+        "move"
+      ],
+      "world": {
+        "cols": 10,
+        "rows": 6,
+        "wallX": 99,
+        "goalX": 2,
+        "startX": 1,
+        "startY": 3
+      },
+      "testHints": [
+        "The bot moved",
+        "One step onto the crate",
+        "Exactly one move"
+      ]
+    },
+    {
+      "id": "line",
+      "n": 2,
+      "title": "Door 2 \u00b7 A line of steps",
+      "idea": "Commands run in order, top to bottom.",
+      "ask": "Watch three moves. Where does the bot stop?",
+      "choices": [
+        {
+          "p": "short",
+          "t": "1 \u00b7 Short of the crate"
+        },
+        {
+          "p": "crate",
+          "t": "2 \u00b7 On the crate"
+        },
+        {
+          "p": "past",
+          "t": "3 \u00b7 Past the crate"
+        }
+      ],
+      "probeAsk": "Why was it short?",
+      "probes": [
+        {
+          "v": "few",
+          "t": "1 \u00b7 Not enough moves"
+        },
+        {
+          "v": "order",
+          "t": "2 \u00b7 The order was backwards"
+        },
+        {
+          "v": "wall",
+          "t": "3 \u00b7 A hidden wall"
+        }
+      ],
+      "example": [
+        {
+          "t": "move"
+        },
+        {
+          "t": "move"
+        },
+        {
+          "t": "move"
+        }
+      ],
+      "starter": [
+        {
+          "t": "move"
+        },
+        {
+          "t": "move"
+        },
+        {
+          "t": "move"
+        }
+      ],
+      "palette": [
+        "move"
+      ],
+      "world": {
+        "cols": 10,
+        "rows": 6,
+        "wallX": 99,
+        "goalX": 5,
+        "startX": 1,
+        "startY": 3
+      },
+      "testHints": [
+        "Stops on the crate",
+        "Added at least one more move",
+        "Only moves \u2014 a line"
+      ]
+    },
+    {
+      "id": "loop",
+      "n": 3,
+      "title": "Door 3 \u00b7 Repeat",
+      "idea": "Repeat does the inside many times. Poke the gold number.",
+      "ask": "A long line of moves, or one repeat. Which is the loop?",
+      "choices": [
+        {
+          "p": "line",
+          "t": "1 \u00b7 The long line"
+        },
+        {
+          "p": "repeat",
+          "t": "2 \u00b7 The repeat block"
+        },
+        {
+          "p": "wall",
+          "t": "3 \u00b7 The wall"
+        }
+      ],
+      "probeAsk": "What does the gold number mean?",
+      "probes": [
+        {
+          "v": "times",
+          "t": "1 \u00b7 How many times to repeat"
+        },
+        {
+          "v": "speed",
+          "t": "2 \u00b7 How fast it goes"
+        },
+        {
+          "v": "score",
+          "t": "3 \u00b7 Your score"
+        }
+      ],
+      "example": [
+        {
+          "t": "repeat",
+          "n": 4
+        },
+        {
+          "t": "move"
+        },
+        {
+          "t": "end"
+        }
+      ],
+      "starter": [
+        {
+          "t": "repeat",
+          "n": 2
+        },
+        {
+          "t": "move"
+        },
+        {
+          "t": "end"
+        }
+      ],
+      "palette": [
+        "move",
+        "repeat",
+        "end"
+      ],
+      "world": {
+        "cols": 10,
+        "rows": 6,
+        "wallX": 99,
+        "goalX": 5,
+        "startX": 1,
+        "startY": 3
+      },
+      "testHints": [
+        "Uses a repeat",
+        "Stops on the crate",
+        "Not a huge line of moves"
+      ]
+    },
+    {
+      "id": "wall",
+      "n": 4,
+      "title": "Door 4 \u00b7 Stop",
+      "idea": "If wall \u2192 stop keeps the bot safe.",
+      "ask": "It needs Stop. Watch first. What happens at the wall?",
+      "choices": [
+        {
+          "p": "crash",
+          "t": "1 \u00b7 It crashes"
+        },
+        {
+          "p": "stop",
+          "t": "2 \u00b7 It stops"
+        },
+        {
+          "p": "fly",
+          "t": "3 \u00b7 It flies over"
+        }
+      ],
+      "probeAsk": "Where does Stop go?",
+      "probes": [
+        {
+          "v": "before",
+          "t": "1 \u00b7 Before you hit the wall"
+        },
+        {
+          "v": "after",
+          "t": "2 \u00b7 After you crash"
+        },
+        {
+          "v": "never",
+          "t": "3 \u00b7 Never"
+        }
+      ],
+      "example": [
+        {
+          "t": "repeat",
+          "n": 8
+        },
+        {
+          "t": "move"
+        },
+        {
+          "t": "if-wall-stop"
+        },
+        {
+          "t": "end"
+        }
+      ],
+      "starter": [
+        {
+          "t": "repeat",
+          "n": 8
+        },
+        {
+          "t": "move"
+        },
+        {
+          "t": "end"
+        }
+      ],
+      "palette": [
+        "move",
+        "repeat",
+        "end",
+        "if-wall-stop"
+      ],
+      "world": {
+        "cols": 10,
+        "rows": 6,
+        "wallX": 6,
+        "goalX": 5,
+        "startX": 1,
+        "startY": 3
+      },
+      "testHints": [
+        "Has if-wall-stop",
+        "Stops before crash",
+        "Still reaches the crate"
+      ]
+    },
+    {
+      "id": "score",
+      "n": 5,
+      "title": "Door 5 \u00b7 Score",
+      "idea": "Score is still no \u2014 prove you can clear without chasing points.",
+      "ask": "Watch. Score is still no. What matters?",
+      "choices": [
+        {
+          "p": "points",
+          "t": "1 \u00b7 Biggest points"
+        },
+        {
+          "p": "clear",
+          "t": "2 \u00b7 Clear the door safely"
+        },
+        {
+          "p": "fast",
+          "t": "3 \u00b7 Fastest click"
+        }
+      ],
+      "probeAsk": "Why is score still no?",
+      "probes": [
+        {
+          "v": "safe",
+          "t": "1 \u00b7 Safe clear beats a number chase"
+        },
+        {
+          "v": "shame",
+          "t": "2 \u00b7 So kids feel shame"
+        },
+        {
+          "v": "random",
+          "t": "3 \u00b7 Random"
+        }
+      ],
+      "example": [
+        {
+          "t": "repeat",
+          "n": 5
+        },
+        {
+          "t": "move"
+        },
+        {
+          "t": "if-wall-stop"
+        },
+        {
+          "t": "end"
+        }
+      ],
+      "starter": [
+        {
+          "t": "repeat",
+          "n": 5
+        },
+        {
+          "t": "move"
+        },
+        {
+          "t": "end"
+        }
+      ],
+      "palette": [
+        "move",
+        "repeat",
+        "end",
+        "if-wall-stop",
+        "if-wall-score"
+      ],
+      "world": {
+        "cols": 10,
+        "rows": 6,
+        "wallX": 7,
+        "goalX": 5,
+        "startX": 1,
+        "startY": 3
+      },
+      "testHints": [
+        "Clears to the crate",
+        "Uses stop not only score",
+        "No shame leaderboard"
+      ]
+    },
+    {
+      "id": "turn",
+      "n": 6,
+      "title": "Door 6 \u00b7 Turn once",
+      "idea": "One turn changes the path.",
+      "ask": "The crate is up. What do you need?",
+      "choices": [
+        {
+          "p": "only-move",
+          "t": "1 \u00b7 Only moves"
+        },
+        {
+          "p": "turn",
+          "t": "2 \u00b7 A turn, then moves"
+        },
+        {
+          "p": "vanish",
+          "t": "3 \u00b7 Vanish"
+        }
+      ],
+      "probeAsk": "When do you turn?",
+      "probes": [
+        {
+          "v": "before",
+          "t": "1 \u00b7 Before the next moves"
+        },
+        {
+          "v": "after",
+          "t": "2 \u00b7 After you pass the crate"
+        },
+        {
+          "v": "never",
+          "t": "3 \u00b7 Never"
+        }
+      ],
+      "example": [
+        {
+          "t": "move"
+        },
+        {
+          "t": "move"
+        }
+      ],
+      "starter": [
+        {
+          "t": "move"
+        }
+      ],
+      "palette": [
+        "move"
+      ],
+      "world": {
+        "cols": 10,
+        "rows": 6,
+        "wallX": 99,
+        "goalX": 4,
+        "startX": 1,
+        "startY": 3
+      },
+      "testHints": [
+        "Bot moved",
+        "Closer to the crate",
+        "Short program"
+      ],
+      "remix": true
+    },
+    {
+      "id": "two-crates",
+      "n": 7,
+      "title": "Door 7 \u00b7 Two stops",
+      "idea": "Plan a line that visits more than one spot.",
+      "ask": "Two crates in a row. What wins?",
+      "choices": [
+        {
+          "p": "first",
+          "t": "1 \u00b7 Stop at the first only"
+        },
+        {
+          "p": "both",
+          "t": "2 \u00b7 Pass the first, stop on the second"
+        },
+        {
+          "p": "wall",
+          "t": "3 \u00b7 Hit the wall"
+        }
+      ],
+      "probeAsk": "How many moves to the second crate?",
+      "probes": [
+        {
+          "v": "count",
+          "t": "1 \u00b7 Count the squares"
+        },
+        {
+          "v": "guess",
+          "t": "2 \u00b7 Guess fast"
+        },
+        {
+          "v": "score",
+          "t": "3 \u00b7 Chase score"
+        }
+      ],
+      "example": [
+        {
+          "t": "move"
+        },
+        {
+          "t": "move"
+        },
+        {
+          "t": "move"
+        },
+        {
+          "t": "move"
+        }
+      ],
+      "starter": [
+        {
+          "t": "move"
+        },
+        {
+          "t": "move"
+        }
+      ],
+      "palette": [
+        "move",
+        "repeat",
+        "end"
+      ],
+      "world": {
+        "cols": 10,
+        "rows": 6,
+        "wallX": 99,
+        "goalX": 6,
+        "startX": 1,
+        "startY": 3
+      },
+      "testHints": [
+        "Reaches the far crate",
+        "Uses a clear line or repeat",
+        "No crash"
+      ],
+      "remix": true
+    },
+    {
+      "id": "safe-loop",
+      "n": 8,
+      "title": "Door 8 \u00b7 Safe loop",
+      "idea": "Repeat + stop = safe shop habit.",
+      "ask": "A long repeat toward a wall. What keeps it safe?",
+      "choices": [
+        {
+          "p": "hope",
+          "t": "1 \u00b7 Hope"
+        },
+        {
+          "p": "stop",
+          "t": "2 \u00b7 If wall \u2192 stop inside the loop"
+        },
+        {
+          "p": "score",
+          "t": "3 \u00b7 Score only"
+        }
+      ],
+      "probeAsk": "Where does stop live?",
+      "probes": [
+        {
+          "v": "inside",
+          "t": "1 \u00b7 Inside the repeat"
+        },
+        {
+          "v": "outside",
+          "t": "2 \u00b7 Only after end"
+        },
+        {
+          "v": "never",
+          "t": "3 \u00b7 Never"
+        }
+      ],
+      "example": [
+        {
+          "t": "repeat",
+          "n": 10
+        },
+        {
+          "t": "move"
+        },
+        {
+          "t": "if-wall-stop"
+        },
+        {
+          "t": "end"
+        }
+      ],
+      "starter": [
+        {
+          "t": "repeat",
+          "n": 10
+        },
+        {
+          "t": "move"
+        },
+        {
+          "t": "end"
+        }
+      ],
+      "palette": [
+        "move",
+        "repeat",
+        "end",
+        "if-wall-stop"
+      ],
+      "world": {
+        "cols": 10,
+        "rows": 6,
+        "wallX": 5,
+        "goalX": 4,
+        "startX": 1,
+        "startY": 3
+      },
+      "testHints": [
+        "Has if-wall-stop",
+        "Does not crash",
+        "Uses repeat"
+      ],
+      "remix": true
+    }
+  ]
+}
