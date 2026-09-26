@@ -649,6 +649,15 @@ export function Board() {
                     <button type="button" onClick={() => go("shop")} className="tw-tap min-h-11 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">Admin</button>
                   </div>
                 ) : null}
+                {view === "skills" && learnStart === "plan" ? (
+                  <div className="grid grid-cols-2 gap-1">
+                    <p className="col-span-2 px-1 text-[11px] font-bold uppercase tracking-wider text-muted">This hour</p>
+                    <button type="button" onClick={() => window.dispatchEvent(new CustomEvent("tw-hour-tool", { detail: "week" }))} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">Week</button>
+                    <button type="button" onClick={() => window.dispatchEvent(new CustomEvent("tw-hour-tool", { detail: "print" }))} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">Print</button>
+                    <button type="button" onClick={() => window.dispatchEvent(new CustomEvent("tw-hour-tool", { detail: "room" }))} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">Run the room</button>
+                    <button type="button" onClick={() => window.dispatchEvent(new CustomEvent("tw-hour-tool", { detail: "present" }))} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">Present</button>
+                  </div>
+                ) : null}
                 {unlocked ? (
                   <div className="relative w-full" data-find-box data-keep-pocket>
                     <Search className="pointer-events-none absolute left-2 top-3 size-3.5 text-subtle" />

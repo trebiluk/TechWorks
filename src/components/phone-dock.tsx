@@ -60,7 +60,7 @@ export function PhoneDock({
               >
                 <span className={cn("dock-mark absolute top-1 h-0.5 w-6 rounded-full", on === it.id ? "bg-accent" : "bg-transparent")} aria-hidden />
                 <Icon className="size-5 sm:size-6" strokeWidth={on === it.id ? 2.4 : 2} aria-hidden />
-                {it.label}
+                <span className="max-w-full truncate whitespace-nowrap text-[10px] leading-none">{it.label}</span>
               </button>
             </li>
             );

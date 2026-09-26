@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, PanelsTopLeft, Presentation, Printer } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
 import { instructionalWeeks, isSchoolDay, todayIso, weekOn, weekRangeLabel } from "@/lib/calendar";
@@ -102,6 +102,16 @@ export function PlanIt({
     }
   }
 
+  useEffect(() => {
+    function onTool(e: Event) {
+      const id = (e as CustomEvent<string>).detail;
+      if (id === "week") setGridOn((v) => !v);
+      if (id === "print") setPrintOn(true);
+    }
+    window.addEventListener("tw-hour-tool", onTool);
+    return () => window.removeEventListener("tw-hour-tool", onTool);
+  }, []);
+
   function move(dx: number, dy: number) {
     const di = days.indexOf(open.date);
     const pi = periods.indexOf(open.period);
@@ -182,7 +192,7 @@ export function PlanIt({
             {weekRangeLabel(days)}
           </h1>
         </div>
-        <div className="ml-auto flex flex-wrap items-center gap-1">
+        <div className="ml-auto flex items-center gap-1">
           <button type="button" onClick={() => goWeek(-1)} className="tw-tap grid size-11 place-items-center rounded-xl bg-elevated" title="Previous week">
             <ChevronLeft className="size-4" />
           </button>
@@ -199,17 +209,6 @@ export function PlanIt({
           <button type="button" onClick={() => goWeek(1)} className="tw-tap grid size-11 place-items-center rounded-xl bg-elevated" title="Next week">
             <ChevronRight className="size-4" />
           </button>
-          <button
-            type="button"
-            onClick={() => setGridOn((v) => !v)}
-            className={cn("tw-tap min-h-11 rounded-xl px-3 text-xs font-semibold", gridOn ? "bg-accent text-accent-fg" : "bg-elevated")}
-          >
-            Week
-          </button>
-          <button type="button" onClick={() => setPrintOn(true)} className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-elevated px-3 text-xs font-semibold">
-            <Printer className="size-3.5" />
-            Print
-          </button>
         </div>
         <div className="tw-planit-meter" title={`${fill.set} of ${fill.total} hours`}>
           <span style={{ width: `${pct}%` }} />
@@ -221,28 +220,32 @@ export function PlanIt({
       </header>
 
       {!gridOn ? (
-        <div className="flex flex-wrap gap-1 px-1 pb-1">
-          {shopBells(file).map((b) => (
-            <button
-              key={b.period}
-              type="button"
-              onClick={() => setOpen({ date: open.date, period: b.period })}
-              className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-semibold", open.period === b.period ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
-            >
-              P{b.period}
-            </button>
-          ))}
-          {days.map((d) => (
-            <button
-              key={d}
-              type="button"
-              disabled={!isSchoolDay(d)}
-              onClick={() => setOpen({ date: d, period: open.period })}
-              className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-semibold", open.date === d ? "bg-fg text-bg" : "bg-elevated text-muted", !isSchoolDay(d) && "opacity-40")}
-            >
-              {weekdayShort(d)} {d.slice(8)}
-            </button>
-          ))}
+        <div className="grid gap-1 px-1 pb-1">
+          <div className="flex gap-1 overflow-x-auto">
+            {shopBells(file).map((b) => (
+              <button
+                key={b.period}
+                type="button"
+                onClick={() => setOpen({ date: open.date, period: b.period })}
+                className={cn("tw-tap min-h-11 shrink-0 rounded-full px-3 text-sm font-semibold", open.period === b.period ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+              >
+                P{b.period}
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-1 overflow-x-auto">
+            {days.map((d) => (
+              <button
+                key={d}
+                type="button"
+                disabled={!isSchoolDay(d)}
+                onClick={() => setOpen({ date: d, period: open.period })}
+                className={cn("tw-tap min-h-11 shrink-0 rounded-full px-3 text-sm font-semibold", open.date === d ? "bg-fg text-bg" : "bg-elevated text-muted", !isSchoolDay(d) && "opacity-40")}
+              >
+                {weekdayShort(d)} {d.slice(8)}
+              </button>
+            ))}
+          </div>
         </div>
       ) : null}
 
@@ -417,6 +420,16 @@ function HourDesk({
   const graded = gradeActivityName(file, d, p);
   const [slideUrl, setSlideUrl] = useState("");
   const [actName, setActName] = useState(graded);
+  useEffect(() => {
+    function onTool(e: Event) {
+      const id = (e as CustomEvent<string>).detail;
+      if (id === "room") onTeach?.(d, p);
+      if (id === "present") onDeck?.();
+      if (id === "undo" && canUndo) onUndo?.();
+    }
+    window.addEventListener("tw-hour-tool", onTool);
+    return () => window.removeEventListener("tw-hour-tool", onTool);
+  }, [onTeach, onDeck, onUndo, canUndo, d, p]);
   useEffect(() => {
     setActName(graded);
   }, [graded, d, p]);
@@ -679,42 +692,23 @@ function HourDesk({
       </div>
 
       <div className="tw-planit-send-dock" data-planit-send>
-      <div className="flex flex-wrap gap-1">
-        {onTeach ? (
-          <button type="button" onClick={() => onTeach(d, p)} className="tw-tap inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-elevated px-3 text-sm font-semibold">
-            <Presentation className="size-3.5" />
-            Run the room
-          </button>
-        ) : null}
-        {canUndo && onUndo ? (
-          <button type="button" onClick={onUndo} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">
-            Undo
-          </button>
-        ) : null}
-        {onWall ? (
-          <button type="button" onClick={onWall} className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-elevated px-3 text-sm font-semibold">
-            <PanelsTopLeft className="size-3.5" />
-            Wall
-          </button>
-        ) : null}
-        {onDeck ? (
-          <button type="button" onClick={onDeck} className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-elevated px-3 text-sm font-semibold">
-            Present
-          </button>
-        ) : null}
-        {later != null && cell.set ? (
-          <button
-            type="button"
-            onClick={() => {
-              onEdit(copyHour(file, d, p, d, later));
-              onNote(`Copied to P${later}.`);
-            }}
-            className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold"
-          >
-            Copy to P{later}
-          </button>
-        ) : null}
-      </div>
+      {canUndo && onUndo ? (
+        <button type="button" onClick={onUndo} className="tw-tap min-h-11 text-left text-sm font-semibold text-muted">
+          Undo
+        </button>
+      ) : null}
+      {later != null && cell.set ? (
+        <button
+          type="button"
+          onClick={() => {
+            onEdit(copyHour(file, d, p, d, later));
+            onNote(`Copied to P${later}.`);
+          }}
+          className="tw-tap min-h-11 text-left text-sm font-semibold"
+        >
+          Copy to P{later}
+        </button>
+      ) : null}
 
       <SendHour
         file={file}

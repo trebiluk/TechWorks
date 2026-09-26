@@ -6,6 +6,11 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.127 — 2026-09-26
+
+- This hour is the lesson. Week, Print, Run the room, and Present live in the menu.
+- Periods are one row. Days are the next row.
+
 ## 1.92.126 — 2026-09-26
 
 - Admin has Back. It returns to the last place, and the next tap brings you back.

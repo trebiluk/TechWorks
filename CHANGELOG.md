@@ -1,8 +1,13 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.126. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.127. -->
 
 # TechWorks changelog
 
-App version **1.92.126**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.127**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.127 — 2026-09-26
+
+- This hour is the lesson. Week, Print, Run the room, and Present live in the menu.
+- Periods are one row. Days are the next row.
 
 ## 1.92.126 — 2026-09-26
 
