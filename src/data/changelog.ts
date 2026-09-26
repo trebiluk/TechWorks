@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.122 — 2026-09-26
+
+- The More chip is a hamburger on the left. It opens a side drawer. The tools inside are the same.
+
 ## 1.92.121 — 2026-09-26
 
 - This hour is the planner. The week grid stays behind Week. Period and day chips sit on the lesson.

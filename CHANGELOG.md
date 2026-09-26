@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.121. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.122. -->
 
 # TechWorks changelog
 
-App version **1.92.121**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.122**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.122 — 2026-09-26
+
+- The More chip is a hamburger on the left. It opens a side drawer. The tools inside are the same.
 
 ## 1.92.121 — 2026-09-26
 

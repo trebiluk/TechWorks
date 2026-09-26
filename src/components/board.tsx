@@ -672,10 +672,6 @@ export function Board() {
         <>
         <header className="desk-chrome tw-gadget tw-hud mb-1 min-w-0">
             <div className="nav-cluster flex min-w-0 flex-nowrap items-center gap-1">
-              <button type="button" onClick={() => go("overview")} title="Shop names only" className="shrink-0">
-                <TwWordmark compact={phone} />
-              </button>
-              <div className="nav-chips min-w-0">{appStrip}</div>
               <EdgePocket
                 label={t("More")}
                 lamp={overlayOn}
@@ -797,6 +793,10 @@ export function Board() {
                   </button>
                 ) : null}
               </EdgePocket>
+              <button type="button" onClick={() => go("overview")} title="Shop names only" className="shrink-0">
+                <TwWordmark compact={phone} />
+              </button>
+              <div className="nav-chips min-w-0">{appStrip}</div>
             </div>
         </header>
         </>

@@ -1820,19 +1820,30 @@ header.desk-chrome .tw-edge-pocket {
 header.desk-chrome .tw-edge-pocket-chip {
   min-height: 2.75rem;
 }
+.tw-edge-pocket-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 69;
+  border: 0;
+  background: color-mix(in oklab, #000 46%, transparent);
+}
 .tw-edge-pocket-menu {
   position: fixed;
   z-index: 70;
+  top: 0;
+  bottom: 0;
+  left: 0;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 0.5rem;
-  min-width: min(22rem, calc(100vw - 1.5rem));
-  max-width: min(28rem, calc(100vw - 1rem));
-  max-height: min(70vh, 32rem);
+  width: min(20rem, calc(100vw - 3rem));
+  max-width: min(20rem, calc(100vw - 3rem));
+  height: 100%;
+  max-height: 100%;
   overflow: auto;
-  padding: 0.6rem;
-  border-radius: 14px;
+  padding: 0.85rem 0.75rem;
+  border-radius: 0 1rem 1rem 0;
   background: var(--color-surface);
   box-shadow:
     inset 0 1px 0 color-mix(in oklab, #fff 16%, transparent),
