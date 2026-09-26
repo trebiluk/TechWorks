@@ -198,7 +198,7 @@ export type NextJob = {
   label: string;
   hint: string;
   tone: "ok" | "due" | "warn" | "now";
-  go: "score" | "schooltool" | "schooltool-in" | "export" | "overview" | "teach" | "admin" | "hall" | "verify";
+  go: "score" | "schooltool" | "schooltool-in" | "export" | "overview" | "teach" | "plan" | "admin" | "hall" | "verify";
   period?: number;
   crew?: string;
   date?: string;
@@ -229,6 +229,10 @@ export function nextJob(file: EconomyFile, now = new Date()): NextJob {
   }
 
   if (live && live !== 6) {
+    const hour = dayHourStatus(file, date, [live])[0];
+    if (hour && !hour.set && (clock?.pct ?? 0) < 18) {
+      return { id: "plan", label: `Write P${live}`, hint: "The wall is empty", tone: "now", go: "plan", period: live, date };
+    }
     const crews = crewsOf(file, live, date);
     const open = crews.find((c) => !crewDone(c.kids, date));
     if (open) {
@@ -270,7 +274,7 @@ export function nextJob(file: EconomyFile, now = new Date()): NextJob {
       label: `Plan P${unset.period}`,
       hint: unset.title || "no Do this yet",
       tone: "due",
-      go: "teach",
+      go: "plan",
       period: unset.period,
       date,
     };
@@ -313,7 +317,7 @@ export function nextJob(file: EconomyFile, now = new Date()): NextJob {
   }
 
   if (nxt) {
-    return { id: "wait", label: `P${nxt.period} next`, hint: formatBell(nxt.start), tone: "ok", go: "teach" };
+    return { id: "wait", label: `P${nxt.period} next`, hint: formatBell(nxt.start), tone: "ok", go: "plan" };
   }
 
   return { id: "clear", label: "You're clear", hint: "Wall up", tone: "ok", go: "overview" };

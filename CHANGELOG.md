@@ -1,8 +1,13 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.129. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.130. -->
 
 # TechWorks changelog
 
-App version **1.92.129**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.130**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.130 — 2026-09-26
+
+- A locked screen follows the bell: the wall in class, the hall in study hall, club only while club is live, cleanup on the wall.
+- One reminder sits under the weather bar. In the first minutes of class it says to write the hour if the wall is empty. That opens This hour.
 
 ## 1.92.129 — 2026-09-26
 

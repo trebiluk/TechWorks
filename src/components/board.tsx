@@ -27,7 +27,7 @@ import { paintCleanup, periodNow, SCHOOLTOOL_URL } from "@/lib/bells";
 import { CleanupStage } from "@/components/cleanup-wall";
 import { CleanupAlarm } from "@/components/cleanup-bar";
 import { NowDock } from "@/components/now-dock";
-import { NextJobChip } from "@/components/next-job";
+import { NextJobChip, RemindBar } from "@/components/next-job";
 import { installLayoutWatch, surfaceOf, useLayout, usePhoneChrome } from "@/lib/layout";
 import { PhoneDock } from "@/components/phone-dock";
 import { applyTheme, applyVibe, paintContrast, storedContrast, storedTheme, storedVibe } from "@/lib/theme";
@@ -43,6 +43,9 @@ import { modeOf } from "@/components/mode-nav";
 import { type AppSection } from "@/lib/app-nav";
 import { ShopMenu } from "@/components/shop-menu";
 import { FrameFacts } from "@/components/wall-frame";
+import { useShopClock } from "@/lib/use-clock";
+import { studentScreen } from "@/lib/offer";
+import { clubPulse, loadClub } from "@/lib/club";
 import { lockView } from "@/lib/lock-view";
 import { cn } from "@/lib/utils";
 import { HOUSE_BERTY, HOUSE_MRK, houseHits } from "@/lib/house";
@@ -264,9 +267,19 @@ export function Board() {
       go(unlocked ? "studyhall" : "hallwall");
       return;
     }
-    if (job.go === "teach") {
-      if (job.period) saveHourPick(job.period);
-      go("teach");
+    if (job.go === "plan" || job.go === "teach") {
+      if (job.date) setPlanDate(job.date);
+      if (job.period) {
+        setJumpPeriod(job.period);
+        saveHourPick(job.period);
+      }
+      setLearnStart("plan");
+      if (!unlocked) {
+        setPendingLearn("plan");
+        askPin("skills");
+        return;
+      }
+      go("skills");
       return;
     }
     if (job.go === "admin") {
@@ -462,6 +475,8 @@ export function Board() {
     };
   }, [file.meta.config?.modules?.stocks]);
 
+  const offerNow = useShopClock(deskBellId(file), "beat");
+
   useEffect(() => {
     if (embed) setView("overview");
     if (portalMode) setView("portal");
@@ -473,6 +488,14 @@ export function Board() {
       if (next !== view) setView(next as View);
     }
   }, [unlocked, view, crewOn]);
+
+  useEffect(() => {
+    if (unlocked || crewOn || embed || portalMode) return;
+    const pulse = featureOn(file, "club") ? clubPulse(loadClub(), todayIso(), offerNow) : null;
+    const clubLive = pulse?.kind === "live" || pulse?.kind === "cleanup";
+    const offer = studentScreen(file, offerNow, clubLive);
+    setView((v) => (v === offer.view ? v : (offer.view as View)));
+  }, [unlocked, crewOn, embed, portalMode, offerNow, file]);
 
   useEffect(() => {
     if (embed || portalMode) return;
@@ -755,6 +778,7 @@ export function Board() {
         </header>
         </>
       )}
+      {unlocked && !crewOn ? <RemindBar file={file} onGo={runJob} /> : null}
       {flash ? (
         <p
           className={cn(

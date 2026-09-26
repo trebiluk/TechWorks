@@ -6,6 +6,11 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.130 — 2026-09-26
+
+- A locked screen follows the bell: the wall in class, the hall in study hall, club only while club is live, cleanup on the wall.
+- One reminder sits under the weather bar. In the first minutes of class it says to write the hour if the wall is empty. That opens This hour.
+
 ## 1.92.129 — 2026-09-26
 
 - This hour is the four beats, the activity name, and Show the wall.

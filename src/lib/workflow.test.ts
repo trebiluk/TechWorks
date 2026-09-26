@@ -30,7 +30,14 @@ describe("next job", () => {
     let file = setSchooltoolDone(desk(), date, 1, true);
     file = setTeachDo(file, date, 2, "Sand the blank.");
     const job = nextJob(file, new Date(2026, 8, 15, 7, 20, 0));
-    assert.equal(job.go, "teach");
+    assert.equal(job.go, "plan");
     assert.equal(job.period, 1);
+  });
+
+  it("in the first minutes, an empty hour says Write, not Score", () => {
+    const file = setSchooltoolDone(desk(), todayIso(), 1, true);
+    const job = nextJob(file, new Date(2026, 8, 15, 8, 0, 0));
+    assert.equal(job.go, "plan");
+    assert.match(job.label, /Write P1/);
   });
 });

@@ -52,3 +52,39 @@ export const NextJobChip = memo(function NextJobChip({
     </button>
   );
 });
+
+/** One sentence. The algorithm already picked the job. */
+export const RemindBar = memo(function RemindBar({
+  file,
+  onGo,
+}: {
+  file: EconomyFile;
+  onGo: (job: NextJob) => void;
+}) {
+  const now = useShopClock(deskBellId(file), "beat");
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const sync = () => setTick((n) => n + 1);
+    window.addEventListener("techworks-job", sync);
+    window.addEventListener("techworks-cloud", sync);
+    return () => {
+      window.removeEventListener("techworks-job", sync);
+      window.removeEventListener("techworks-cloud", sync);
+    };
+  }, []);
+  const job = useMemo(() => nextJob(file, now), [file, now, tick]);
+  if (job.tone === "ok" || job.id === "clean") return null;
+  return (
+    <button
+      type="button"
+      onClick={() => onGo(job)}
+      className={cn(
+        "tw-tap mx-1 mt-1 min-h-11 shrink-0 rounded-xl px-3 text-left text-sm font-semibold",
+        job.tone === "warn" ? "bg-cleanup text-accent-fg" : job.tone === "due" ? "bg-loss text-accent-fg" : "bg-accent text-accent-fg",
+      )}
+    >
+      {job.label}
+      <span className="ml-2 font-normal opacity-80">{job.hint}</span>
+    </button>
+  );
+});
