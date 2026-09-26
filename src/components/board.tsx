@@ -957,6 +957,7 @@ export function Board() {
           }}
           onSeeWall={() => go("overview")}
           onDeck={() => go("deck")}
+          onGrade={() => go("grades")}
           onStart={setLearnStart}
         />
       ) : view === "wallet" ? (

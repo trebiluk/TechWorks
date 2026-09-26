@@ -44,6 +44,7 @@ export function LearningCenter({
   onTeachDay,
   onSeeWall,
   onDeck,
+  onGrade,
   onStart,
 }: {
   file: EconomyFile;
@@ -60,6 +61,7 @@ export function LearningCenter({
   onTeachDay?: (date: string, period: number) => void;
   onSeeWall?: () => void;
   onDeck?: () => void;
+  onGrade?: () => void;
   onStart?: (start: LearnStart) => void;
 }) {
   const first = splitStart(start);
@@ -110,6 +112,7 @@ export function LearningCenter({
               onTeach={onTeachDay}
               onWall={onSeeWall}
               onDeck={onDeck}
+              onGrade={onGrade}
               date={_jumpDate ?? undefined}
               period={_jumpPeriod ?? undefined}
             />

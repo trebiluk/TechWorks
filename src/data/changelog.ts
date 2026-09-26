@@ -6,6 +6,12 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.121 — 2026-09-26
+
+- This hour is the planner. The week grid stays behind Week. Period and day chips sit on the lesson.
+- Paste a Google Slides share link on that same page. Present plays it.
+- Name the activity and save it. Grade it later on People. The live room is not a second planner.
+
 ## 1.92.120 — 2026-09-26
 
 - Run the room no longer opens PlanIt, Deck, or the projector. Hang and Print stay.

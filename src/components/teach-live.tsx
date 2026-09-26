@@ -50,7 +50,7 @@ export function TeachLive({
   tab?: LiveBoardTab;
   onTab?: (tab: LiveBoardTab) => void;
 }) {
-  const [inner, setInner] = useState<LiveBoardTab>("job");
+  const [inner, setInner] = useState<LiveBoardTab>("teach");
   const pane = tab ?? inner;
   const setPane = onTab ?? setInner;
   const today = todayIso();
@@ -88,14 +88,9 @@ export function TeachLive({
             {t.label}
           </button>
         ))}
-        {onDeck ? (
-          <button type="button" onClick={onDeck} className="tw-tap tw-mf-tab tw-mf-tab-aux ml-auto">
-            Deck
-          </button>
-        ) : null}
         {onPlan ? (
-          <button type="button" onClick={onPlan} className="tw-tap tw-mf-tab tw-mf-tab-aux">
-            PlanIt
+          <button type="button" onClick={onPlan} className="tw-tap tw-mf-tab tw-mf-tab-aux ml-auto">
+            This hour
           </button>
         ) : null}
       </nav>

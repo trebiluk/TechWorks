@@ -3,9 +3,12 @@ import { ChevronLeft, ChevronRight, PanelsTopLeft, Presentation, Printer } from 
 import type { EconomyFile } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
 import { instructionalWeeks, isSchoolDay, todayIso, weekOn, weekRangeLabel } from "@/lib/calendar";
-import { activitiesOf, pinDayActivity, slotsOf } from "@/lib/projects";
+import { activitiesOf, createActivityPlan, pinDayActivity, pinnedActivityId, projectsOf, slotsOf } from "@/lib/projects";
 import {
   dropTeachDay,
+  addTeachHang,
+  dropTeachHang,
+  hangOf,
   setTeachClose,
   setTeachHomework,
   setTeachMaterials,
@@ -41,6 +44,7 @@ export function PlanIt({
   onTeach,
   onWall,
   onDeck,
+  onGrade,
   date: dateProp,
   period: periodProp,
 }: {
@@ -51,6 +55,7 @@ export function PlanIt({
   onTeach?: (date: string, period: number) => void;
   onWall?: () => void;
   onDeck?: () => void;
+  onGrade?: () => void;
   date?: string;
   period?: number;
 }) {
@@ -210,10 +215,36 @@ export function PlanIt({
           <span style={{ width: `${pct}%` }} />
         </div>
         <p className="text-xs text-muted">
-          {fill.set}/{fill.total} hours · four beats are the wall. Week is the map.
+          {fill.set}/{fill.total} hours · lesson, slide, and the activity you will grade.
         </p>
         {notice ? <p className="text-sm font-semibold text-gain">{notice}</p> : null}
       </header>
+
+      {!gridOn ? (
+        <div className="flex flex-wrap gap-1 px-1 pb-1">
+          {shopBells(file).map((b) => (
+            <button
+              key={b.period}
+              type="button"
+              onClick={() => setOpen({ date: open.date, period: b.period })}
+              className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-semibold", open.period === b.period ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+            >
+              P{b.period}
+            </button>
+          ))}
+          {days.map((d) => (
+            <button
+              key={d}
+              type="button"
+              disabled={!isSchoolDay(d)}
+              onClick={() => setOpen({ date: d, period: open.period })}
+              className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-semibold", open.date === d ? "bg-fg text-bg" : "bg-elevated text-muted", !isSchoolDay(d) && "opacity-40")}
+            >
+              {weekdayShort(d)} {d.slice(8)}
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       <div className="tw-planit-stage" data-week={gridOn ? "on" : "off"}>
         <div className="tw-planit-board tw-lcars" style={{ ["--days" as string]: String(Math.max(days.length, 1)) }}>
@@ -253,6 +284,7 @@ export function PlanIt({
             onTeach={onTeach}
             onWall={onWall}
             onDeck={onDeck}
+            onGrade={onGrade}
             onClear={() => {
               if (!gate()) return;
               let next = dropTeachDay(file, cell.date, cell.period);
@@ -321,6 +353,16 @@ function PeriodRow({
   );
 }
 
+function gradeActivityName(file: EconomyFile, date: string, period: number): string {
+  const id = pinnedActivityId(file, period, date);
+  if (!id) return "";
+  for (const project of projectsOf(file)) {
+    const act = activitiesOf(project).find((a) => a.id === id);
+    if (act?.name) return act.name;
+  }
+  return "";
+}
+
 function HourDesk({
   file,
   cell,
@@ -332,6 +374,7 @@ function HourDesk({
   onTeach,
   onWall,
   onDeck,
+  onGrade,
   onClear,
   onNote,
 }: {
@@ -345,6 +388,7 @@ function HourDesk({
   onTeach?: (date: string, period: number) => void;
   onWall?: () => void;
   onDeck?: () => void;
+  onGrade?: () => void;
   onClear: () => void;
   onNote: (note: string) => void;
 }) {
@@ -369,6 +413,13 @@ function HourDesk({
     .find((n) => n > p && !hourIsSet(file, d, n));
   const preview = planitPreview(file, d, p);
   const beats = hourAgendaDraft(file, d, p);
+  const hangs = hangOf(file, d, p);
+  const graded = gradeActivityName(file, d, p);
+  const [slideUrl, setSlideUrl] = useState("");
+  const [actName, setActName] = useState(graded);
+  useEffect(() => {
+    setActName(graded);
+  }, [graded, d, p]);
 
   return (
     <aside className="tw-planit-desk tw-lcars" data-planit-hour>
@@ -409,6 +460,87 @@ function HourDesk({
           </label>
         ))}
       </div>
+
+      <label className="grid gap-1">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Google Slides</span>
+        {hangs.length ? (
+          <ul className="grid gap-1">
+            {hangs.map((h) => (
+              <li key={h.id} className="flex items-center gap-2">
+                <span className="min-w-0 flex-1 truncate text-sm">{h.title || h.url}</span>
+                <button type="button" onClick={() => onEdit(dropTeachHang(file, d, p, h.id))} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        <span className="flex flex-wrap gap-1">
+          <input
+            value={slideUrl}
+            onChange={(e) => setSlideUrl(e.target.value)}
+            placeholder="Paste the share link"
+            aria-label="Google Slides link"
+            className="tw-field min-h-11 min-w-0 flex-1"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              const next = addTeachHang(file, d, p, slideUrl);
+              if (next === file) {
+                onNote("Paste a Google Slides share link.");
+                return;
+              }
+              onEdit(next);
+              setSlideUrl("");
+              onNote("Slides are on this hour. Present plays them.");
+            }}
+            className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold"
+          >
+            Add slide
+          </button>
+        </span>
+      </label>
+
+      <label className="grid gap-1">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Activity to grade</span>
+        <span className="flex flex-wrap gap-1">
+          <input
+            value={actName}
+            onChange={(e) => setActName(e.target.value)}
+            placeholder="Name the make. You grade it later."
+            aria-label="Activity to grade"
+            className="tw-field min-h-11 min-w-0 flex-1"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              const name = actName.trim();
+              if (!name) return;
+              if (graded) {
+                onNote("Already on the grade. Open People, then Grade.");
+                onGrade?.();
+                return;
+              }
+              const made = createActivityPlan(file, {
+                name,
+                belong: "project",
+                period: p,
+                grades: [cell.grade || 6],
+                dates: [d],
+                do: beats.find((b) => b.id === "goal")?.body || name,
+                prove: "done",
+              });
+              onEdit(pinDayActivity(made.file, d, p, made.activityId));
+              onNote("Saved. Grade it later on People.");
+            }}
+            className="tw-tap min-h-11 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg"
+          >
+            {graded ? "Grade it" : "Save activity"}
+          </button>
+        </span>
+        <span className="text-xs text-muted">{graded ? "On the gradebook. People → Grade." : "This name becomes the column you score later."}</span>
+      </label>
 
       {cell.set ? <WallPreview preview={preview} /> : null}
 
