@@ -116,6 +116,8 @@ export function Board() {
   const [planDate, setPlanDate] = useState(() => nextOpenDay(todayIso()));
   const [deskPad, setDeskPad] = useState<"effort" | "skill">("effort");
   const [adminPane, setAdminPane] = useState<AdminPane>("today");
+  const spotRef = useRef<{ view: View; pane: AdminPane }>({ view: "overview", pane: "today" });
+  const [back, setBack] = useState<{ view: View; pane: AdminPane } | null>(null);
   const [arrangeOn, setArrangeOn] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [describeOn, setDescribeOn] = useState(false);
@@ -209,6 +211,22 @@ export function Board() {
       setView(next);
     });
   }
+
+  useEffect(() => {
+    const prev = spotRef.current;
+    if (prev.view === view && prev.pane === adminPane) return;
+    setBack(prev);
+    spotRef.current = { view, pane: adminPane };
+  }, [view, adminPane]);
+
+  function goBack() {
+    if (!back) return;
+    const there = back;
+    setAdminPane(there.pane);
+    if (there.view !== view) go(there.view);
+  }
+
+  const showBack = Boolean(back) && (view === "shop" || view === "admin" || back?.view === "shop" || back?.view === "admin");
 
   function goDesk(_panel?: DeskPanel) {
     if (crewOn) return;
@@ -709,6 +727,11 @@ export function Board() {
                   </button>
                 ) : null}
               </EdgePocket>
+              {showBack ? (
+                <button type="button" onClick={goBack} className="tw-tap min-h-11 shrink-0 rounded-xl bg-elevated px-3 text-sm font-semibold" title="Back">
+                  Back
+                </button>
+              ) : null}
               <button type="button" onClick={() => go("overview")} title="Shop names only" className="shrink-0">
                 <TwWordmark compact={phone} />
               </button>

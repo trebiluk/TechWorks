@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.126 — 2026-09-26
+
+- Admin has Back. It returns to the last place, and the next tap brings you back.
+
 ## 1.92.125 — 2026-09-26
 
 - Admin switches are knobs. The knob moves. A note no longer pretends a closed door opened.
