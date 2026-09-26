@@ -1786,6 +1786,9 @@ header.desk-chrome .nav-cluster {
 header.desk-chrome .nav-cluster > .nav-chips {
   position: relative;
   z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   flex: 1 1 auto;
   min-width: 0;
   max-width: 100%;
@@ -4280,5 +4283,68 @@ html[data-theme="new-look"] .tw-gadget {
   font-weight: 650;
   line-height: 1.2;
   color: var(--color-title, var(--color-fg));
+}
+
+.tw-shuttle {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15.5rem, 1fr));
+  gap: 0.55rem;
+  align-content: start;
+  min-height: 0;
+  overflow: auto;
+  padding: 0.45rem;
+}
+.tw-shuttle-lead { grid-column: 1 / -1; }
+.tw-shuttle-bay {
+  display: grid;
+  align-content: start;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  border-radius: 0.85rem;
+  background: color-mix(in oklab, var(--color-surface) 88%, transparent);
+  box-shadow: inset 3px 0 0 var(--color-accent);
+}
+.tw-shuttle-bay[data-bay="Games"],
+.tw-shuttle-bay[data-bay="Extra"] {
+  box-shadow: inset 3px 0 0 var(--color-gold, var(--color-accent));
+}
+.tw-shuttle-bay[data-bay="Tools"],
+.tw-shuttle-bay[data-bay="Room"] {
+  box-shadow: inset 3px 0 0 var(--color-muted);
+}
+.tw-shuttle-bay h2 {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+.tw-shuttle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6.4rem, 1fr));
+  gap: 0.3rem;
+}
+.tw-shuttle-key {
+  min-height: 2.75rem;
+  border-radius: 0.65rem;
+  padding: 0.3rem 0.45rem;
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--color-muted);
+  background: var(--color-elevated);
+}
+.tw-shuttle-key.is-on {
+  color: var(--color-accent-fg);
+  background: var(--color-accent);
+}
+header.desk-chrome .tw-wall-frame-sky strong,
+header.desk-chrome .tw-wall-frame-lunch strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.95rem;
 }
 

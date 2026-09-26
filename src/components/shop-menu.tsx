@@ -1,26 +1,22 @@
-const GROUPS: { title: string; hint: string; items: [string, string][] }[] = [
+import type { EconomyFile } from "@/lib/economy";
+import { FEATURES, FEATURE_GROUPS, featureOn, setFeature } from "@/lib/features";
+import { cn } from "@/lib/utils";
+
+const DOORS: { title: string; items: [string, string][] }[] = [
   {
-    title: "Show",
-    hint: "After the hour is written",
+    title: "Open",
     items: [
       ["week", "Week"],
-      ["clubwall", "Club"],
-      ["hallwall", "Hall"],
       ["teach", "Run the room"],
-    ],
-  },
-  {
-    title: "Class",
-    hint: "Words, skills, and longer makes",
-    items: [
       ["words", "Words"],
       ["skills", "Skills"],
       ["projects", "Projects"],
+      ["clubwall", "Club"],
+      ["hallwall", "Hall"],
     ],
   },
   {
     title: "Room",
-    hint: "The shop around the lesson",
     items: [
       ["crib", "Crib"],
       ["prints", "Prints"],
@@ -32,7 +28,6 @@ const GROUPS: { title: string; hint: string; items: [string, string][] }[] = [
   },
   {
     title: "Desk",
-    hint: "This computer",
     items: [
       ["today", "Today"],
       ["vault", "Backups"],
@@ -41,55 +36,71 @@ const GROUPS: { title: string; hint: string; items: [string, string][] }[] = [
   },
 ];
 
-/** The wrench. One list. Nothing here is also a button on the wall. */
+/** One panel. Switches and doors, grouped, all visible. */
 export function ShopMenu({
+  file,
+  onChange,
   onGo,
   onHelp,
   onWeb,
 }: {
+  file: EconomyFile;
+  onChange: (next: EconomyFile) => void;
   onGo: (id: string) => void;
   onHelp?: () => void;
   onWeb?: () => void;
 }) {
   return (
-    <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col gap-4 overflow-y-auto p-2">
-      <header>
+    <div className="tw-shuttle" data-shuttle>
+      <header className="tw-shuttle-lead">
         <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">Admin</p>
-        <h1 className="font-display text-2xl font-semibold">One wrench</h1>
-        <p className="mt-1 text-sm text-muted">Wall, This hour, Score, and People stay on the bar. Everything else is here.</p>
+        <h1 className="font-display text-2xl font-semibold">The panel</h1>
+        <p className="text-sm text-muted">On is lit. Off is dim. Open is a door.</p>
       </header>
-      {GROUPS.map((g) => (
-        <section key={g.title} className="grid gap-2">
-          <div>
-            <h2 className="font-display text-lg font-semibold">{g.title}</h2>
-            <p className="text-xs text-muted">{g.hint}</p>
-          </div>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {g.items.map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => onGo(id)}
-                className="tw-tap min-h-11 rounded-2xl bg-elevated px-3 text-left text-sm font-semibold"
-              >
-                {label}
-              </button>
-            ))}
+      {FEATURE_GROUPS.map((group) => (
+        <section key={group} className="tw-shuttle-bay" data-bay={group}>
+          <h2>{group}</h2>
+          <div className="tw-shuttle-grid">
+            {FEATURES.filter((f) => f.group === group).map((f) => {
+              const on = featureOn(file, f.id);
+              return (
+                <button
+                  key={f.id}
+                  type="button"
+                  aria-pressed={on}
+                  title={f.hint}
+                  onClick={() => onChange(setFeature(file, f.id, !on))}
+                  className={cn("tw-shuttle-key", on && "is-on")}
+                >
+                  {f.label}
+                </button>
+              );
+            })}
           </div>
         </section>
       ))}
-      <div className="flex flex-wrap gap-2">
-        {onHelp ? (
-          <button type="button" onClick={onHelp} className="tw-tap min-h-11 rounded-2xl bg-elevated px-4 text-sm font-semibold">
-            Help
-          </button>
-        ) : null}
-        {onWeb ? (
-          <button type="button" onClick={onWeb} className="tw-tap min-h-11 rounded-2xl bg-elevated px-4 text-sm font-semibold">
-            Web
-          </button>
-        ) : null}
-      </div>
+      {DOORS.map((g) => (
+        <section key={g.title} className="tw-shuttle-bay" data-bay={g.title}>
+          <h2>{g.title}</h2>
+          <div className="tw-shuttle-grid">
+            {g.items.map(([id, label]) => (
+              <button key={id} type="button" onClick={() => onGo(id)} className="tw-shuttle-key">
+                {label}
+              </button>
+            ))}
+            {g.title === "Desk" && onHelp ? (
+              <button type="button" onClick={onHelp} className="tw-shuttle-key">
+                Help
+              </button>
+            ) : null}
+            {g.title === "Desk" && onWeb ? (
+              <button type="button" onClick={onWeb} className="tw-shuttle-key">
+                Web
+              </button>
+            ) : null}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }

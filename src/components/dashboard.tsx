@@ -104,6 +104,7 @@ export const Dashboard = memo(function Dashboard({
   onPrints,
   onOpenMod,
   arrange = false,
+  showStatus = true,
   onSeeWall,
   onArrange,
 }: {
@@ -121,6 +122,7 @@ export const Dashboard = memo(function Dashboard({
   onPrints?: () => void;
   onOpenMod?: (id: string) => void;
   arrange?: boolean;
+  showStatus?: boolean;
   onSeeWall?: () => void;
   onArrange?: () => void;
 }) {
@@ -470,6 +472,7 @@ export const Dashboard = memo(function Dashboard({
       file={file}
       date={today}
       arrange={arrange}
+      showBar={showStatus}
       tickerBits={[
         `P${shown}`,
         wallSpine.job || wallSpine.ask || periodTitle(shown, bells),

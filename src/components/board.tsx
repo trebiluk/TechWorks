@@ -40,9 +40,9 @@ import { AdminHub } from "@/components/admin-hub";
 import type { LearnStart } from "@/components/learning-center";
 import type { AdminPane } from "@/components/settings";
 import { modeOf } from "@/components/mode-nav";
-import { AppNav } from "@/components/app-nav";
+import { type AppSection } from "@/lib/app-nav";
 import { ShopMenu } from "@/components/shop-menu";
-import { chromeTabs, sectionOf, type AppSection, type NavTab } from "@/lib/app-nav";
+import { FrameFacts } from "@/components/wall-frame";
 import { lockView } from "@/lib/lock-view";
 import { cn } from "@/lib/utils";
 import { HOUSE_BERTY, HOUSE_MRK, houseHits } from "@/lib/house";
@@ -517,8 +517,6 @@ export function Board() {
     };
   }, [unlocked, surface, crewOn]);
 
-  const section = sectionOf(view);
-
   function goSection(next: AppSection) {
     if (crewOn) return;
     if (next === "dash") go("overview");
@@ -548,28 +546,6 @@ export function Board() {
     }
   }
 
-  const primaryTabs: NavTab[] = [
-    { id: "wall", label: t("Wall"), on: view === "overview", onClick: () => go("overview") },
-    {
-      id: "hour",
-      label: t("This hour"),
-      on: (view === "skills" && learnStart === "plan") || view === "teach",
-      onClick: () => {
-        setLearnStart("plan");
-        if (!unlocked) {
-          setPendingLearn("plan");
-          askPin("skills");
-          return;
-        }
-        go("skills");
-      },
-    },
-    { id: "score", label: t("Score"), on: view === "score" || view === "crew", onClick: () => goDesk() },
-    { id: "people", label: t("People"), on: view === "roster" || (view === "skills" && (learnStart === "grades" || learnStart === "book")), onClick: () => go("roster") },
-    { id: "shop", label: t("Admin"), on: view === "shop" || view === "admin", onClick: () => go("shop") },
-  ];
-  const headerTabs: NavTab[] = chromeTabs(section, [], primaryTabs, phone);
-
   function openShopItem(id: string) {
     if (id === "words") {
       setLearnStart("words");
@@ -589,16 +565,6 @@ export function Board() {
     go(id as View);
   }
 
-  const appStrip = !crewOn ? (
-    <AppNav
-      section={section}
-      onSection={goSection}
-      tabs={headerTabs}
-      unlocked={unlocked}
-      hideSections
-    />
-  ) : null;
-
   const wallDash = (arrange: boolean) => (
         <Dashboard
           list={list}
@@ -606,6 +572,7 @@ export function Board() {
           file={wallFile}
           unlocked={unlocked}
           arrange={arrange}
+          showStatus={Boolean(embed || portalMode)}
           onArrange={() => {
             if (!unlocked) {
               askPin();
@@ -676,6 +643,15 @@ export function Board() {
                 lamp={overlayOn}
                 badge={unlocked && dueN && mode !== "board" ? String(dueN) : undefined}
               >
+                {!phone ? (
+                  <div className="grid grid-cols-2 gap-1">
+                    <button type="button" onClick={() => go("overview")} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">Wall</button>
+                    <button type="button" onClick={() => { setLearnStart("plan"); if (!unlocked) { setPendingLearn("plan"); askPin("skills"); return; } go("skills"); }} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">This hour</button>
+                    <button type="button" onClick={() => goDesk()} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">Score</button>
+                    <button type="button" onClick={() => go("roster")} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">People</button>
+                    <button type="button" onClick={() => go("shop")} className="tw-tap min-h-11 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">Admin</button>
+                  </div>
+                ) : null}
                 {unlocked ? (
                   <div className="relative w-full" data-find-box data-keep-pocket>
                     <Search className="pointer-events-none absolute left-2 top-3 size-3.5 text-subtle" />
@@ -739,7 +715,6 @@ export function Board() {
                   }}
                 />
                 <LangChip />
-                <SavedChip />
                 {verChip}
                 </div>
                 {unlocked && dueN && mode !== "board" ? (
@@ -758,7 +733,10 @@ export function Board() {
               <button type="button" onClick={() => go("overview")} title="Shop names only" className="shrink-0">
                 <TwWordmark compact={phone} />
               </button>
-              <div className="nav-chips min-w-0">{appStrip}</div>
+              <div className="nav-chips min-w-0">
+                <FrameFacts file={wallFile} />
+              </div>
+              <SavedChip />
             </div>
         </header>
         </>
@@ -958,6 +936,8 @@ export function Board() {
         <ClubBoard unlocked={unlocked} onNeedPin={() => askPin()} onWall={() => go("clubwall")} desk={file} onDesk={commitDesk} />
       ) : view === "shop" ? (
         <ShopMenu
+          file={file}
+          onChange={commitDesk}
           onGo={openShopItem}
           onHelp={() => setHelpOpen(true)}
           onWeb={() => {

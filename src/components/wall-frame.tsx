@@ -40,49 +40,62 @@ function useBistroLunch(file: EconomyFile, date: string): BistroLine {
   return row;
 }
 
+export function FrameFacts({ file, date = todayIso() }: { file: EconomyFile; date?: string }) {
+  const weatherOn = featureOn(file, "weather");
+  const sky = useSky(weatherOn);
+  const lunch = useBistroLunch(file, date);
+  const Icon = sky ? SKY_ICON[sky.icon] : null;
+  const lunchBit = lunch.label;
+  return (
+    <>
+      {weatherOn && sky && Icon ? (
+        <span className="tw-wall-frame-sky" title={`Solvay · ${sky.word} · ${sky.f}°F`}>
+          <Icon className="size-4 shrink-0" aria-hidden />
+          <span>Sky</span>
+          <strong>{sky.f}° {sky.word}</strong>
+        </span>
+      ) : null}
+      {lunchBit ? (
+        <a href={BISTRO_DOOR} target="_blank" rel="noreferrer" className="tw-wall-frame-lunch" title="Bearcat Bistro">
+          <span>Lunch</span>
+          <strong>{lunchBit}</strong>
+        </a>
+      ) : (
+        <span className="tw-wall-frame-lunch">
+          <span>Lunch</span>
+          <strong>Weekend</strong>
+        </span>
+      )}
+    </>
+  );
+}
 export function WallFrame({
   file,
   date = todayIso(),
   tickerBits,
   arrange = false,
+  showBar = true,
   children,
 }: {
   file: EconomyFile;
   date?: string;
   tickerBits: string[];
   arrange?: boolean;
+  showBar?: boolean;
   children: ReactNode;
 }) {
   const weatherOn = featureOn(file, "weather");
   const sky = useSky(weatherOn);
   const lunch = useBistroLunch(file, date);
-  const Icon = sky ? SKY_ICON[sky.icon] : null;
   const skyBit = sky ? `${sky.word} ${sky.f}°` : "";
   const lunchBit = lunch.label;
   const line = [...tickerBits, skyBit, lunchBit].filter(Boolean).join("  ·  ");
 
   return (
     <div className="tw-wall-frame flex min-h-0 flex-1 flex-col" data-wall-frame>
-      {!arrange ? (
+      {!arrange && showBar ? (
         <div className="tw-wall-frame-bar" data-wall-frame-bar aria-label="Weather and lunch">
-          {weatherOn && sky && Icon ? (
-            <span className="tw-wall-frame-sky" title={`Solvay · ${sky.word} · ${sky.f}°F`}>
-              <Icon className="size-4 shrink-0" aria-hidden />
-              <span>Sky</span>
-              <strong>{sky.f}° {sky.word}</strong>
-            </span>
-          ) : null}
-          {lunchBit ? (
-            <a href={BISTRO_DOOR} target="_blank" rel="noreferrer" className="tw-wall-frame-lunch" title="Bearcat Bistro">
-              <span>Lunch</span>
-              <strong>{lunchBit}</strong>
-            </a>
-          ) : (
-            <span className="tw-wall-frame-lunch">
-              <span>Lunch</span>
-              <strong>Weekend</strong>
-            </span>
-          )}
+          <FrameFacts file={file} date={date} />
         </div>
       ) : null}
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</div>

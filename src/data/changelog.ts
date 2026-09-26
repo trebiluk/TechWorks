@@ -6,6 +6,12 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.124 — 2026-09-26
+
+- The top chip row is gone. The hamburger sits on the sky and lunch line.
+- A phone keeps the five thumb tabs. A computer opens Wall, This hour, Score, People, and Admin from the hamburger.
+- Admin is one panel. Every switch is on the screen, grouped. Lit means on.
+
 ## 1.92.123 — 2026-09-26
 
 - Admin is the wrench. Help, Web, Cloud, theme, and the room tools live there once. The side menu no longer repeats them.
