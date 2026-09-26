@@ -10,7 +10,6 @@ import {
   Flame,
   Lock,
   Minus,
-  Monitor,
   ShieldCheck,
   Star,
   Undo2,
@@ -247,13 +246,7 @@ export function ScoreDesk({
           </>
         ) : (
           <>
-            <h1 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">
-              Score <span className="text-muted">·</span> 40s
-            </h1>
-            <p className="ml-auto inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
-              <Monitor className="size-3.5" aria-hidden />
-              Chromebook · 1366×768
-            </p>
+            <h1 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">Score</h1>
           </>
         )}
       </header>

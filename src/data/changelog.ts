@@ -6,6 +6,11 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.128 — 2026-09-26
+
+- On a phone, This hour is one short line. The date no longer stacks over the lesson.
+- Score no longer says Chromebook or 40s.
+
 ## 1.92.127 — 2026-09-26
 
 - This hour is the lesson. Week, Print, Run the room, and Present live in the menu.

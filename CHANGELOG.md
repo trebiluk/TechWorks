@@ -1,8 +1,13 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.127. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.128. -->
 
 # TechWorks changelog
 
-App version **1.92.127**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.128**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.128 — 2026-09-26
+
+- On a phone, This hour is one short line. The date no longer stacks over the lesson.
+- Score no longer says Chromebook or 40s.
 
 ## 1.92.127 — 2026-09-26
 

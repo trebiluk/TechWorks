@@ -2834,6 +2834,22 @@ html[dir="rtl"] .board-root { direction: rtl; }
   background: var(--color-accent);
   box-shadow: 0 0 12px color-mix(in oklab, var(--color-accent) 55%, transparent);
 }
+@media (max-width: 700px) {
+  .tw-planit-top {
+    align-items: center;
+    padding: 0.4rem 0.55rem;
+  }
+  .tw-planit-top h1 {
+    overflow: hidden;
+    font-size: 1.05rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .tw-planit-top .tw-planit-meter,
+  .tw-planit-top > p {
+    display: none;
+  }
+}
 .tw-planit-stage {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(18.5rem, 23rem);

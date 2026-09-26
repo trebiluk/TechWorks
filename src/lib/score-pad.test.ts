@@ -121,7 +121,7 @@ describe("Score · 40s surfaces", () => {
   it("paints StyleBot hex glyphs and Chromebook 6-up chrome", () => {
     const css = readFileSync(join(root, "styles.css"), "utf8");
     assert.match(score, /data-score-hex/);
-    assert.match(score, /Chromebook · 1366×768/);
+    assert.doesNotMatch(score, /Chromebook · 1366×768/);
     assert.match(score, /Mark = crew score/);
     assert.match(score, /score-lead-card/);
     assert.match(score, /tapeMark/);
