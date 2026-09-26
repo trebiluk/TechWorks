@@ -35,11 +35,11 @@ export function PhoneDock({
   if (navV2) {
     const sec = sectionOf(view);
     const items: { id: AppSection; label: string; go: () => void }[] = [
-      { id: "dash", label: t("Dash"), go: onBoard },
-      { id: "learn", label: t("Learn"), go: onSkills },
-      { id: "crew", label: t("Crew"), go: onCrew },
-      { id: "roster", label: t("Rosters"), go: onRoster ?? onOther ?? onDesk },
-      { id: "admin", label: t("Admin"), go: onOther ?? onDesk },
+      { id: "dash", label: t("Wall"), go: onBoard },
+      { id: "learn", label: t("Hour"), go: onSkills },
+      { id: "crew", label: t("Score"), go: onCrew },
+      { id: "roster", label: t("People"), go: onRoster ?? onOther ?? onDesk },
+      { id: "admin", label: t("Shop"), go: onOther ?? onDesk },
     ];
     const on = sec;
     return (

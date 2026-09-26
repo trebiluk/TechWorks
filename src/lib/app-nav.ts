@@ -48,19 +48,8 @@ export const APP_SECTIONS: { id: AppSection; label: string; lock?: boolean }[] =
 ];
 
 export function sectionOf(view: string): AppSection {
-  if (
-    view === "overview" ||
-    view === "week" ||
-    view === "year" ||
-    view === "polls" ||
-    view === "data" ||
-    view === "teach" ||
-    view === "deck" ||
-    view === "clubwall" ||
-    view === "hallwall"
-  )
-    return "dash";
-  if (view === "skills" || view === "grades" || view === "projects" || view === "plan") return "learn";
+  if (view === "overview") return "dash";
+  if (view === "skills" || view === "grades" || view === "projects" || view === "plan" || view === "teach" || view === "deck") return "learn";
   if (view === "score" || view === "crew") return "crew";
   if (view === "roster") return "roster";
   return "admin";
@@ -68,10 +57,12 @@ export function sectionOf(view: string): AppSection {
 
 export type NavTab = { id: string; label: string; on: boolean; onClick: () => void; hidden?: boolean };
 
-/** Top chrome: never dump Admin rooms onto the HUD row. Those live on the Admin rail. */
-export function chromeTabs(section: AppSection, dashPins: NavTab[], rest: NavTab[], phone: boolean): NavTab[] {
-  if (section === "admin" || section === "crew" || section === "roster") {
-    return phone ? [] : dashPins;
-  }
-  return phone ? rest : [...dashPins, ...rest.filter((tab) => tab.id !== "wall" && tab.id !== "teach" && tab.id !== "deck")];
+/** Top row is five jobs. The phone dock owns them, so the HUD row stays empty there. */
+export function chromeTabs(_section: AppSection, _dashPins: NavTab[], rest: NavTab[], phone: boolean): NavTab[] {
+  if (phone) return [];
+  const want = ["wall", "hour", "score", "people", "shop"];
+  return want.flatMap((id) => {
+    const tab = rest.find((t) => t.id === id);
+    return tab ? [tab] : [];
+  });
 }

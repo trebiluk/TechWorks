@@ -6,6 +6,12 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.119 — 2026-09-26
+
+- The bar is Wall, This hour, Score, People, Shop. This hour is the four beats.
+- Week, Present, Club, Hall, the grade, and the room tools live on Shop. They are not a second row.
+- The phone dock uses the same five names.
+
 ## 1.92.118 — 2026-09-26
 
 - The top bar says Saved when this PC has the gradebook, and Saving… while a write is still going.

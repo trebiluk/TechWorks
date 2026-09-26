@@ -171,7 +171,7 @@ export function PlanIt({
       <header className="tw-planit-top tw-lcars">
         <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: "var(--mf-cyan)" }}>
-            PlanIt
+            This hour
           </p>
           <h1 className="font-display text-[1.65rem] font-semibold leading-none tracking-tight">
             {weekRangeLabel(days)}
@@ -549,9 +549,9 @@ function HourDesk({
       <div className="tw-planit-send-dock" data-planit-send>
       <div className="flex flex-wrap gap-1">
         {onTeach ? (
-          <button type="button" onClick={() => onTeach(d, p)} className="tw-tap inline-flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">
+          <button type="button" onClick={() => onTeach(d, p)} className="tw-tap inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-elevated px-3 text-sm font-semibold">
             <Presentation className="size-3.5" />
-            Teach
+            Run the room
           </button>
         ) : null}
         {canUndo && onUndo ? (

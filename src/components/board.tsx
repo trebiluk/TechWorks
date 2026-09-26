@@ -42,9 +42,9 @@ import type { LearnStart } from "@/components/learning-center";
 import type { AdminPane } from "@/components/settings";
 import { modeOf } from "@/components/mode-nav";
 import { AppNav } from "@/components/app-nav";
+import { ShopMenu } from "@/components/shop-menu";
 import { chromeTabs, sectionOf, type AppSection, type NavTab } from "@/lib/app-nav";
 import { lockView } from "@/lib/lock-view";
-import { ADMIN_GROUPS, defaultPane, paneInGroup } from "@/lib/admin-nav";
 import { cn } from "@/lib/utils";
 import { HOUSE_BERTY, HOUSE_MRK, houseHits } from "@/lib/house";
 import type { NextJob } from "@/lib/workflow";
@@ -75,7 +75,7 @@ const DeckBoard = lazy(() => import("@/components/deck-board").then((m) => ({ de
 
 const RANK_KEY = "techworks-rank-board";
 
-type View = "crew" | "score" | "overview" | "week" | "year" | "data" | "wallet" | "lucky" | "skills" | "store" | "prints" | "crib" | "portal" | "grades" | "studyhall" | "hallwall" | "club" | "clubwall" | "projects" | "admin" | "teach" | "polls" | "deck" | "roster";
+type View = "crew" | "score" | "overview" | "week" | "year" | "data" | "wallet" | "lucky" | "skills" | "store" | "prints" | "crib" | "portal" | "grades" | "studyhall" | "hallwall" | "club" | "clubwall" | "projects" | "admin" | "teach" | "polls" | "deck" | "roster" | "shop";
 type DeskPanel = "score" | "schedule" | "config";
 
 function gearHint(view: string): string {
@@ -162,7 +162,7 @@ export function Board() {
       setView("overview");
       return;
     }
-    const teacher = ["admin", "score", "grades", "projects", "store", "studyhall", "club", "crew", "lucky", "roster", "data"].includes(next);
+    const teacher = ["admin", "score", "grades", "projects", "store", "studyhall", "club", "crew", "lucky", "roster", "data", "shop"].includes(next);
     if (teacher && !unlocked && !(next === "crew" && crewOn)) {
       askPin(next);
       return;
@@ -549,54 +549,46 @@ export function Board() {
     }
   }
 
-  const v2Tabs: NavTab[] =
-    section === "dash"
-      ? [
-          { id: "wall", label: t("Wall"), on: view === "overview", onClick: () => go("overview") },
-          { id: "teach", label: t("Teach"), on: view === "teach" || view === "polls", onClick: () => go("teach"), hidden: !featureOn(file, "teach") },
-          { id: "deck", label: t("Deck"), on: view === "deck", onClick: () => go("deck") },
-          { id: "plan", label: t("PlanIt"), on: view === "skills" && learnStart === "plan", onClick: () => { setLearnStart("plan"); go("skills"); }, hidden: !unlocked },
-          { id: "week", label: t("Week"), on: view === "week" || view === "year" || view === "data", onClick: () => go("week") },
-          { id: "clubwall", label: t("Club"), on: view === "clubwall", onClick: () => go("clubwall"), hidden: !featureOn(file, "club") },
-          { id: "hallwall", label: t("Hall"), on: view === "hallwall", onClick: () => go("hallwall"), hidden: !featureOn(file, "studyhall") },
-        ]
-      : section === "learn"
-        ? [
-            { id: "plan", label: t("PlanIt"), on: learnStart === "plan", onClick: () => { setLearnStart("plan"); go("skills"); }, hidden: !unlocked },
-            { id: "projects", label: t("Projects"), on: learnStart === "projects", onClick: () => { setLearnStart("projects"); go("skills"); }, hidden: !unlocked },
-            { id: "skills", label: t("Skills"), on: learnStart === "skills", onClick: () => { setLearnStart("skills"); go("skills"); }, hidden: !unlocked },
-            { id: "book", label: t("Book"), on: learnStart === "grades" || learnStart === "book", onClick: () => { setLearnStart("grades"); go("skills"); }, hidden: !unlocked },
-            { id: "words", label: t("Words"), on: learnStart === "words", onClick: () => { setLearnStart("words"); go("skills"); } },
-          ]
-        : section === "crew"
-          ? []
-          : section === "roster"
-            ? []
-            : [
-              ...ADMIN_GROUPS.map((g) => ({
-                id: g.id,
-                label: t(g.label),
-                on: view === "admin" && paneInGroup(adminPane, g.id),
-                onClick: () => {
-                  if (!paneInGroup(adminPane, g.id)) setAdminPane(defaultPane(g.id));
-                  go("admin");
-                },
-              })),
-              { id: "club", label: t("Club"), on: view === "club", onClick: () => go("club"), hidden: !featureOn(file, "club") },
-              { id: "hall", label: t("Hall"), on: view === "studyhall", onClick: () => go("studyhall"), hidden: !featureOn(file, "studyhall") },
-              { id: "prints", label: t("Prints"), on: view === "prints", onClick: () => go("prints"), hidden: !featureOn(file, "prints") },
-              { id: "crib", label: t("Crib"), on: view === "crib", onClick: () => go("crib"), hidden: !featureOn(file, "crib") },
-              { id: "stocks", label: t("Stocks"), on: view === "wallet", onClick: () => go("wallet"), hidden: !featureOn(file, "stocks") },
-              { id: "lucky", label: t("Lucky"), on: view === "lucky", onClick: () => go("lucky"), hidden: !featureOn(file, "lucky") },
-              { id: "store", label: t("Store"), on: view === "store", onClick: () => go("store"), hidden: !featureOn(file, "store") },
-            ];
-
-  const dashPins: NavTab[] = [
+  const primaryTabs: NavTab[] = [
     { id: "wall", label: t("Wall"), on: view === "overview", onClick: () => go("overview") },
-    { id: "teach", label: t("Teach"), on: view === "teach" || view === "polls", onClick: () => go("teach"), hidden: !featureOn(file, "teach") },
-    { id: "deck", label: t("Deck"), on: view === "deck", onClick: () => go("deck") },
+    {
+      id: "hour",
+      label: t("This hour"),
+      on: (view === "skills" && learnStart === "plan") || view === "teach",
+      onClick: () => {
+        setLearnStart("plan");
+        if (!unlocked) {
+          setPendingLearn("plan");
+          askPin("skills");
+          return;
+        }
+        go("skills");
+      },
+    },
+    { id: "score", label: t("Score"), on: view === "score" || view === "crew", onClick: () => goDesk() },
+    { id: "people", label: t("People"), on: view === "roster", onClick: () => go("roster") },
+    { id: "shop", label: t("Shop"), on: view === "shop" || view === "admin", onClick: () => go("shop") },
   ];
-  const headerTabs: NavTab[] = chromeTabs(section, dashPins, v2Tabs, phone);
+  const headerTabs: NavTab[] = chromeTabs(section, [], primaryTabs, phone);
+
+  function openShopItem(id: string) {
+    if (id === "words") {
+      setLearnStart("words");
+      go("skills");
+      return;
+    }
+    if (id === "skills") {
+      setLearnStart("skills");
+      go("skills");
+      return;
+    }
+    if (id === "today" || id === "crews" || id === "vault" || id === "room") {
+      setAdminPane(id as typeof adminPane);
+      go("admin");
+      return;
+    }
+    go(id as View);
+  }
 
   const appStrip = !crewOn ? (
     <AppNav
@@ -757,10 +749,10 @@ export function Board() {
                   aria-label="Settings"
                   onClick={() => {
                     if (!unlocked) {
-                      askPin("admin");
+                      askPin("shop");
                       return;
                     }
-                    go("admin");
+                    go("shop");
                   }}
                   className={cn(
                     "tw-hud-btn tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-xl text-fg hover:bg-elevated",
@@ -1000,12 +992,14 @@ export function Board() {
         <ClubBoard unlocked={unlocked} onNeedPin={() => askPin()} wall onWall={() => go("club")} desk={file} onDesk={commitDesk} />
       ) : view === "club" ? (
         <ClubBoard unlocked={unlocked} onNeedPin={() => askPin()} onWall={() => go("clubwall")} desk={file} onDesk={commitDesk} />
+      ) : view === "shop" ? (
+        <ShopMenu onGo={openShopItem} />
       ) : view === "teach" ? (
         <TeachBoard file={graphFile} unlocked={unlocked} date={planDate} onDate={setPlanDate} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onPlan={(iso, p) => { if (iso) setPlanDate(iso); if (p != null) setJumpPeriod(p); setLearnStart("plan"); if (!unlocked) { setPendingLearn("plan"); askPin("skills"); return; } go("skills"); }} onWords={() => { setLearnStart("words"); go("skills"); }} onCrib={unlocked && featureOn(file, "crib") ? (iso, p) => { if (iso) setPlanDate(iso); if (p != null) setJumpPeriod(p); go("crib"); } : undefined} onWall={() => go("overview")} onDeck={() => go("deck")} />
       ) : view === "polls" ? (
         <PollBoard file={file} unlocked={unlocked} onChange={commitDesk} onNeedPin={() => askPin()} />
       ) : view === "deck" ? (
-        <DeckBoard file={graphFile} unlocked={unlocked} date={planDate} onNeedPin={() => askPin()} onTeach={() => go("teach")} onChange={commitDesk} />
+        <DeckBoard file={graphFile} unlocked={unlocked} date={planDate} onNeedPin={() => askPin()} onTeach={() => { setLearnStart("plan"); go("skills"); }} onChange={commitDesk} />
       ) : view === "week" ? (
         <WeekBoard
           file={wallFile}
@@ -1049,10 +1043,15 @@ export function Board() {
           onTeach={() => {
             go("teach");
           }}
-          onOther={() => goSection("admin")}
+          onOther={() => go("shop")}
           onRoster={() => goSection("roster")}
           onSkills={() => {
-            setLearnStart(unlocked ? "plan" : "words");
+            setLearnStart("plan");
+            if (!unlocked) {
+              setPendingLearn("plan");
+              askPin("skills");
+              return;
+            }
             go("skills");
           }}
           onProjects={() => {
