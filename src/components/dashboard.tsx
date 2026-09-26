@@ -107,6 +107,8 @@ export const Dashboard = memo(function Dashboard({
   showStatus = true,
   onSeeWall,
   onArrange,
+  focus = null,
+  onClearFocus,
 }: {
   list: ScoredStudent[];
   bells: Bell[];
@@ -125,6 +127,8 @@ export const Dashboard = memo(function Dashboard({
   showStatus?: boolean;
   onSeeWall?: () => void;
   onArrange?: () => void;
+  focus?: { date: string; period: number } | null;
+  onClearFocus?: () => void;
 }) {
   const { t } = useLang();
   const fold = useDashFold();
@@ -137,20 +141,23 @@ export const Dashboard = memo(function Dashboard({
   const shop = useMemo(() => shopBells(file).map((b) => b.period), [file]);
   const live = periodNow(bellsId, now);
   const nxt = periodNext(bellsId, now);
+  const preview = focus && shop.includes(focus.period) ? focus : null;
   const shown =
     viewP != null && shop.includes(viewP)
       ? viewP
-      : live != null && shop.includes(live)
-        ? live
-        : nxt && shop.includes(nxt.period)
-          ? nxt.period
-          : teachFocusPeriod(file, today, now);
+      : preview
+        ? preview.period
+        : live != null && shop.includes(live)
+          ? live
+          : nxt && shop.includes(nxt.period)
+            ? nxt.period
+            : teachFocusPeriod(file, today, now);
   const viewMine = shop.includes(shown);
   const clock = live != null ? periodClock(live, bellsId, now) : null;
   const shopLive = Boolean(clock?.live);
   const afterBell = isSchoolDay(today) && live == null && nxt == null;
   const openDay = nextOpenDay(today, afterBell);
-  const wallDate = shopLive || afterBell ? today : openDay;
+  const wallDate = preview && viewP == null ? preview.date : shopLive || afterBell ? today : openDay;
   const wallJob = teachJob(file, shown, wallDate);
   const wallSpine = hourWallSpine(file, wallDate, shown);
   const wallSlots = laySlots(file, wallDate, shown);
@@ -483,6 +490,11 @@ export const Dashboard = memo(function Dashboard({
       ]}
     >
     <div className={cn("tw-web-wall relative flex w-full flex-1 flex-col gap-1.5", arrange ? "overflow-auto" : "min-h-0 overflow-hidden")} data-wall-stage={arrange ? "edit" : "show"}>
+      {preview && viewP == null ? (
+        <button type="button" onClick={onClearFocus} className="tw-tap min-h-11 shrink-0 rounded-xl bg-accent px-3 text-left text-sm font-semibold text-accent-fg">
+          Showing this hour · P{preview.period}. Back to now.
+        </button>
+      ) : null}
       {unlocked && !arrange && onArrange ? (
         <div className="flex shrink-0 justify-end">
           <button type="button" onClick={onArrange} className="tw-tap min-h-9 rounded-full bg-elevated px-3 text-xs font-semibold">

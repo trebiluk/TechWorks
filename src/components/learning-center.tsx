@@ -59,7 +59,7 @@ export function LearningCenter({
   onOpenSettings?: () => void;
   onRankUp?: (alias: string, band: string) => void;
   onTeachDay?: (date: string, period: number) => void;
-  onSeeWall?: () => void;
+  onSeeWall?: (date?: string, period?: number) => void;
   onDeck?: () => void;
   onGrade?: () => void;
   onStart?: (start: LearnStart) => void;

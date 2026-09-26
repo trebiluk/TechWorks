@@ -1,8 +1,14 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.128. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.129. -->
 
 # TechWorks changelog
 
-App version **1.92.128**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.129**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.129 — 2026-09-26
+
+- This hour is the four beats, the activity name, and Show the wall.
+- The activity name saves when you leave the field. The same name is the grade column.
+- Show the wall opens that hour, not whatever period is live.
 
 ## 1.92.128 — 2026-09-26
 

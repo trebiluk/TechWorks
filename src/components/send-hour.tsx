@@ -111,7 +111,7 @@ export function SendHour({
     <div className="grid gap-2" data-send-hour>
       <p className="text-[11px] font-bold uppercase tracking-wide text-subtle">Send this hour</p>
       {!sourceOn ? (
-        <p className="text-sm text-muted">Type the job first. Then send this hour to other periods or days. Save writes edits onto hours you already sent.</p>
+        <p className="text-sm text-muted">Type a beat. Then send this hour.</p>
       ) : null}
       {sourceOn ? (
         <>

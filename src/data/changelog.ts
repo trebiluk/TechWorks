@@ -6,6 +6,12 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.129 — 2026-09-26
+
+- This hour is the four beats, the activity name, and Show the wall.
+- The activity name saves when you leave the field. The same name is the grade column.
+- Show the wall opens that hour, not whatever period is live.
+
 ## 1.92.128 — 2026-09-26
 
 - On a phone, This hour is one short line. The date no longer stacks over the lesson.

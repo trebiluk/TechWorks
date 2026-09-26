@@ -100,6 +100,7 @@ export function Board() {
   const list = useMemo(() => score(wallFile), [wallFile]);
   const bells = useMemo(() => bellFor(wallFile), [wallFile]);
   const [view, setView] = useState<View>("overview");
+  const [wallFocus, setWallFocus] = useState<{ date: string; period: number } | null>(null);
   const [learnStart, setLearnStart] = useState<LearnStart>("projects");
   const [pendingLearn, setPendingLearn] = useState<LearnStart | null>(null);
   const [deskPanel] = useState<DeskPanel>("score");
@@ -578,6 +579,8 @@ export function Board() {
             setArrangeOn(true);
           }}
           onSeeWall={() => setArrangeOn(false)}
+          focus={wallFocus}
+          onClearFocus={() => setWallFocus(null)}
           rankBoard={rankBoard}
           onRankBoard={toggleRank}
           onPeriod={(p) => {
@@ -906,7 +909,10 @@ export function Board() {
             setJumpPeriod(p);
             go("teach");
           }}
-          onSeeWall={() => go("overview")}
+          onSeeWall={(date, period) => {
+            if (date && period != null) setWallFocus({ date, period });
+            go("overview");
+          }}
           onDeck={() => go("deck")}
           onGrade={() => go("grades")}
           onStart={setLearnStart}
