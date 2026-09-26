@@ -28,6 +28,7 @@ import { periodNow } from "@/lib/bells";
 import { cn } from "@/lib/utils";
 import { crewDone, crewsOf, type CrewRow } from "@/lib/crews";
 import { crewEffortMark, crewGlyphId, isEffortMark, type CrewGlyphId, type EffortMark } from "@/lib/score-pad";
+import { acceptTicket, answerTicket, readTicket } from "@/lib/ticket";
 
 const GLYPH: Record<CrewGlyphId, LucideIcon> = {
   flame: Flame,
@@ -302,13 +303,24 @@ export function ScoreDesk({
         <LeadPad
           crew={visibleCrews[0]!}
           date={date}
+          period={period}
+          file={file}
           locked={scoringLocked}
           lockLine={
             livePeriod === 6 ? "Study hall · Tech crews after." : livePeriod ? `P${livePeriod} only. Wait for your class.` : "Between classes. Lock when done."
           }
           onTap={(code) => tapCrew(visibleCrews[0]!, code)}
+          onAnswer={(pick) => commit(answerTicket(file, date, period, visibleCrews[0]!.key, pick))}
         />
       ) : (
+        <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-hidden">
+          <TicketAccept
+            file={file}
+            date={date}
+            period={period}
+            crews={visibleCrews}
+            onAccept={(key) => commit(acceptTicket(file, date, period, key))}
+          />
         <div
           data-score-crews
           className={cn("grid min-h-0 flex-1 gap-1.5 overflow-hidden px-1", twoCol ? "grid-cols-2" : "grid-cols-1")}
@@ -329,6 +341,7 @@ export function ScoreDesk({
               </div>
             );
           })}
+        </div>
         </div>
       )}
 
@@ -370,20 +383,27 @@ export function ScoreDesk({
 function LeadPad({
   crew,
   date,
+  period,
+  file,
   locked,
   lockLine,
   onTap,
+  onAnswer,
 }: {
   crew: CrewRow;
   date: string;
+  period: number;
+  file: EconomyFile;
   locked?: boolean;
   lockLine?: string;
   onTap: (code: EffortMark) => void;
+  onAnswer: (pick: string) => void;
 }) {
   const mark = crewEffortMark(crew.kids.map((s) => padMark(s, date)));
   const school = isSchoolDay(date);
+  const ticket = readTicket(file, date, period, crew.key);
   return (
-    <section data-score-crews data-score-crew={crew.key} data-score-lead className="score-lead-card flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 sm:p-5">
+    <section data-score-crews data-score-crew={crew.key} data-score-lead className="score-lead-card flex min-h-0 flex-1 flex-col gap-3 overflow-hidden p-4 sm:p-5">
       <div className="flex items-center gap-3 border-b border-white/10 pb-3">
         <CrewHex name={crew.name || crew.key} size="lg" />
         <div className="min-w-0">
@@ -399,6 +419,67 @@ function LeadPad({
           <FatMark key={code} code={code} fat on={mark === code} disabled={locked} onClick={() => onTap(code)} />
         ))}
       </div>
+      <div className="shrink-0 rounded-2xl bg-elevated p-3">
+        <p className="text-[11px] font-bold uppercase tracking-wider text-muted">Ticket out · not XP until the teacher accepts</p>
+        <p className="mt-1 text-sm">{ticket.prompt}</p>
+        {ticket.accepted ? (
+          <p className="mt-2 text-sm font-semibold">XP is in.</p>
+        ) : ticket.pick ? (
+          <p className="mt-2 text-sm font-semibold">Sent. Waiting for the teacher.</p>
+        ) : (
+          <div className="mt-2 flex flex-wrap gap-1">
+            {ticket.choices.map((choice) => (
+              <button
+                key={choice}
+                type="button"
+                disabled={locked}
+                onClick={() => onAnswer(choice)}
+                className="tw-tap min-h-11 rounded-xl bg-bg px-3 text-sm font-semibold disabled:opacity-40"
+              >
+                {choice}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
     </section>
+  );
+}
+
+function TicketAccept({
+  file,
+  date,
+  period,
+  crews,
+  onAccept,
+}: {
+  file: EconomyFile;
+  date: string;
+  period: number;
+  crews: CrewRow[];
+  onAccept: (crewKey: string) => void;
+}) {
+  const rows = crews
+    .map((c) => ({ crew: c, ticket: readTicket(file, date, period, c.key) }))
+    .filter((r) => r.ticket.pick);
+  if (!rows.length) return null;
+  return (
+    <div className="flex shrink-0 flex-wrap gap-1 px-1">
+      {rows.map(({ crew, ticket }) =>
+        ticket.accepted ? (
+          <span key={crew.key} className="inline-flex min-h-11 items-center rounded-xl bg-elevated px-3 text-sm font-semibold text-muted">
+            {crew.name} · XP in
+          </span>
+        ) : ticket.pick === ticket.term ? (
+          <button key={crew.key} type="button" onClick={() => onAccept(crew.key)} className="tw-tap min-h-11 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">
+            Accept {crew.name} · 1 XP
+          </button>
+        ) : (
+          <span key={crew.key} className="inline-flex min-h-11 items-center rounded-xl bg-elevated px-3 text-sm font-semibold text-muted">
+            {crew.name} · not the word
+          </span>
+        ),
+      )}
+    </div>
   );
 }

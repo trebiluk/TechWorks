@@ -18,12 +18,14 @@ export function RosterWall({
   unlocked,
   onOpenId,
   onRecords,
+  onGrade,
 }: {
   file: EconomyFile;
   list: ScoredStudent[];
   unlocked: boolean;
   onOpenId: (id: string) => void;
   onRecords?: () => void;
+  onGrade?: () => void;
 }) {
   const today = todayIso();
   const letter = abOn(file, today);
@@ -44,15 +46,24 @@ export function RosterWall({
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col gap-3 overflow-y-auto overscroll-y-contain pb-3">
       <header className="shrink-0">
-        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gold">Rosters · {letter} day</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gold">People · {letter} day</p>
         <p className="font-display text-3xl font-bold tracking-tight">P{shown}</p>
         <p className="text-sm text-muted">
           {n ? `${n} on the board` : "No aliases yet."} · tap a card
         </p>
-        {unlocked && onRecords ? (
-          <button type="button" onClick={onRecords} className="tw-tap mt-2 min-h-11 rounded-xl bg-accent px-4 text-sm font-semibold text-accent-fg">
-            Add a class
-          </button>
+        {unlocked ? (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {onRecords ? (
+              <button type="button" onClick={onRecords} className="tw-tap min-h-11 rounded-xl bg-accent px-4 text-sm font-semibold text-accent-fg">
+                Add a class
+              </button>
+            ) : null}
+            {onGrade ? (
+              <button type="button" onClick={onGrade} className="tw-tap min-h-11 rounded-xl bg-elevated px-4 text-sm font-semibold">
+                Grade
+              </button>
+            ) : null}
+          </div>
         ) : null}
       </header>
 

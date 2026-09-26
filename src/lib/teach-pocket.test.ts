@@ -22,12 +22,13 @@ describe("TEACH Edge Pocket", () => {
     assert.match(css, /\.tw-teach-pocket-btn \{[\s\S]*?min-height:\s*2\.75rem/);
   });
 
-  it("puts PlanIt · Deck · Projector · Hang in the pocket, not a second header row", () => {
+  it("keeps Hang and Print in the pocket, not a second planner", () => {
     assert.match(teach, /<TeachPocket/);
-    assert.match(teach, /label:\s*"PlanIt"/);
-    assert.match(teach, /label:\s*"Deck"/);
-    assert.match(teach, /label:\s*"Projector"/);
     assert.match(teach, /label:\s*"Hang"/);
+    assert.match(teach, /label:\s*"Print"/);
+    assert.doesNotMatch(teach, /label:\s*"PlanIt"/);
+    assert.doesNotMatch(teach, /label:\s*"Deck"/);
+    assert.doesNotMatch(teach, /label:\s*"Projector"/);
     assert.doesNotMatch(teach, /label:\s*"Arrange"/);
     assert.doesNotMatch(teach, /function plateOf/);
     assert.doesNotMatch(teach, /function TeachRing/);

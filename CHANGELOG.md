@@ -1,8 +1,15 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.119. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.120. -->
 
 # TechWorks changelog
 
-App version **1.92.119**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.120**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.120 — 2026-09-26
+
+- Run the room no longer opens PlanIt, Deck, or the projector. Hang and Print stay.
+- People has the grade. Shop no longer does. Present stays on This hour.
+- Shop’s first page is seven jobs. The rest sit under More.
+- A crew can answer a ticket-out word. It is not XP until you tap Accept on Score. A wrong word cannot be accepted. Wallet stays out.
 
 ## 1.92.119 — 2026-09-26
 

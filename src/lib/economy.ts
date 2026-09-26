@@ -344,6 +344,8 @@ export type EconomyFile = {
         specials?: { title: string; who?: string; place?: string; start?: string; end?: string; period?: number }[];
         cards?: { title: string; body: string }[];
         verify?: Record<string, boolean>;
+        /** Ticket out the door. Key is period|crew. Not a grade. */
+        ticket?: Record<string, { prompt: string; term: string; choices: string[]; pick?: string; accepted?: boolean }>;
       }
     >;
   };

@@ -566,7 +566,7 @@ export function Board() {
       },
     },
     { id: "score", label: t("Score"), on: view === "score" || view === "crew", onClick: () => goDesk() },
-    { id: "people", label: t("People"), on: view === "roster", onClick: () => go("roster") },
+    { id: "people", label: t("People"), on: view === "roster" || (view === "skills" && (learnStart === "grades" || learnStart === "book")), onClick: () => go("roster") },
     { id: "shop", label: t("Shop"), on: view === "shop" || view === "admin", onClick: () => go("shop") },
   ];
   const headerTabs: NavTab[] = chromeTabs(section, [], primaryTabs, phone);
@@ -855,6 +855,7 @@ export function Board() {
             setAdminPane("roster");
             go("admin");
           }}
+          onGrade={() => go("grades")}
         />
       ) : view === "admin" && unlocked ? (
         <AdminHub
@@ -1035,7 +1036,13 @@ export function Board() {
       </div>
       {embed || portalMode || (crewOn && view === "crew") || !phone ? null : (
         <PhoneDock
-          view={view === "skills" && learnStart === "projects" ? "projects" : view}
+          view={
+            view === "skills" && (learnStart === "grades" || learnStart === "book")
+              ? "roster"
+              : view === "skills" && learnStart === "projects"
+                ? "projects"
+                : view
+          }
           pad={deskPad}
           navV2
           onBoard={() => go("overview")}
