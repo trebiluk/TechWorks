@@ -132,9 +132,7 @@ export function ProjectsBoard({
             />
             <div className="tw-gadget p-4">
               <p className="font-display text-lg font-semibold">The hour lives on PlanIt</p>
-              <p className="mt-1 text-sm text-muted">
-                Job · Guiding Q · Prove · beats. Teach and Deck play that write. This page parks a multi-day unit only.
-              </p>
+              <p className="mt-1 text-sm text-muted">Four beats. Teach and the wall play that. This page only names a multi-day unit.</p>
               {onPlanIt ? (
                 <button type="button" onClick={onPlanIt} className="tw-tap mt-3 inline-flex min-h-11 items-center rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">
                   Open PlanIt

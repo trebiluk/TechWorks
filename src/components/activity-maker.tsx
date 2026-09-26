@@ -85,6 +85,7 @@ export function ActivityMaker({
   const [prove, setProve] = useState<(typeof PROVE)[number]["id"]>("both");
   const [projectId, setProjectId] = useState("");
   const [parked, setParked] = useState<string | null>(null);
+  const [models, setModels] = useState(false);
   const units = periodUnits(file, period);
 
   function pickStep(id: (typeof STEPS)[number]["id"]) {
@@ -141,7 +142,7 @@ export function ActivityMaker({
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-wider text-gold">New activity</p>
-          <p className="mt-0.5 text-sm text-muted">Park a multi-day unit here. The hour itself is written on PlanIt.</p>
+          <p className="mt-0.5 text-sm text-muted">Name it, say what they do, pick the days. The hour beats stay on PlanIt.</p>
         </div>
         {ready ? (
           <button
@@ -169,7 +170,57 @@ export function ActivityMaker({
           This period already has {units.map((u) => u.title).join(" · ")}. Park to add a day, or pick the unit under Add to a project.
         </p>
       ) : null}
-      <div className="grid gap-3 lg:grid-cols-2">
+      <div className="grid gap-3">
+      <label className="grid gap-1">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">What they do</span>
+        <input
+          value={doit}
+          onChange={(e) => setDoit(e.target.value)}
+          onKeyDown={keepSpace}
+          placeholder="Cut the part. Try the move."
+          className="tw-field"
+        />
+      </label>
+      <label className="grid gap-1">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Done when</span>
+        <input
+          value={done}
+          onChange={(e) => setDone(e.target.value)}
+          onKeyDown={keepSpace}
+          placeholder="It fits, and the move works once."
+          className="tw-field"
+        />
+      </label>
+      <label className="grid gap-1">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Name</span>
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onKeyDown={keepSpace}
+          placeholder={doit.trim() || "Name on the plan"}
+          className="tw-field"
+        />
+      </label>
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Days</p>
+        <div className="mt-1 flex flex-wrap gap-1">
+          {days.map((d) => (
+            <button
+              key={d}
+              type="button"
+              onClick={() => toggleDay(d)}
+              className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-semibold", picked.includes(d) ? "bg-gold text-bg" : "bg-elevated text-muted")}
+            >
+              {formatSchoolDate(d)}
+            </button>
+          ))}
+        </div>
+      </div>
+      <button type="button" onClick={() => setModels((v) => !v)} className="tw-tap min-h-11 text-left text-sm font-semibold text-muted">
+        {models ? "Less" : "More"}
+      </button>
+      {models ? (
+      <div className="grid gap-3">
       <div>
         <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">What is this?</p>
         <div className="mt-1 flex flex-wrap gap-1">
@@ -230,48 +281,8 @@ export function ActivityMaker({
           </div>
         </div>
       ) : null}
-      <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Ask · the problem</span>
-        <input
-          value={ask}
-          onChange={(e) => setAsk(e.target.value)}
-          onKeyDown={keepSpace}
-          placeholder="How can a small force move a bigger load?"
-          className="tw-field"
-        />
-      </label>
-      <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Do this now</span>
-        <input
-          value={doit}
-          onChange={(e) => setDoit(e.target.value)}
-          onKeyDown={keepSpace}
-          placeholder="Name the load. Sketch one machine that could move it."
-          className="tw-field"
-        />
-      </label>
-      <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Done when</span>
-        <input
-          value={done}
-          onChange={(e) => setDone(e.target.value)}
-          onKeyDown={keepSpace}
-          placeholder="Point to the load and the force on the sketch."
-          className="tw-field"
-        />
-      </label>
-      <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Name on the plan book</span>
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onKeyDown={keepSpace}
-          placeholder={doit.trim() || ask.trim() || "Brainstorm levers"}
-          className="tw-field"
-        />
-      </label>
       <div>
-        <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Skill · what a 3 looks like</p>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Skill</p>
         <div className="mt-1 flex flex-wrap gap-1">
           {SKILLS.map((s) => (
             <button
@@ -324,21 +335,8 @@ export function ActivityMaker({
           ))}
         </div>
       </div>
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Days this activity runs</p>
-        <div className="mt-1 flex flex-wrap gap-1">
-          {days.map((d) => (
-            <button
-              key={d}
-              type="button"
-              onClick={() => toggleDay(d)}
-              className={cn("tw-tap min-h-9 rounded-full px-3 text-sm font-semibold", picked.includes(d) ? "bg-gold text-bg" : "bg-elevated text-muted")}
-            >
-              {formatSchoolDate(d)}
-            </button>
-          ))}
-        </div>
       </div>
+      ) : null}
       </div>
     </section>
   );

@@ -1,8 +1,14 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.116. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.117. -->
 
 # TechWorks changelog
 
-App version **1.92.116**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.117**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.117 — 2026-09-25
+
+- PlanIt opens on the four beats. The week grid, the question, and units sit behind Week or More.
+- New activity is a name, what they do, and the days. The design-process chips are under More.
+- Deck plays the hour. It does not edit slides. Edit this hour goes back to the plan.
 
 ## 1.92.116 — 2026-09-25
 

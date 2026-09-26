@@ -26,7 +26,6 @@ import {
   weekdayShort,
 } from "@/lib/planit";
 import { hourAgendaDraft } from "@/lib/hour-flow";
-import { LIVE_BEATS } from "@/lib/live-board";
 import { SKILL_TRACK, SOFT_TRACK, skillTrackOf } from "@/lib/skills";
 import { DraftField } from "@/components/draft-field";
 import { LessonPlanSheet } from "@/components/lesson-plan-sheet";
@@ -71,7 +70,7 @@ export function PlanIt({
   }, [dateProp, periodProp, today, firstP]);
   const [printOn, setPrintOn] = useState(false);
   const [notice, setNotice] = useState("");
-  const [gridOn, setGridOn] = useState(true);
+  const [gridOn, setGridOn] = useState(false);
   const fileRef = useRef(file);
   fileRef.current = file;
   const week = weekOn(weekDate);
@@ -182,7 +181,7 @@ export function PlanIt({
           <span style={{ width: `${pct}%` }} />
         </div>
         <p className="text-xs text-muted">
-          {fill.set}/{fill.total} hours · Job · Guiding Q · Beats write TEACH · Deck plays TEACH
+          {fill.set}/{fill.total} hours · four beats are the wall. Week is the map.
         </p>
         {notice ? <p className="text-sm font-semibold text-gain">{notice}</p> : null}
       </header>
@@ -350,60 +349,12 @@ function HourDesk({
         ) : null}
       </div>
 
-      <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Job</span>
-        <DraftField
-          value={cell.do || cell.title}
-          editing={unlocked}
-          multiline
-          onCommit={(v) => patch((f) => setPlanitJob(f, d, p, v))}
-          placeholder="What they do this hour — that’s the wall."
-          aria-label="Job"
-          className="min-h-[4.5rem] rounded-xl bg-elevated px-3 py-2 font-display text-lg font-semibold"
-        />
-      </label>
-
-      <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Guiding Q</span>
-        <DraftField
-          value={cell.ask}
-          editing={unlocked}
-          multiline
-          onCommit={(v) => patch((f) => setPlanitQuestion(f, d, p, v))}
-          placeholder="How can a small force move a bigger load?"
-          aria-label="Guiding question"
-          className="min-h-11 rounded-xl bg-elevated px-3 py-2 text-sm"
-        />
-      </label>
-
-      <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Prove</span>
-        <DraftField
-          value={cell.objective}
-          editing={unlocked}
-          onCommit={(v) => patch((f) => setPlanitProve(f, d, p, v))}
-          placeholder="What they show before the bell."
-          aria-label="Prove"
-          className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
-        />
-      </label>
-
-      <HourSkills cell={cell} unlocked={unlocked} onEdit={commit} file={file} />
-
       <div className="grid gap-2" data-planit-beats>
-        <p className="tw-mf-kicker">Beats</p>
-        <div className="tw-mf-beats">
-          {LIVE_BEATS.map((b) => (
-            <span key={b.id} data-tone={b.tone} className="tw-mf-beat">
-              {b.label}
-            </span>
-          ))}
-        </div>
         {(
           [
             ["now", "01 Now", "Sit with your crew."],
             ["goal", "02 Do this", "The make for this hour."],
-            ["next", "03 Then", "Second move · peer restyle"],
+            ["next", "03 Then", "Second move."],
             ["behave", "04 How we work", "Choose → work → focus → cleanup."],
           ] as const
         ).map(([id, label, ph]) => (
@@ -421,36 +372,71 @@ function HourDesk({
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        <label className="grid gap-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Need</span>
-          <DraftField
-            value={cell.materials}
-            editing={unlocked}
-            onCommit={(v) => patch((f) => setTeachMaterials(f, d, p, v))}
-            placeholder="Stock · PPE"
-            className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
-          />
-        </label>
-        <label className="grid gap-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Close</span>
-          <DraftField
-            value={cell.close}
-            editing={unlocked}
-            onCommit={(v) => patch((f) => setTeachClose(f, d, p, v))}
-            placeholder="Exit / reset"
-            className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
-          />
-        </label>
-      </div>
-
       {cell.set ? <WallPreview preview={preview} /> : null}
 
-      <button type="button" onClick={() => setMore((v) => !v)} className="tw-tap min-h-9 text-left text-[11px] font-bold uppercase tracking-wider text-muted">
-        {more ? "Less" : "Notes · homework · unit"}
+      <button type="button" onClick={() => setMore((v) => !v)} className="tw-tap min-h-11 text-left text-sm font-semibold text-muted">
+        {more ? "Less" : "More"}
       </button>
       {more ? (
         <div className="grid gap-2">
+          <label className="grid gap-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Job</span>
+            <DraftField
+              value={cell.do || cell.title}
+              editing={unlocked}
+              multiline
+              onCommit={(v) => patch((f) => setPlanitJob(f, d, p, v))}
+              placeholder="Same as Do this, if you want a shorter line."
+              aria-label="Job"
+              className="min-h-11 rounded-xl bg-elevated px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="grid gap-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Question</span>
+            <DraftField
+              value={cell.ask}
+              editing={unlocked}
+              multiline
+              onCommit={(v) => patch((f) => setPlanitQuestion(f, d, p, v))}
+              placeholder="Optional."
+              aria-label="Question"
+              className="min-h-11 rounded-xl bg-elevated px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="grid gap-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Prove</span>
+            <DraftField
+              value={cell.objective}
+              editing={unlocked}
+              onCommit={(v) => patch((f) => setPlanitProve(f, d, p, v))}
+              placeholder="What they show before the bell."
+              aria-label="Prove"
+              className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
+            />
+          </label>
+          <HourSkills cell={cell} unlocked={unlocked} onEdit={commit} file={file} />
+          <div className="grid grid-cols-2 gap-2">
+            <label className="grid gap-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Need</span>
+              <DraftField
+                value={cell.materials}
+                editing={unlocked}
+                onCommit={(v) => patch((f) => setTeachMaterials(f, d, p, v))}
+                placeholder="Stock · PPE"
+                className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
+              />
+            </label>
+            <label className="grid gap-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Close</span>
+              <DraftField
+                value={cell.close}
+                editing={unlocked}
+                onCommit={(v) => patch((f) => setTeachClose(f, d, p, v))}
+                placeholder="Exit / reset"
+                className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
+              />
+            </label>
+          </div>
           <DraftField
             value={cell.homework}
             editing={unlocked}
@@ -481,7 +467,7 @@ function HourDesk({
             placeholder="Mods · no names"
             className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
           />
-          <button type="button" onClick={() => setUnitOn((v) => !v)} className="text-left text-xs font-semibold text-muted">
+          <button type="button" onClick={() => setUnitOn((v) => !v)} className="tw-tap min-h-11 text-left text-sm font-semibold text-muted">
             {unitOn ? "Hide units" : "Part of a unit"}
           </button>
           {unitOn ? (
@@ -538,7 +524,7 @@ function HourDesk({
         ) : null}
         {onDeck ? (
           <button type="button" onClick={onDeck} className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-elevated px-3 text-sm font-semibold">
-            Deck
+            Present
           </button>
         ) : null}
       </div>

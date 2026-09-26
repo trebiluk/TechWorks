@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { ChevronLeft, ChevronRight, Maximize2, Pencil } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 import { Berty } from "@/components/berty";
 import { COPYRIGHT_LINE } from "@/lib/copy";
 import type { DeckCard, DeckSlide } from "@/data/deck";
@@ -413,8 +413,7 @@ export function DeckBoard({
       else if (e.key === "End") setI(slides.length - 1);
       else if (e.key === "f" || e.key === "F") void stage.current?.requestFullscreen?.();
       else if (e.key === "e" || e.key === "E") {
-        if (!unlocked) onNeedPin?.();
-        else setPaint((on) => !on);
+        askTeach();
       }
     }
     window.addEventListener("keydown", onKey);
@@ -455,7 +454,7 @@ export function DeckBoard({
     <section className="flex min-h-0 flex-1 flex-col gap-2">
       <div className="flex flex-wrap items-center gap-2">
         <p className="text-sm font-medium uppercase tracking-wider text-subtle">{pack.title}</p>
-        <span className="text-sm font-semibold text-gold">{formatSchoolDate(date)} · same as Teach</span>
+        <span className="text-sm font-semibold text-gold">{formatSchoolDate(date)} · play only</span>
         <span className="font-mono text-xs text-muted">
           {Math.min(i + 1, slides.length)} / {slides.length}
         </span>
@@ -493,26 +492,13 @@ export function DeckBoard({
           >
             <Maximize2 className="size-4" /> Present
           </button>
-          <button
-            type="button"
-            onClick={() => {
-              if (!unlocked) {
-                onNeedPin?.();
-                return;
-              }
-              setPaint((on) => !on);
-            }}
-            className={cn("tw-tap inline-flex min-h-11 items-center gap-2 rounded-md px-3 text-sm font-semibold", paint ? "bg-gold text-bg" : "bg-elevated")}
-          >
-            <Pencil className="size-4" /> {paint ? "Done" : "Edit slides"}
-          </button>
           {onTeach ? (
             <button
               type="button"
               onClick={askTeach}
               className="tw-tap inline-flex min-h-11 items-center gap-2 rounded-md bg-elevated px-3 text-sm font-semibold"
             >
-              Hour on Teach
+              Edit this hour
             </button>
           ) : null}
         </div>
