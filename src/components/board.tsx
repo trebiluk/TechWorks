@@ -1,7 +1,7 @@
 "use client";
 
 import { lazy, startTransition, Suspense, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { CircleHelp, Globe, Search, Settings } from "lucide-react";
+import { Search } from "lucide-react";
 import { TwWordmark } from "@/components/tw-mark";
 import { EdgePocket } from "@/components/edge-pocket";
 import snapshot from "@/data/economy.json";
@@ -11,7 +11,6 @@ import { loadDesk, saveDesk, saveDeskNow, applyDjia, stampLiveExport, isSubDay, 
 import { hydrateVault } from "@/lib/vault";
 import { applyCloudPack, cloudPackCount, cloudSyncPlan, localIsNewer, pullCloud, pushCloud } from "@/lib/desk-cloud";
 import { hourCount, hourPlanOf, readHours, recoverHours } from "@/lib/hour-persist";
-import { CloudChip } from "@/components/cloud-board";
 import { LockBar, PinPad } from "@/components/pin-pad";
 import { DescribeBar } from "@/components/describe-bar";
 import { storedDescribe } from "@/lib/describe";
@@ -567,7 +566,7 @@ export function Board() {
     },
     { id: "score", label: t("Score"), on: view === "score" || view === "crew", onClick: () => goDesk() },
     { id: "people", label: t("People"), on: view === "roster" || (view === "skills" && (learnStart === "grades" || learnStart === "book")), onClick: () => go("roster") },
-    { id: "shop", label: t("Shop"), on: view === "shop" || view === "admin", onClick: () => go("shop") },
+    { id: "shop", label: t("Admin"), on: view === "shop" || view === "admin", onClick: () => go("shop") },
   ];
   const headerTabs: NavTab[] = chromeTabs(section, [], primaryTabs, phone);
 
@@ -582,7 +581,7 @@ export function Board() {
       go("skills");
       return;
     }
-    if (id === "today" || id === "crews" || id === "vault" || id === "room") {
+    if (id === "today" || id === "crews" || id === "vault" || id === "room" || id === "cloud") {
       setAdminPane(id as typeof adminPane);
       go("admin");
       return;
@@ -739,44 +738,7 @@ export function Board() {
                     if (stay !== view) setView(stay as View);
                   }}
                 />
-                <button
-                  type="button"
-                  title="Settings"
-                  aria-label="Settings"
-                  onClick={() => {
-                    if (!unlocked) {
-                      askPin("shop");
-                      return;
-                    }
-                    go("shop");
-                  }}
-                  className={cn(
-                    "tw-hud-btn tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-xl text-fg hover:bg-elevated",
-                    view === "admin" ? "bg-gold text-bg" : "",
-                  )}
-                >
-                  <Settings className="size-5" />
-                </button>
-                <button type="button" title={t("How this class works")} aria-label={t("Help")} onClick={() => setHelpOpen(true)} className="tw-hud-btn tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-xl text-fg hover:bg-elevated">
-                  <CircleHelp className="size-5" />
-                </button>
-                <button type="button" title="Family web — progress and profiles" aria-label="Web" data-web-btn onClick={() => {
-                  const u = new URL(window.location.href);
-                  u.searchParams.set("web", "1");
-                  window.location.assign(u.toString());
-                }} className="tw-hud-btn tw-tap relative z-30 inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl px-2.5 text-fg hover:bg-elevated pointer-events-auto">
-                  <Globe className="size-5" />
-                  <span className="text-xs font-bold uppercase tracking-wide">Web</span>
-                </button>
                 <LangChip />
-                {unlocked ? (
-                <CloudChip
-                  onOpen={() => {
-                    setAdminPane("cloud");
-                    go("admin");
-                  }}
-                />
-                ) : null}
                 <SavedChip />
                 {verChip}
                 </div>
@@ -995,7 +957,15 @@ export function Board() {
       ) : view === "club" ? (
         <ClubBoard unlocked={unlocked} onNeedPin={() => askPin()} onWall={() => go("clubwall")} desk={file} onDesk={commitDesk} />
       ) : view === "shop" ? (
-        <ShopMenu onGo={openShopItem} />
+        <ShopMenu
+          onGo={openShopItem}
+          onHelp={() => setHelpOpen(true)}
+          onWeb={() => {
+            const u = new URL(window.location.href);
+            u.searchParams.set("web", "1");
+            window.location.assign(u.toString());
+          }}
+        />
       ) : view === "teach" ? (
         <TeachBoard file={graphFile} unlocked={unlocked} date={planDate} onDate={setPlanDate} onChange={commitDesk} onNeedPin={() => askPin()} onPolls={() => go("polls")} onPlan={(iso, p) => { if (iso) setPlanDate(iso); if (p != null) setJumpPeriod(p); setLearnStart("plan"); if (!unlocked) { setPendingLearn("plan"); askPin("skills"); return; } go("skills"); }} onWords={() => { setLearnStart("words"); go("skills"); }} onCrib={unlocked && featureOn(file, "crib") ? (iso, p) => { if (iso) setPlanDate(iso); if (p != null) setJumpPeriod(p); go("crib"); } : undefined} onWall={() => go("overview")} onDeck={() => go("deck")} />
       ) : view === "polls" ? (

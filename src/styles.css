@@ -3656,27 +3656,24 @@ html[dir="rtl"] .board-root { direction: rtl; }
   border-top: 1px solid var(--color-border);
 }
 
-/* Mr Fortnite: Dream navy + cyan LCARS. Gold is accent only (crowns / CLEAN / gilded race). */
+/* Teach and This hour use the desk theme. No second cyan skin. */
 .tw-planit-mf,
 .tw-teach-live {
-  --mf-void: #06122b;
-  --mf-plate: #0b1a40;
-  --mf-elev: #132a5c;
-  --mf-cyan: #22d3ee;
-  --mf-violet: #6366f1;
-  --mf-blue: #3b82f6;
-  --mf-gold: #f0d48a;
-  --mf-gold-hi: #ffd700;
+  --mf-void: var(--color-bg);
+  --mf-plate: var(--color-surface);
+  --mf-elev: var(--color-elevated);
+  --mf-cyan: var(--color-accent);
+  --mf-violet: var(--color-accent);
+  --mf-blue: var(--color-accent);
+  --mf-gold: var(--color-gold, var(--color-accent));
+  --mf-gold-hi: var(--color-gold, var(--color-accent));
   --lcars-gold: var(--mf-cyan);
   --lcars-gap: 16px;
   --lcars-thick: 3px;
   gap: 0.55rem;
   padding: 0.35rem;
-  background:
-    radial-gradient(120% 80% at 8% 0%, color-mix(in oklab, var(--mf-cyan) 18%, transparent), transparent 44%),
-    radial-gradient(90% 70% at 92% 100%, color-mix(in oklab, var(--mf-blue) 14%, transparent), transparent 52%),
-    var(--mf-void);
-  color: #f7f9ff;
+  background: var(--color-bg);
+  color: var(--color-fg);
 }
 .tw-planit-mf .tw-planit-stage {
   overflow: hidden;
@@ -3775,13 +3772,13 @@ html[dir="rtl"] .board-root { direction: rtl; }
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #eef2ff;
+  color: var(--color-fg);
   background: color-mix(in oklab, var(--mf-elev) 80%, #000);
 }
-.tw-mf-beat[data-tone="enter"] { box-shadow: inset 0 0 0 1.5px var(--mf-blue); color: #9ad4ff; }
-.tw-mf-beat[data-tone="listen"] { box-shadow: inset 0 0 0 1.5px var(--mf-violet); color: #c5d4ff; }
-.tw-mf-beat[data-tone="crew"] { box-shadow: inset 0 0 0 1.5px var(--mf-cyan); color: #9ae8f5; }
-.tw-mf-beat[data-tone="clean"] { box-shadow: inset 0 0 0 1.5px var(--mf-gold); color: var(--mf-gold-hi); }
+.tw-mf-beat[data-tone="enter"] { box-shadow: inset 0 0 0 1.5px var(--color-accent); color: var(--color-fg); }
+.tw-mf-beat[data-tone="listen"] { box-shadow: inset 0 0 0 1.5px var(--color-accent); color: var(--color-fg); }
+.tw-mf-beat[data-tone="crew"] { box-shadow: inset 0 0 0 1.5px var(--color-accent); color: var(--color-fg); }
+.tw-mf-beat[data-tone="clean"] { box-shadow: inset 0 0 0 1.5px var(--color-gold, var(--color-accent)); color: var(--color-fg); }
 .tw-mf-beat[data-on="on"] {
   background: color-mix(in oklab, var(--mf-cyan) 16%, var(--mf-elev));
 }
@@ -3817,12 +3814,12 @@ html[dir="rtl"] .board-root { direction: rtl; }
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #c9d4ff;
-  background: color-mix(in oklab, var(--mf-elev) 70%, transparent);
+  color: var(--color-muted);
+  background: var(--color-elevated);
 }
 .tw-mf-tab[data-on="on"] {
-  color: #1a1408;
-  background: linear-gradient(180deg, var(--mf-gold-hi), var(--mf-gold));
+  color: var(--color-accent-fg);
+  background: var(--color-accent);
 }
 .tw-mf-tab-aux {
   color: var(--mf-cyan);
@@ -3850,13 +3847,13 @@ html[dir="rtl"] .board-root { direction: rtl; }
   line-height: 1.25;
   width: 100%;
   background: var(--mf-elev);
-  color: #f7f9ff;
+  color: var(--color-fg);
   box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--mf-cyan) 28%, transparent);
 }
 .tw-mf-body {
   width: 100%;
   background: var(--mf-elev);
-  color: #f7f9ff;
+  color: var(--color-fg);
 }
 .tw-mf-job-row {
   display: grid;
@@ -3916,7 +3913,7 @@ html[dir="rtl"] .board-root { direction: rtl; }
 .tw-mf-hint {
   margin: 0.15rem 0 0.4rem;
   font-size: 0.72rem;
-  color: #9aa8d8;
+  color: var(--color-muted);
 }
 .tw-mf-beat-list {
   display: grid;
@@ -3956,7 +3953,7 @@ html[dir="rtl"] .board-root { direction: rtl; }
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #9aa8d8;
+  color: var(--color-muted);
 }
 .tw-mf-stat strong {
   margin-left: auto;
@@ -3975,7 +3972,7 @@ html[dir="rtl"] .board-root { direction: rtl; }
 }
 .tw-mf-rank[data-gold="on"] {
   background: var(--mf-elev);
-  color: #f7f9ff;
+  color: var(--color-fg);
   box-shadow:
     inset 0 0 0 1.5px var(--mf-gold),
     0 0 14px color-mix(in oklab, var(--mf-gold) 22%, transparent);
@@ -4032,7 +4029,7 @@ html[dir="rtl"] .board-root { direction: rtl; }
 .tw-mf-classic-row em {
   font-style: normal;
   font-size: 0.68rem;
-  color: #9aa8d8;
+  color: var(--color-muted);
 }
 .tw-mf-classic-row b {
   font-family: var(--font-mono, ui-monospace);
@@ -4042,7 +4039,7 @@ html[dir="rtl"] .board-root { direction: rtl; }
 .tw-mf-classic-empty {
   padding: 0.4rem 0;
   font-size: 0.8rem;
-  color: #9aa8d8;
+  color: var(--color-muted);
 }
 .tw-planit-mf .tw-planit-desk {
   gap: 0.55rem;
@@ -4056,7 +4053,7 @@ html[dir="rtl"] .board-root { direction: rtl; }
 .tw-teach-live input {
   min-width: 0;
   background: var(--mf-elev);
-  color: #f7f9ff;
+  color: var(--color-fg);
   box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--mf-cyan) 32%, transparent);
 }
 .tw-planit-mf textarea:focus,
@@ -4128,11 +4125,9 @@ html[dir="rtl"] .board-root { direction: rtl; }
   box-shadow: inset 0 0 0 1px color-mix(in oklab, #fff 8%, transparent);
 }
 [data-score-mark][data-score-on="1"] {
-  color: #f7f9ff;
-  background: linear-gradient(90deg, #22d3ee 0%, #38bdf8 52%, #60a5fa 100%);
-  box-shadow:
-    0 0 0 1px color-mix(in oklab, #22d3ee 55%, transparent),
-    0 0 28px -4px color-mix(in oklab, #22d3ee 55%, transparent);
+  color: var(--color-accent-fg);
+  background: var(--color-accent);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-accent) 55%, transparent);
 }
 [data-score-pad="teacher"] [data-score-mark][data-score-on="0"] {
   color: color-mix(in oklab, var(--color-accent) 70%, #f7f9ff);
@@ -4162,7 +4157,7 @@ html[dir="rtl"] .board-root { direction: rtl; }
   width: 2.55rem;
   height: 2.8rem;
   flex-shrink: 0;
-  color: #67e8f9;
+  color: var(--color-accent);
 }
 [data-score-hex]::before,
 [data-score-hex]::after {
@@ -4172,11 +4167,11 @@ html[dir="rtl"] .board-root { direction: rtl; }
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
 [data-score-hex]::before {
-  background: color-mix(in oklab, #22d3ee 50%, #6366f1);
+  background: var(--color-accent);
 }
 [data-score-hex]::after {
   inset: 2px;
-  background: color-mix(in oklab, #0a1636 82%, #1e1b4b);
+  background: var(--color-surface);
 }
 [data-score-hex] svg {
   position: relative;
@@ -4198,8 +4193,7 @@ html[dir="rtl"] .board-root { direction: rtl; }
     linear-gradient(180deg, color-mix(in oklab, #fff 6%, transparent), transparent 28%),
     color-mix(in oklab, var(--color-surface) 88%, #06122B);
   box-shadow:
-    inset 0 0 0 1px color-mix(in oklab, #22d3ee 28%, transparent),
-    0 0 0 1px color-mix(in oklab, #6366f1 22%, transparent);
+    inset 0 0 0 1px color-mix(in oklab, var(--color-accent) 28%, transparent);
 }
 [data-score-pad="crew"] [data-score-mark] {
   min-height: 9rem;
@@ -4209,11 +4203,9 @@ html[dir="rtl"] .board-root { direction: rtl; }
   background: color-mix(in oklab, var(--color-elevated) 42%, #06122B);
 }
 [data-score-pad="crew"] [data-score-mark][data-score-on="1"] {
-  background: linear-gradient(180deg, #5eead4 0%, #22d3ee 55%, #38bdf8 100%);
-  box-shadow:
-    0 0 0 3px color-mix(in oklab, #22d3ee 80%, transparent),
-    0 0 42px -2px color-mix(in oklab, #22d3ee 70%, transparent);
-  color: #f7f9ff;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-accent) 55%, transparent);
+  color: var(--color-accent-fg);
 }
 [data-score-mark]:disabled {
   cursor: not-allowed;

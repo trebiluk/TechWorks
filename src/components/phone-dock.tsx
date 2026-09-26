@@ -39,7 +39,7 @@ export function PhoneDock({
       { id: "learn", label: t("Hour"), go: onSkills },
       { id: "crew", label: t("Score"), go: onCrew },
       { id: "roster", label: t("People"), go: onRoster ?? onOther ?? onDesk },
-      { id: "admin", label: t("Shop"), go: onOther ?? onDesk },
+      { id: "admin", label: t("Admin"), go: onOther ?? onDesk },
     ];
     const on = sec;
     return (

@@ -1,6 +1,4 @@
-import { useState } from "react";
-
-const FIRST: { title: string; hint: string; items: [string, string][] }[] = [
+const GROUPS: { title: string; hint: string; items: [string, string][] }[] = [
   {
     title: "Show",
     hint: "After the hour is written",
@@ -8,48 +6,59 @@ const FIRST: { title: string; hint: string; items: [string, string][] }[] = [
       ["week", "Week"],
       ["clubwall", "Club"],
       ["hallwall", "Hall"],
+      ["teach", "Run the room"],
     ],
   },
   {
     title: "Class",
-    hint: "Run the room, or the words",
+    hint: "Words, skills, and longer makes",
     items: [
-      ["teach", "Run the room"],
       ["words", "Words"],
+      ["skills", "Skills"],
+      ["projects", "Projects"],
+    ],
+  },
+  {
+    title: "Room",
+    hint: "The shop around the lesson",
+    items: [
+      ["crib", "Crib"],
+      ["prints", "Prints"],
+      ["store", "Store"],
+      ["lucky", "Lucky"],
+      ["crews", "Crews"],
+      ["room", "Theme"],
     ],
   },
   {
     title: "Desk",
-    hint: "Today and the backup",
+    hint: "This computer",
     items: [
       ["today", "Today"],
       ["vault", "Backups"],
+      ["cloud", "Cloud"],
     ],
   },
 ];
 
-const MORE: [string, string][] = [
-  ["skills", "Skills"],
-  ["projects", "Projects"],
-  ["crib", "Crib"],
-  ["prints", "Prints"],
-  ["store", "Store"],
-  ["lucky", "Lucky"],
-  ["crews", "Crews"],
-  ["room", "Theme"],
-];
-
-/** Every door that is not Wall, This hour, Score, or People. */
-export function ShopMenu({ onGo }: { onGo: (id: string) => void }) {
-  const [more, setMore] = useState(false);
+/** The wrench. One list. Nothing here is also a button on the wall. */
+export function ShopMenu({
+  onGo,
+  onHelp,
+  onWeb,
+}: {
+  onGo: (id: string) => void;
+  onHelp?: () => void;
+  onWeb?: () => void;
+}) {
   return (
     <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col gap-4 overflow-y-auto p-2">
       <header>
-        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">Shop</p>
-        <h1 className="font-display text-2xl font-semibold">The other jobs</h1>
-        <p className="mt-1 text-sm text-muted">The hour is This hour. The grade is on People.</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">Admin</p>
+        <h1 className="font-display text-2xl font-semibold">One wrench</h1>
+        <p className="mt-1 text-sm text-muted">Wall, This hour, Score, and People stay on the bar. Everything else is here.</p>
       </header>
-      {FIRST.map((g) => (
+      {GROUPS.map((g) => (
         <section key={g.title} className="grid gap-2">
           <div>
             <h2 className="font-display text-lg font-semibold">{g.title}</h2>
@@ -69,23 +78,18 @@ export function ShopMenu({ onGo }: { onGo: (id: string) => void }) {
           </div>
         </section>
       ))}
-      <button type="button" onClick={() => setMore((v) => !v)} className="tw-tap min-h-11 text-left text-sm font-semibold text-muted">
-        {more ? "Less" : "More"}
-      </button>
-      {more ? (
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {MORE.map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => onGo(id)}
-              className="tw-tap min-h-11 rounded-2xl bg-elevated px-3 text-left text-sm font-semibold"
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      ) : null}
+      <div className="flex flex-wrap gap-2">
+        {onHelp ? (
+          <button type="button" onClick={onHelp} className="tw-tap min-h-11 rounded-2xl bg-elevated px-4 text-sm font-semibold">
+            Help
+          </button>
+        ) : null}
+        {onWeb ? (
+          <button type="button" onClick={onWeb} className="tw-tap min-h-11 rounded-2xl bg-elevated px-4 text-sm font-semibold">
+            Web
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 }

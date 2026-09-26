@@ -1,8 +1,13 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.122. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.123. -->
 
 # TechWorks changelog
 
-App version **1.92.122**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.123**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.123 — 2026-09-26
+
+- Admin is the wrench. Help, Web, Cloud, theme, and the room tools live there once. The side menu no longer repeats them.
+- This hour, the live room, and Score use the same colors as the wall. The extra cyan skin is gone.
 
 ## 1.92.122 — 2026-09-26
 

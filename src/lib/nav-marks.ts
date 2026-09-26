@@ -98,6 +98,7 @@ export const NAV_MARK: Record<string, LucideIcon> = {
   cloud: Cloud,
   more: Ellipsis,
   admin: Wrench,
+  shop: Wrench,
   today: Sun,
   day: Clock,
   class: Target,

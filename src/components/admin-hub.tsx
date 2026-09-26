@@ -17,7 +17,6 @@ import { CtrlRail, CtrlSeg } from "@/components/ctrl";
 import { markOf } from "@/lib/nav-marks";
 import { MarkChip } from "@/components/ui";
 import { cn } from "@/lib/utils";
-import { featureOn } from "@/lib/features";
 import { ADMIN_GROUPS, PANE_LABEL, groupOfPane } from "@/lib/admin-nav";
 import { cloudStatus } from "@/lib/desk-cloud";
 import { markSchooltoolOpened } from "@/lib/workflow";
@@ -84,7 +83,6 @@ export function AdminHub({
   onPane?: (pane: AdminPane) => void;
   wallDesk?: ReactNode;
 }) {
-  const [more, setMore] = useState(false);
   const [pane, setPane] = useState<AdminPane>(start);
   const [meetDraft, setMeetDraft] = useState("");
   const [specDate, setSpecDate] = useState(() => todayIso());
@@ -130,29 +128,6 @@ export function AdminHub({
   const real = showFirstReal(file);
   const group = groupOfPane(pane);
   const inner = group.panes;
-  const rooms: { id: string; label: string; on: boolean; go: () => void; show: boolean }[] = [
-    ...ADMIN_GROUPS.map((g) => ({
-      id: g.id,
-      label: g.label,
-      on: group.id === g.id,
-      go: () => {
-        pickPane(g.panes[0] as AdminPane);
-      },
-      show: true,
-    })),
-    { id: "club", label: "Club", on: false, go: () => onClub?.(), show: featureOn(file, "club") && Boolean(onClub) },
-    { id: "hall", label: "Hall", on: false, go: () => onStudyHall(), show: featureOn(file, "studyhall") },
-    { id: "charts", label: "Charts", on: false, go: () => onData?.(), show: Boolean(onData) },
-    { id: "prints", label: "Prints", on: false, go: () => onPrints?.(), show: featureOn(file, "prints") && Boolean(onPrints) },
-    { id: "crib", label: "Crib", on: false, go: () => onCrib?.(), show: featureOn(file, "crib") && Boolean(onCrib) },
-    { id: "lucky", label: "Lucky", on: false, go: () => onLucky?.(), show: featureOn(file, "lucky") && Boolean(onLucky) },
-    { id: "stocks", label: "Stocks", on: false, go: () => onStocks(), show: featureOn(file, "stocks") },
-    { id: "store", label: "Rewards", on: false, go: () => onStore(), show: featureOn(file, "store") },
-  ];
-
-  const dailyIds = new Set(["today", "people", "money", "room", "data"]);
-  const dailyRooms = rooms.filter((r) => r.show && dailyIds.has(r.id));
-  const moreRooms = rooms.filter((r) => r.show && !dailyIds.has(r.id));
   const cloud = cloudStatus();
   const cloudDue = cloud === "this-pc" || cloud === "off" || cloud === "need-key" || cloud === "error";
 
@@ -160,28 +135,18 @@ export function AdminHub({
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <div className="shrink-0 px-1 pb-1">
         <CtrlRail label="Admin">
-          {dailyRooms.map((r) => (
-            <MarkChip key={r.id} mark={markOf(r.id)} title={r.label} on={r.on} onClick={r.go}>
-              {r.label}
+          {ADMIN_GROUPS.map((g) => (
+            <MarkChip
+              key={g.id}
+              mark={markOf(g.id)}
+              title={g.label}
+              on={group.id === g.id}
+              onClick={() => pickPane(g.panes[0] as AdminPane)}
+            >
+              {g.label}
             </MarkChip>
           ))}
-          <button
-            type="button"
-            onClick={() => setMore((v) => !v)}
-            className={cn("tw-tap inline-flex min-h-11 shrink-0 items-center rounded-lg px-3 text-sm font-semibold", more ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
-          >
-            {more ? "Less" : "More"}
-          </button>
         </CtrlRail>
-        {more ? (
-          <CtrlRail label="More admin" className="mt-1" bare>
-            {moreRooms.map((r) => (
-              <MarkChip key={r.id} mark={markOf(r.id)} title={r.label} on={r.on} onClick={r.go}>
-                {r.label}
-              </MarkChip>
-            ))}
-          </CtrlRail>
-        ) : null}
         {inner.length > 1 ? (
           <div className="mt-1">
             <CtrlSeg

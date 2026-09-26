@@ -45,16 +45,16 @@ describe("PlanIt Mr Fortnite chrome", () => {
     assert.match(css, /@media \(prefers-reduced-motion:\s*reduce\) \{[\s\S]*?\.tw-planit-mf[\s\S]*?animation:\s*none/);
   });
 
-  it("stays Dream navy + cyan LCARS, gold accent only, never Baboo Stark", () => {
-    assert.match(css, /\.tw-planit-mf(?:,\s*\.tw-teach-live)? \{[\s\S]*?--mf-void:\s*#06122b/);
-    assert.match(css, /\.tw-planit-mf(?:,\s*\.tw-teach-live)? \{[\s\S]*?--mf-plate:\s*#0b1a40/);
-    assert.match(css, /\.tw-planit-mf(?:,\s*\.tw-teach-live)? \{[\s\S]*?--mf-elev:\s*#132a5c/);
-    assert.match(css, /\.tw-planit-mf(?:,\s*\.tw-teach-live)? \{[\s\S]*?--mf-cyan:\s*#22d3ee/);
+  it("uses the desk theme, not a second cyan skin", () => {
+    assert.match(css, /\.tw-planit-mf(?:,\s*\.tw-teach-live)? \{[\s\S]*?--mf-void:\s*var\(--color-bg\)/);
+    assert.match(css, /\.tw-planit-mf(?:,\s*\.tw-teach-live)? \{[\s\S]*?--mf-plate:\s*var\(--color-surface\)/);
+    assert.match(css, /\.tw-planit-mf(?:,\s*\.tw-teach-live)? \{[\s\S]*?--mf-elev:\s*var\(--color-elevated\)/);
+    assert.match(css, /\.tw-planit-mf(?:,\s*\.tw-teach-live)? \{[\s\S]*?--mf-cyan:\s*var\(--color-accent\)/);
     assert.match(css, /\.tw-planit-mf(?:,\s*\.tw-teach-live)? \{[\s\S]*?--lcars-gold:\s*var\(--mf-cyan\)/);
-    assert.match(css, /\.tw-planit-mf(?:,\s*\.tw-teach-live)? \{[\s\S]*?--mf-gold/);
+    assert.doesNotMatch(css, /--mf-void:\s*#06122b/);
+    assert.doesNotMatch(css, /--mf-cyan:\s*#22d3ee/);
     assert.match(css, /\.tw-teach-live textarea[\s\S]*?background:\s*var\(--mf-elev\)/);
     assert.match(css, /\.tw-mf-quote \{[\s\S]*?background:\s*var\(--mf-elev\)/);
-    assert.doesNotMatch(css, /\.tw-mf-rank\[data-gold="on"\] \{[\s\S]*?linear-gradient\(180deg,\s*color-mix\(in oklab,\s*var\(--mf-gold-hi\)/);
     assert.match(css, /\.tw-mf-rank\[data-gold="on"\] \{[\s\S]*?background:\s*var\(--mf-elev\)/);
     assert.doesNotMatch(css, /baboo|stark/i);
     assert.doesNotMatch(planit, /baboo|stark/i);
