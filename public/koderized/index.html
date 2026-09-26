@@ -13,12 +13,26 @@
 </head>
 <body>
   <header class="top">
-    <div class="brand">KODER<em>IZED</em> <span class="pill" id="version-chip">KZ 1.21.0</span></div>
+    <div class="brand">KODER<em>IZED</em> <span class="pill" id="version-chip">KZ 1.22.0</span></div>
     <div class="meta" id="top-meta">Solvay MS · Technology · Chromebook</div>
     <div class="row top-tools">
-      <button class="btn ghost" id="btn-lang-en" type="button" aria-pressed="true">EN</button>
-      <button class="btn ghost" id="btn-lang-es" type="button" aria-pressed="false">ES</button>
-      <button class="btn ghost" id="btn-big" type="button" data-i18n="big">Big words</button>
+      <button class="btn ghost hidden" id="btn-lang-en" type="button" aria-pressed="true">EN</button>
+      <button class="btn ghost hidden" id="btn-lang-es" type="button" aria-pressed="false">ES</button>
+      <button class="btn ghost hidden" id="btn-big" type="button" data-i18n="big">Big words</button>
+      <div class="settings">
+        <button class="btn ghost" id="btn-settings" type="button" aria-expanded="false" aria-controls="settings-panel" data-i18n="settings">Settings</button>
+        <div id="settings-panel" class="settings-panel hidden">
+          <p class="set-label" data-i18n="language">Language</p>
+          <div class="set-row">
+            <button class="btn ghost" type="button" data-set-lang="en" data-i18n="english">English</button>
+            <button class="btn ghost" type="button" data-set-lang="simple" data-i18n="simple">Simple</button>
+            <button class="btn ghost" type="button" data-set-lang="es" data-i18n="espanol">Español</button>
+          </div>
+          <button class="btn ghost" id="btn-read-aloud" type="button" aria-pressed="false">Read aloud · Off</button>
+          <button class="btn ghost" id="btn-big-set" type="button" aria-pressed="false">Big text · Off</button>
+          <button class="btn ghost" id="btn-fewer" type="button" aria-pressed="false">Fewer answers · Off</button>
+        </div>
+      </div>
       <button class="btn ghost" id="btn-home" type="button" data-i18n="home">Home</button>
     </div>
   </header>
@@ -158,7 +172,7 @@
         <p class="hint">Class <b id="t-code">QUEST4</b> · <span id="t-quest"></span> · Freeze / Spotlight / Restore. No ranks.</p>
         <p class="hint teacher-notes">Five doors from zero. Walk with me is for aides and short periods. Heat is tests, not a kid rank. <a href="teacher.html" data-i18n="notes">Notes</a></p>
         <p class="hint" data-i18n="ferpaTeacher">Teachers only. Alias only. Do not store an IEP, a 504, or a legal name.</p>
-        <p class="hint" id="ship-note">2026-09-24 · KZ 1.21.0 · The bot picture fits on the first screen. Plates stay in order.</p>
+        <p class="hint" id="ship-note">2026-09-25 · KZ 1.22.0 · Settings. Read aloud stays off until they turn it on. Read still speaks the line.</p>
         <div class="row" id="door-picks" style="margin-top:8px;"></div>
       </div>
       <div class="row">
@@ -188,7 +202,7 @@
       </div>
     </div>
   </section>
-  <p class="footer-note" data-i18n="footer">Koderized KZ 1.21.0 · alias only</p>
+  <p class="footer-note" data-i18n="footer">Koderized KZ 1.22.0 · alias only</p>
   <script src="speak.js"></script>
   <script src="origin.js"></script>
   <script src="i18n.js"></script>

@@ -1,4 +1,4 @@
-/* KZ 1.21.0 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
+/* KZ 1.22.0 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
 window.I18N = {
   en: {
     lang: "en",
@@ -41,6 +41,16 @@ window.I18N = {
     ferpaAide: "Alias only. Not a real name.",
     winPeriod: "Door 1 is a win today.",
     didIt: "You did it.",
+    settings: "Settings",
+    language: "Language",
+    english: "English",
+    simple: "Simple",
+    espanol: "Español",
+    readAloud: "Read aloud",
+    bigText: "Big text",
+    fewerAnswers: "Fewer answers",
+    on: "On",
+    off: "Off",
     emptyList: "No code yet — this program is blank. Pick what the bot does.",
     zoneCode: "Current code",
     zoneOptions: "Options",
@@ -52,10 +62,10 @@ window.I18N = {
     score: "score",
     cost: "One cost",
     look: "Look",
-    speak: "Speak",
+    speak: "Read",
     stopSpeak: "Stop",
     example: "Example",
-    footer: "Koderized KZ 1.21.0 · alias only",
+    footer: "Koderized KZ 1.22.0 · alias only",
     ferpaTeacher: "Teachers only. Alias only. Do not store an IEP, a 504, or a legal name.",
     sit: "SIT", crate: "CRATE", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     clear: "CLEAR",
@@ -63,6 +73,8 @@ window.I18N = {
     doors: {
       zero: {
         title: "Door 1 · One move",
+        right: "sit",
+        probeRight: "do",
         idea: "One picture. One tap. The bot does that.",
         ask: "",
         choices: [
@@ -86,6 +98,8 @@ window.I18N = {
       },
       line: {
         title: "Door 2 · More moves",
+        right: "short",
+        probeRight: "few",
         idea: "Top to bottom. One after one.",
         ask: "Three moves. Where does it stop?",
         choices: [
@@ -109,6 +123,8 @@ window.I18N = {
       },
       loop: {
         title: "Door 3 · Repeat",
+        right: "repeat",
+        probeRight: "count",
         idea: "Repeat does the inside many times.",
         ask: "Which one is the loop?",
         choices: [
@@ -132,6 +148,8 @@ window.I18N = {
       },
       wall: {
         title: "Door 4 · Stop",
+        right: "stop",
+        probeRight: "inside",
         idea: "Ask about the wall, or the bot hits it.",
         ask: "What happens at the wall?",
         choices: [
@@ -154,6 +172,8 @@ window.I18N = {
       },
       score: {
         title: "Door 5 · Score",
+        right: "score",
+        probeRight: "wall",
         idea: "Stop. Then count.",
         ask: "It stops. What is missing?",
         choices: [
@@ -217,6 +237,16 @@ window.I18N = {
     ferpaAide: "Solo apodo. No es un nombre real.",
     winPeriod: "La Puerta 1 ya es un logro hoy.",
     didIt: "Lo lograste.",
+    settings: "Ajustes",
+    language: "Idioma",
+    english: "English",
+    simple: "Simple",
+    espanol: "Español",
+    readAloud: "Lectura en voz alta",
+    bigText: "Letras grandes",
+    fewerAnswers: "Menos respuestas",
+    on: "Sí",
+    off: "No",
     emptyList: "Aún no hay código — este programa está en blanco. Elige qué hace el bot.",
     zoneCode: "Código actual",
     zoneOptions: "Opciones",
@@ -231,12 +261,14 @@ window.I18N = {
     speak: "Leer",
     stopSpeak: "Parar",
     example: "Ejemplo",
-    footer: "Koderized KZ 1.21.0 · solo apodo",
+    footer: "Koderized KZ 1.22.0 · solo apodo",
     ferpaTeacher: "Solo maestros. Solo apodo. No guardes un IEP, un 504, ni un nombre legal.",
     sit: "SIT", crate: "CAJA", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     doors: {
       zero: {
         title: "Puerta 1 · Un mover",
+        right: "sit",
+        probeRight: "do",
         idea: "Un dibujo. Un toque. El bot lo hace.",
         ask: "",
         choices: [
@@ -260,6 +292,8 @@ window.I18N = {
       },
       line: {
         title: "Puerta 2 · Más mover",
+        right: "short",
+        probeRight: "few",
         idea: "De arriba a abajo. Uno tras uno.",
         ask: "Tres mover. ¿Dónde para?",
         choices: [
@@ -283,6 +317,8 @@ window.I18N = {
       },
       loop: {
         title: "Puerta 3 · Repetir",
+        right: "repeat",
+        probeRight: "count",
         idea: "Repetir hace lo de adentro muchas veces.",
         ask: "¿Cuál es el ciclo?",
         choices: [
@@ -306,6 +342,8 @@ window.I18N = {
       },
       wall: {
         title: "Puerta 4 · Parar",
+        right: "stop",
+        probeRight: "inside",
         idea: "Pregunta por la pared, o el bot choca.",
         ask: "¿Qué pasa en la pared?",
         choices: [
@@ -328,6 +366,8 @@ window.I18N = {
       },
       score: {
         title: "Puerta 5 · Sumar",
+        right: "score",
+        probeRight: "wall",
         idea: "Parar. Luego contar.",
         ask: "Ya para. ¿Qué falta?",
         choices: [
@@ -347,6 +387,126 @@ window.I18N = {
           investigate: { say: "Sumar en la pared.", tap: "1, luego Next" },
           modify: { say: "Toca sumar. Luego GO.", tap: "sumar, luego GO" }
         }
+      }
+    }
+  },
+
+  simple: {
+    lang: "en",
+    settings: "Settings",
+    language: "Language",
+    english: "English",
+    simple: "Simple",
+    espanol: "Español",
+    readAloud: "Read aloud",
+    bigText: "Big text",
+    fewerAnswers: "Fewer answers",
+    on: "On",
+    off: "Off",
+    speak: "Read",
+    stopSpeak: "Stop",
+    home: "Home",
+    didIt: "You did it.",
+    emptyList: "No code yet. Pick one.",
+    footer: "Koderized KZ 1.22.0 · alias only",
+    doors: {
+      zero: {
+        title: "Door 1.",
+        idea: "One tap.",
+        ask: "",
+        right: "sit",
+        probeRight: "do",
+        choices: [
+          { p: "sit", t: "It sits." },
+          { p: "roll", t: "It rolls." },
+          { p: "vanish", t: "It goes away." }
+        ],
+        probeAsk: "What is a command?",
+        probes: [
+          { v: "do", t: "One thing the bot does" },
+          { v: "guess", t: "A guess" },
+          { v: "wall", t: "The wall" }
+        ],
+        help: {
+          predict: { say: "Tap 1.", tap: "Tap 1" },
+          run: { say: "Watch.", tap: "Watch" },
+          investigate: { say: "Tap 1. Then Next.", tap: "1, then Next" },
+          modify: { say: "Tap move. Then GO.", tap: "move, then GO" }
+        }
+      },
+      line: {
+        title: "Door 2.",
+        idea: "One after one.",
+        ask: "Where does it stop?",
+        right: "short",
+        probeRight: "few",
+        choices: [
+          { p: "short", t: "Before the crate" },
+          { p: "crate", t: "On the crate" },
+          { p: "past", t: "Past the crate" }
+        ],
+        probeAsk: "Why short?",
+        probes: [
+          { v: "few", t: "Need more moves" },
+          { v: "order", t: "Wrong order" },
+          { v: "wall", t: "A wall" }
+        ],
+        help: { predict: { say: "Tap 1.", tap: "Tap 1" }, run: { say: "Watch.", tap: "Watch" }, investigate: { say: "Tap 1.", tap: "1" }, modify: { say: "Tap move.", tap: "move" } }
+      },
+      loop: {
+        title: "Door 3.",
+        idea: "Repeat does it again.",
+        ask: "Which is the loop?",
+        right: "repeat",
+        probeRight: "count",
+        choices: [
+          { p: "repeat", t: "Repeat" },
+          { p: "line", t: "Many moves" },
+          { p: "stop", t: "Stop" }
+        ],
+        probeAsk: "What is the gold number?",
+        probes: [
+          { v: "count", t: "How many times" },
+          { v: "score", t: "A grade" },
+          { v: "speed", t: "Speed" }
+        ],
+        help: { predict: { say: "Tap 1.", tap: "Tap 1" }, run: { say: "Watch.", tap: "Watch" }, investigate: { say: "Tap 1.", tap: "1" }, modify: { say: "Gold to 4.", tap: "4" } }
+      },
+      wall: {
+        title: "Door 4.",
+        idea: "Ask about the wall.",
+        ask: "What happens at the wall?",
+        right: "stop",
+        probeRight: "inside",
+        choices: [
+          { p: "stop", t: "It stops" },
+          { p: "through", t: "It goes through" },
+          { p: "forever", t: "It never stops" }
+        ],
+        probeAsk: "Where is Stop?",
+        probes: [
+          { v: "inside", t: "In the loop" },
+          { v: "outside", t: "After the loop" }
+        ],
+        help: { predict: { say: "Watch.", tap: "Watch" }, run: { say: "Watch.", tap: "Watch" }, investigate: { say: "Tap 1.", tap: "1" }, modify: { say: "GO.", tap: "GO" } }
+      },
+      score: {
+        title: "Door 5.",
+        idea: "Then count.",
+        ask: "What is missing?",
+        right: "score",
+        probeRight: "wall",
+        choices: [
+          { p: "score", t: "Score at the wall" },
+          { p: "faster", t: "More speed" },
+          { p: "name", t: "A name" }
+        ],
+        probeAsk: "When does score run?",
+        probes: [
+          { v: "wall", t: "If wall: score" },
+          { v: "always", t: "Every move" }
+        ],
+        help: { predict: { say: "Tap 1.", tap: "Tap 1" }, run: { say: "Watch.", tap: "Watch" }, investigate: { say: "Tap 1.", tap: "1" }, modify: { say: "Tap score.", tap: "score" } }
       }
     }
   }

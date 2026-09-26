@@ -48,7 +48,7 @@
   function pickVoice(code) {
     var voices = [];
     try { voices = window.speechSynthesis.getVoices() || []; } catch (e) { voices = []; }
-    var want = code === "es" ? "es" : "en";
+    var want = code === "es" ? "es" : "en"; /* simple uses English voice */
     var local = null;
     var any = null;
     var i, v;
@@ -66,7 +66,7 @@
     if (!pending) return;
     var u = new SpeechSynthesisUtterance(text);
     u.lang = code === "es" ? "es-US" : "en-US";
-    u.rate = 0.92;
+    u.rate = code === "simple" ? 0.85 : 0.95;
     u.pitch = 1;
     var voice = pickVoice(code);
     if (voice) { try { u.voice = voice; } catch (e) {} }
@@ -115,5 +115,42 @@
     return true;
   }
 
-  window.KZSpeak = { speak: speak, stop: stop, speaking: speaking, current: current, supported: supported };
+  var ACCESS_KEY = "kz-access-v1";
+
+  function readAccess() {
+    try {
+      var raw = JSON.parse(localStorage.getItem(ACCESS_KEY) || "null");
+      if (!raw || typeof raw !== "object") {
+        raw = {
+          lang: localStorage.getItem("kz-lang") === "es" ? "es" : "en",
+          speak: false,
+          big: localStorage.getItem("kz-big") === "1",
+          fewer: false
+        };
+      }
+      var lang = raw.lang === "simple" || raw.lang === "es" ? raw.lang : "en";
+      return { lang: lang, speak: !!raw.speak, big: !!raw.big, fewer: !!raw.fewer };
+    } catch (e) {
+      return { lang: "en", speak: false, big: false, fewer: false };
+    }
+  }
+
+  function writeAccess(next) {
+    var lang = next.lang === "simple" || next.lang === "es" ? next.lang : "en";
+    var clean = { lang: lang, speak: !!next.speak, big: !!next.big, fewer: !!next.fewer };
+    try { localStorage.setItem(ACCESS_KEY, JSON.stringify(clean)); } catch (e) {}
+    document.documentElement.dataset.big = clean.big ? "1" : "0";
+    document.documentElement.dataset.lang = clean.lang;
+    try { window.dispatchEvent(new Event("kz-access")); } catch (e) {}
+    return clean;
+  }
+
+  function say(text, code) { return speak(text, code || readAccess().lang); }
+  function stopSay() { stop(); }
+
+  window.say = say;
+  window.stopSay = stopSay;
+  window.readAccess = readAccess;
+  window.writeAccess = writeAccess;
+  window.KZSpeak = { speak: speak, stop: stop, say: say, stopSay: stopSay, speaking: speaking, current: current, supported: supported, readAccess: readAccess, writeAccess: writeAccess };
 })();

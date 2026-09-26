@@ -1,4 +1,4 @@
-/* Koderized KZ 1.21.0 — Speak beside the line. Not red until GO. One board. No IEP stored. */
+/* Koderized KZ 1.22.0 — Speak beside the line. Not red until GO. One board. No IEP stored. */
 
 function preferTouchUi() {
   const coarse = window.matchMedia("(pointer: coarse)").matches
@@ -170,7 +170,7 @@ const DOORS = [
 /* CUT D — quest packs */
 async function loadQuestPacks() {
   try {
-    const res = await fetch("quests.json?v=1.21.0", { cache: "no-store" });
+    const res = await fetch("quests.json?v=1.22.0", { cache: "no-store" });
     if (!res.ok) return;
     const data = await res.json();
     const packs = (data && data.quests) || [];
@@ -229,17 +229,46 @@ function doorOf(id) {
   return DOORS.find(d => d.id === id) || DOORS[0];
 }
 function copy(x) { return JSON.parse(JSON.stringify(x)); }
-function lang() { return localStorage.getItem("kz-lang") === "es" ? "es" : "en"; }
-function L() { return (window.I18N && (I18N[lang()] || I18N.en)) || { doors: {} }; }
+function readA() { return window.readAccess ? readAccess() : { lang: "en", speak: false, big: false, fewer: false }; }
+function lang() { return readA().lang; }
+function mergePack(base, over) {
+  const out = Object.assign({}, base || {}, over || {});
+  const doors = {};
+  Object.keys((base && base.doors) || {}).forEach(id => { doors[id] = Object.assign({}, base.doors[id]); });
+  Object.keys((over && over.doors) || {}).forEach(id => { doors[id] = Object.assign({}, doors[id] || {}, over.doors[id]); });
+  out.doors = doors;
+  return out;
+}
+function L() {
+  const code = lang();
+  const en = (window.I18N && I18N.en) || { doors: {} };
+  if (code === "es") return (window.I18N && I18N.es) || en;
+  if (code === "simple") return mergePack(en, (window.I18N && I18N.simple) || {});
+  return en;
+}
+function simpleDoor(id) {
+  return window.I18N && I18N.simple && I18N.simple.doors && I18N.simple.doors[id];
+}
+let lastReadCard = "";
+let skipAuto = false;
 function setLang(code) {
-  localStorage.setItem("kz-lang", code === "es" ? "es" : "en");
+  const a = readA();
+  a.lang = code === "es" || code === "simple" ? code : "en";
+  if (window.writeAccess) writeAccess(a);
+  skipAuto = true;
   applyChrome();
   if (session.role === "student") renderStudent();
   if (session.role === "teacher") renderTeacher();
+  skipAuto = false;
+  lastReadCard = cardId();
+  const line = a.lang === "es" ? "Español." : a.lang === "simple" ? "Simple words." : "English.";
+  if (window.say) say(line, a.lang);
 }
 function applyChrome() {
   const pack = L();
-  document.documentElement.lang = pack.lang || lang();
+  document.documentElement.lang = lang() === "es" ? "es" : "en";
+  document.documentElement.dataset.lang = lang();
+  document.documentElement.dataset.big = readA().big ? "1" : "0";
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const k = el.getAttribute("data-i18n");
     if (pack[k]) el.textContent = pack[k];
@@ -248,7 +277,8 @@ function applyChrome() {
     const k = el.getAttribute("data-i18n-ph");
     if (pack[k]) el.placeholder = pack[k];
   });
-  document.body.classList.toggle("big-type", localStorage.getItem("kz-big") === "1");
+  document.body.classList.toggle("big-type", !!readA().big);
+  syncSettings();
   if ($("btn-lang-en")) $("btn-lang-en").setAttribute("aria-pressed", lang() === "en" ? "true" : "false");
   if ($("btn-lang-es")) $("btn-lang-es").setAttribute("aria-pressed", lang() === "es" ? "true" : "false");
   if ($("btn-big")) $("btn-big").setAttribute("aria-pressed", localStorage.getItem("kz-big") === "1" ? "true" : "false");
@@ -263,9 +293,100 @@ function doorL(d) {
     choices: pack.choices || d.choices,
     probeAsk: pack.probeAsk || d.probeAsk,
     probes: pack.probes || d.probes,
+    right: pack.right || d.right || "",
+    probeRight: pack.probeRight || d.probeRight || "",
     tests: pack.tests || null,
     help: pack.help || {}
   };
+}
+function shown(list, right, picked) {
+  if (!readA().fewer || !list || !list.length) return list || [];
+  const key = c => c.p || c.v;
+  const ok = list.find(c => key(c) === right);
+  const bad = list.find(c => key(c) !== right);
+  const out = [];
+  if (ok) out.push(ok);
+  if (bad) out.push(bad);
+  if (picked && !out.some(c => key(c) === picked)) {
+    const extra = list.find(c => key(c) === picked);
+    if (extra) out.push(extra);
+  }
+  return out.length ? out : list;
+}
+function cardId() {
+  if (session.role !== "student") return "";
+  const st = load(session.code);
+  const s = st.students[session.id];
+  if (!s) return "";
+  const a = readA();
+  return [s.door, s.phase, a.lang, a.fewer ? "1" : "0"].join(":");
+}
+function cardBits(forSpeak) {
+  if (session.role !== "student") return "";
+  const st = load(session.code);
+  const s = st.students[session.id];
+  if (!s) return "";
+  const d = doorOf(s.door);
+  const code = lang();
+  const simpleSpeak = !!(forSpeak && code === "simple");
+  if (simpleSpeak && !simpleDoor(d.id)) return "";
+  const loc = simpleSpeak ? simpleDoor(d.id) : doorL(d);
+  const bits = [];
+  const add = t => {
+    t = String(t || "").replace(/\s+/g, " ").trim().replace(/\.+$/, "");
+    if (t && bits.indexOf(t) === -1) bits.push(t);
+  };
+  add(loc.title);
+  add(loc.idea);
+  if (s.phase === "predict") {
+    add(loc.ask);
+    if (!(loc.ask && String(loc.ask).trim())) add(forSpeak && code === "simple" ? (I18N.simple && I18N.simple.emptyList) : L().emptyList);
+    shown(loc.choices, loc.right, s.predict).forEach(c => add(c.t));
+  } else if (s.phase === "investigate") {
+    add(loc.probeAsk);
+    shown(loc.probes, loc.probeRight, s.probe).forEach(c => add(c.t));
+  } else if ($("guide-line")) add($("guide-line").textContent);
+  return bits.join(". ");
+}
+function maybeReadCard() {
+  if (skipAuto) return;
+  const a = readA();
+  if (!a.speak || session.role !== "student") return;
+  const st = load(session.code);
+  const s = st.students[session.id];
+  if (!s || (s.phase !== "predict" && s.phase !== "investigate")) {
+    if (lastReadCard) { lastReadCard = ""; if (window.stopSay) stopSay(); }
+    return;
+  }
+  const id = cardId();
+  if (id === lastReadCard) return;
+  const text = cardBits(true);
+  if (!text) return;
+  lastReadCard = id;
+  if (window.say) say(text, a.lang);
+}
+function syncSettings() {
+  const a = readA();
+  const pack = L();
+  const onOff = v => v ? (pack.on || "On") : (pack.off || "Off");
+  document.querySelectorAll("[data-set-lang]").forEach(b => {
+    b.setAttribute("aria-pressed", b.getAttribute("data-set-lang") === a.lang ? "true" : "false");
+  });
+  const ra = $("btn-read-aloud");
+  if (ra) {
+    ra.textContent = (pack.readAloud || "Read aloud") + " · " + onOff(a.speak);
+    ra.setAttribute("aria-pressed", a.speak ? "true" : "false");
+  }
+  const bg = $("btn-big-set");
+  if (bg) {
+    bg.textContent = (pack.bigText || "Big text") + " · " + onOff(a.big);
+    bg.setAttribute("aria-pressed", a.big ? "true" : "false");
+  }
+  const fw = $("btn-fewer");
+  if (fw) {
+    fw.textContent = (pack.fewerAnswers || "Fewer answers") + " · " + onOff(a.fewer);
+    fw.setAttribute("aria-pressed", a.fewer ? "true" : "false");
+  }
 }
 function startWalk(s) {
   const d = doorOf(s.door);
@@ -497,11 +618,13 @@ function draw(canvas, sim) {
 }
 
 function goLanding() {
-  if (window.KZSpeak) KZSpeak.stop();
+  if (window.stopSay) stopSay();
+  else if (window.KZSpeak) KZSpeak.stop();
+  lastReadCard = "";
   hide("screen-student"); hide("screen-teacher"); show("screen-landing"); applyChrome();
 }
 function goStudent() { hide("screen-landing"); hide("screen-teacher"); show("screen-student"); renderStudent(); }
-function goTeacher() { hide("screen-landing"); hide("screen-student"); show("screen-teacher"); renderTeacher(); }
+function goTeacher() { if (window.stopSay) stopSay(); lastReadCard = ""; hide("screen-landing"); hide("screen-student"); show("screen-teacher"); renderTeacher(); }
 $("btn-student").onclick = () => {
   session.role = "student";
   session.code = ($("join-code").value || "QUEST4").toUpperCase();
@@ -590,7 +713,7 @@ function renderChoices(d, s) {
   const loc = doorL(d);
   const box = $("choices");
   box.innerHTML = "";
-  loc.choices.forEach((c, i) => {
+  shown(loc.choices, loc.right, s.predict).forEach((c, i) => {
     const b = document.createElement("button");
     b.className = "choice" + (s.predict === c.p ? " picked" : "");
     b.type = "button";
@@ -606,7 +729,7 @@ function renderChoices(d, s) {
   const pb = $("probe-choices") || $("probe-wrap").querySelector(".choices");
   if (pb) {
     pb.innerHTML = "";
-    loc.probes.forEach((c, i) => {
+    shown(loc.probes, loc.probeRight, s.probe).forEach((c, i) => {
       const b = document.createElement("button");
       b.className = "choice probe" + (s.probe === c.v ? " picked" : "");
       b.type = "button";
@@ -753,8 +876,9 @@ function renderStudent() {
   });
   glow(hint.id, hint.poke);
   renderGuide(s, d, loc, hint);
-  if (window.KZSpeak && KZSpeak.speaking() && KZSpeak.current() !== guideSpeech()) KZSpeak.stop();
+  if (window.KZSpeak && KZSpeak.speaking() && KZSpeak.current() !== cardBits(true)) KZSpeak.stop();
   syncSpeakBtn();
+  maybeReadCard();
 }
 $("choices").onclick = e => {
   const b = e.target.closest(".choice");
@@ -980,15 +1104,65 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 if ($("btn-lang-en")) $("btn-lang-en").onclick = () => setLang("en");
 if ($("btn-lang-es")) $("btn-lang-es").onclick = () => setLang("es");
 if ($("btn-big")) $("btn-big").onclick = () => {
-  localStorage.setItem("kz-big", localStorage.getItem("kz-big") === "1" ? "0" : "1");
+  const a = readA();
+  a.big = !a.big;
+  if (window.writeAccess) writeAccess(a);
   applyChrome();
 };
 if ($("btn-speak")) $("btn-speak").onclick = () => {
-  if (!window.KZSpeak || !KZSpeak.supported()) return;
-  if (KZSpeak.speaking()) { KZSpeak.stop(); syncSpeakBtn(); return; }
-  KZSpeak.speak(guideSpeech(), lang(), syncSpeakBtn);
+  if (!window.say || !window.KZSpeak) return;
+  if (KZSpeak.speaking()) { stopSay(); syncSpeakBtn(); return; }
+  const text = cardBits(true);
+  if (!text) return;
+  say(text, lang());
   syncSpeakBtn();
 };
+if ($("btn-settings")) $("btn-settings").onclick = () => {
+  const panel = $("settings-panel");
+  panel.classList.toggle("hidden");
+  $("btn-settings").setAttribute("aria-expanded", panel.classList.contains("hidden") ? "false" : "true");
+};
+document.querySelectorAll("[data-set-lang]").forEach(b => {
+  b.onclick = () => setLang(b.getAttribute("data-set-lang"));
+});
+if ($("btn-read-aloud")) $("btn-read-aloud").onclick = () => {
+  const a = readA();
+  a.speak = !a.speak;
+  writeAccess(a);
+  applyChrome();
+  if (!a.speak) { stopSay(); lastReadCard = ""; return; }
+  lastReadCard = cardId();
+  say(a.lang === "es" ? "Lectura activada." : "Read aloud is on.", a.lang);
+};
+if ($("btn-big-set")) $("btn-big-set").onclick = () => {
+  const a = readA();
+  a.big = !a.big;
+  writeAccess(a);
+  applyChrome();
+};
+if ($("btn-fewer")) $("btn-fewer").onclick = () => {
+  const a = readA();
+  a.fewer = !a.fewer;
+  writeAccess(a);
+  lastReadCard = "";
+  applyChrome();
+  if (session.role === "student") renderStudent();
+};
+document.addEventListener("click", e => {
+  const panel = $("settings-panel");
+  const btn = $("btn-settings");
+  if (!panel || panel.classList.contains("hidden")) return;
+  if (panel.contains(e.target) || (btn && btn.contains(e.target))) return;
+  panel.classList.add("hidden");
+  if (btn) btn.setAttribute("aria-expanded", "false");
+});
+document.addEventListener("keydown", e => {
+  if (e.key !== "Escape") return;
+  const panel = $("settings-panel");
+  if (!panel || panel.classList.contains("hidden")) return;
+  panel.classList.add("hidden");
+  if ($("btn-settings")) $("btn-settings").setAttribute("aria-expanded", "false");
+});
 if ($("btn-aide")) $("btn-aide").onclick = () => {
   const st = load(session.code);
   const s = st.students[session.id];
