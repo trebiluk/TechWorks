@@ -1,8 +1,13 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.124. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.125. -->
 
 # TechWorks changelog
 
-App version **1.92.124**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.125**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.125 — 2026-09-26
+
+- Admin switches are knobs. The knob moves. A note no longer pretends a closed door opened.
+- A dim door stays put until its switch is on.
 
 ## 1.92.124 — 2026-09-26
 

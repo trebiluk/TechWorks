@@ -193,40 +193,19 @@ export function Board() {
         setView(next);
         return;
       }
-      if (next === "wallet" && !featureOn(file, "stocks")) {
-        flashMsg("Stocks is off · Admin");
-        return;
-      }
-      if (next === "lucky" && !featureOn(file, "lucky")) {
-        flashMsg("Lucky Bench is off · Admin");
-        return;
-      }
-      if (next === "store" && !featureOn(file, "store")) {
-        flashMsg("Store is off · Admin");
-        return;
-      }
-      if (next === "prints" && !featureOn(file, "prints")) {
-        flashMsg("Prints is off · Admin");
-        return;
-      }
-      if (next === "crib" && !featureOn(file, "crib")) {
-        flashMsg("Crib is off · Admin");
-        return;
-      }
+      if (next === "wallet" && !featureOn(file, "stocks")) return;
+      if (next === "lucky" && !featureOn(file, "lucky")) return;
+      if (next === "store" && !featureOn(file, "store")) return;
+      if (next === "prints" && !featureOn(file, "prints")) return;
+      if (next === "crib" && !featureOn(file, "crib")) return;
       if (next === "portal") {
         const u = new URL(window.location.href);
         u.searchParams.set("web", "1");
         window.location.assign(u.toString());
         return;
       }
-      if (next === "polls" && !featureOn(file, "polls")) {
-        flashMsg("Polls is off · Admin");
-        return;
-      }
-      if (next === "teach" && !featureOn(file, "teach")) {
-        flashMsg("Teach is off · Admin");
-        return;
-      }
+      if (next === "polls" && !featureOn(file, "polls")) return;
+      if (next === "teach" && !featureOn(file, "teach")) return;
       setView(next);
     });
   }
@@ -944,6 +923,10 @@ export function Board() {
             const u = new URL(window.location.href);
             u.searchParams.set("web", "1");
             window.location.assign(u.toString());
+          }}
+          onPaint={(id, on) => {
+            if (id === "tips") setDescribeOn(on);
+            if (id === "debug") setDemoId(on ? "week" : "off");
           }}
         />
       ) : view === "teach" ? (

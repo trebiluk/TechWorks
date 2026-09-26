@@ -4336,9 +4336,51 @@ html[data-theme="new-look"] .tw-gadget {
   color: var(--color-muted);
   background: var(--color-elevated);
 }
-.tw-shuttle-key.is-on {
-  color: var(--color-accent-fg);
+.tw-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem;
+  min-height: 2.75rem;
+  padding: 0.25rem 0.35rem 0.25rem 0.55rem;
+  border-radius: 0.65rem;
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--color-fg);
+  background: var(--color-elevated);
+}
+.tw-switch-track {
+  position: relative;
+  flex: 0 0 auto;
+  width: 2.45rem;
+  height: 1.4rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--color-muted) 50%, var(--color-bg));
+}
+.tw-switch-knob {
+  position: absolute;
+  top: 0.16rem;
+  left: 0.16rem;
+  width: 1.08rem;
+  height: 1.08rem;
+  border-radius: 999px;
+  background: var(--color-fg);
+}
+.tw-switch[aria-checked="true"] .tw-switch-track {
   background: var(--color-accent);
+}
+.tw-switch[aria-checked="true"] .tw-switch-knob {
+  transform: translateX(1.05rem);
+  background: var(--color-accent-fg);
+}
+.tw-shuttle-key.is-off {
+  opacity: 0.38;
+  cursor: default;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tw-switch-knob { transition: none; }
 }
 header.desk-chrome .tw-wall-frame-sky strong,
 header.desk-chrome .tw-wall-frame-lunch strong {

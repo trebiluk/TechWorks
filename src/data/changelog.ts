@@ -6,6 +6,11 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.125 — 2026-09-26
+
+- Admin switches are knobs. The knob moves. A note no longer pretends a closed door opened.
+- A dim door stays put until its switch is on.
+
 ## 1.92.124 — 2026-09-26
 
 - The top chip row is gone. The hamburger sits on the sky and lunch line.

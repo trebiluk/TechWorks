@@ -1,61 +1,75 @@
 import type { EconomyFile } from "@/lib/economy";
-import { FEATURES, FEATURE_GROUPS, featureOn, setFeature } from "@/lib/features";
+import { FEATURES, FEATURE_GROUPS, featureOn, setFeature, type FeatureId } from "@/lib/features";
+import { commitContrast } from "@/lib/theme";
+import { commitDescribe } from "@/lib/describe";
+import { commitDemo, storedDemo } from "@/lib/demo";
 import { cn } from "@/lib/utils";
 
-const DOORS: { title: string; items: [string, string][] }[] = [
+const DOORS: { title: string; items: [string, string, FeatureId | ""][] }[] = [
   {
     title: "Open",
     items: [
-      ["week", "Week"],
-      ["teach", "Run the room"],
-      ["words", "Words"],
-      ["skills", "Skills"],
-      ["projects", "Projects"],
-      ["clubwall", "Club"],
-      ["hallwall", "Hall"],
+      ["week", "Week", ""],
+      ["teach", "Run the room", "teach"],
+      ["words", "Words", "vocab"],
+      ["skills", "Skills", ""],
+      ["projects", "Projects", "projects"],
+      ["clubwall", "Club", "club"],
+      ["hallwall", "Hall", "studyhall"],
     ],
   },
   {
     title: "Room",
     items: [
-      ["crib", "Crib"],
-      ["prints", "Prints"],
-      ["store", "Store"],
-      ["lucky", "Lucky"],
-      ["crews", "Crews"],
-      ["room", "Theme"],
+      ["crib", "Crib", "crib"],
+      ["prints", "Prints", "prints"],
+      ["store", "Store", "store"],
+      ["lucky", "Lucky", "lucky"],
+      ["crews", "Crews", "crews"],
+      ["room", "Theme", ""],
     ],
   },
   {
     title: "Desk",
     items: [
-      ["today", "Today"],
-      ["vault", "Backups"],
-      ["cloud", "Cloud"],
+      ["today", "Today", ""],
+      ["vault", "Backups", ""],
+      ["cloud", "Cloud", ""],
     ],
   },
 ];
 
-/** One panel. Switches and doors, grouped, all visible. */
+/** One panel. A switch moves. A dim door stays put until its switch is on. */
 export function ShopMenu({
   file,
   onChange,
   onGo,
   onHelp,
   onWeb,
+  onPaint,
 }: {
   file: EconomyFile;
   onChange: (next: EconomyFile) => void;
   onGo: (id: string) => void;
   onHelp?: () => void;
   onWeb?: () => void;
+  onPaint?: (id: FeatureId, on: boolean) => void;
 }) {
+  function flip(id: FeatureId, on: boolean) {
+    onChange(setFeature(file, id, !on));
+    const next = !on;
+    if (id === "debug") commitDemo(next ? (storedDemo() === "off" ? "week" : storedDemo()) : "off");
+    if (id === "tips") commitDescribe(next);
+    if (id === "contrast") commitContrast(next);
+    onPaint?.(id, next);
+  }
+
   return (
     <div className="tw-shuttle" data-shuttle>
       <header className="tw-shuttle-lead">
         <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">Admin</p>
         <h1 className="font-display text-2xl font-semibold">The panel</h1>
-        <p className="text-sm text-muted">On is lit. Off is dim. Open is a door.</p>
+        <p className="text-sm text-muted">The knob is the switch. A dim door does nothing until its switch is on.</p>
       </header>
       {FEATURE_GROUPS.map((group) => (
         <section key={group} className="tw-shuttle-bay" data-bay={group}>
@@ -67,12 +81,16 @@ export function ShopMenu({
                 <button
                   key={f.id}
                   type="button"
-                  aria-pressed={on}
+                  role="switch"
+                  aria-checked={on}
                   title={f.hint}
-                  onClick={() => onChange(setFeature(file, f.id, !on))}
-                  className={cn("tw-shuttle-key", on && "is-on")}
+                  onClick={() => flip(f.id, on)}
+                  className="tw-switch"
                 >
-                  {f.label}
+                  <span>{f.label}</span>
+                  <span className="tw-switch-track" aria-hidden>
+                    <span className="tw-switch-knob" />
+                  </span>
                 </button>
               );
             })}
@@ -83,11 +101,23 @@ export function ShopMenu({
         <section key={g.title} className="tw-shuttle-bay" data-bay={g.title}>
           <h2>{g.title}</h2>
           <div className="tw-shuttle-grid">
-            {g.items.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => onGo(id)} className="tw-shuttle-key">
-                {label}
-              </button>
-            ))}
+            {g.items.map(([id, label, need]) => {
+              const live = !need || featureOn(file, need);
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  disabled={!live}
+                  onClick={() => {
+                    if (!live) return;
+                    onGo(id);
+                  }}
+                  className={cn("tw-shuttle-key", !live && "is-off")}
+                >
+                  {label}
+                </button>
+              );
+            })}
             {g.title === "Desk" && onHelp ? (
               <button type="button" onClick={onHelp} className="tw-shuttle-key">
                 Help
