@@ -14,7 +14,7 @@ import {
   setTeachReflect,
   toggleTeachSkill,
 } from "@/lib/teach";
-import { planWeek, weekFillCount, type PlanCell } from "@/lib/planbook";
+import { planWeek, weekFillCount, copyHour, hourIsSet, type PlanCell } from "@/lib/planbook";
 import {
   newPlanitUnit,
   parkPlanitUnit,
@@ -127,11 +127,40 @@ export function PlanIt({
     return () => window.removeEventListener("keydown", onKey);
   }, [open.date, open.period, days, periods]);
 
+  const undoFile = useRef<EconomyFile | null>(null);
+  const undoFn = useRef<() => void>(() => {});
+  const [canUndo, setCanUndo] = useState(false);
+
   function edit(next: EconomyFile) {
     if (!gate()) return;
+    undoFile.current = fileRef.current;
+    setCanUndo(true);
     fileRef.current = next;
     onChange(next);
   }
+
+  function undo() {
+    const prev = undoFile.current;
+    if (!prev) return;
+    undoFile.current = null;
+    setCanUndo(false);
+    fileRef.current = prev;
+    onChange(prev);
+  }
+  undoFn.current = undo;
+
+  useEffect(() => {
+    function onUndoKey(e: KeyboardEvent) {
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+        e.preventDefault();
+        undoFn.current();
+      }
+    }
+    window.addEventListener("keydown", onUndoKey);
+    return () => window.removeEventListener("keydown", onUndoKey);
+  }, []);
 
   const pct = fill.total ? Math.round((fill.set / fill.total) * 100) : 0;
 
@@ -219,6 +248,8 @@ export function PlanIt({
             unlocked={unlocked}
             days={days}
             onEdit={edit}
+            canUndo={canUndo}
+            onUndo={undo}
             onTeach={onTeach}
             onWall={onWall}
             onDeck={onDeck}
@@ -296,6 +327,8 @@ function HourDesk({
   unlocked,
   days,
   onEdit,
+  canUndo,
+  onUndo,
   onTeach,
   onWall,
   onDeck,
@@ -307,6 +340,8 @@ function HourDesk({
   unlocked: boolean;
   days: string[];
   onEdit: (next: EconomyFile) => void;
+  canUndo?: boolean;
+  onUndo?: () => void;
   onTeach?: (date: string, period: number) => void;
   onWall?: () => void;
   onDeck?: () => void;
@@ -329,6 +364,9 @@ function HourDesk({
   const [newName, setNewName] = useState("");
   const project = slotsOf(file, p, d)[0];
   const units = slotsOf(file, p);
+  const later = shopBells(file)
+    .map((b) => b.period)
+    .find((n) => n > p && !hourIsSet(file, d, n));
   const preview = planitPreview(file, d, p);
   const beats = hourAgendaDraft(file, d, p);
 
@@ -516,6 +554,11 @@ function HourDesk({
             Teach
           </button>
         ) : null}
+        {canUndo && onUndo ? (
+          <button type="button" onClick={onUndo} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">
+            Undo
+          </button>
+        ) : null}
         {onWall ? (
           <button type="button" onClick={onWall} className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-elevated px-3 text-sm font-semibold">
             <PanelsTopLeft className="size-3.5" />
@@ -525,6 +568,18 @@ function HourDesk({
         {onDeck ? (
           <button type="button" onClick={onDeck} className="tw-tap inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-elevated px-3 text-sm font-semibold">
             Present
+          </button>
+        ) : null}
+        {later != null && cell.set ? (
+          <button
+            type="button"
+            onClick={() => {
+              onEdit(copyHour(file, d, p, d, later));
+              onNote(`Copied to P${later}.`);
+            }}
+            className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold"
+          >
+            Copy to P{later}
           </button>
         ) : null}
       </div>

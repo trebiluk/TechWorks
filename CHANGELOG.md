@@ -1,8 +1,14 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.117. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.118. -->
 
 # TechWorks changelog
 
-App version **1.92.117**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.118**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.118 — 2026-09-26
+
+- The top bar says Saved when this PC has the gradebook, and Saving… while a write is still going.
+- PlanIt Undo puts the last hour edit back. Ctrl+Z does the same when you are not typing.
+- Copy to the next empty period is one tap. Hours that already have a plan stay put.
 
 ## 1.92.117 — 2026-09-25
 

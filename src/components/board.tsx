@@ -35,7 +35,7 @@ import { applyTheme, applyVibe, paintContrast, storedContrast, storedTheme, stor
 import { bootLang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n-hook";
 import { LangChip } from "@/components/lang-chip";
-import { VersionChip } from "@/components/version-chip";
+import { SavedChip, VersionChip } from "@/components/version-chip";
 import { ErrorGate } from "@/components/error-gate";
 import { AdminHub } from "@/components/admin-hub";
 import type { LearnStart } from "@/components/learning-center";
@@ -789,6 +789,7 @@ export function Board() {
                   }}
                 />
                 ) : null}
+                <SavedChip />
                 {verChip}
                 </div>
                 {unlocked && dueN && mode !== "board" ? (
