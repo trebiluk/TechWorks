@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.138. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.139. -->
 
 # TechWorks changelog
 
-App version **1.92.138**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.139**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.139 — 2026-09-27
+
+- Watch opens this hour's skill, then overdue skills from earlier plans. Each card shows the last mark and today's note.
 
 ## 1.92.138 — 2026-09-27
 

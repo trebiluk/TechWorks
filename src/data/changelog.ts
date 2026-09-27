@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.139 — 2026-09-27
+
+- Watch opens this hour's skill, then overdue skills from earlier plans. Each card shows the last mark and today's note.
+
 ## 1.92.138 — 2026-09-27
 
 - Student labels are gone. The room is built for everyone. An aide is a person on the period, not a tag on a student.

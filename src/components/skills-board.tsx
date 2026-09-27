@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
 import { isLiveStudent, padFirst, periodTitle, score, shopBells, showFirstReal } from "@/lib/economy";
-import { PORTRAIT, SKILL_MARKS, SKILL_WHY, ALL_TRACK, crossedBand, setSkillScore, skillForGoal, skillScore, skillTrackOf, skillXp, skillsOfFamily, workerLevel, xpIntoLevel, type SkillFamily } from "@/lib/skills";
+import { PORTRAIT, SKILL_MARKS, SKILL_WHY, ALL_TRACK, crossedBand, setSkillScore, skillBest, skillForGoal, skillLogOf, skillScore, skillTrackOf, skillXp, skillsOfFamily, workerLevel, xpIntoLevel, type SkillFamily } from "@/lib/skills";
 import { STEM_LABEL, stemLettersOf, stemOf, stemsOf } from "@/lib/stems";
 import { abOn, deskBellId, onAbRoster, periodGoal } from "@/lib/store";
 import { crewsOf } from "@/lib/crews";
 import { agendaFor } from "@/lib/projects";
 import { todayIso } from "@/lib/calendar";
 import { periodNow } from "@/lib/bells";
-import { hourSkillsOf } from "@/lib/teach";
+import { hourSkillsOf, teachDay } from "@/lib/teach";
+import { watchQueue } from "@/lib/skill-queue";
 import { downloadText } from "@/lib/live";
 import {
   MST_SCORES,
@@ -34,6 +35,28 @@ const MARKS = SKILL_MARKS;
 
 function prettySkill(id: string, name: string) {
   return skillTrackOf(id)?.name ?? (name.charAt(0).toUpperCase() + name.slice(1).toLowerCase());
+}
+
+function PriorLine({
+  student,
+  skillId,
+  today,
+}: {
+  student: { notes?: Record<string, string>; skillLog?: { date: string; skillId: string; n: number; year: string }[]; skills?: Record<string, number> };
+  skillId: string;
+  today: string;
+}) {
+  const log = skillLogOf(student as never).filter((x) => x.skillId === skillId && x.n > 0);
+  const last = log.at(-1);
+  const best = skillBest(student as never, skillId);
+  const note = student.notes?.[today]?.trim();
+  if (!last && !note) return null;
+  const bits: string[] = [];
+  if (last && last.date !== today) bits.push(`Last ${last.n} · ${last.date}${last.year ? ` · ${last.year}` : ""}`);
+  else if (last && best > last.n) bits.push(`Best ${best}`);
+  if (note) bits.push(note.slice(0, 80));
+  if (!bits.length) return null;
+  return <p className="text-xs text-subtle">{bits.join(" · ")}</p>;
 }
 
 function SkillGuide() {
@@ -137,7 +160,11 @@ export function SkillsBoard({
   const [crewKey, setCrewKey] = useState("");
 
   useEffect(() => {
-    const next = family === "soft" ? hourSkills.find((id) => skillTrackOf(id)?.family === "soft") || "listen" : hourSkills[0] || agendaFor(file, period).skillId || skillForGoal(goal);
+    const roster = file.students.filter((s) => s.period === period);
+    const queued = watchQueue(file, period, today, roster);
+    const next = family === "soft"
+      ? hourSkills.find((id) => skillTrackOf(id)?.family === "soft") || queued.find((q) => skillTrackOf(q.id)?.family === "soft")?.id || "listen"
+      : hourSkills[0] || queued[0]?.id || agendaFor(file, period).skillId || skillForGoal(goal);
     setSkillId(next);
     setMore(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -165,6 +192,11 @@ export function SkillsBoard({
     if (next) setCrewKey(next.key);
   }
 
+  const hour = teachDay(file, today, period);
+  const queue = useMemo(
+    () => watchQueue(file, period, today, kids),
+    [file, period, today, kids],
+  );
   const parentId = skillId.split(":")[0] ?? skillId;
   const skill = skills.find((s) => s.id === parentId) ?? skills[0];
   const sub = skillTrackOf(parentId)?.subs.find((x) => `${parentId}:${x.id}` === skillId);
@@ -204,7 +236,7 @@ export function SkillsBoard({
   }
 
   const modes = [
-    { id: "watch" as const, label: "Watch", hint: "One skill. Four stems. Walk the room." },
+    { id: "watch" as const, label: "Watch", hint: "This hour, then overdue. Four stems. Walk the room." },
     { id: "map" as const, label: "Sit-down", hint: "Every skill for this class. PIN." },
     ...(featureOn(file, "nytech")
       ? [{ id: "standard" as const, label: "NY Tech", hint: "State Standard 5 on the project." }]
@@ -281,9 +313,28 @@ export function SkillsBoard({
                 {need.length ? ` · look first: ${need.map((s) => padFirst(s, real)).join(", ")}` : " · everyone has a mark"}
               </span>
               <button type="button" onClick={() => setMore((v) => !v)} className="min-h-9 text-sm font-semibold text-gold">
-                {more ? "Hide skills" : "Other skill"}
+                {more ? "Hide library" : "Skill library"}
               </button>
             </div>
+            {hour.notes ? <p className="mt-1 text-sm text-muted">{hour.notes}</p> : null}
+            {queue.length > 1 ? (
+              <div className="mt-2 flex flex-wrap gap-1">
+                {queue.map((q) => (
+                  <button
+                    key={q.id}
+                    type="button"
+                    onClick={() => setSkillId(q.id)}
+                    className={cn(
+                      "min-h-11 rounded-full px-3 text-sm font-semibold",
+                      (skillId === q.id || skillId.startsWith(`${q.id}:`)) ? "bg-fg text-bg" : "bg-elevated text-muted",
+                    )}
+                  >
+                    {prettySkill(q.id, q.id)}
+                    <span className="ml-1 text-[11px] font-medium opacity-70">{q.why === "today" ? "This hour" : "Overdue"}</span>
+                  </button>
+                ))}
+              </div>
+            ) : null}
           </div>
           {more ? (
             <div className="flex flex-wrap gap-1">
@@ -369,6 +420,7 @@ export function SkillsBoard({
                     ))}
                   </div>
                   {cur ? <p className="text-sm text-muted">{stemOf(skillId, cur)}</p> : <p className="text-sm font-semibold text-gold">Not seen</p>}
+                  <PriorLine student={s} skillId={skillId} today={today} />
                 </article>
               );
             })}
