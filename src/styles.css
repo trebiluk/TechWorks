@@ -4508,6 +4508,43 @@ html[data-theme="new-look"] .tw-gadget {
   text-transform: uppercase;
   color: var(--color-accent);
 }
+.tw-now-card {
+  container-type: inline-size;
+}
+.tw-now-stage {
+  display: none;
+}
+@container (min-width: 22rem) {
+  .tw-now-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(8rem, 0.42fr);
+    align-items: center;
+  }
+  .tw-now-stage {
+    display: block;
+  }
+}
+.tw-stage-card {
+  display: flex;
+  min-height: 7rem;
+  align-items: center;
+}
+.tw-card-stage {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 0.75rem;
+}
+.tw-card-stage p {
+  margin: 0;
+  font-family: var(--font-display, ui-sans-serif);
+  font-size: clamp(1.05rem, 5cqi, 1.45rem);
+  font-weight: 650;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--color-title, var(--color-fg));
+}
 .tw-switch {
   display: flex;
   align-items: center;

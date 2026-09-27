@@ -41,6 +41,31 @@ import { HangFrame } from "@/components/hang-frame";
 import { PlanitWeek } from "@/components/planit-week";
 import { WallLookChips } from "@/components/wall-looks";
 
+const SHOP_LINES = [
+  "Measure twice.",
+  "Leave it better than you found it.",
+  "A 3 means you can do it alone.",
+  "Tools back. Then the bell.",
+  "Kind, and specific.",
+  "Your crew is the job.",
+  "Goggles before the cut.",
+  "The drawing is the promise.",
+];
+
+function shopLine(seed: string): string {
+  let n = 0;
+  for (let i = 0; i < seed.length; i++) n = (n + seed.charCodeAt(i)) % SHOP_LINES.length;
+  return SHOP_LINES[n] ?? SHOP_LINES[0];
+}
+
+function CardStage({ seed, berty }: { seed: string; berty?: boolean }) {
+  return (
+    <aside className="tw-card-stage" data-card-stage>
+      {berty ? <Berty pose="think" size="md" /> : null}
+      <p>{shopLine(seed)}</p>
+    </aside>
+  );
+}
 const FOLD_KEY = "techworks-dash-fold-v2";
 const DEFAULT_CLOSED: Record<string, boolean> = { spark: true, notes: true };
 
@@ -206,8 +231,8 @@ export const Dashboard = memo(function Dashboard({
   }
 
   const nowCard = (
-    <article className={cn("tw-gadget tw-hud tw-fill flex min-h-0 flex-col p-2 text-fg", clock?.live ? "justify-center" : "", clock?.cleanup ? "bg-cleanup text-accent-fg" : "", clock?.live && !clock.cleanup ? "tw-live" : "")}>
-      <div className="flex items-center gap-3">
+    <article className={cn("tw-gadget tw-hud tw-fill tw-now-card flex min-h-0 flex-col p-2 text-fg", clock?.live ? "justify-center" : "", clock?.cleanup ? "bg-cleanup text-accent-fg" : "", clock?.live && !clock.cleanup ? "tw-live" : "")}>
+      <div className="flex min-w-0 items-center gap-3">
         {clock?.live ? (
           <ProgressRing
             pct={clock.pct}
@@ -243,9 +268,9 @@ export const Dashboard = memo(function Dashboard({
           </p>
         </div>
       </div>
-      {arrange && live == null ? (
-        <div className="mt-auto pt-2">
-          <ProgressTrio cycle={cyc} quarter={qtr} year={yr} />
+      {!arrange ? (
+        <div className="tw-now-stage">
+          <CardStage seed={today} />
         </div>
       ) : null}
     </article>
@@ -404,7 +429,7 @@ export const Dashboard = memo(function Dashboard({
             : null}
         </ol>
       </article>
-      <article className="tw-gadget tw-hud p-3">
+      <article className="tw-gadget tw-hud tw-stage-card p-3">
         {arrange ? (
           <>
         <p className="text-[11px] font-semibold uppercase tracking-wider text-subtle">{t("Year")}</p>
@@ -417,6 +442,7 @@ export const Dashboard = memo(function Dashboard({
           </>
         ) : null}
         {featureOn(file, "reward") ? <RewardBar file={file} period={shown} /> : null}
+        {!arrange && !featureOn(file, "reward") ? <CardStage seed={`${today}-shop`} berty={bertyOn} /> : null}
       </article>
     </section>
   );
@@ -427,8 +453,9 @@ export const Dashboard = memo(function Dashboard({
 
   function ghost(label: string) {
     return (
-      <article className="tw-gadget px-3 py-2 text-sm text-muted">
-        {label} · {t("None today")}
+      <article className="tw-gadget tw-stage-card px-3 py-2">
+        <p className="text-[11px] font-bold uppercase tracking-wider text-muted">{label}</p>
+        <CardStage seed={`${today}-${label}`} />
       </article>
     );
   }

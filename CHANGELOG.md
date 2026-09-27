@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.135. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.136. -->
 
 # TechWorks changelog
 
-App version **1.92.135**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.136**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.136 — 2026-09-27
+
+- Empty card sides hold a shop line. The blank school card holds Berty with it.
 
 ## 1.92.135 — 2026-09-27
 
