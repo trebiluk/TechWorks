@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.135 — 2026-09-27
+
+- The wall tells the room what a 3 looks like on this hour's skill. Admin switches are a full 44px tap.
+
 ## 1.92.134 — 2026-09-27
 
 - Admin is a left menu. Wall arrange puts kits and plates on the left so the drag cards keep a real size.

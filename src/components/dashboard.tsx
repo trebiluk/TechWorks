@@ -23,6 +23,7 @@ import { featureOn } from "@/lib/features";
 import { showBerty, bertyPose } from "@/lib/berty";
 import { procedureStep } from "@/lib/procedure";
 import { teachJob, laySlots, teachFocusPeriod, hangOf } from "@/lib/teach";
+import { skillName } from "@/lib/projects";
 import { hourKit, hourWallSpine } from "@/lib/hour-flow";
 import { AgendaWall, KitChip } from "@/components/agenda-wall";
 import { hideDashRow, loadDashLayout, moveDashRow, moveDashTo, applyDashKit, DASH_KITS, patchDash, rowOn, saveDashLayout, DASH_ROWS, DEFAULT_LAYOUT, type DashLayout, type DashRowId } from "@/lib/dash-layout";
@@ -290,6 +291,12 @@ export const Dashboard = memo(function Dashboard({
               </aside>
             ) : null}
           </div>
+          {!arrange && wallJob.lookFor ? (
+            <p className="tw-skill-bar" data-skill-bar>
+              <span>{skillName(wallJob.skillId) || "Skill"} · a {wallJob.expect}</span>
+              {wallJob.lookFor.replace(/^\d\s*=\s*/, "")}
+            </p>
+          ) : null}
           <KitChip kit={hourKit(file, wallDate, shown)} />
           {arrange ? (
             <>

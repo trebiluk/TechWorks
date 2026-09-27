@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.134. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.135. -->
 
 # TechWorks changelog
 
-App version **1.92.134**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.135**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.135 — 2026-09-27
+
+- The wall tells the room what a 3 looks like on this hour's skill. Admin switches are a full 44px tap.
 
 ## 1.92.134 — 2026-09-27
 

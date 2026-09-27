@@ -4484,12 +4484,36 @@ html[data-theme="new-look"] .tw-gadget {
   color: var(--color-muted);
   background: var(--color-elevated);
 }
+.tw-skill-bar {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: baseline;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  margin: 0;
+  overflow: hidden;
+  padding: 0.35rem 0.7rem;
+  border-radius: 0.7rem;
+  background: color-mix(in oklab, var(--color-elevated) 90%, transparent);
+  color: var(--color-fg);
+  font-size: clamp(0.95rem, 2.2cqi, 1.25rem);
+  font-weight: 650;
+  line-height: 1.2;
+}
+.tw-skill-bar span {
+  flex: 0 0 auto;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
 .tw-switch {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.45rem;
-  min-height: 2.75rem;
+  min-height: 44px;
   padding: 0.25rem 0.35rem 0.25rem 0.55rem;
   border-radius: 0.65rem;
   text-align: left;
