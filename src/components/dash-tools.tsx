@@ -49,12 +49,12 @@ export function DashTools({ file, period }: { file: EconomyFile; period: number 
   }
 
   return (
-    <section className="tw-gadget tw-hud grid min-h-0 gap-2 p-3 sm:grid-cols-3">
+    <section className="tw-gadget tw-hud tw-tools-grid p-3">
       {timerOn ? <TouchTimer title="Timer" className="bg-elevated" /> : null}
       {pickOn ? (
         <article className="rounded-xl bg-elevated p-3">
           <p className="text-[11px] font-semibold uppercase tracking-widest text-subtle">Draw · P{period}</p>
-          <p className="mt-1 font-display text-3xl font-semibold tracking-tight">{who === "—" ? "Tap" : who}</p>
+          <p className="tw-tool-read">{who === "—" ? "Tap" : who}</p>
           <p className="text-xs text-muted">{pool.length} aliases</p>
           <button type="button" onClick={drawWho} className="tw-tap mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-accent text-sm font-semibold text-accent-fg">
             <Dices className="size-4" /> Worker
@@ -64,7 +64,7 @@ export function DashTools({ file, period }: { file: EconomyFile; period: number 
       {pickOn ? (
         <article className="rounded-xl bg-elevated p-3">
           <p className="text-[11px] font-semibold uppercase tracking-widest text-subtle">Crew</p>
-          <p className="mt-1 font-display text-3xl font-semibold tracking-tight">{crew === "—" ? "Tap" : crew}</p>
+          <p className="tw-tool-read">{crew === "—" ? "Tap" : crew}</p>
           <p className="text-xs text-muted">{crews.length} crews</p>
           <button
             type="button"

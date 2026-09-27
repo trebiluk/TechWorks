@@ -40,7 +40,7 @@ export function TouchTimer({
   return (
     <section className={cn("rounded-xl bg-surface p-3", className)}>
       <p className="text-[11px] font-semibold uppercase tracking-widest text-subtle">{title}</p>
-      <p className={cn("font-display text-5xl font-semibold tabular-nums", left === 0 ? "text-cleanup" : "text-fg")}>
+      <p className={cn("tw-timer-read font-display font-semibold tabular-nums", left === 0 ? "text-cleanup" : "text-fg")}>
         {String(m).padStart(2, "0")}:{String(s).padStart(2, "0")}
       </p>
       <div className="mt-2 flex flex-wrap gap-1">

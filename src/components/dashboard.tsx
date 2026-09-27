@@ -489,7 +489,7 @@ export const Dashboard = memo(function Dashboard({
         formatSchoolDate(wallDate),
       ]}
     >
-    <div className={cn("tw-web-wall relative flex w-full flex-1 flex-col gap-1.5", arrange ? "overflow-auto" : "min-h-0 overflow-hidden")} data-wall-stage={arrange ? "edit" : "show"}>
+    <div className={cn("tw-web-wall relative flex w-full flex-1 flex-col gap-1.5", arrange ? "tw-arrange overflow-auto" : "min-h-0 overflow-hidden")} data-wall-stage={arrange ? "edit" : "show"}>
       {preview && viewP == null ? (
         <button type="button" onClick={onClearFocus} className="tw-tap min-h-11 shrink-0 rounded-xl bg-accent px-3 text-left text-sm font-semibold text-accent-fg">
           Showing this hour · P{preview.period}. Back to now.
@@ -502,27 +502,31 @@ export const Dashboard = memo(function Dashboard({
           </button>
         </div>
       ) : null}
-      {arrange ? <LayoutBar dash={dash} rankBoard={rankBoard} onRankBoard={onRankBoard} onSeeWall={onSeeWall} /> : null}
-      {arrange && stOpen ? (
-        <div className="flex min-w-0 shrink-0 flex-wrap items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => {
-              if (unlocked && onChange) onChange(setSchooltoolDone(file, today, 1, true));
-              else window.open(SCHOOLTOOL_URL, "_blank", "noreferrer");
-            }}
-            className={cn(
-              "flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold",
-              stLate ? "bg-cleanup text-accent-fg" : "bg-elevated text-muted",
-            )}
-          >
-            <ClipboardList className="size-3.5" />
-            SchoolTool{stLate ? <span className="hidden sm:inline"> · P1 by 8:15</span> : null}
-            {unlocked ? <span className="opacity-80">tap = in</span> : null}
-          </button>
-        </div>
+      {arrange ? (
+        <aside className="tw-arrange-menu">
+          <LayoutBar dash={dash} rankBoard={rankBoard} onRankBoard={onRankBoard} onSeeWall={onSeeWall} />
+          {stOpen ? (
+            <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  if (unlocked && onChange) onChange(setSchooltoolDone(file, today, 1, true));
+                  else window.open(SCHOOLTOOL_URL, "_blank", "noreferrer");
+                }}
+                className={cn(
+                  "flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold",
+                  stLate ? "bg-cleanup text-accent-fg" : "bg-elevated text-muted",
+                )}
+              >
+                <ClipboardList className="size-3.5" />
+                SchoolTool{stLate ? <span className="hidden sm:inline"> · P1 by 8:15</span> : null}
+                {unlocked ? <span className="opacity-80">tap = in</span> : null}
+              </button>
+            </div>
+          ) : null}
+        </aside>
       ) : null}
-      <div className={cn(arrange ? "" : "flex min-h-0 flex-1 flex-col overflow-hidden")}>
+      <div className={cn("tw-arrange-stage", arrange ? "" : "flex min-h-0 flex-1 flex-col overflow-hidden")}>
         <SortableList
           enabled={sortOn}
           className={cn("tw-wall-grid", arrange ? "" : "min-h-0 h-full")}

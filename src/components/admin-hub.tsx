@@ -13,9 +13,6 @@ import { abOn, deskBellId, deskPacks, exportedThisPeriod, isSubDay, lunchOn, mee
 import type { EconomyFile } from "@/lib/economy";
 import { CloudBoard } from "@/components/cloud-board";
 import { CrewDesk } from "@/components/crew-desk";
-import { CtrlRail, CtrlSeg } from "@/components/ctrl";
-import { markOf } from "@/lib/nav-marks";
-import { MarkChip } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { ADMIN_GROUPS, PANE_LABEL, groupOfPane } from "@/lib/admin-nav";
 import { cloudStatus } from "@/lib/desk-cloud";
@@ -133,33 +130,37 @@ export function AdminHub({
   const cloudDue = cloud === "this-pc" || cloud === "off" || cloud === "need-key" || cloud === "error";
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      <div className="shrink-0 px-1 pb-1">
-        <CtrlRail label="Admin">
-          {ADMIN_GROUPS.map((g) => (
-            <MarkChip
-              key={g.id}
-              mark={markOf(g.id)}
-              title={g.label}
-              on={group.id === g.id}
+    <div className="tw-admin-split">
+      <nav className="tw-admin-rail" aria-label="Admin">
+        {ADMIN_GROUPS.map((g) => (
+          <div key={g.id}>
+            <button
+              type="button"
+              aria-current={group.id === g.id ? "page" : undefined}
               onClick={() => pickPane(g.panes[0] as AdminPane)}
+              className={cn("tw-admin-link", group.id === g.id && "is-on")}
             >
               {g.label}
-            </MarkChip>
-          ))}
-        </CtrlRail>
-        {inner.length > 1 ? (
-          <div className="mt-1">
-            <CtrlSeg
-              items={inner.map((id) => ({ id, label: PANE_LABEL[id] ?? id }))}
-              value={pane}
-              onChange={(id) => pickPane(id as AdminPane)}
-            />
+            </button>
+            {group.id === g.id && inner.length > 1 ? (
+              <div className="tw-admin-sub">
+                {inner.map((id) => (
+                  <button
+                    key={id}
+                    type="button"
+                    aria-current={pane === id ? "page" : undefined}
+                    onClick={() => pickPane(id as AdminPane)}
+                    className={cn("tw-admin-sublink", pane === id && "is-on")}
+                  >
+                    {PANE_LABEL[id] ?? id}
+                  </button>
+                ))}
+              </div>
+            ) : null}
           </div>
-        ) : null}
-      </div>
-
-      <div className={cn("min-h-0 flex-1", pane === "wall" ? "flex flex-col overflow-hidden" : "overflow-y-auto overscroll-contain")}>
+        ))}
+      </nav>
+      <div className={cn("tw-admin-main", pane === "wall" ? "flex flex-col overflow-hidden" : "overflow-y-auto overscroll-contain")}>
         {pane === "crews" ? (
           <CrewDesk file={file} onChange={onChange} startPeriod={shown} />
         ) : pane === "cloud" ? (

@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.133. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.134. -->
 
 # TechWorks changelog
 
-App version **1.92.133**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.134**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.134 — 2026-09-27
+
+- Admin is a left menu. Wall arrange puts kits and plates on the left so the drag cards keep a real size.
 
 ## 1.92.133 — 2026-09-27
 
