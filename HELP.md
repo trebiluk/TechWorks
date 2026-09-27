@@ -364,7 +364,7 @@ BertyBot is the workshop mascot — cleanup, enter/listen/work, never a grade or
 
 ### Data privacy
 
-TechWorks does not store legal names, IEP, or 504. The wall, this PC, the cloud desk, the Google book, and backups are Shop ID + alias only. A SchoolTool paste may mint aliases once; those names are dropped and never saved. Family web needs the class code, then the Shop ID — it does not list the class. Wallet and Lucky stay off family web. Cloud copies aliases and scores with a desk key you keep in the planner. Idle lock after 5 minutes. The teacher PIN is the one you set — never 1111.
+TechWorks does not store legal names, or labels. The wall, this PC, the cloud desk, the Google book, and backups are Shop ID + alias only. A SchoolTool paste may mint aliases once; those names are dropped and never saved. Family web needs the class code, then the Shop ID — it does not list the class. Wallet and Lucky stay off family web. Cloud copies aliases and scores with a desk key you keep in the planner. Idle lock after 5 minutes. The teacher PIN is the one you set — never 1111.
 
 ### Family web code
 
@@ -372,7 +372,7 @@ Web on the HUD, or ?web=1. Class web code is the portal PIN (default 2627 — ch
 
 ### FERPA / what gets published
 
-This app does not store last names, legal first names, IEP, or 504. Cloud, live, Google book, and this PC are Shop ID + alias. Import may paste a SIS list once to mint aliases, then those names are dropped. Family web asks for Shop ID. Idle lock after 5 minutes.
+This app does not store last names, legal first names, or labels. Cloud, live, Google book, and this PC are Shop ID + alias. Import may paste a SIS list once to mint aliases, then those names are dropped. Family web asks for Shop ID. Idle lock after 5 minutes.
 
 ### Shop IDs
 

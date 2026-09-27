@@ -34,12 +34,6 @@ export type RawStudent = {
   clutch: number;
   opening: number;
   flags?: {
-    iep?: boolean;
-    plan504?: boolean;
-    ell?: boolean;
-    preferSeating?: boolean;
-    extendedTime?: boolean;
-    dhh?: boolean;
     ta?: boolean;
     hp?: boolean;
   };
@@ -183,6 +177,8 @@ export type EconomyFile = {
       crewProjects?: { cycle: number; period: number; crewKey: string; projectId: string }[];
       /** Period → ordered active project slots. Empty until the teacher parks one. */
       periodProjects?: Record<string, string[]>;
+      /** Adults in the room for a period. Shop name only. Not tied to a student. */
+      aides?: { id: string; period: number; name: string }[];
       /** Once true, factory units are not re-injected. First load after 1.92.28 clears them. */
       authoredPlans?: boolean;
       projects?: {

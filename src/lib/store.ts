@@ -976,16 +976,11 @@ export function setStudentFlags(
   const next = clone(file);
   next.students = next.students.map((st) => {
     if (st.id !== id) return st;
-    const flags = { ...(st.flags ?? {}) };
+    const flags = { ...(st.flags ?? {}) } as Record<string, unknown>;
     if (patch.ta !== undefined) flags.ta = patch.ta;
     if (patch.hp !== undefined) flags.hp = patch.hp;
-    delete flags.iep;
-    delete flags.plan504;
-    delete flags.ell;
-    delete flags.dhh;
-    delete flags.preferSeating;
-    delete flags.extendedTime;
-    return { ...st, flags: Object.keys(flags).length ? flags : undefined };
+    for (const key of ["iep", "plan504", "ell", "dhh", "preferSeating", "extendedTime"]) delete flags[key];
+    return { ...st, flags: Object.keys(flags).length ? (flags as RawStudent["flags"]) : undefined };
   });
   return next;
 }

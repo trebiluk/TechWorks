@@ -34,7 +34,7 @@ describe("names vault", () => {
         last: "Smith",
         legalLast: "Smith",
         legalFirst: "Jordan",
-        flags: { iep: true, plan504: true, ell: true },
+        flags: { ta: true, iep: true, plan504: true, ell: true } as RawStudent["flags"],
       }),
     ]);
     const pub = stripNames(file);
@@ -43,9 +43,10 @@ describe("names vault", () => {
     assert.equal(s.last, "");
     assert.equal(s.legalFirst, undefined);
     assert.equal(s.legalLast, undefined);
-    assert.equal(s.flags?.iep, undefined);
-    assert.equal(s.flags?.plan504, undefined);
-    assert.equal(s.flags?.ell, undefined);
+    assert.equal((s.flags as { iep?: boolean; plan504?: boolean; ell?: boolean; ta?: boolean } | undefined)?.iep, undefined);
+    assert.equal((s.flags as { plan504?: boolean } | undefined)?.plan504, undefined);
+    assert.equal((s.flags as { ell?: boolean } | undefined)?.ell, undefined);
+    assert.equal(s.flags?.ta, true);
     const vault = namesVaultOf(file);
     assert.deepEqual(vault, {});
   });
@@ -53,7 +54,7 @@ describe("names vault", () => {
   it("merge does not restore legal names", () => {
     const pub = desk([kid({ id: "TW-AAAAAAAAAA", first: "Rivet", period: 3, last: "Smith", legalLast: "Smith" })]);
     const merged = mergeNames(pub, {
-      "TW-AAAAAAAAAA": { alias: "Rivet", last: "Smith", legalFirst: "Jordan", period: 3, iep: true, plan504: false },
+      "TW-AAAAAAAAAA": { alias: "Rivet", last: "Smith", legalFirst: "Jordan", period: 3 },
     });
     assert.equal(merged.students[0]!.legalLast, undefined);
     assert.equal(merged.students[0]!.last, "");

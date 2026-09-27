@@ -91,7 +91,7 @@ Wall beat  —wallMode from the bell→  Enter · Agenda · Cleanup · idle
 **Do not**
 
 - Deck does not keep its own lesson file anymore. Old techworks-deck-v1 is leftover chrome, not the hour.
-- Wall does not show legal names, IEP, wallet, Lucky, or SCOREPIXEL / grading debt.
+- Wall does not show legal names, wallet, Lucky, or SCOREPIXEL / grading debt.
 
 ## Four number systems (do not mix)
 
@@ -126,7 +126,7 @@ A worker is a locked id. The wall shows an alias minted from that id, never from
 | Alias (first) | students[].first | Yes | Yes | Yes | Yes |
 | Codebook | paper / CSV | Never | Print Shop IDs after PIN | Never | Teacher drawer only |
 | Legal name | not stored | Never | Never | Never | Not in this app |
-| IEP / 504 | not stored | Never | Never | Never | Not in this app |
+| student labels | not stored | Never | Never | Never | Not in this app |
 | Crew key | crewKey + crewDays | Crew plates | Yes | No | Class tabs |
 | Period / grade | period, grade | P chips | Yes | Yes | Yes |
 
@@ -232,7 +232,7 @@ Three copies. None of them is live Google Drive sync.
 
 | Copy | Holds | Does not hold |
 | --- | --- | --- |
-| This PC (gradebook) | Roster (Shop ID + alias), marks, skills, projects, teachDays, club, prints, crib | Theme, layout, PIN, Fake data toggle (browser only). Legal names / IEP |
+| This PC (gradebook) | Roster (Shop ID + alias), marks, skills, projects, teachDays, club, prints, crib | Theme, layout, PIN, Fake data toggle (browser only). Legal names are not stored |
 | Cloud (desk key) | Same aliases + scores, encrypted | Theme / PIN / Fake data. Empty PC will not overwrite names |
 | Drive folder | JSON + Google book you download | Live watch. VAULT tab = Shop ID + alias — not legal names |
 

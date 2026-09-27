@@ -4500,6 +4500,12 @@ html[data-theme="new-look"] .tw-gadget {
   font-weight: 650;
   line-height: 1.2;
 }
+.tw-aide-line {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: var(--color-fg);
+}
 .tw-skill-bar span {
   flex: 0 0 auto;
   font-size: 0.68rem;

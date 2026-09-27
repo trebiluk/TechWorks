@@ -25,6 +25,7 @@ import { addTypedStudent, deskSavePending, saveDeskNow, setAlias, setGradeOverri
 import { auditStudentIds } from "@/lib/ids";
 import { emptyRoster, snapshotNow } from "@/lib/vault";
 import { publicHandle } from "@/lib/live";
+import { addAide, aidesOf, dropAide } from "@/lib/aides";
 import { todayIso } from "@/lib/calendar";
 import { bansOf, BENCH, addPeriodCrew, dropCrewBan, nextPeriodCrewKey, placeBlock, rosterLabel, separatePair, setStudentCrew, whoOf } from "@/lib/crew-desk";
 import { MarkChip } from "@/components/ui";
@@ -54,6 +55,7 @@ export function YearRoster({
   const [st, setSt] = useState(false);
   const [pending, setPending] = useState(false);
   const [notice, setNotice] = useState("");
+  const [aideName, setAideName] = useState("");
   const counts = useMemo(() => yearCounts(file, club), [file, club]);
   const ids = useMemo(() => auditStudentIds(file.students), [file.students]);
   const cohort = YEAR_CLASSES.concat(YEAR_GROUPS).find((c) => c.id === pick) ?? null;
@@ -81,6 +83,8 @@ export function YearRoster({
   }, [file, club, focus, filter, more, period, q]);
   const orphans = unlinkedClub(club, file);
   const bells = shopBells(file);
+  const aidePeriod = period ?? bells[0]?.period ?? 1;
+  const aides = aidesOf(file, period);
   const periods = [...new Set(YEAR_CLASSES.map((c) => c.period))];
 
   useEffect(() => {
@@ -126,6 +130,45 @@ export function YearRoster({
               P{p}
             </button>
           ))}
+        </div>
+        <div className="rounded-xl bg-elevated p-2">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-muted">Aides · P{aidePeriod}</p>
+          <p className="text-xs text-muted">A person in this room. Not tied to a student.</p>
+          <div className="mt-1 flex gap-1">
+            <input
+              value={aideName}
+              onChange={(e) => setAideName(e.target.value)}
+              placeholder="Shop name"
+              aria-label="Aide name"
+              className="min-h-11 min-w-0 flex-1 rounded-xl bg-surface px-3 text-sm outline-none"
+            />
+            <button
+              type="button"
+              disabled={!aideName.trim()}
+              onClick={() => {
+                onChange(addAide(file, aidePeriod, aideName));
+                setAideName("");
+              }}
+              className="tw-tap min-h-11 rounded-xl bg-fg px-3 text-sm font-semibold text-bg disabled:opacity-40"
+            >
+              Add
+            </button>
+          </div>
+          {aides.length ? (
+            <ul className="mt-1">
+              {aides.map((a) => (
+                <li key={a.id} className="flex items-center gap-2">
+                  <span className="min-w-0 flex-1 truncate text-sm font-semibold">
+                    {a.name}
+                    {period == null ? <span className="ml-1 font-normal text-muted">P{a.period}</span> : null}
+                  </span>
+                  <button type="button" onClick={() => onChange(dropAide(file, a.id))} className="tw-tap min-h-11 text-sm font-semibold text-muted">
+                    Remove
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
       </div>
 

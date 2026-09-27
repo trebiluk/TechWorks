@@ -241,7 +241,7 @@ function readmeSheet(): BookSheet {
     ["Your fields", "extra_1 through extra_8 — rename the label row, type whatever you need. The desk never overwrites those."],
     ["Add more columns", "Add them AFTER extra_8. Keep a copy before you re-export, then paste your extra columns back."],
     ["Do not insert", "Do not insert columns between gold headers. That breaks the lock."],
-    ["FERPA", "This book is Shop ID + alias only. No legal names. No IEP or 504."],
+    ["FERPA", "This book is Shop ID + alias only. No legal names. No student labels."],
     ["Class tabs", "One mini dashboard per period (1, 2, 3, 8, 9, 10) plus study hall and club."],
     ["YEAR MARKS", "Full year D1–D4 for cycles 1–8. Blank is not a zero. Fill as the year happens."],
     ["STEM", "Evidence stems (the 1–4 sentences). Not a second MST score. NY Tech stays on the desk."],
@@ -457,7 +457,7 @@ function vaultSheet(file: EconomyFile): BookSheet {
   return {
     name: "VAULT",
     kind: "table",
-    banner: "Shop ID + alias · no legal names · no IEP / 504",
+    banner: "Shop ID + alias · no legal names · no student labels",
     warn: true,
     keys,
     labels,

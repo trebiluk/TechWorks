@@ -4,7 +4,7 @@ Live desk **v1.92.72**. Bottom dock: **Dash · Learn · Crew · Rosters · Admin
 
 Twin of `docs/MENU-TREE.md`. Teacher unlock = Set teacher PIN (never 1111). Crew pad 2222. Family web portal default 2627.
 
-Aliases on the wall. This app does not store legal names, IEP, or 504.
+Aliases on the wall. This app does not store legal names, or labels.
 
 ---
 

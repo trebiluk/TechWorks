@@ -590,12 +590,20 @@ export const HELP_ARTICLES: HelpArticle[] = [
     body: "BertyBot is the workshop mascot — cleanup, enter/listen/work, never a grade or a wallet. Mr. K is the teacher card (Richard Kulibert). Open from the version chip (tap Berty or the v number), Find (type berty or kulibert), Teach (tap Berty), or Admin → About. These are house profiles, not students.",
   },
   {
+    id: "access",
+    category: "Data privacy",
+    title: "Access for everyone",
+    tags: ["access", "aide", "tap", "contrast", "motion"],
+    wall: true,
+    body: "The wall, the taps, and the type are built for the whole room. Taps are at least 44px. Wall type stays large. Reduced motion is honored. Nothing in this app labels a student. An aide is a person for the period: Admin → People, type a shop name. The wall shows Aide and that name. The aide is not tied to a student.",
+  },
+  {
     id: "data-privacy",
     category: "Data privacy",
     title: "Data privacy",
     tags: ["privacy", "ferpa", "data", "names", "alias", "cloud", "family"],
     wall: true,
-    body: "TechWorks does not store legal names, IEP, or 504. The wall, this PC, the cloud desk, the Google book, and backups are Shop ID + alias only. A SchoolTool paste may mint aliases once; those names are dropped and never saved. Family web needs the class code, then the Shop ID — it does not list the class. Wallet and Lucky stay off family web. Cloud copies aliases and scores with a desk key you keep in the planner. Idle lock after 5 minutes. The teacher PIN is the one you set — never 1111.",
+    body: "TechWorks does not store legal names, and it does not label students. The wall, this PC, the cloud desk, the Google book, and backups are Shop ID + alias only. A SchoolTool paste may mint aliases once; those names are dropped and never saved. An aide is a person for the period, listed by shop name, not tied to a student. Family web needs the class code, then the Shop ID — it does not list the class. Wallet and Lucky stay off family web. Cloud copies aliases and scores with a desk key you keep in the planner. Idle lock after 5 minutes. The teacher PIN is the one you set — never 1111.",
   },
   {
     id: "portal",
@@ -609,7 +617,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Data privacy",
     title: "FERPA / what gets published",
     tags: ["ferpa", "alias", "names", "export"],
-    body: "This app does not store last names, legal first names, IEP, or 504. Cloud, live, Google book, and this PC are Shop ID + alias. Import may paste a SIS list once to mint aliases, then those names are dropped. Family web asks for Shop ID. Idle lock after 5 minutes.",
+    body: "This app does not store last names, legal first names, or labels on a student. Cloud, live, Google book, and this PC are Shop ID + alias. Import may paste a SIS list once to mint aliases, then those names are dropped. An aide is listed on the period only. Family web asks for Shop ID. Idle lock after 5 minutes.",
   },
   {
     id: "codebook",
@@ -790,7 +798,7 @@ Grok Publish hits Orbit only. Do not commit legal names. Desk pack kind techwork
 
 ## Privacy
 
-This app does not store legal names, IEP, or 504. Projector, ?embed=1, cloud, Google book, and this PC are Shop ID + alias. Family web asks for Shop ID after the class code. Idle lock after 5 minutes. Crew 2222 stays off student About. Teacher PIN is never printed.
+This app does not store legal names or labels on a student. Projector, ?embed=1, cloud, Google book, and this PC are Shop ID + alias. Family web asks for Shop ID after the class code. Idle lock after 5 minutes. Crew 2222 stays off student About. Teacher PIN is never printed.
 `;
 }
 

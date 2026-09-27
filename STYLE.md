@@ -51,7 +51,7 @@ PINs: teacher is the PIN they set (1111 is rejected). Crew override `2222`.
 
 - Walls, projector, desk, cloud, and backups: **alias + Shop ID only**.
 - Real last and first names are **not stored**. A SIS paste may mint aliases once, then the names are dropped.
-- IEP, 504, ELL, DHH, and quiet notes are **not stored**.
+- labels, ELL, DHH, and quiet notes are **not stored**.
 - Never log the confidential roster PDF. Never paste real names into changelog, Help, or Drive dumps.
 
 ---
@@ -101,7 +101,7 @@ Tokens live in `src/styles.css` (`--bg`, `--fg`, `--gold`, `--accent`, `--loss`,
 | **Skills** | 1–4 marks, XP, bands. PIN to edit. | Tie to wallet. |
 | **Study Hall** | Productive or peaceful. Line leader. Notes / owes. Age-10 voice. | Shop effort language. |
 | **Admin** | Everything that isn’t scoring. Categories, not a settings dump. | Duplicate Desk controls. |
-| **Profile** | Alias first. Real name behind arrow. Grades, skills, wallet, stocks, history. | IEP as a selectable chip. |
+| **Profile** | Alias first. Real name behind arrow. Grades, skills, wallet, stocks, history. | No student labels. |
 
 ---
 

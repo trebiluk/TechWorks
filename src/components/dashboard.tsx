@@ -24,6 +24,7 @@ import { showBerty, bertyPose } from "@/lib/berty";
 import { procedureStep } from "@/lib/procedure";
 import { teachJob, laySlots, teachFocusPeriod, hangOf } from "@/lib/teach";
 import { skillName } from "@/lib/projects";
+import { aidesOf } from "@/lib/aides";
 import { hourKit, hourWallSpine } from "@/lib/hour-flow";
 import { AgendaWall, KitChip } from "@/components/agenda-wall";
 import { hideDashRow, loadDashLayout, moveDashRow, moveDashTo, applyDashKit, DASH_KITS, patchDash, rowOn, saveDashLayout, DASH_ROWS, DEFAULT_LAYOUT, type DashLayout, type DashRowId } from "@/lib/dash-layout";
@@ -185,6 +186,7 @@ export const Dashboard = memo(function Dashboard({
   const openDay = nextOpenDay(today, afterBell);
   const wallDate = preview && viewP == null ? preview.date : shopLive || afterBell ? today : openDay;
   const wallJob = teachJob(file, shown, wallDate);
+  const aides = aidesOf(file, shown);
   const wallSpine = hourWallSpine(file, wallDate, shown);
   const wallSlots = laySlots(file, wallDate, shown);
   const passing = isSchoolDay(today) && !shopLive && Boolean(nxt);
@@ -316,6 +318,9 @@ export const Dashboard = memo(function Dashboard({
               </aside>
             ) : null}
           </div>
+          {!arrange && aides.length ? (
+            <p className="tw-aide-line">Aide · {aides.map((a) => a.name).join(" · ")}</p>
+          ) : null}
           {!arrange && wallJob.lookFor ? (
             <p className="tw-skill-bar" data-skill-bar>
               <span>{skillName(wallJob.skillId) || "Skill"} · a {wallJob.expect}</span>

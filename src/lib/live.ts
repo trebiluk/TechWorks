@@ -3,7 +3,7 @@ import { isLiveStudent } from "@/lib/economy";
 import { isSchoolDay, todayIso, weekOn } from "@/lib/calendar";
 import { isSubDay, markOn, abOn, onAbRoster } from "@/lib/store";
 
-/** Frozen names-vault schema. Unused. Real names and IEP are not stored. */
+/** Frozen names-vault schema. Unused. Real names are not stored. */
 export const VAULT_FIELDS = [
   "alias",
   "period",
@@ -16,10 +16,6 @@ export type NamesVaultRow = {
   legalFirst?: string;
   period: number;
   section?: number;
-  iep: boolean;
-  plan504: boolean;
-  ell?: boolean;
-  dhh?: boolean;
 };
 
 export function vaultRowOf(s: {
@@ -32,8 +28,6 @@ export function vaultRowOf(s: {
     last: "",
     period: s.period,
     section: s.section,
-    iep: false,
-    plan504: false,
   };
 }
 

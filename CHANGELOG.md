@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.137. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.138. -->
 
 # TechWorks changelog
 
-App version **1.92.137**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.138**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.138 — 2026-09-27
+
+- Student labels are gone. The room is built for everyone. An aide is a person on the period, not a tag on a student.
 
 ## 1.92.137 — 2026-09-27
 
@@ -294,7 +298,7 @@ App version **1.92.137**. Newest first. Sheets stay the archive; this desk is th
 
 ## 1.92.70 — 2026-09-18
 
-- FERPA scrub: IEP, 504, ELL, DHH, seating, extended time, and quiet notes are not stored. Profile Supports gone. Import is Last, First, Period. Google book VAULT is Shop ID + alias.
+- FERPA scrub: labels, ELL, DHH, seating, extended time, and quiet notes are not stored. Profile Supports gone. Import is Last, First, Period. Google book VAULT is Shop ID + alias.
 
 ## 1.92.69 — 2026-09-18
 
@@ -302,7 +306,7 @@ App version **1.92.137**. Newest first. Sheets stay the archive; this desk is th
 
 ## 1.92.68 — 2026-09-18
 
-- Help → Data privacy: what this app stores (Shop ID + alias), what it never stores (legal names), family web, IEP/504, cloud key, idle lock.
+- Help → Data privacy: what this app stores (Shop ID + alias), what it never stores (legal names), family web, student labels, cloud key, idle lock.
 
 ## 1.92.67 — 2026-09-18
 
@@ -314,11 +318,11 @@ App version **1.92.137**. Newest first. Sheets stay the archive; this desk is th
 
 ## 1.92.65 — 2026-09-17
 
-- FERPA split: legal names and IEP/504 stay on this PC + the codebook. Cloud desk, live wall file, Google book VAULT, and Grades CSV are Shop ID + alias only. Family web / portal no longer list the class — type the Shop ID from the paper. Idle lock 5 minutes back on the teacher pad.
+- FERPA split: legal names and student labels stay on this PC + the codebook. Cloud desk, live wall file, Google book VAULT, and Grades CSV are Shop ID + alias only. Family web / portal no longer list the class — type the Shop ID from the paper. Idle lock 5 minutes back on the teacher pad.
 
 ## 1.92.64 — 2026-09-17
 
-- Codebook: Admin → Records → Names (or Backups) → Print codebook / Download codebook. Paper and private CSV map Shop ID + alias → last, first. Wall stays aliases. IEP/504 stay in the names vault, not on the paper. Confirm before print — teacher drawer, not the shop tray.
+- Codebook: Admin → Records → Names (or Backups) → Print codebook / Download codebook. Paper and private CSV map Shop ID + alias → last, first. Wall stays aliases. student labels stay in the names vault, not on the paper. Confirm before print — teacher drawer, not the shop tray.
 
 ## 1.92.62 — 2026-09-17
 
@@ -718,7 +722,7 @@ App version **1.92.137**. Newest first. Sheets stay the archive; this desk is th
 
 - Day 0: seed roster is empty. Clear workers (Roster or Admin → Backups) snapshots first, then wipes workers and the ledger. Crews, bells, theme, and projects stay.
 - Local backups manager: named snapshots, daily autos (30 days), download full backup (desk + Tech Club), restore from file, download all snapshots, CSV template. Empty desks save and reload — an older bigger roster cannot overwrite a newer clear.
-- Import: CSV or paste Last, First, Period, IEP, 504. Period in the file is kept. Ready for real names.
+- Import: CSV or paste Last, First, Period, labels. Period in the file is kept. Ready for real names.
 
 ## 1.80.96 — 2026-09-08
 
@@ -995,7 +999,7 @@ App version **1.92.137**. Newest first. Sheets stay the archive; this desk is th
 
 ## 1.80.30 — 2026-09-06
 
-- Family view: one project mark, 1–4 skill words, presence not averaged, no wallet/IEP on the print sheet. Portal shows the same card under the badge.
+- Family view: one project mark, 1–4 skill words, presence not averaged, no wallet on the print sheet. Portal shows the same card under the badge.
 
 ## 1.80.29 — 2026-09-06
 
@@ -1750,7 +1754,7 @@ GrokBot is gone. Product name on the wall stays **TechWorks 1.0**. Desk build is
 - Store soak: can't-afford flash; spend still wallet-only.
 
 ### Unchanged
-- Dark themes. Store in More. Happened on Desk. IEP/504 display-only. No 2.1.0 zip.
+- Dark themes. Store in More. Happened on Desk. student labels display-only. No 2.1.0 zip.
 
 ## 1.10.0 — 2026-09-05
 
@@ -1772,7 +1776,7 @@ Canonical packet: **TECHWORKS-CANONICAL-1.10.0.zip** (Drive). Chrome is 1.9.10. 
 ### Added (grafted from 2.1.0, then cut to fit)
 - **Store** — catalog UI. \`buyShop\` still pays from Perks. PIN to buy. Can't afford = no sale. Wallet ≠ grade ≠ effort.
 - **Roster import** — Settings → Add / import roster (PIN). Paste legal first/last/period. Aliases generated (\`alias-bank.ts\`). Legal names vault-only.
-- **Supports (PIN, profile)** — ELL, prefer seating, extended time, DHH. Quiet notes. IEP and 504 still **display-only** from the roster (not toggleable).
+- **Supports (PIN, profile)** — ELL, prefer seating, extended time, DHH. Quiet notes. labels still **display-only** from the roster (not toggleable).
 - **Achievements** on profile — times led crew, crew-lead streak. Lead Skills XP once per confirmed lead (you name the lead **and** they get a mood tap that day). Settings: lead XP amount, default **+2**. Never wallet, never a mark.
 - **Bearcat labels** in Config — Cub → Rookie → Scout → Builder → Crafter → Lead → Ace → Legend (6 XP each). Still XP, not a shop mark.
 - **Names vault** now includes \`legalFirst\`, ELL, DHH. Live export still aliases + Shop ID only.
@@ -1791,14 +1795,14 @@ Canonical packet: **TECHWORKS-CANONICAL-1.10.0.zip** (Drive). Chrome is 1.9.10. 
 - ROLL THE DICE theme
 - Hamburger / tooltip nav modes replacing the icon row
 - Version jump to 2.0 / 2.1
-- IEP / 504 as toggleable chips (they come from the roster)
+- student labels as toggleable chips (they come from the roster)
 
 ### Laws (still)
 1. Effort ≠ money. Only 3 / 2 / 1 is effort.
 2. Skills ≠ money ≠ stocks. Lead XP is Skills XP only.
 3. Grades ≠ wallet. Blank is not a zero.
 4. Attendance is SchoolTool.
-5. FERPA: aliases on the wall. Legal names + IEP/504/DHH only after PIN, Show full info.
+5. FERPA: aliases on the wall. Legal names + student labels/DHH only after PIN, Show full info.
 6. Crews 3–4. Kids leave after ~8 weeks. P6 is A/B year-long.
 7. SUB voids the date. Cycle still advances. A sub never uses the app.
 8. Every theme dark.
@@ -1905,7 +1909,7 @@ PINs: teacher **1111** · crew override **2222** · portal **2627**
 ### Changed
 - **SUB** voids that day’s pay, effort, invest, and due. Cycle day still advances. Subs never use the app.
 - Dashboard boards: **Skills** (default, XP) and **Perks** (wallet). Stocks stay on the Stocks tab only.
-- Export live has **no legal names**. Names vault is a separate private file (alias + last + IEP/504). Friday banner if you have not exported today.
+- Export live has **no legal names**. Names vault is a separate private file (alias + last + student labels). Friday banner if you have not exported today.
 
 ## 1.5.0 — 2026-09-04
 
@@ -2033,7 +2037,7 @@ PINs: teacher **1111** · crew override **2222** · portal **2627**
 - SchoolTool link + ST badge (no in-app attendance).
 - Cycle / Quarter / Year school-day progress.
 - Invest ask → teacher approve. Effort uses 3/2/1 only.
-- Aliases, publicHandle, IEP/504 read-only in Show full info.
+- Aliases, publicHandle, student labels read-only in Show full info.
 - Shop lists (SNACKS / LEISURE / CHORES / TOOLS).
 - Encoded live export + names vault.
 - Seed roster: ~12 per class, 4 crews, 5 fake days (2026-09-08 → 09-14).
