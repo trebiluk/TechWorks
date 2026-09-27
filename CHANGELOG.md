@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.130. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.131. -->
 
 # TechWorks changelog
 
-App version **1.92.130**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.131**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.131 — 2026-09-27
+
+- Admin → Polls. Make a poll and read the bars there. The switch only turns the wall plate on.
 
 ## 1.92.130 — 2026-09-26
 

@@ -13,6 +13,7 @@ describe("admin nav", () => {
     assert.equal(people?.panes[0], "roster");
     assert.ok(people?.panes.includes("crews"));
     assert.equal(groupOfPane("crews").id, "people");
+    assert.equal(groupOfPane("polls").id, "today");
     assert.equal(groupOfPane("roster").id, "people");
     assert.equal(groupOfPane("vault").id, "data");
     assert.equal(groupOfPane("room").id, "room");

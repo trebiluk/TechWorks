@@ -23,6 +23,7 @@ import { markSchooltoolOpened } from "@/lib/workflow";
 import { VisitDesk } from "@/components/visit-chip";
 import { DocsBoard } from "@/components/docs-board";
 import { DoorLinksBoard } from "@/components/door-links-board";
+import { PollBoard } from "@/components/polls";
 
 type Jump = (period: number, crewKey?: string, date?: string) => void;
 
@@ -169,6 +170,8 @@ export function AdminHub({
           <DocsBoard />
         ) : pane === "door" ? (
           <DoorLinksBoard unlocked={unlocked} onNeedPin={() => onNeedPin?.()} />
+        ) : pane === "polls" ? (
+          <PollBoard file={file} unlocked={unlocked} onChange={onChange} onNeedPin={() => onNeedPin?.()} />
         ) : pane !== "today" ? (
           <SettingsBody
             file={file}

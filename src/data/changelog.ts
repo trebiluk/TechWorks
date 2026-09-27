@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.131 — 2026-09-27
+
+- Admin → Polls. Make a poll and read the bars there. The switch only turns the wall plate on.
+
 ## 1.92.130 — 2026-09-26
 
 - A locked screen follows the bell: the wall in class, the hall in study hall, club only while club is live, cleanup on the wall.

@@ -578,6 +578,11 @@ export function Board() {
       go("skills");
       return;
     }
+    if (id === "polls") {
+      setAdminPane("polls");
+      go("admin");
+      return;
+    }
     if (id === "today" || id === "crews" || id === "vault" || id === "room" || id === "cloud") {
       setAdminPane(id as typeof adminPane);
       go("admin");

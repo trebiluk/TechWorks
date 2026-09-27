@@ -9,6 +9,7 @@ const DOORS: { title: string; items: [string, string, FeatureId | ""][] }[] = [
   {
     title: "Open",
     items: [
+      ["polls", "Polls", ""],
       ["week", "Week", ""],
       ["teach", "Run the room", "teach"],
       ["words", "Words", "vocab"],
