@@ -7,6 +7,7 @@ import { abOn, onAbRoster } from "@/lib/store";
 import { todayIso } from "@/lib/calendar";
 import { crewsOf } from "@/lib/crews";
 import { featureOn } from "@/lib/features";
+import { openAmbientMix, ambientOpen } from "@/lib/ambient";
 import { jobCardOf } from "@/lib/projects";
 import { toolsOpen } from "@/lib/ppe";
 import { TouchTimer } from "@/components/touch-timer";
@@ -73,28 +74,29 @@ export function DashTools({ file, period }: { file: EconomyFile; period: number 
           >
             <Dices className="size-4" /> Crew
           </button>
-          {featureOn(file, "ambient") ? (
-            <a
-              href="https://neal.fun/ambient-chaos/"
-              target="_blank"
-              rel="noreferrer"
-              className="mt-2 block text-center text-xs font-semibold uppercase tracking-wider text-accent"
-            >
-              Ambient Chaos
-            </a>
-          ) : null}
+          {featureOn(file, "ambient") ? <AmbientMix /> : null}
         </article>
       ) : featureOn(file, "ambient") ? (
-        <a
-          href="https://neal.fun/ambient-chaos/"
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center justify-center rounded-xl bg-elevated p-3 text-xs font-semibold uppercase tracking-wider text-accent"
-        >
-          Ambient Chaos
-        </a>
+        <AmbientMix />
       ) : null}
     </section>
+  );
+}
+
+export function AmbientMix({ className }: { className?: string }) {
+  const [open, setOpen] = useState(ambientOpen);
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        openAmbientMix();
+        setOpen(ambientOpen());
+      }}
+      className={cn("tw-tap mt-2 flex min-h-11 w-full flex-col items-center justify-center rounded-md bg-surface px-2 text-center", className)}
+    >
+      <span className="text-sm font-semibold">{open ? "Show the mix" : "Play the mix"}</span>
+      <span className="text-[11px] font-medium text-muted">Side window. Stays on while you teach.</span>
+    </button>
   );
 }
 

@@ -16,7 +16,7 @@ export const FEATURES = [
   { id: "picker", label: "Name picker", group: "Tools", hint: "Draw an alias from a period · Dash" },
   { id: "timer", label: "Focus timer", group: "Tools", hint: "3 / 5 / 10 min sand clock · Dash" },
   { id: "crib", label: "Tool Cabinet", group: "Tools", hint: "Tools, PPE, stock, checkout" },
-  { id: "ambient", label: "Ambient Chaos", group: "Tools", hint: "neal.fun workshop-noise tab" },
+  { id: "ambient", label: "Ambient Chaos", group: "Tools", hint: "Side window. The mix keeps playing." },
   { id: "club", label: "Tech Club", group: "After school", hint: "IN pays $10 + 2 XP once a day. Not class effort." },
   { id: "studyhall", label: "Study Hall", group: "After school", hint: "P6 projector. Not in Tech effort." },
   { id: "store", label: "Rewards", group: "Games", hint: "Perk cards. Wallet still exists." },

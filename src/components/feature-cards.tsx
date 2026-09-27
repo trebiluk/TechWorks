@@ -6,6 +6,7 @@ import { luckyOf } from "@/lib/lucky";
 import { printsOf } from "@/lib/prints";
 import { agendaFor } from "@/lib/projects";
 import { bellForPeriod, formatBell } from "@/lib/bells";
+import { openAmbientMix } from "@/lib/ambient";
 
 const WALL: FeatureId[] = [
   "weather",
@@ -24,7 +25,6 @@ const WALL: FeatureId[] = [
 ];
 
 const SKIP = new Set<FeatureId>(["contrast", "debug", "portal", "tips", "picker", "timer"]);
-const AMBIENT = "https://neal.fun/ambient-chaos/";
 
 export const FeatureCards = memo(function FeatureCards({
   file,
@@ -64,7 +64,7 @@ export const FeatureCards = memo(function FeatureCards({
             type="button"
             onClick={() => {
               if (f.id === "ambient") {
-                window.open(AMBIENT, "_blank", "noreferrer");
+                openAmbientMix();
                 return;
               }
               open.current?.(f.id);

@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.137 — 2026-09-27
+
+- Ambient Chaos opens in a side window so the mix keeps playing while the wall stays up.
+
 ## 1.92.136 — 2026-09-27
 
 - Empty card sides hold a shop line. The blank school card holds Berty with it.

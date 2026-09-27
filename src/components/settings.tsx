@@ -22,6 +22,7 @@ import { RewardBar, RewardEditor } from "@/components/reward-bar";
 import { ShopLists, SkillLists } from "@/components/score-panels";
 import { commitDescribe } from "@/lib/describe";
 import { FEATURES, FEATURE_GROUPS, featureOn, setFeature, type FeatureId } from "@/lib/features";
+import { openAmbientMix } from "@/lib/ambient";
 import { DEMO_SETS, commitDemo, storedDemo, type DemoId } from "@/lib/demo";
 import { YearPlanBoard } from "@/components/year-plan-board";
 import { VaultBoard } from "@/components/vault-board";
@@ -491,15 +492,14 @@ export function SettingsBody({
                 {printNote ? <p className="mt-2 text-sm font-semibold">{printNote}</p> : null}
                 <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted">{COPYRIGHT_LONG}</p>
                 <p className="mt-3 text-sm text-muted">Help <strong>?</strong> is for every role. Teachers: Download help file and Download technical manual from that panel. Teacher PIN is the one you set — never 1111. Crew 2222 stays off the student About card.</p>
-                <p className="mt-6 text-sm text-muted">Workshop noise for the projector. Opens in a new tab.</p>
-                <a
-                  href="https://neal.fun/ambient-chaos/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-2 inline-flex min-h-11 items-center rounded-md bg-elevated px-3 text-sm font-semibold text-gold"
+                <p className="mt-6 text-sm text-muted">Workshop noise. It plays in a side window so this wall stays up. Their site will not load inside the page.</p>
+                <button
+                  type="button"
+                  onClick={() => openAmbientMix()}
+                  className="tw-tap mt-2 inline-flex min-h-11 items-center rounded-md bg-elevated px-3 text-sm font-semibold text-gold"
                 >
-                  Ambient Chaos — neal.fun
-                </a>
+                  Play Ambient Chaos
+                </button>
               </section>
             ) : null}
       {rosterOpen ? (

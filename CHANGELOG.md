@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.136. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.137. -->
 
 # TechWorks changelog
 
-App version **1.92.136**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.137**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.137 — 2026-09-27
+
+- Ambient Chaos opens in a side window so the mix keeps playing while the wall stays up.
 
 ## 1.92.136 — 2026-09-27
 
