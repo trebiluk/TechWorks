@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.131. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.132. -->
 
 # TechWorks changelog
 
-App version **1.92.131**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.132**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.132 — 2026-09-27
+
+- Crib is now Tool Cabinet. Same checkout. The old name is gone from the buttons.
 
 ## 1.92.131 — 2026-09-27
 

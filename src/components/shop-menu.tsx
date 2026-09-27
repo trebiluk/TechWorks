@@ -22,7 +22,7 @@ const DOORS: { title: string; items: [string, string, FeatureId | ""][] }[] = [
   {
     title: "Room",
     items: [
-      ["crib", "Crib", "crib"],
+      ["crib", "Tool Cabinet", "crib"],
       ["prints", "Prints", "prints"],
       ["store", "Store", "store"],
       ["lucky", "Lucky", "lucky"],

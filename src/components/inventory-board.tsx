@@ -140,7 +140,7 @@ export function InventoryBoard({
           </MarkChip>
         ))}
         <p className="ml-auto text-xs font-semibold uppercase tracking-wide text-muted">
-          {crib.items.length} in crib · {holds.length} out
+          {crib.items.length} in the cabinet · {holds.length} out
         </p>
       </header>
 
@@ -197,7 +197,7 @@ export function InventoryBoard({
         <div className="min-h-0 flex-1 space-y-2 overflow-auto">
           {emptySaved ? (
             <div className="tw-gadget flex items-center justify-between gap-2 p-3">
-              <p className="text-sm">Crib is empty. Load the shop kit (PPE, tools, machines, stock).</p>
+              <p className="text-sm">Tool Cabinet is empty. Load the shop kit (PPE, tools, machines, stock).</p>
               <button
                 type="button"
                 onClick={() => {
@@ -276,7 +276,7 @@ export function InventoryBoard({
         <div className="grid min-h-0 flex-1 gap-2 overflow-hidden lg:grid-cols-[minmax(0,1fr)_18rem]">
           <ul className="min-h-0 space-y-1 overflow-auto">
             {(pane === "low" ? low.filter((it) => rows.includes(it)) : rows).length === 0 ? (
-              <p className="p-3 text-sm text-muted">{pane === "low" ? "Par is met. Nothing broken." : emptySaved ? "Crib is empty — Catalog → Load shop kit." : "No match."}</p>
+              <p className="p-3 text-sm text-muted">{pane === "low" ? "Par is met. Nothing broken." : emptySaved ? "Tool Cabinet is empty — Catalog → Load shop kit." : "No match."}</p>
             ) : null}
             {(pane === "low" ? low.filter((it) => rows.includes(it)) : rows).map((it) => {
               const hand = onHand(it, holds);

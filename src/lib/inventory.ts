@@ -64,10 +64,10 @@ function row(id: string, name: string, kind: InvKind, qty: number, par: number, 
 
 /** Middle-school shop kit. First open only — an empty crib you saved stays empty. */
 export const FACTORY_CRIB: InvItem[] = [
-  row("safety-glasses", "Safety glasses", "ppe", 32, 28, "Crib", { station: "Enter" }),
+  row("safety-glasses", "Safety glasses", "ppe", 32, 28, "Cabinet", { station: "Enter" }),
   row("push-stick", "Push stick", "ppe", 6, 4, "Saw", { station: "Saw" }),
-  row("apron", "Apron", "ppe", 12, 10, "Crib"),
-  row("ear-muffs", "Ear muffs", "ppe", 8, 6, "Crib"),
+  row("apron", "Apron", "ppe", 12, 10, "Cabinet"),
+  row("ear-muffs", "Ear muffs", "ppe", 8, 6, "Cabinet"),
   row("try-square", "Try square", "tool", 16, 12, "Measure", { station: "Measure" }),
   row("rule", "Rule", "tool", 20, 16, "Measure", { station: "Measure" }),
   row("clamp", "Clamp", "tool", 24, 16, "Glue", { station: "Glue" }),

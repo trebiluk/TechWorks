@@ -229,7 +229,7 @@ export const ARCH_SECTIONS: ArchSection[] = [
           ["Club wall / Hall wall", "Open", "Agenda / HERE counts", "On the desk"],
           ["Learn Words", "Open", "Shop vocab · games", "Bank"],
           ["Crew pad", "2222 / live P", "Teal 3/2/1", "—"],
-          ["Score / Rosters / Admin / Store / Grades / Crib", "Teacher PIN", "Never", "Yes"],
+          ["Score / Rosters / Admin / Store / Grades / Tool Cabinet", "Teacher PIN", "Never", "Yes"],
           ["Family sheet", "Tap alias; family web uses Shop ID", "Project mark, skill words", "—"],
           ["Embed ?embed=1", "Wall only", "Same as Wall", "No dock"],
         ],

@@ -577,9 +577,9 @@ export const HELP_ARTICLES: HelpArticle[] = [
   {
     id: "crib",
     category: "Admin",
-    title: "Shop crib",
-    tags: ["crib", "inventory", "tools", "ppe", "stock", "checkout", "par", "bin", "kit"],
-    body: "Teach → Crib (or Admin → More → Crib). Tools, PPE, machines, and kits check out to a crew letter, shop alias, or station — never a legal name. Consumables and materials Take (count down, no hold). Low = on-hand below par, or a broken machine. Need this hour writes the name onto PlanIt materials (wall Need chip). PIN to add, edit, adjust, or drop. First open shows the shop kit; an empty crib you saved stays empty until Load shop kit. Not Prints, not Store, not a grade, not on the student wall. Off in Modules if you don't want it.",
+    title: "Tool Cabinet",
+    tags: ["crib", "tool cabinet", "inventory", "tools", "ppe", "stock", "checkout", "par", "bin", "kit"],
+    body: "Admin → Tool Cabinet. Tools, PPE, machines, and kits check out to a crew letter, shop alias, or station — never a legal name. Consumables and materials Take (count down, no hold). Low = on-hand below par, or a broken machine. PIN to add, edit, adjust, or drop. First open shows the shop kit; an empty cabinet you saved stays empty until Load shop kit. Not Prints, not Store, not a grade, not on the student wall. The Tool Cabinet switch turns it off.",
   },
   {
     id: "profile-house",

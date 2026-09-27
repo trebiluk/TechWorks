@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.132 — 2026-09-27
+
+- Crib is now Tool Cabinet. Same checkout. The old name is gone from the buttons.
+
 ## 1.92.131 — 2026-09-27
 
 - Admin → Polls. Make a poll and read the bars there. The switch only turns the wall plate on.

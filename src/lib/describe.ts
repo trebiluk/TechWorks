@@ -43,8 +43,8 @@ const CARDS: Record<string, DescribeCard> = {
     links: [{ label: "Help", href: "#help" }],
   },
   crib: {
-    title: "Crib",
-    purpose: "Shop inventory. Check out tools and PPE to a crew letter or shop alias — never a legal name. Consumables Take. Need this hour writes PlanIt materials. Not a grade, not wallet, not on the wall.",
+    title: "Tool Cabinet",
+    purpose: "Check tools and PPE out to a crew letter or shop alias — never a legal name. Consumables Take. Not a grade, and not on the wall.",
     links: [{ label: "Help", href: "#help" }],
   },
   crew: {
