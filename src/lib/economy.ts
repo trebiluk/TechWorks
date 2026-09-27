@@ -63,6 +63,8 @@ export type RawStudent = {
   icon?: string;
   gradeOverrides?: Record<string, number>;
   lucky?: { ts: string; date: string; face: number; stake: number; payout: number }[];
+  /** Hash of the student's own 4-digit pin. Never the pin. Empty until they set one. */
+  pinHash?: string;
 };
 
 export function legalLastOf(_s: Pick<RawStudent, "legalLast" | "last">): string {

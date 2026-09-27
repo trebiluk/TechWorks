@@ -6,6 +6,11 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.140 — 2026-09-27
+
+- Quarter 1 shop sections seat 18 aliases when the class is empty. Study hall seats 22, on both A and B day. A class that already has students is left alone.
+- A student sets a pin with their code, then can change their name. Teacher lookup can reset the pin. The pin is never shown.
+
 ## 1.92.139 — 2026-09-27
 
 - Watch opens this hour's skill, then overdue skills from earlier plans. Each card shows the last mark and today's note.

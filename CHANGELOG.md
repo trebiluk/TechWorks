@@ -1,8 +1,13 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.139. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.140. -->
 
 # TechWorks changelog
 
-App version **1.92.139**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.140**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.140 — 2026-09-27
+
+- Quarter 1 shop sections seat 18 aliases when the class is empty. Study hall seats 22, on both A and B day. A class that already has students is left alone.
+- A student sets a pin with their code, then can change their name. Teacher lookup can reset the pin. The pin is never shown.
 
 ## 1.92.139 — 2026-09-27
 

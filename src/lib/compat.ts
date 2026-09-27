@@ -86,4 +86,5 @@ export const STUDENT_KNOWN = [
   "icon",
   "gradeOverrides",
   "lucky",
+  "pinHash",
 ] as const;

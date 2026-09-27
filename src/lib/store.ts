@@ -1,7 +1,7 @@
 import { bellFor, dayPay, isLiveStudent, score, type DayCode, type EconomyFile, type RawStudent } from "@/lib/economy";
 import { crewAt } from "@/lib/crew-desk";
 import { isAwayMark } from "@/lib/score-pad";
-import { generateAlias, type LegalRosterRow } from "@/lib/alias-bank";
+import { aliasAllowed, generateAlias, type LegalRosterRow } from "@/lib/alias-bank";
 import { aliasAfterId, newStudentId } from "@/lib/ids";
 import { DEFAULT_LEVEL_BANDS, skillXp, type LevelBand } from "@/lib/skills";
 import { cleanPicks } from "@/lib/tickers";
@@ -955,8 +955,8 @@ export function setGradeOverride(
 
 export function setAlias(file: EconomyFile, id: string, first: string): EconomyFile {
   const next = clone(file);
-  const name = first.trim().slice(0, 24);
-  if (!name) return file;
+  const name = first.trim().slice(0, 16);
+  if (!name || !aliasAllowed(name)) return file;
   const taken = next.students.filter((s) => s.id !== id).map((s) => s.first);
   const clash = taken.some((n) => n.trim().toLowerCase() === name.toLowerCase());
   const alias = clash ? aliasAfterId(id, taken) : name;

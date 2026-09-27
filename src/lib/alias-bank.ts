@@ -1,15 +1,23 @@
 /** Creative shop-style alias word bank + uniqueness. Public `first` only — never legal names. */
 
 const WORDS = [
-  "Nova", "Bolt", "Echo", "Flux", "Jade", "Kite", "Lumen", "Mesa", "Nyx", "Orbit",
-  "Pixel", "Quill", "Rivet", "Spark", "Torch", "Ultra", "Vex", "Wren", "Axiom", "Blaze",
-  "Cipher", "Drift", "Ember", "Forge", "Glitch", "Helix", "Ion", "Jolt", "Karma", "Loom",
-  "Magnet", "Nimbus", "Onyx", "Prism", "Quark", "Radar", "Sable", "Tide", "Umbra", "Volt",
-  "Wisp", "Xenon", "Yonder", "Zephyr", "Arc", "Beacon", "Comet", "Delta", "Eclipse", "Frost",
-  "Gizmo", "Harbor", "Ink", "Jet", "Knack", "Lark", "Mirage", "Nest", "Oxide", "Pulse",
-  "Quest", "Rune", "Sprocket", "Truss", "Vector", "Warp", "Yield", "Zinc", "Atlas", "Bramble",
-  "Canyon", "Dune", "Elm", "Falcon", "Grove", "Hawk", "Iris", "Juniper", "Keen", "Lotus",
-  "Maple", "North", "Oak", "Pine", "Quartz", "Ridge", "Summit", "Thorn", "Vale", "Willow",
+  "Alder", "Anchor", "Anvil", "Apex", "Arbor", "Arch", "Arrow", "Atlas", "Axiom", "Azure",
+  "Badge", "Barn", "Basil", "Beacon", "Birch", "Blade", "Bloom", "Bolt", "Brass", "Brick",
+  "Brook", "Cabin", "Cedar", "Chalk", "Cinder", "Citrus", "Clay", "Cloud", "Clover", "Cobalt",
+  "Comet", "Compass", "Coral", "Crane", "Creek", "Crystal", "Daisy", "Delta", "Drawer", "Dune",
+  "Echo", "Elm", "Ember", "Engine", "Fable", "Falcon", "Fern", "Field", "Finch", "Flint",
+  "Flora", "Forge", "Frost", "Gale", "Garden", "Gauge", "Gem", "Glen", "Glow", "Grain",
+  "Granite", "Grove", "Hammer", "Harbor", "Hazel", "Helix", "Heron", "Holly", "Honey", "Horizon",
+  "Indigo", "Ingot", "Iris", "Island", "Ivory", "Jade", "Jasper", "Juniper", "Keen", "Kestrel",
+  "Kite", "Ladder", "Lake", "Lark", "Lattice", "Laurel", "Lumen", "Magnet", "Maple", "Marble",
+  "Marin", "Meadow", "Mesa", "Mint", "Moss", "Needle", "Nimbus", "North", "Nova", "Oak",
+  "Olive", "Onyx", "Opal", "Orbit", "Oriole", "Paddle", "Pebble", "Pine", "Pixel", "Plaza",
+  "Plum", "Pond", "Prism", "Quartz", "Quest", "Quill", "Quilt", "Radar", "Rain", "Raven",
+  "Reef", "Ridge", "River", "Robin", "Rocket", "Rowan", "Ruby", "Saddle", "Sage", "Sail",
+  "Sand", "Scout", "Silver", "Sky", "Slate", "Sparrow", "Spark", "Spruce", "Steel", "Stone",
+  "Summit", "Sunny", "Terra", "Tide", "Timber", "Torch", "Trail", "Truss", "Tulip", "Turtle",
+  "Vale", "Valley", "Violet", "Volt", "Walnut", "Wave", "Willow", "Window", "Wisp", "Wren",
+  "Yarn", "Yarrow", "Zephyr", "Zinc",
 ] as const;
 
 function hashSeed(seed: string): number {
@@ -18,8 +26,20 @@ function hashSeed(seed: string): number {
   return h >>> 0;
 }
 
+const BANNED =
+  /\b(ass|anal|sex|sexy|cum|damn|hell|crap|butt|dick|cock|knob|piss|slut|porn|nazi|rape|kill|fuck|shit|tit|boob|nude|drug|dumb|stupid)\b/i;
+
 export function normalizeAlias(name: string): string {
-  return name.trim().replace(/\s+/g, " ").slice(0, 24);
+  return name.trim().replace(/\s+/g, " ").slice(0, 16);
+}
+
+/** Public alias. Letters first. No repeats of a banned word. */
+export function aliasAllowed(name: string): boolean {
+  const clean = normalizeAlias(name);
+  if (clean.length < 2 || clean.length > 16) return false;
+  if (!/^[A-Za-z][A-Za-z0-9 ]*$/.test(clean)) return false;
+  if (BANNED.test(clean)) return false;
+  return true;
 }
 
 /** Pick a creative alias unique against `used` (case-insensitive). */

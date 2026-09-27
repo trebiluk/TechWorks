@@ -41,6 +41,7 @@ import { useLang } from "@/lib/i18n-hook";
 import { HangFrame } from "@/components/hang-frame";
 import { PlanitWeek } from "@/components/planit-week";
 import { WallLookChips } from "@/components/wall-looks";
+import { StudentClaim } from "@/components/student-claim";
 
 const SHOP_LINES = [
   "Measure twice.",
@@ -534,6 +535,7 @@ export const Dashboard = memo(function Dashboard({
           Showing this hour · P{preview.period}. Back to now.
         </button>
       ) : null}
+      {!unlocked && onChange ? <StudentClaim file={file} onChange={onChange} /> : null}
       {unlocked && !arrange && onArrange ? (
         <div className="flex shrink-0 justify-end">
           <button type="button" onClick={onArrange} className="tw-tap min-h-9 rounded-full bg-elevated px-3 text-xs font-semibold">

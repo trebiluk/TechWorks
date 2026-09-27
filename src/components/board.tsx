@@ -19,6 +19,7 @@ import { Dashboard } from "@/components/dashboard";
 import { featureOn } from "@/lib/features";
 import { paintDemo, SAVE_FAIL_EVENT, storedDemo, takeRealDesk, type DemoId } from "@/lib/demo";
 import { ensureP6StudyHall } from "@/lib/hall-roster";
+import { fillQuarterOne } from "@/lib/roster-seed";
 import { isUnlocked, lock, lockCrew, ensureDefaultPin } from "@/lib/pin";
 import { daySlot, isSchoolDay, nextOpenDay, todayIso } from "@/lib/calendar";
 import { loadDjia, type DjiaQuote } from "@/lib/djia";
@@ -353,12 +354,26 @@ export function Board() {
           const local = ensureP6StudyHall(next);
           setFile(local);
           const pack = await pullCloud();
-          if (!pack) return;
+          if (!pack) {
+            if (local.students.length === 0) {
+              const seated = fillQuarterOne(local);
+              setFile(seated);
+              void pushCloud(seated);
+            }
+            return;
+          }
           const cloudN = cloudPackCount(pack);
           const localN = local.students.length;
           const sameStamp = Boolean(pack.saved && pack.saved === (local.meta.savedAt ?? ""));
           const plan = cloudSyncPlan(localN, cloudN, localIsNewer(local, pack.saved), sameStamp);
-          if (plan === "keep") return;
+          if (plan === "keep") {
+            if (local.students.length === 0) {
+              const seated = fillQuarterOne(local);
+              setFile(seated);
+              void pushCloud(seated);
+            }
+            return;
+          }
           if (plan === "push") {
             void pushCloud(local);
             return;
@@ -372,8 +387,10 @@ export function Board() {
             return;
           }
           const kept = ensureP6StudyHall(recovered);
-          setFile(kept);
-          if (localN === 0 && kept.students.length > 0) {
+          const seated = kept.students.length === 0 ? fillQuarterOne(kept) : kept;
+          setFile(seated);
+          if (seated !== kept) void pushCloud(seated);
+          if (localN === 0 && seated.students.length > 0 && seated === kept) {
             flashMsg(`Loaded ${kept.students.length} workers from the cloud`, "ok");
           }
         })

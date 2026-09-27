@@ -30,6 +30,7 @@ import { todayIso } from "@/lib/calendar";
 import { bansOf, BENCH, addPeriodCrew, dropCrewBan, nextPeriodCrewKey, placeBlock, rosterLabel, separatePair, setStudentCrew, whoOf } from "@/lib/crew-desk";
 import { MarkChip } from "@/components/ui";
 import { Fold } from "@/components/fold";
+import { PinDesk } from "@/components/pin-desk";
 import { markOf } from "@/lib/nav-marks";
 import { cn } from "@/lib/utils";
 
@@ -112,6 +113,7 @@ export function YearRoster({
           aria-label="Search alias"
           className="min-h-11 w-full rounded-xl bg-elevated px-3 text-base outline-none"
         />
+        <PinDesk file={file} onChange={onChange} />
         <div className="flex flex-wrap gap-1" aria-label="Period">
           <button
             type="button"
