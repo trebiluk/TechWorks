@@ -1,36 +1,31 @@
 /** Creative shop-style alias word bank + uniqueness. Public `first` only — never legal names. */
 
-/** Finish or material. Not a person, not a given name. */
-const LEFT = [
-  "Aqua", "Beige", "Brass", "Brick", "Bronze", "Brown", "Chrome", "Cobalt", "Copper", "Cream",
-  "Cyan", "Denim", "Gloss", "Khaki", "Linen", "Maple", "Marble", "Mauve", "Navy", "Neon",
-  "Nickel", "Ochre", "Patina", "Pewter", "Quartz", "Russet", "Sepia", "Slate", "Steel", "Taupe",
-  "Teal", "Umber", "Zinc", "Alder", "Basalt", "Birch", "Chalk", "Granite", "Ingot", "Alloy",
-  "Matte", "Polar", "Solar", "Lunar", "Cocoa", "Mocha", "Crimson", "Maroon", "Canvas", "Twill",
-  "Fleece", "Cotton", "Balsa", "Cork", "Jute", "Hemp", "Nylon", "Tweed", "Flax", "Sisal",
-  "Bamboo", "Pine", "Spruce", "Walnut", "Teak", "Oak", "Elm", "Fir", "Glass", "Resin",
-  "Epoxy", "Putty", "Grout", "Mortar", "Stucco", "Plaster", "Gypsum", "Gravel", "Shale", "Loam",
+/** One shared list of handles a kid can answer to. Not people, not a fabric swatch. */
+const TAGS = [
+  "Nova", "Volt", "Echo", "Flux", "Ember", "Drift", "Pixel", "Orbit", "Spark", "Quill",
+  "Rune", "Turbo", "Gyro", "Neon", "Pulse", "Comet", "Prism", "Quest", "Cipher", "Vector",
+  "Nitro", "Ozone", "Radar", "Sonic", "Warp", "Byte", "Glitch", "Apex", "Zenith", "Ion",
+  "Jolt", "Zig", "Dash", "Bolt", "Chip", "Gear", "Axle", "Motor", "Torque", "Piston",
+  "Rivet", "Forge", "Laser", "Plasma", "Photon", "Quark", "Meteor", "Cosmos", "Astro", "Rocket",
+  "Boost", "Flash", "Vortex", "Matrix", "Node", "Core", "Grid", "Link", "Sync", "Logic",
+  "Cache", "Signal", "Beacon", "Flare", "Cinder", "Magma", "Frost", "Arctic", "Polar", "Cyclone",
+  "Vertex", "Proton", "Neutron", "Atom", "Boson", "Pulsar", "Quasar", "Eclipse", "Nadir", "Nebula",
+  "Galaxy", "Sprite", "Voxel", "Shader", "Buffer", "Portal", "Hex", "Ping", "Zoom", "Blip",
+  "Gizmo", "Widget", "Sprocket", "Cog", "Cam", "Pulley", "Lever", "Crank", "Winch", "Hoist",
+  "Clamp", "Lathe", "Drill", "Press", "Clutch", "Throttle", "Battery", "Circuit", "Fuse", "Relay",
+  "Switch", "Dial", "Cable", "Plug", "Socket", "Bit", "Hub", "Rover", "Probe", "Lander",
+  "Module", "Capsule", "Dock", "Sirius", "Rigel", "Altair", "Deneb", "Cygnus", "Hydra", "Joule",
+  "Hertz", "Farad", "Lumen", "Ohm", "Amp", "Kelvin", "Tempo", "Chorus", "Puck", "Visor",
+  "Kite", "Glider", "Thruster", "Nozzle", "Intake", "Pylon", "Strut", "Spar", "Rib", "Frame",
 ] as const;
 
-/** Form or place. Same list for every student, so nobody is sorted into a gendered set. */
-const RIGHT = [
-  "Angle", "Apex", "Arc", "Arch", "Beam", "Bend", "Block", "Bolt", "Brace", "Cleat",
-  "Cone", "Cube", "Curve", "Disc", "Dome", "Edge", "Gauge", "Gear", "Glide", "Groove",
-  "Hinge", "Joint", "Kerf", "Latch", "Level", "Miter", "Notch", "Plane", "Plumb", "Point",
-  "Prism", "Ridge", "Riser", "Round", "Scale", "Shear", "Slope", "Slot", "Span", "Spoke",
-  "Stack", "Tread", "Truss", "Wedge", "Wheel", "Bench", "Dock", "Gate", "Hull", "Keel",
-  "Mast", "Pier", "Ramp", "Shed", "Sill", "Slab", "Stair", "Step", "Tower", "Vault",
-  "Axis", "Knoll", "Mesa", "Dune", "Shoal", "Ledge", "Cove", "Gulf", "Isle", "Peak",
-  "Pond", "Reef", "Vale", "Basin", "Bluff", "Butte", "Delta", "Fault", "Gorge", "Marsh",
-  "Canyon", "Summit", "Valley", "Meadow", "Prairie", "Tundra", "Fjord", "Atoll", "Lagoon", "Harbor",
-] as const;
+export const TAG_SPACE = TAGS.length + TAGS.length * (TAGS.length - 1);
 
-export const PAIR_SPACE = LEFT.length * RIGHT.length;
-
-export function isPairAlias(name: string): boolean {
+export function isTagAlias(name: string): boolean {
   const parts = name.trim().split(" ");
-  if (parts.length !== 2) return false;
-  return (LEFT as readonly string[]).includes(parts[0] ?? "") && (RIGHT as readonly string[]).includes(parts[1] ?? "");
+  if (parts.length === 1) return (TAGS as readonly string[]).includes(parts[0] ?? "");
+  if (parts.length !== 2 || parts[0] === parts[1]) return false;
+  return (TAGS as readonly string[]).includes(parts[0] ?? "") && (TAGS as readonly string[]).includes(parts[1] ?? "");
 }
 
 function hashSeed(seed: string): number {
@@ -55,24 +50,33 @@ export function aliasAllowed(name: string): boolean {
   return true;
 }
 
-/** Two shop words, unique against `used`. Not a person and not assigned by gender. */
+/** A single handle until those run out, then two of them. Unique. Same list for every kid. */
 export function generateAlias(seed: string, used: Iterable<string>): string {
   const taken = new Set([...used].map((u) => u.trim().toLowerCase()).filter(Boolean));
   const base = hashSeed(seed || "tw");
-  const n = PAIR_SPACE;
-  const rightN = RIGHT.length;
+  const n = TAGS.length;
 
   for (let i = 0; i < n; i++) {
-    const k = (base + i) % n;
-    const candidate = `${LEFT[Math.floor(k / rightN)]!} ${RIGHT[k % rightN]!}`;
+    const word = TAGS[(base + i) % n]!;
+    if (!taken.has(word.toLowerCase())) return word;
+  }
+
+  const span = n * (n - 1);
+  for (let i = 0; i < span; i++) {
+    const k = (base + i) % span;
+    const a = Math.floor(k / (n - 1)) % n;
+    let b = k % (n - 1);
+    if (b >= a) b += 1;
+    const candidate = `${TAGS[a]} ${TAGS[b]}`;
+    if (candidate.length > 16) continue;
     if (!taken.has(candidate.toLowerCase())) return candidate;
   }
 
   for (let n2 = 2; n2 < 10000; n2++) {
-    const candidate = `Shop ${n2}`;
+    const candidate = `Crew ${n2}`;
     if (!taken.has(candidate.toLowerCase())) return candidate;
   }
-  return `Shop ${Date.now() % 100000}`;
+  return `Crew ${Date.now() % 100000}`;
 }
 
 export function generateUniqueAliases(seeds: string[], alreadyUsed: Iterable<string> = []): string[] {
@@ -119,4 +123,4 @@ export function parseLegalRosterText(raw: string): LegalRosterRow[] {
   return rows;
 }
 
-export { LEFT as ALIAS_LEFT, RIGHT as ALIAS_RIGHT };
+export { TAGS as ALIAS_TAGS };

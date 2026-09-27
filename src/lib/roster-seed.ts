@@ -3,7 +3,7 @@ import { isLiveStudent } from "@/lib/economy";
 import { SCHOOLTOOL_SECTIONS } from "@/data/schooltool-sections";
 import { addTypedStudent } from "@/lib/store";
 import { dealCrews } from "@/lib/crew-desk";
-import { isPairAlias, generateAlias } from "@/lib/alias-bank";
+import { isTagAlias, generateAlias } from "@/lib/alias-bank";
 
 export const SHOP_SEATS = 18;
 export const HALL_SEATS = 22;
@@ -45,16 +45,16 @@ export function fillQuarterOne(file: EconomyFile): EconomyFile {
   return next;
 }
 
-/** One pass. Unclaimed one-word names become a pair. A pin means they already chose, so that name stays. The id, and so the code, stays. */
+/** One pass. Unclaimed catalog names become a handle. A pin means they already chose, so that name stays. The code stays. */
 export function neutralizeOpenNames(file: EconomyFile): EconomyFile {
-  if (file.meta.config?.aliasStyle === "pair-v1") return file;
+  if (file.meta.config?.aliasStyle === "tag-v2") return file;
   const used: string[] = [];
   const students = file.students.map((s) => {
-    if (s.pinHash || isPairAlias(s.first)) {
+    if (s.pinHash || isTagAlias(s.first)) {
       used.push(s.first);
       return s;
     }
-    const alias = generateAlias(`${s.id}|pair`, used);
+    const alias = generateAlias(`${s.id}|tag`, used);
     used.push(alias);
     return { ...s, first: alias };
   });
@@ -63,7 +63,7 @@ export function neutralizeOpenNames(file: EconomyFile): EconomyFile {
     students,
     meta: {
       ...file.meta,
-      config: { ...file.meta.config, aliasStyle: "pair-v1" },
+      config: { ...file.meta.config, aliasStyle: "tag-v2" },
     },
   };
 }

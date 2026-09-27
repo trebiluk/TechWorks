@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 import type { EconomyFile, RawStudent } from "./economy.ts";
 import { isLiveStudent } from "./economy.ts";
 import { fillQuarterOne, HALL_SEATS, SHOP_SEATS } from "./roster-seed.ts";
-import { aliasAllowed, ALIAS_LEFT, ALIAS_RIGHT, generateAlias, PAIR_SPACE } from "./alias-bank.ts";
+import { aliasAllowed, ALIAS_TAGS, generateAlias, isTagAlias, TAG_SPACE } from "./alias-bank.ts";
 import { onAbRoster, addTypedStudent } from "./store.ts";
 import { claimAlias, pinSet, rerollWithPin, resetStudentPin, setStudentPin } from "./student-pin.ts";
 import { mintWorkerId } from "./ids.ts";
@@ -48,7 +48,7 @@ describe("quarter roster", () => {
     assert.equal(new Set(names).size, names.length);
     const codes = file.students.map((s) => publicHandle(s.id));
     assert.equal(new Set(codes).size, codes.length);
-    assert.ok(file.students.every((s) => aliasAllowed(s.first) && s.first.includes(" ")));
+    assert.ok(file.students.every((s) => aliasAllowed(s.first) && isTagAlias(s.first) && !s.first.includes(" ")));
     assert.ok(file.students.every((s) => !s.legalFirst && !s.legalLast));
   });
 
@@ -95,16 +95,18 @@ const GIVEN = new Set(
 
 describe("name and code room", () => {
   it("has thousands of shared shop names and no given names in the generator", () => {
-    assert.ok(PAIR_SPACE >= 4000);
-    const words = [...ALIAS_LEFT, ...ALIAS_RIGHT];
+    assert.ok(TAG_SPACE >= 4000);
+    assert.ok(ALIAS_TAGS.length >= 130);
+    const words = [...ALIAS_TAGS];
     assert.equal(new Set(words.map((w) => w.toLowerCase())).size, words.length);
     for (const word of words) {
-      assert.ok(word.length <= 7, word);
+      assert.ok(word.length <= 8, word);
       assert.ok(!GIVEN.has(word.toLowerCase()), word);
     }
     const used: string[] = [];
     for (let i = 0; i < 600; i++) used.push(generateAlias(String(i), used));
     assert.equal(new Set(used.map((n) => n.toLowerCase())).size, 600);
+    assert.ok(used.slice(0, 130).every((n) => !n.includes(" ")));
     const ids: string[] = [];
     for (let i = 0; i < 600; i++) ids.push(mintWorkerId(ids));
     assert.equal(new Set(ids.map((id) => publicHandle(id))).size, 600);

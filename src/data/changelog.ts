@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.142 — 2026-09-27
+
+- Generated names are short handles a kid can answer to, like Pixel or Nova. Catalog pairs are gone. Unclaimed ones update. A chosen name and the code stay.
+
 ## 1.92.141 — 2026-09-27
 
 - Shop code stays with the student. A new name does not change it. Room for 400 codes a year, and well past that.
