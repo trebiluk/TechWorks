@@ -19,7 +19,7 @@ import { Dashboard } from "@/components/dashboard";
 import { featureOn } from "@/lib/features";
 import { paintDemo, SAVE_FAIL_EVENT, storedDemo, takeRealDesk, type DemoId } from "@/lib/demo";
 import { ensureP6StudyHall } from "@/lib/hall-roster";
-import { fillQuarterOne } from "@/lib/roster-seed";
+import { fillQuarterOne, neutralizeOpenNames } from "@/lib/roster-seed";
 import { isUnlocked, lock, lockCrew, ensureDefaultPin } from "@/lib/pin";
 import { daySlot, isSchoolDay, nextOpenDay, todayIso } from "@/lib/calendar";
 import { loadDjia, type DjiaQuote } from "@/lib/djia";
@@ -347,16 +347,16 @@ export function Board() {
       /* */
     }
     try {
-      const desk = ensureP6StudyHall(loadDesk(seed));
+      const desk = neutralizeOpenNames(ensureP6StudyHall(loadDesk(seed)));
       setFile(desk);
       void hydrateVault(desk)
         .then(async (next) => {
-          const local = ensureP6StudyHall(next);
+          const local = neutralizeOpenNames(ensureP6StudyHall(next));
           setFile(local);
           const pack = await pullCloud();
           if (!pack) {
             if (local.students.length === 0) {
-              const seated = fillQuarterOne(local);
+              const seated = neutralizeOpenNames(fillQuarterOne(local));
               setFile(seated);
               void pushCloud(seated);
             }
@@ -368,7 +368,7 @@ export function Board() {
           const plan = cloudSyncPlan(localN, cloudN, localIsNewer(local, pack.saved), sameStamp);
           if (plan === "keep") {
             if (local.students.length === 0) {
-              const seated = fillQuarterOne(local);
+              const seated = neutralizeOpenNames(fillQuarterOne(local));
               setFile(seated);
               void pushCloud(seated);
             }
@@ -386,8 +386,8 @@ export function Board() {
             flashMsg("Cloud desk was empty · kept this PC's roster", "warn");
             return;
           }
-          const kept = ensureP6StudyHall(recovered);
-          const seated = kept.students.length === 0 ? fillQuarterOne(kept) : kept;
+          const kept = neutralizeOpenNames(ensureP6StudyHall(recovered));
+          const seated = kept.students.length === 0 ? neutralizeOpenNames(fillQuarterOne(kept)) : kept;
           setFile(seated);
           if (seated !== kept) void pushCloud(seated);
           if (localN === 0 && seated.students.length > 0 && seated === kept) {
@@ -397,7 +397,8 @@ export function Board() {
         .catch(() => {});
     } catch (err) {
       console.error("[TechWorks] loadDesk", err);
-      setFile(ensureP6StudyHall(seed));
+      const blank = ensureP6StudyHall(seed);
+      setFile(blank.students.length ? neutralizeOpenNames(blank) : neutralizeOpenNames(fillQuarterOne(blank)));
       flashMsg("Saved data failed · using seed roster");
     }
     try {

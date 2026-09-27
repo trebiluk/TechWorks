@@ -1,24 +1,37 @@
 /** Creative shop-style alias word bank + uniqueness. Public `first` only — never legal names. */
 
-const WORDS = [
-  "Alder", "Anchor", "Anvil", "Apex", "Arbor", "Arch", "Arrow", "Atlas", "Axiom", "Azure",
-  "Badge", "Barn", "Basil", "Beacon", "Birch", "Blade", "Bloom", "Bolt", "Brass", "Brick",
-  "Brook", "Cabin", "Cedar", "Chalk", "Cinder", "Citrus", "Clay", "Cloud", "Clover", "Cobalt",
-  "Comet", "Compass", "Coral", "Crane", "Creek", "Crystal", "Daisy", "Delta", "Drawer", "Dune",
-  "Echo", "Elm", "Ember", "Engine", "Fable", "Falcon", "Fern", "Field", "Finch", "Flint",
-  "Flora", "Forge", "Frost", "Gale", "Garden", "Gauge", "Gem", "Glen", "Glow", "Grain",
-  "Granite", "Grove", "Hammer", "Harbor", "Hazel", "Helix", "Heron", "Holly", "Honey", "Horizon",
-  "Indigo", "Ingot", "Iris", "Island", "Ivory", "Jade", "Jasper", "Juniper", "Keen", "Kestrel",
-  "Kite", "Ladder", "Lake", "Lark", "Lattice", "Laurel", "Lumen", "Magnet", "Maple", "Marble",
-  "Marin", "Meadow", "Mesa", "Mint", "Moss", "Needle", "Nimbus", "North", "Nova", "Oak",
-  "Olive", "Onyx", "Opal", "Orbit", "Oriole", "Paddle", "Pebble", "Pine", "Pixel", "Plaza",
-  "Plum", "Pond", "Prism", "Quartz", "Quest", "Quill", "Quilt", "Radar", "Rain", "Raven",
-  "Reef", "Ridge", "River", "Robin", "Rocket", "Rowan", "Ruby", "Saddle", "Sage", "Sail",
-  "Sand", "Scout", "Silver", "Sky", "Slate", "Sparrow", "Spark", "Spruce", "Steel", "Stone",
-  "Summit", "Sunny", "Terra", "Tide", "Timber", "Torch", "Trail", "Truss", "Tulip", "Turtle",
-  "Vale", "Valley", "Violet", "Volt", "Walnut", "Wave", "Willow", "Window", "Wisp", "Wren",
-  "Yarn", "Yarrow", "Zephyr", "Zinc",
+/** Finish or material. Not a person, not a given name. */
+const LEFT = [
+  "Aqua", "Beige", "Brass", "Brick", "Bronze", "Brown", "Chrome", "Cobalt", "Copper", "Cream",
+  "Cyan", "Denim", "Gloss", "Khaki", "Linen", "Maple", "Marble", "Mauve", "Navy", "Neon",
+  "Nickel", "Ochre", "Patina", "Pewter", "Quartz", "Russet", "Sepia", "Slate", "Steel", "Taupe",
+  "Teal", "Umber", "Zinc", "Alder", "Basalt", "Birch", "Chalk", "Granite", "Ingot", "Alloy",
+  "Matte", "Polar", "Solar", "Lunar", "Cocoa", "Mocha", "Crimson", "Maroon", "Canvas", "Twill",
+  "Fleece", "Cotton", "Balsa", "Cork", "Jute", "Hemp", "Nylon", "Tweed", "Flax", "Sisal",
+  "Bamboo", "Pine", "Spruce", "Walnut", "Teak", "Oak", "Elm", "Fir", "Glass", "Resin",
+  "Epoxy", "Putty", "Grout", "Mortar", "Stucco", "Plaster", "Gypsum", "Gravel", "Shale", "Loam",
 ] as const;
+
+/** Form or place. Same list for every student, so nobody is sorted into a gendered set. */
+const RIGHT = [
+  "Angle", "Apex", "Arc", "Arch", "Beam", "Bend", "Block", "Bolt", "Brace", "Cleat",
+  "Cone", "Cube", "Curve", "Disc", "Dome", "Edge", "Gauge", "Gear", "Glide", "Groove",
+  "Hinge", "Joint", "Kerf", "Latch", "Level", "Miter", "Notch", "Plane", "Plumb", "Point",
+  "Prism", "Ridge", "Riser", "Round", "Scale", "Shear", "Slope", "Slot", "Span", "Spoke",
+  "Stack", "Tread", "Truss", "Wedge", "Wheel", "Bench", "Dock", "Gate", "Hull", "Keel",
+  "Mast", "Pier", "Ramp", "Shed", "Sill", "Slab", "Stair", "Step", "Tower", "Vault",
+  "Axis", "Knoll", "Mesa", "Dune", "Shoal", "Ledge", "Cove", "Gulf", "Isle", "Peak",
+  "Pond", "Reef", "Vale", "Basin", "Bluff", "Butte", "Delta", "Fault", "Gorge", "Marsh",
+  "Canyon", "Summit", "Valley", "Meadow", "Prairie", "Tundra", "Fjord", "Atoll", "Lagoon", "Harbor",
+] as const;
+
+export const PAIR_SPACE = LEFT.length * RIGHT.length;
+
+export function isPairAlias(name: string): boolean {
+  const parts = name.trim().split(" ");
+  if (parts.length !== 2) return false;
+  return (LEFT as readonly string[]).includes(parts[0] ?? "") && (RIGHT as readonly string[]).includes(parts[1] ?? "");
+}
 
 function hashSeed(seed: string): number {
   let h = 2166136261;
@@ -42,23 +55,24 @@ export function aliasAllowed(name: string): boolean {
   return true;
 }
 
-/** Pick a creative alias unique against `used` (case-insensitive). */
+/** Two shop words, unique against `used`. Not a person and not assigned by gender. */
 export function generateAlias(seed: string, used: Iterable<string>): string {
   const taken = new Set([...used].map((u) => u.trim().toLowerCase()).filter(Boolean));
   const base = hashSeed(seed || "tw");
-  const n = WORDS.length;
+  const n = PAIR_SPACE;
+  const rightN = RIGHT.length;
 
-  for (let i = 0; i < n * 3; i++) {
-    const word = WORDS[(base + i * 17) % n];
-    const candidate = i < n ? word : `${word}${((base + i) % 90) + 10}`;
+  for (let i = 0; i < n; i++) {
+    const k = (base + i) % n;
+    const candidate = `${LEFT[Math.floor(k / rightN)]!} ${RIGHT[k % rightN]!}`;
     if (!taken.has(candidate.toLowerCase())) return candidate;
   }
 
-  for (let n2 = 10; n2 < 10000; n2++) {
-    const candidate = `Shop${n2}`;
+  for (let n2 = 2; n2 < 10000; n2++) {
+    const candidate = `Shop ${n2}`;
     if (!taken.has(candidate.toLowerCase())) return candidate;
   }
-  return `Shop${Date.now() % 100000}`;
+  return `Shop ${Date.now() % 100000}`;
 }
 
 export function generateUniqueAliases(seeds: string[], alreadyUsed: Iterable<string> = []): string[] {
@@ -105,4 +119,4 @@ export function parseLegalRosterText(raw: string): LegalRosterRow[] {
   return rows;
 }
 
-export { WORDS as ALIAS_WORDS };
+export { LEFT as ALIAS_LEFT, RIGHT as ALIAS_RIGHT };

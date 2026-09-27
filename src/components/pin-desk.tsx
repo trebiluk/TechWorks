@@ -23,7 +23,7 @@ export function PinDesk({ file, onChange }: { file: EconomyFile; onChange: (next
   return (
     <div className="rounded-xl bg-elevated p-2">
       <p className="text-[11px] font-bold uppercase tracking-wider text-muted">Pins</p>
-      <p className="text-xs text-muted">Look up a name or code. Reset clears the pin. The name locks until they set a new one.</p>
+      <p className="text-xs text-muted">Look up a name or code. Reset clears the pin. A new name does not change the code.</p>
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}

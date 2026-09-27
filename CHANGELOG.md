@@ -1,8 +1,13 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.140. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.141. -->
 
 # TechWorks changelog
 
-App version **1.92.140**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.141**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.141 — 2026-09-27
+
+- Shop code stays with the student. A new name does not change it. Room for 400 codes a year, and well past that.
+- Generated names are two shop words from one shared list, so the desk does not hand out a gendered name. Unclaimed one-word names update once. A name chosen after a pin stays.
 
 ## 1.92.140 — 2026-09-27
 

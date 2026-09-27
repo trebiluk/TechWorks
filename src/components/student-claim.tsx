@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
 import { findByShop } from "@/lib/live";
-import { claimAlias, pinSet, setStudentPin } from "@/lib/student-pin";
+import { claimAlias, pinSet, rerollWithPin, setStudentPin } from "@/lib/student-pin";
 
 /** Shop code, then a pin, then the alias. The pin is not shown again. */
 export function StudentClaim({ file, onChange }: { file: EconomyFile; onChange: (next: EconomyFile) => void }) {
@@ -52,7 +52,7 @@ export function StudentClaim({ file, onChange }: { file: EconomyFile; onChange: 
           Close
         </button>
       </div>
-      <p className="text-sm text-muted">Type the code from your teacher. Set a pin. Then you can change your name.</p>
+      <p className="text-sm text-muted">Type the code from your teacher. Set a pin. Then you can roll a new name. The code stays yours.</p>
       <input
         value={code}
         onChange={(e) => {
@@ -80,6 +80,17 @@ export function StudentClaim({ file, onChange }: { file: EconomyFile; onChange: 
           <input value={alias} onChange={(e) => setAlias(e.target.value)} placeholder="New name" aria-label="New name" className="min-h-12 rounded-xl bg-elevated px-3 text-lg outline-none" />
           <button type="button" onClick={saveAlias} className="tw-tap min-h-12 rounded-xl bg-fg text-sm font-semibold text-bg">
             Save name
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const res = rerollWithPin(file, code, pin);
+              setMsg(res.error || "New name. Your code did not change.");
+              if (!res.error) onChange(res.file);
+            }}
+            className="tw-tap min-h-12 rounded-xl bg-elevated text-sm font-semibold"
+          >
+            New name
           </button>
         </div>
       ) : null}

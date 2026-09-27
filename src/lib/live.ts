@@ -31,15 +31,9 @@ export function vaultRowOf(s: {
   };
 }
 
-const ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+import { publicHandle } from "@/lib/shop-code";
 
-export function publicHandle(id: string): string {
-  let h = 2166136261;
-  for (let i = 0; i < id.length; i++) h = Math.imul(h ^ id.charCodeAt(i), 16777619);
-  let out = "";
-  for (let i = 0; i < 5; i++) out += ALPHA[(h >>> (i * 5)) & 31];
-  return out;
-}
+export { publicHandle } from "@/lib/shop-code";
 
 export function findByShop<T extends { id: string }>(rows: T[], shop: string): T | undefined {
   const q = shop.trim().toUpperCase().replace(/[^A-Z2-9]/g, "");

@@ -3,10 +3,12 @@ import { describe, it } from "node:test";
 import type { EconomyFile, RawStudent } from "./economy.ts";
 import { isLiveStudent } from "./economy.ts";
 import { fillQuarterOne, HALL_SEATS, SHOP_SEATS } from "./roster-seed.ts";
-import { publicHandle } from "./live.ts";
-import { aliasAllowed } from "./alias-bank.ts";
+import { aliasAllowed, ALIAS_LEFT, ALIAS_RIGHT, generateAlias, PAIR_SPACE } from "./alias-bank.ts";
 import { onAbRoster, addTypedStudent } from "./store.ts";
-import { claimAlias, pinSet, resetStudentPin, setStudentPin } from "./student-pin.ts";
+import { claimAlias, pinSet, rerollWithPin, resetStudentPin, setStudentPin } from "./student-pin.ts";
+import { mintWorkerId } from "./ids.ts";
+import { neutralizeOpenNames } from "./roster-seed.ts";
+import { publicHandle } from "./shop-code.ts";
 
 function blank(): EconomyFile {
   return {
@@ -46,7 +48,7 @@ describe("quarter roster", () => {
     assert.equal(new Set(names).size, names.length);
     const codes = file.students.map((s) => publicHandle(s.id));
     assert.equal(new Set(codes).size, codes.length);
-    assert.ok(file.students.every((s) => aliasAllowed(s.first)));
+    assert.ok(file.students.every((s) => aliasAllowed(s.first) && s.first.includes(" ")));
     assert.ok(file.students.every((s) => !s.legalFirst && !s.legalLast));
   });
 
@@ -78,5 +80,51 @@ describe("student pin", () => {
     const cleared = resetStudentPin(named.file, kid.id);
     const again = claimAlias(cleared, code, "2468", "Redwing");
     assert.match(again.error, /pin/i);
+    const rolled = rerollWithPin(named.file, code, "2468");
+    const after = rolled.file.students.find((s) => s.id === kid.id);
+    assert.equal(rolled.error, "");
+    assert.equal(publicHandle(after!.id), code);
+    assert.notEqual(after!.first, "Bluejay");
+  });
+});
+
+const GIVEN = new Set(
+  "amber jade ruby pearl olive ivory coral indigo sage river sky daisy holly hazel willow wren robin violet iris rose lily june april faith hope joy grace summer autumn dawn dusty sandy rocky cherry sienna misty aspen alex avery blake casey charlie dakota drew emery harper hayden jamie jordan logan morgan parker quinn reese riley rowan taylor mason hunter peyton ryan"
+    .split(" "),
+);
+
+describe("name and code room", () => {
+  it("has thousands of shared shop names and no given names in the generator", () => {
+    assert.ok(PAIR_SPACE >= 4000);
+    const words = [...ALIAS_LEFT, ...ALIAS_RIGHT];
+    assert.equal(new Set(words.map((w) => w.toLowerCase())).size, words.length);
+    for (const word of words) {
+      assert.ok(word.length <= 7, word);
+      assert.ok(!GIVEN.has(word.toLowerCase()), word);
+    }
+    const used: string[] = [];
+    for (let i = 0; i < 600; i++) used.push(generateAlias(String(i), used));
+    assert.equal(new Set(used.map((n) => n.toLowerCase())).size, 600);
+    const ids: string[] = [];
+    for (let i = 0; i < 600; i++) ids.push(mintWorkerId(ids));
+    assert.equal(new Set(ids.map((id) => publicHandle(id))).size, 600);
+  });
+
+  it("replaces an unclaimed one-word name and leaves a chosen name and the code", () => {
+    const base = blank();
+    const open = addTypedStudent(base, { alias: "Daisy", period: 1, sem: "Q1" });
+    const kid = open.students[0]!;
+    const code = publicHandle(kid.id);
+    const fixed = neutralizeOpenNames({ ...open, students: [{ ...kid, first: "Daisy" }] });
+    assert.notEqual(fixed.students[0]?.first, "Daisy");
+    assert.equal(publicHandle(fixed.students[0]!.id), code);
+    const chosen = setStudentPin(open, code, "2468").file;
+    const held = neutralizeOpenNames({
+      ...chosen,
+      meta: { ...chosen.meta, config: {} },
+      students: chosen.students.map((s) => (s.id === kid.id ? { ...s, first: "Daisy" } : s)),
+    });
+    assert.equal(held.students.find((s) => s.id === kid.id)?.first, "Daisy");
+    assert.equal(publicHandle(held.students.find((s) => s.id === kid.id)!.id), code);
   });
 });

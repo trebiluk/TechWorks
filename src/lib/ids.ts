@@ -1,6 +1,7 @@
 /** Locked worker ids. Alias is minted AFTER the id exists — never the other way. */
 
 import { generateAlias } from "./alias-bank.ts";
+import { publicHandle } from "./shop-code.ts";
 
 const ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
@@ -25,6 +26,19 @@ export function newStudentId(used: Iterable<string>): string {
     if (!taken.has(id)) return id;
   }
   return `TW-${Date.now().toString(36).toUpperCase()}${token(4)}`;
+}
+
+/** New unique id whose shop code is also unused. The code stays with this id for good. */
+export function mintWorkerId(used: Iterable<string>): string {
+  const ids = new Set([...used].map((id) => String(id || "").trim()).filter(Boolean));
+  const handles = new Set([...ids].map((id) => publicHandle(id)));
+  for (let n = 0; n < 64; n++) {
+    const id = newStudentId(ids);
+    ids.add(id);
+    if (handles.has(publicHandle(id))) continue;
+    return id;
+  }
+  return newStudentId(ids);
 }
 
 /** Alias from the locked id, unique against `used`. Call only after the id is assigned. */

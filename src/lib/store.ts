@@ -2,7 +2,7 @@ import { bellFor, dayPay, isLiveStudent, score, type DayCode, type EconomyFile, 
 import { crewAt } from "@/lib/crew-desk";
 import { isAwayMark } from "@/lib/score-pad";
 import { aliasAllowed, generateAlias, type LegalRosterRow } from "@/lib/alias-bank";
-import { aliasAfterId, newStudentId } from "@/lib/ids";
+import { aliasAfterId, mintWorkerId } from "@/lib/ids";
 import { DEFAULT_LEVEL_BANDS, skillXp, type LevelBand } from "@/lib/skills";
 import { cleanPicks } from "@/lib/tickers";
 import { daySlot, schoolDays, sessions, todayIso, weekOn } from "@/lib/calendar";
@@ -1070,7 +1070,7 @@ function defaultCrewKey(file: EconomyFile, period: number, idx: number): string 
 /** Mint a locked id, then an alias. Real names are not stored. */
 export function addTypedStudent(file: EconomyFile, row: TypedStudent): EconomyFile {
   const next = clone(file);
-  const id = newStudentId(next.students.map((s) => s.id));
+  const id = mintWorkerId(next.students.map((s) => s.id));
   const used = next.students.map((s) => s.first);
   const wanted = (row.alias ?? "").trim().slice(0, 24);
   const clash = wanted && used.some((n) => n.trim().toLowerCase() === wanted.toLowerCase());
@@ -1120,7 +1120,7 @@ export function importLegalRoster(file: EconomyFile, rows: LegalRosterRow[]): Ec
   const ids = next.students.map((s) => s.id);
 
   for (const row of rows) {
-    const id = newStudentId(ids);
+    const id = mintWorkerId(ids);
     ids.push(id);
     const alias = aliasAfterId(id, used);
     used.push(alias);

@@ -110,6 +110,7 @@ export type EconomyFile = {
       activities?: string[];
       currentCycle?: number;
       seed?: string;
+      aliasStyle?: string;
       cycleGoals?: Record<string, string>;
       bellTimes?: { period: number; start: string; end: string; attendBy: string }[];
       schedule?: string;

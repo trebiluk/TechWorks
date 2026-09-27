@@ -6,6 +6,11 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.141 — 2026-09-27
+
+- Shop code stays with the student. A new name does not change it. Room for 400 codes a year, and well past that.
+- Generated names are two shop words from one shared list, so the desk does not hand out a gendered name. Unclaimed one-word names update once. A name chosen after a pin stays.
+
 ## 1.92.140 — 2026-09-27
 
 - Quarter 1 shop sections seat 18 aliases when the class is empty. Study hall seats 22, on both A and B day. A class that already has students is left alone.

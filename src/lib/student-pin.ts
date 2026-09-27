@@ -2,7 +2,7 @@ import type { EconomyFile, RawStudent } from "@/lib/economy";
 import { cloneFile } from "@/lib/clone";
 import { aliasAllowed, normalizeAlias } from "@/lib/alias-bank";
 import { findByShop } from "@/lib/live";
-import { setAlias } from "@/lib/store";
+import { setAlias, rerollAlias } from "@/lib/store";
 
 const BLOCKED = new Set(["0000", "1111", "1234", "2222", "2580", "2627", "7879"]);
 
@@ -64,4 +64,13 @@ export function claimAlias(file: EconomyFile, shop: string, pin: string, alias: 
   const clash = file.students.some((s) => s.id !== kid.id && s.first.trim().toLowerCase() === name.toLowerCase());
   if (clash) return { file, error: "Someone already has that name." };
   return { file: setAlias(file, kid.id, name), error: "" };
+}
+
+/** New pair. The shop code is the id, so it does not change. */
+export function rerollWithPin(file: EconomyFile, shop: string, pin: string): { file: EconomyFile; error: string } {
+  const kid = findByShop(file.students, shop);
+  if (!kid) return { file, error: "That code is not on the list." };
+  if (!pinSet(kid)) return { file, error: "Set a pin first." };
+  if (!pinsMatch(kid, pin)) return { file, error: "Pin does not match." };
+  return { file: rerollAlias(file, kid.id), error: "" };
 }
