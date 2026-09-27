@@ -142,7 +142,7 @@ export function ActivityMaker({
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-wider text-gold">New activity</p>
-          <p className="mt-0.5 text-sm text-muted">Name it, say what they do, pick the days. The hour beats stay on PlanIt.</p>
+          <p className="mt-0.5 text-sm text-muted">Name the make in the boxes. Two columns, so a phone can still read them.</p>
         </div>
         {ready ? (
           <button
@@ -159,7 +159,7 @@ export function ActivityMaker({
             disabled={!onPlanIt}
             className="tw-tap min-h-10 rounded-full bg-gold px-4 text-sm font-bold text-bg disabled:opacity-40"
           >
-            Write this hour on PlanIt
+            Write this hour
           </button>
         )}
       </div>
@@ -170,37 +170,38 @@ export function ActivityMaker({
           This period already has {units.map((u) => u.title).join(" · ")}. Park to add a day, or pick the unit under Add to a project.
         </p>
       ) : null}
-      <div className="grid gap-3">
-      <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">What they do</span>
-        <input
+      <div className="grid grid-cols-2 gap-2">
+      <label className="grid gap-1 rounded-xl bg-elevated p-2">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-muted">What they do</span>
+        <textarea
           value={doit}
           onChange={(e) => setDoit(e.target.value)}
           onKeyDown={keepSpace}
           placeholder="Cut the part. Try the move."
-          className="tw-field"
+          className="min-h-28 resize-none rounded-lg bg-surface px-2 py-2 text-sm leading-snug outline-none"
         />
       </label>
-      <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Done when</span>
-        <input
+      <label className="grid gap-1 rounded-xl bg-elevated p-2">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-muted">Done when</span>
+        <textarea
           value={done}
           onChange={(e) => setDone(e.target.value)}
           onKeyDown={keepSpace}
           placeholder="It fits, and the move works once."
-          className="tw-field"
+          className="min-h-28 resize-none rounded-lg bg-surface px-2 py-2 text-sm leading-snug outline-none"
         />
       </label>
-      <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Name</span>
+      <label className="col-span-2 grid gap-1 rounded-xl bg-elevated p-2">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-muted">Name</span>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           onKeyDown={keepSpace}
           placeholder={doit.trim() || "Name on the plan"}
-          className="tw-field"
+          className="min-h-11 rounded-lg bg-surface px-2 text-sm outline-none"
         />
       </label>
+      </div>
       <div>
         <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Days</p>
         <div className="mt-1 flex flex-wrap gap-1">
@@ -337,7 +338,6 @@ export function ActivityMaker({
       </div>
       </div>
       ) : null}
-      </div>
     </section>
   );
 }

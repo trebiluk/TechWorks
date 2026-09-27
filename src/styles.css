@@ -3715,6 +3715,18 @@ html[dir="rtl"] .board-root { direction: rtl; }
     inset 0 1px 0 color-mix(in oklab, #fff 16%, transparent),
     0 18px 40px -24px color-mix(in oklab, #000 80%, transparent);
 }
+.tw-planit-mf .tw-planit-top,
+.tw-planit-mf .tw-planit-desk {
+  background: var(--color-surface);
+  box-shadow: none;
+  border-radius: 0.9rem;
+}
+[data-planit-hour] textarea,
+[data-planit-hour] input,
+[data-activity-maker] textarea,
+[data-activity-maker] input {
+  box-shadow: none;
+}
 .tw-lcars {
   position: relative;
   isolation: isolate;
@@ -4082,6 +4094,14 @@ html[dir="rtl"] .board-root { direction: rtl; }
   box-shadow:
     inset 0 0 0 1.5px var(--mf-blue),
     0 0 16px color-mix(in oklab, var(--mf-cyan) 32%, transparent);
+}
+[data-planit-hour] textarea,
+[data-planit-hour] input,
+[data-activity-maker] textarea,
+[data-activity-maker] input {
+  box-shadow: none;
+  background: var(--color-surface);
+  color: var(--color-fg);
 }
 .tw-teach-live .tw-field,
 .tw-teach-live .tw-gadget {

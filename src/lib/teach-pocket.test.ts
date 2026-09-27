@@ -43,6 +43,6 @@ describe("TEACH Edge Pocket", () => {
     assert.doesNotMatch(board, /LessonBoard/);
     assert.doesNotMatch(board, /teachStart/);
     assert.doesNotMatch(projects, /PlanBook/);
-    assert.match(projects, /The hour lives on PlanIt/);
+    assert.match(projects, /Open this hour/);
   });
 });

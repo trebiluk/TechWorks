@@ -117,7 +117,7 @@ export function ProjectsBoard({
 
       <div className="min-h-0">
         {pane === "plan" ? (
-          <div className="grid gap-3">
+          <div className="grid items-start gap-3 lg:grid-cols-2">
             <ActivityMaker
               file={file}
               period={period}
@@ -131,11 +131,11 @@ export function ProjectsBoard({
               }}
             />
             <div className="tw-gadget p-4">
-              <p className="font-display text-lg font-semibold">The hour lives on PlanIt</p>
-              <p className="mt-1 text-sm text-muted">Four beats. Teach and the wall play that. This page only names a multi-day unit.</p>
+              <p className="font-display text-lg font-semibold">This hour</p>
+              <p className="mt-1 text-sm text-muted">Four beats, side by side. The wall plays that. This page only names a multi-day unit.</p>
               {onPlanIt ? (
                 <button type="button" onClick={onPlanIt} className="tw-tap mt-3 inline-flex min-h-11 items-center rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">
-                  Open PlanIt
+                  Open this hour
                 </button>
               ) : null}
             </div>

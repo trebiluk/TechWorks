@@ -175,13 +175,11 @@ export function PlanIt({
     return () => window.removeEventListener("keydown", onUndoKey);
   }, []);
 
-  const pct = fill.total ? Math.round((fill.set / fill.total) * 100) : 0;
-
   return (
     <div className="tw-planit tw-planit-mf flex min-h-0 flex-1 flex-col" data-planit data-planit-mf>
       {printOn ? <LessonPlanSheet file={file} period={cell?.period ?? firstP} dates={days} onClose={() => setPrintOn(false)} /> : null}
 
-      <header className="tw-planit-top tw-lcars">
+      <header className="tw-planit-top">
         <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: "var(--mf-cyan)" }}>
             This hour
@@ -207,9 +205,6 @@ export function PlanIt({
           <button type="button" onClick={() => goWeek(1)} className="tw-tap grid size-11 place-items-center rounded-xl bg-elevated" title="Next week">
             <ChevronRight className="size-4" />
           </button>
-        </div>
-        <div className="tw-planit-meter" title={`${fill.set} of ${fill.total} hours`}>
-          <span style={{ width: `${pct}%` }} />
         </div>
         <p className="text-xs text-muted">
           {fill.set}/{fill.total} hours · lesson, slide, and the activity you will grade.
@@ -457,7 +452,7 @@ function HourDesk({
   }
 
   return (
-    <aside className="tw-planit-desk tw-lcars" data-planit-hour>
+    <aside className="tw-planit-desk" data-planit-hour>
       <div className="tw-planit-hour-scroll">
       <div className="flex items-center gap-2">
         <p className="min-w-0 truncate text-[11px] font-bold uppercase tracking-[0.18em] text-accent">
@@ -470,24 +465,25 @@ function HourDesk({
         ) : null}
       </div>
 
-      <div className="grid gap-2" data-planit-beats>
+      <div className="grid grid-cols-2 gap-2" data-planit-beats>
         {(
           [
-            ["now", "01 Now", "Sit with your crew."],
-            ["goal", "02 Do this", "The make for this hour."],
-            ["next", "03 Then", "Second move."],
-            ["behave", "04 How we work", "Choose → work → focus → cleanup."],
+            ["now", "Now", "Sit with your crew."],
+            ["goal", "Do this", "The make for this hour."],
+            ["next", "Then", "Second move."],
+            ["behave", "How we work", "Choose, work, focus, cleanup."],
           ] as const
         ).map(([id, label, ph]) => (
-          <label key={id} className="grid gap-1">
+          <label key={id} className="grid gap-1 rounded-xl bg-elevated p-2">
             <span className="text-[11px] font-bold uppercase tracking-wider text-muted">{label}</span>
             <DraftField
               value={beats.find((c) => c.id === id)?.body ?? ""}
               editing={unlocked}
+              multiline
               onCommit={(v) => patch((f) => setPlanitBeat(f, d, p, id, v))}
               placeholder={ph}
               aria-label={label}
-              className="min-h-11 rounded-xl bg-elevated px-3 text-sm"
+              className="min-h-28 rounded-lg bg-surface px-2 py-2 text-sm leading-snug"
             />
           </label>
         ))}
@@ -499,70 +495,63 @@ function HourDesk({
         </button>
       ) : null}
 
-      <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Activity to grade</span>
-        <input
+      <div className="grid grid-cols-2 gap-2">
+      <label className="grid gap-1 rounded-xl bg-elevated p-2">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-muted">Activity to grade</span>
+        <textarea
           value={actName}
           onChange={(e) => setActName(e.target.value)}
           onBlur={saveActivity}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.currentTarget.blur();
-            }
-          }}
           placeholder="Name the make. You grade it later."
           aria-label="Activity to grade"
-          className="tw-field min-h-11 min-w-0"
+          className="min-h-28 resize-none rounded-lg bg-surface px-2 py-2 text-sm leading-snug outline-none"
         />
-        <span className="flex flex-wrap items-center gap-2 text-xs text-muted">
-          <span>{graded ? "On the gradebook." : "Leave the field. The name becomes the column."}</span>
-          {graded && onGrade ? (
-            <button type="button" onClick={onGrade} className="tw-tap min-h-11 text-sm font-semibold text-fg">
-              Open the grade
-            </button>
-          ) : null}
-        </span>
+        <span className="text-xs text-muted">{graded ? "On the gradebook." : "Leave the box. The name becomes the column."}</span>
+        {graded && onGrade ? (
+          <button type="button" onClick={onGrade} className="tw-tap min-h-11 rounded-lg bg-fg px-3 text-sm font-semibold text-bg">
+            Open the grade
+          </button>
+        ) : null}
       </label>
-      <label className="grid gap-1">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-subtle">Google Slides</span>
+      <label className="grid gap-1 rounded-xl bg-elevated p-2">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-muted">Google Slides</span>
         {hangs.length ? (
           <ul className="grid gap-1">
             {hangs.map((h) => (
               <li key={h.id} className="flex items-center gap-2">
                 <span className="min-w-0 flex-1 truncate text-sm">{h.title || h.url}</span>
-                <button type="button" onClick={() => onEdit(dropTeachHang(file, d, p, h.id))} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">
+                <button type="button" onClick={() => onEdit(dropTeachHang(file, d, p, h.id))} className="tw-tap min-h-11 rounded-lg bg-surface px-2 text-sm font-semibold">
                   Remove
                 </button>
               </li>
             ))}
           </ul>
         ) : null}
-        <span className="flex flex-wrap gap-1">
-          <input
-            value={slideUrl}
-            onChange={(e) => setSlideUrl(e.target.value)}
-            placeholder="Paste the share link"
-            aria-label="Google Slides link"
-            className="tw-field min-h-11 min-w-0 flex-1"
-          />
-          <button
-            type="button"
-            onClick={() => {
-              const next = addTeachHang(file, d, p, slideUrl);
-              if (next === file) {
-                onNote("Paste a Google Slides share link.");
-                return;
-              }
-              onEdit(next);
-              setSlideUrl("");
-              onNote("Slides are on this hour. Present plays them.");
-            }}
-            className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold"
-          >
-            Add slide
-          </button>
-        </span>
+        <textarea
+          value={slideUrl}
+          onChange={(e) => setSlideUrl(e.target.value)}
+          placeholder="Paste the share link"
+          aria-label="Google Slides link"
+          className="min-h-28 resize-none rounded-lg bg-surface px-2 py-2 text-sm leading-snug outline-none"
+        />
+        <button
+          type="button"
+          onClick={() => {
+            const next = addTeachHang(file, d, p, slideUrl);
+            if (next === file) {
+              onNote("Paste a Google Slides share link.");
+              return;
+            }
+            onEdit(next);
+            setSlideUrl("");
+            onNote("Slides are on this hour. Present plays them.");
+          }}
+          className="tw-tap min-h-11 rounded-lg bg-surface px-3 text-sm font-semibold"
+        >
+          Add slide
+        </button>
       </label>
+      </div>
 
       <button type="button" onClick={() => setMore((v) => !v)} className="tw-tap min-h-11 text-left text-sm font-semibold text-muted">
         {more ? "Less" : "More"}

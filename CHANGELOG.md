@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.132. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.133. -->
 
 # TechWorks changelog
 
-App version **1.92.132**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.133**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.133 — 2026-09-27
+
+- This hour and the activity maker are two columns of writing boxes. The old PlanIt frame is off those screens.
 
 ## 1.92.132 — 2026-09-27
 
