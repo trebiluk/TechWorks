@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Door book · TechWorks</title>
+  <style>
+    body{margin:0;font:16px/1.4 system-ui,sans-serif;background:#0c1220;color:#e8f7ff}
+    main{max-width:46rem;margin:0 auto;padding:1.25rem}
+    h1{font-size:1.4rem;margin:0 0 .25rem}
+    p{color:#9fb4c8}
+    table{width:100%;border-collapse:collapse}
+    th,td{text-align:left;padding:.45rem .4rem;border-bottom:1px solid #243044}
+    th{font-size:.75rem;letter-spacing:.04em;text-transform:uppercase;color:#8fb4c9}
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Door book</h1>
+    <p>Aliases only. The same code and the same app replace the old line. This is the inbox. The class roster stays in the desk.</p>
+    <p id="status">Loading.</p>
+    <table>
+      <thead><tr><th>Alias</th><th>Code</th><th>App</th><th>Line</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </main>
+  <script>
+    var names = {
+      baboo: "Baboo", bertycad: "BertyCAD", visualizer: "Visualizer", bits: "Bits & Bobs",
+      bertybots: "Berty's Botz", "berty-run": "Berty Run", spancraft: "SpanCraft", "spire-lab": "Spire Lab",
+      drift: "Drift", holdit: "HoldIt", ginger: "Ginger", paperlab: "PaperLab", logolab: "LogoLab",
+      drawin: "Drawin'", catapult: "ThrowIt", musiclab: "MusicLab", bertybeatz: "BertyBeatz", koderized: "Koderized"
+    };
+    fetch("/api/marks").then(function (res) { return res.json(); }).then(function (pack) {
+      var rows = pack && pack.marks || [];
+      document.getElementById("status").textContent = rows.length ? rows.length + " lines." : "No lines yet.";
+      document.getElementById("rows").innerHTML = rows.map(function (row) {
+        return "<tr><td>" + row.alias + "</td><td>" + row.code + "</td><td>" + (names[row.app] || row.app) + "</td><td>" + row.line + "</td></tr>";
+      }).join("");
+    }).catch(function () {
+      document.getElementById("status").textContent = "The book did not load.";
+    });
+  </script>
+</body>
+</html>
