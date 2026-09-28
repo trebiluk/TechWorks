@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
 import { publicHandle } from "@/lib/live";
-import { pinSet, resetStudentPin } from "@/lib/student-pin";
+import { pinSet, resetStudentPin, assignStudentPin } from "@/lib/student-pin";
 import { fillQuarterOne } from "@/lib/roster-seed";
 import { cn } from "@/lib/utils";
 
@@ -23,7 +23,7 @@ export function PinDesk({ file, onChange }: { file: EconomyFile; onChange: (next
   return (
     <div className="rounded-xl bg-elevated p-2">
       <p className="text-[11px] font-bold uppercase tracking-wider text-muted">Pins</p>
-      <p className="text-xs text-muted">Look up a name or code. Reset clears the pin. A new name does not change the code.</p>
+      <p className="text-xs text-muted">Look up a name. You set the PIN. The student uses that PIN and the 5-character code. Reset clears it.</p>
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
@@ -44,6 +44,22 @@ export function PinDesk({ file, onChange }: { file: EconomyFile; onChange: (next
                 </span>
                 <span className="font-mono text-sm">{code}</span>
                 <span className={cn("text-xs font-semibold", set ? "text-fg" : "text-muted")}>{set ? "Pin set" : "No pin"}</span>
+                <form
+                  className="flex items-center gap-1"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const pin = String(new FormData(e.currentTarget).get("pin") || "").replace(/\D/g, "").slice(0, 4);
+                    const res = assignStudentPin(file, s.id, pin);
+                    setNote(res.error || `${s.first} PIN saved. Publish the cloud desk so the apps can see it.`);
+                    if (!res.error) {
+                      onChange(res.file);
+                      e.currentTarget.reset();
+                    }
+                  }}
+                >
+                  <input name="pin" aria-label={`PIN for ${s.first}`} inputMode="numeric" maxLength={4} placeholder="PIN" className="min-h-11 w-16 rounded-lg bg-surface px-2 font-mono text-sm outline-none" />
+                  <button type="submit" className="tw-tap min-h-11 rounded-lg bg-fg px-3 text-sm font-semibold text-bg">Set</button>
+                </form>
                 <button
                   type="button"
                   disabled={!set}

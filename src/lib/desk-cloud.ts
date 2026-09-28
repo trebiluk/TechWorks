@@ -6,6 +6,8 @@ import { isDemoStudentId, stripFakeDemo } from "@/lib/demo";
 import { cloudPackOpen } from "@/lib/compat";
 import { mergeNames, persistNamesVault, readNamesVault, stripNames } from "@/lib/names-vault";
 import { hourCount } from "@/lib/hour-persist";
+import { publicHandle } from "@/lib/shop-code";
+import { avatarOf } from "@/lib/avatars";
 
 const KEY = "techworks-desk-key";
 const ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -201,6 +203,21 @@ export async function pushCloud(file: EconomyFile): Promise<boolean> {
     }
     lastSaved = pack.saved;
     setStatus("saved");
+    const people = real.students
+      .filter((s) => s.first && s.first.trim().length >= 2)
+      .slice(0, 400)
+      .map((s) => ({
+        id: s.id,
+        alias: s.first.trim().slice(0, 16),
+        avatar: avatarOf(s.icon, s.id),
+        code: publicHandle(s.id),
+        pinHash: s.pinHash || "",
+      }));
+    fetch("/api/who", {
+      method: "PUT",
+      headers: { "content-type": "application/json", "x-tw-desk": token },
+      body: JSON.stringify({ people }),
+    }).catch(() => {});
     return true;
   } catch {
     setStatus("error", "offline");

@@ -48,6 +48,13 @@ export function setStudentPin(file: EconomyFile, shop: string, pin: string): { f
   return { file: withHash(file, kid.id, pinHashOf(kid.id, pin)), error: "" };
 }
 
+/** Teacher sets or replaces the pin. The student does not choose it. */
+export function assignStudentPin(file: EconomyFile, id: string, pin: string): { file: EconomyFile; error: string } {
+  if (!file.students.some((s) => s.id === id)) return { file, error: "That student is not on the list." };
+  if (!pinOk(pin)) return { file, error: "Use 4 digits. Not 1111, 1234, or a class pin." };
+  return { file: withHash(file, id, pinHashOf(id, pin)), error: "" };
+}
+
 export function resetStudentPin(file: EconomyFile, id: string): EconomyFile {
   if (!file.students.some((s) => s.id === id)) return file;
   return withHash(file, id, undefined);
