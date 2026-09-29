@@ -22,6 +22,7 @@ import { loadClub } from "@/lib/club";
 import { cn } from "@/lib/utils";
 import { stripFakeDemo } from "@/lib/demo";
 import { CodebookActions } from "@/components/codebook-actions";
+import { TypedConfirm } from "@/components/roster-guards";
 
 export function VaultBoard({
   file,
@@ -43,6 +44,15 @@ export function VaultBoard({
   const [daily, setDaily] = useState<SnapInfo[]>([]);
   const [busy, setBusy] = useState(false);
   const [bookBusy, setBookBusy] = useState(false);
+  const [wipeAsk, setWipeAsk] = useState(false);
+  const [undoFile, setUndoFile] = useState<EconomyFile | null>(null);
+  const wipePhrase = file.meta.title?.trim() || "All classes";
+
+  useEffect(() => {
+    if (!undoFile) return;
+    const t = window.setTimeout(() => setUndoFile(null), 30_000);
+    return () => window.clearTimeout(t);
+  }, [undoFile]);
 
   async function refresh() {
     const [s, d, q] = await Promise.all([listNamedSnaps(), listDeskBackups(), storageLabel()]);
@@ -249,21 +259,50 @@ export function VaultBoard({
 
       <div>
         <p className="text-sm font-medium uppercase tracking-wider text-subtle">Day 0</p>
-        <p className="mt-1 text-sm text-muted">Wipes workers and the ledger. Crews, bells, theme, and projects stay. A snapshot is saved first.</p>
+        <p className="mt-1 text-sm text-muted">Wipes workers and the ledger. Crews, bells, theme, and projects stay. Type the desk name. A snapshot is saved first.</p>
         <div className="mt-2 flex flex-wrap gap-2">
           <button
             type="button"
             className="tw-tap min-h-11 rounded-md bg-cleanup/30 px-3 text-sm font-semibold"
-            onClick={async () => {
-              if (!window.confirm(`Clear ${file.students.length} workers from this device? A snapshot is saved first.`)) return;
-              await snapshotNow(file, "Before clear workers");
-              commit(emptyRoster(file), "Workers cleared · snapshot kept · ready to import");
-            }}
+            onClick={() => setWipeAsk(true)}
           >
             Clear workers
           </button>
         </div>
       </div>
+      {wipeAsk ? (
+        <TypedConfirm
+          title={`This removes ${file.students.length} workers from ${wipePhrase}.`}
+          names={file.students.slice(0, 6).map((s) => s.first)}
+          phrase={wipePhrase}
+          confirmLabel="Remove"
+          onCancel={() => setWipeAsk(false)}
+          onConfirm={() => {
+            const before = file;
+            setWipeAsk(false);
+            void (async () => {
+              await snapshotNow(before, "Before clear workers");
+              setUndoFile(before);
+              commit(emptyRoster(before), "Workers cleared · snapshot kept · Undo for 30 seconds");
+            })();
+          }}
+        />
+      ) : null}
+      {undoFile ? (
+        <div className="fixed bottom-4 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-full bg-fg px-4 py-2 text-bg shadow-xl" role="status">
+          <span className="text-sm font-semibold">Workers cleared.</span>
+          <button
+            type="button"
+            className="tw-tap min-h-11 rounded-full bg-bg px-3 text-sm font-semibold text-fg"
+            onClick={() => {
+              commit(undoFile, "Undo · workers restored");
+              setUndoFile(null);
+            }}
+          >
+            Undo
+          </button>
+        </div>
+      ) : null}
 
       {msg ? <p className="text-sm text-gold">{msg}</p> : null}
 

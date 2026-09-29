@@ -2,6 +2,7 @@ import type { EconomyFile, RawStudent } from "@/lib/economy";
 import { isLiveStudent } from "@/lib/economy";
 import { P6_STUDY_HALL_ID, SOLVAY_MS_TECH_PROFILE, type P6StudyHallClass } from "@/data/solvay-ms-tech.profile";
 import { addTypedStudent, onAbRoster, patchStudent } from "@/lib/store";
+import { inHall } from "@/lib/roster-safety";
 
 export const HALL_PERIOD = 6;
 export const HALL_EMPTY_COPY = "No class loaded";
@@ -114,7 +115,7 @@ export function ensureP6StudyHall(file: EconomyFile): EconomyFile {
 
 export function p6HallKids(file: EconomyFile, letter: HallAbLetter): RawStudent[] {
   return file.students
-    .filter((s) => s.period === HALL_PERIOD && isLiveStudent(s, file.meta.quarterName) && onAbRoster(s, letter))
+    .filter((s) => inHall(s, HALL_PERIOD) && isLiveStudent(s, file.meta.quarterName) && onAbRoster(s, letter))
     .sort((a, b) => a.first.localeCompare(b.first));
 }
 

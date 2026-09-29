@@ -23,7 +23,6 @@ import { skillXp } from "@/lib/skills";
 import { currentCycleOf } from "@/lib/roles";
 import { addTypedStudent, deskSavePending, saveDeskNow, setAlias, setGradeOverride } from "@/lib/store";
 import { auditStudentIds } from "@/lib/ids";
-import { emptyRoster, snapshotNow } from "@/lib/vault";
 import { publicHandle } from "@/lib/live";
 import { addAide, aidesOf, dropAide } from "@/lib/aides";
 import { todayIso } from "@/lib/calendar";
@@ -31,6 +30,8 @@ import { bansOf, BENCH, addPeriodCrew, dropCrewBan, nextPeriodCrewKey, placeBloc
 import { MarkChip } from "@/components/ui";
 import { Fold } from "@/components/fold";
 import { PinDesk } from "@/components/pin-desk";
+import { DangerZone, HallDesk, TypedConfirm, WorkerMenu } from "@/components/roster-guards";
+import { archiveStudents, moveToClass, softRemove } from "@/lib/roster-safety";
 import { markOf } from "@/lib/nav-marks";
 import { cn } from "@/lib/utils";
 
@@ -57,6 +58,11 @@ export function YearRoster({
   const [pending, setPending] = useState(false);
   const [notice, setNotice] = useState("");
   const [aideName, setAideName] = useState("");
+  const [hallOn, setHallOn] = useState(false);
+  const [sort, setSort] = useState<"alias" | "class" | "seen">("alias");
+  const [pickedIds, setPickedIds] = useState<string[]>([]);
+  const [undoFile, setUndoFile] = useState<EconomyFile | null>(null);
+  const [bulkDanger, setBulkDanger] = useState(false);
   const counts = useMemo(() => yearCounts(file, club), [file, club]);
   const ids = useMemo(() => auditStudentIds(file.students), [file.students]);
   const cohort = YEAR_CLASSES.concat(YEAR_GROUPS).find((c) => c.id === pick) ?? null;
@@ -82,6 +88,18 @@ export function YearRoster({
       return true;
     });
   }, [file, club, focus, filter, more, period, q]);
+  const ordered = useMemo(() => {
+    const list = [...rows];
+    if (sort === "class") list.sort((a, b) => a.period - b.period || a.first.localeCompare(b.first));
+    else if (sort === "seen") {
+      list.sort((a, b) => {
+        const as = file.students.find((s) => s.id === a.id)?.lastSeen ?? "";
+        const bs = file.students.find((s) => s.id === b.id)?.lastSeen ?? "";
+        return bs.localeCompare(as) || a.first.localeCompare(b.first);
+      });
+    } else list.sort((a, b) => a.first.localeCompare(b.first));
+    return list;
+  }, [rows, sort, file.students]);
   const orphans = unlinkedClub(club, file);
   const bells = shopBells(file);
   const aidePeriod = period ?? bells[0]?.period ?? 1;
@@ -93,6 +111,12 @@ export function YearRoster({
     return () => window.clearInterval(t);
   }, []);
 
+  useEffect(() => {
+    if (!undoFile) return;
+    const t = window.setTimeout(() => setUndoFile(null), 30_000);
+    return () => window.clearTimeout(t);
+  }, [undoFile]);
+
   function place(id: string, c: YearCohort) {
     onChange(placeStudent(file, id, c));
   }
@@ -101,6 +125,22 @@ export function YearRoster({
     saveDeskNow(file);
     onChange({ ...file, meta: { ...file.meta, savedAt: new Date().toISOString() } });
     setPending(false);
+  }
+
+  const classPhrase = focus?.course || file.meta.title || "All classes";
+  const scopeIds = focus
+    ? studentsInCohort(file, focus, club).map((s) => s.id)
+    : file.students.filter((s) => !s.removedAt && !s.archivedAt).map((s) => s.id);
+  const scopeNames = scopeIds
+    .map((id) => file.students.find((s) => s.id === id)?.first ?? "")
+    .filter(Boolean);
+
+  function removeWorkers(ids: string[]) {
+    if (!ids.length) return;
+    const before = file;
+    onChange(softRemove(file, ids, classPhrase));
+    setUndoFile(before);
+    setPickedIds([]);
   }
 
   return (
@@ -113,12 +153,33 @@ export function YearRoster({
           aria-label="Search alias"
           className="min-h-11 w-full rounded-xl bg-elevated px-3 text-base outline-none"
         />
+        <div className="flex flex-wrap gap-1" aria-label="Sort">
+          {(
+            [
+              ["alias", "Alias"],
+              ["class", "Class"],
+              ["seen", "Last sign-in"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setSort(id)}
+              className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-semibold", sort === id ? "bg-fg text-bg" : "bg-elevated text-muted")}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
         <PinDesk file={file} onChange={onChange} />
         <div className="flex flex-wrap gap-1" aria-label="Period">
           <button
             type="button"
-            onClick={() => setPeriod(null)}
-            className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-bold", period == null ? "bg-fg text-bg" : "bg-elevated text-muted")}
+            onClick={() => {
+              setPeriod(null);
+              setHallOn(false);
+            }}
+            className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-bold", period == null && !hallOn ? "bg-fg text-bg" : "bg-elevated text-muted")}
           >
             All
           </button>
@@ -126,12 +187,22 @@ export function YearRoster({
             <button
               key={p}
               type="button"
-              onClick={() => setPeriod(p)}
-              className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-bold", period === p ? "bg-fg text-bg" : "bg-elevated text-muted")}
+              onClick={() => {
+                setPeriod(p);
+                setHallOn(false);
+              }}
+              className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-bold", period === p && !hallOn ? "bg-fg text-bg" : "bg-elevated text-muted")}
             >
               P{p}
             </button>
           ))}
+          <button
+            type="button"
+            onClick={() => setHallOn(true)}
+            className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-bold", hallOn ? "bg-fg text-bg" : "bg-elevated text-muted")}
+          >
+            Hall
+          </button>
         </div>
         <div className="rounded-xl bg-elevated p-2">
           <p className="text-[11px] font-bold uppercase tracking-wider text-muted">Aides · P{aidePeriod}</p>
@@ -192,21 +263,6 @@ export function YearRoster({
               Import
             </button>
           ) : null}
-          {file.students.length ? (
-            <button
-              type="button"
-              className="tw-tap min-h-11 rounded-md bg-cleanup/30 px-3 text-sm font-semibold"
-              onClick={async () => {
-                if (!window.confirm(`Clear ${file.students.length} workers? A snapshot is saved first.`)) return;
-                await snapshotNow(file, "Before clear workers");
-                const next = emptyRoster(file);
-                saveDeskNow(next);
-                onChange(next);
-              }}
-            >
-              Clear workers
-            </button>
-          ) : null}
           <MarkChip mark={markOf("schooltool")} on={st} onClick={() => setSt((v) => !v)}>
             SchoolTool
           </MarkChip>
@@ -260,7 +316,14 @@ export function YearRoster({
             ["hold", "Hold"],
           ] as const
         ).map(([id, label]) => (
-          <MarkChip key={id} mark={markOf(id)} on={filter === id} onClick={() => setFilter(id)} className={filter === id ? "bg-fg text-bg" : undefined}>
+          <MarkChip key={id} mark={markOf(id)} on={id === "hall" ? hallOn : filter === id} onClick={() => {
+            if (id === "hall") {
+              setHallOn(true);
+              return;
+            }
+            setHallOn(false);
+            setFilter(id);
+          }} className={(id === "hall" ? hallOn : filter === id) ? "bg-fg text-bg" : undefined}>
             {label}
           </MarkChip>
         ))}
@@ -271,6 +334,14 @@ export function YearRoster({
           className="min-h-11 min-w-[10rem] flex-1 rounded-md bg-elevated px-3 text-sm outline-none"
         />
       </div>
+      <DangerZone
+        file={file}
+        className={classPhrase}
+        ids={scopeIds}
+        names={scopeNames}
+        onUndoReady={setUndoFile}
+        onChange={onChange}
+      />
       </Fold>
 
       {st ? (
@@ -316,7 +387,10 @@ export function YearRoster({
                     <button
                       key={c.id}
                       type="button"
-                      onClick={() => setPick(on ? null : c.id)}
+                      onClick={() => {
+                        setHallOn(false);
+                        setPick(on ? null : c.id);
+                      }}
                       className={cn("tw-tap rounded-md px-1 py-2 text-center", on ? "bg-accent text-accent-fg" : "bg-elevated")}
                     >
                       <p className="text-[10px] font-bold uppercase tracking-wider opacity-80">{c.quarter}</p>
@@ -336,8 +410,16 @@ export function YearRoster({
                 <button
                   key={c.id}
                   type="button"
-                  onClick={() => setPick(on ? null : c.id)}
-                  className={cn("tw-gadget tw-tap p-3 text-left", on ? "bg-accent text-accent-fg" : "")}
+                  onClick={() => {
+                    if (c.kind === "hall") {
+                      setHallOn(true);
+                      setPick(c.id);
+                      return;
+                    }
+                    setHallOn(false);
+                    setPick(on ? null : c.id);
+                  }}
+                  className={cn("tw-gadget tw-tap p-3 text-left", on || (c.kind === "hall" && hallOn) ? "bg-accent text-accent-fg" : "")}
                 >
                   <p className="text-[11px] font-bold uppercase tracking-wider opacity-80">{c.course}{c.kind === "hall" ? " · Sec 10 · Rm 136" : ""}</p>
                   <p className="font-display text-2xl font-semibold leading-none">{n}</p>
@@ -350,14 +432,27 @@ export function YearRoster({
 
         <div className="tw-gadget min-h-0 overflow-auto p-2">
           <p className="sticky top-0 z-[1] bg-surface px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-subtle">
-            {focus ? `${focus.course} · Sec ${focus.section} · ${focus.quarter === "YEAR" ? "year" : focus.quarter} · Rm ${focus.room}` : "Aliases"} · {rows.length}
+            {hallOn || focus?.kind === "hall" ? "Study Hall" : focus ? `${focus.course} · Sec ${focus.section} · ${focus.quarter === "YEAR" ? "year" : focus.quarter} · Rm ${focus.room}` : "Aliases"} · {hallOn || focus?.kind === "hall" ? "home class stays" : rows.length}
           </p>
-          {focus && focus.kind !== "club" ? (
+          {hallOn || focus?.kind === "hall" ? (
+            <HallDesk file={file} onChange={onChange} />
+          ) : focus && focus.kind !== "club" ? (
             <ClassBook file={file} cohort={focus} onChange={onChange} onOpenId={onOpenId} onPlace={place} onNotice={setNotice} />
           ) : (
             <table className="w-full text-left text-sm">
             <thead className="text-[11px] uppercase tracking-wider text-subtle">
               <tr>
+                <th className="px-1 py-1">
+                  <label className="flex min-h-11 min-w-11 items-center justify-center">
+                    <input
+                      type="checkbox"
+                      className="size-6"
+                      aria-label="Select all"
+                      checked={ordered.length > 0 && ordered.every((k) => pickedIds.includes(k.id))}
+                      onChange={() => setPickedIds(ordered.every((k) => pickedIds.includes(k.id)) ? [] : ordered.map((k) => k.id))}
+                    />
+                  </label>
+                </th>
                 <th className="px-2 py-1 font-semibold">Alias</th>
                 <th className="px-2 py-1 font-semibold">Id</th>
                 <th className="px-2 py-1 font-semibold">Class</th>
@@ -368,10 +463,22 @@ export function YearRoster({
               </tr>
             </thead>
             <tbody>
-              {rows.map((k) => {
+              {ordered.map((k) => {
                 const s = file.students.find((x) => x.id === k.id);
+                const on = pickedIds.includes(k.id);
                 return (
                 <tr key={k.id} className="border-t border-border/40">
+                  <td className="px-1 py-1">
+                    <label className="flex min-h-11 min-w-11 items-center justify-center">
+                      <input
+                        type="checkbox"
+                        className="size-6"
+                        checked={on}
+                        aria-label={`Select ${k.first}`}
+                        onChange={() => setPickedIds((cur) => (cur.includes(k.id) ? cur.filter((id) => id !== k.id) : [...cur, k.id]))}
+                      />
+                    </label>
+                  </td>
                   <td className="px-2 py-1.5">
                     <AliasCell file={file} student={s} fallback={k.first} onChange={onChange} onOpenId={onOpenId} />
                     <span className="ml-1 text-[10px] uppercase tracking-wider text-subtle">
@@ -410,6 +517,7 @@ export function YearRoster({
                         ))}
                       </select>
                     ) : null}
+                    {s ? <WorkerMenu file={file} student={s} onChange={onChange} onRemove={removeWorkers} /> : null}
                   </td>
                 </tr>
               );
@@ -417,6 +525,36 @@ export function YearRoster({
             </tbody>
           </table>
           )}
+          {pickedIds.length > 0 && !hallOn ? (
+            <div className="sticky bottom-0 mt-2 flex flex-wrap items-center gap-1 rounded-xl bg-fg p-2 text-bg">
+              <span className="px-2 text-sm font-semibold">{pickedIds.length} selected</span>
+              <button type="button" className="tw-tap min-h-11 rounded-full bg-bg px-3 text-sm font-semibold text-fg" onClick={() => onChange(archiveStudents(file, pickedIds))}>
+                Archive
+              </button>
+              <label className="text-sm">
+                Move
+                <select
+                  className="ml-1 min-h-11 rounded-full bg-bg px-2 text-fg"
+                  defaultValue=""
+                  aria-label="Move to class"
+                  onChange={(e) => {
+                    const c = YEAR_CLASSES.find((x) => x.id === e.target.value);
+                    if (c) onChange(moveToClass(file, pickedIds, c.period, c.section, c.course));
+                    e.target.value = "";
+                    setPickedIds([]);
+                  }}
+                >
+                  <option value="">to class…</option>
+                  {YEAR_CLASSES.map((c) => (
+                    <option key={c.id} value={c.id}>P{c.period} {c.course}</option>
+                  ))}
+                </select>
+              </label>
+              <button type="button" className="tw-tap min-h-11 rounded-full bg-cleanup px-3 text-sm font-semibold" onClick={() => setBulkDanger(true)}>
+                Remove
+              </button>
+            </div>
+          ) : null}
           {!rows.length ? (
             <p className="p-3 text-sm text-muted">{q.trim() || period != null ? "No one matches." : "No aliases yet."}</p>
           ) : null}
@@ -443,6 +581,34 @@ export function YearRoster({
           ) : null}
         </div>
       </div>
+      {bulkDanger ? (
+        <TypedConfirm
+          title={`This removes ${pickedIds.length} workers from ${classPhrase}.`}
+          names={pickedIds.map((id) => file.students.find((s) => s.id === id)?.first ?? "").filter(Boolean)}
+          phrase={classPhrase}
+          confirmLabel="Remove"
+          onCancel={() => setBulkDanger(false)}
+          onConfirm={() => {
+            removeWorkers(pickedIds);
+            setBulkDanger(false);
+          }}
+        />
+      ) : null}
+      {undoFile ? (
+        <div className="fixed bottom-4 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-full bg-fg px-4 py-2 text-bg shadow-xl" role="status">
+          <span className="text-sm font-semibold">Removed. Undo puts them back.</span>
+          <button
+            type="button"
+            className="tw-tap min-h-11 rounded-full bg-bg px-3 text-sm font-semibold text-fg"
+            onClick={() => {
+              onChange(undoFile);
+              setUndoFile(null);
+            }}
+          >
+            Undo
+          </button>
+        </div>
+      ) : null}
     </section>
   );
 }

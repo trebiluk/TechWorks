@@ -65,6 +65,16 @@ export type RawStudent = {
   lucky?: { ts: string; date: string; face: number; stake: number; payout: number }[];
   /** Hash of the student's own 4-digit pin. Never the pin. Empty until they set one. */
   pinHash?: string;
+  /** Soft delete. Hidden for 30 days, then a typed purge can drop them. */
+  removedAt?: string;
+  /** Hidden from class lists. The record stays. */
+  archivedAt?: string;
+  /** Study hall periods this worker also sits in. Home `period` does not change. */
+  hallOf?: number[];
+  /** A hall-native row was taken off the hall list. The worker stays. */
+  hallLeft?: boolean;
+  /** Last time this alias signed in with a pin. */
+  lastSeen?: string;
 };
 
 export function legalLastOf(_s: Pick<RawStudent, "legalLast" | "last">): string {
@@ -182,6 +192,10 @@ export type EconomyFile = {
       periodProjects?: Record<string, string[]>;
       /** Adults in the room for a period. Shop name only. Not tied to a student. */
       aides?: { id: string; period: number; name: string }[];
+      /** Last 10 class snapshots taken before a wipe. Students only. */
+      restorePoints?: { at: string; label: string; students: RawStudent[] }[];
+      /** Teacher-visible log of wipes, moves, and restores. */
+      rosterLog?: { at: string; action: string; count: number; detail: string }[];
       /** Once true, factory units are not re-injected. First load after 1.92.28 clears them. */
       authoredPlans?: boolean;
       projects?: {
@@ -411,6 +425,7 @@ export function sessionCode(quarterName: string | undefined): string {
 }
 
 export function isLiveStudent(s: RawStudent, quarterName?: string): boolean {
+  if (s.removedAt || s.archivedAt) return false;
   const sem = String(s.sem ?? "Q1").toUpperCase();
   if (sem === "YEAR" || (sem.includes("Q1") && sem.includes("Q4"))) return true;
   return sem === sessionCode(quarterName);

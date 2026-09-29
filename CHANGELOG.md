@@ -1,8 +1,14 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.142. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.143. -->
 
 # TechWorks changelog
 
-App version **1.92.142**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.143**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.143 — 2026-09-29
+
+- Clear workers lives in More, under Danger zone, not next to Save. Confirm stays off until the class name is typed. A restore point is saved first. Undo lasts 30 seconds. Removed workers stay in Recently removed for 30 days.
+- Each row has a menu: rename, move to a class, reset the PIN, archive, or remove. The shop code stays with the student. Bulk select can move, archive, or remove.
+- Study Hall is its own list. Add a worker from any class. They stay in the home class, with the same code and marks. Remove from Hall only drops that seat.
 
 ## 1.92.142 — 2026-09-27
 

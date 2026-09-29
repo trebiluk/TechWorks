@@ -79,6 +79,11 @@ export function compactStudent(s: RawStudent): RawStudent {
   if (s.passes?.length) next.passes = s.passes;
   if (s.lucky?.length) next.lucky = s.lucky;
   if (s.pinHash) next.pinHash = s.pinHash;
+  if (s.removedAt) next.removedAt = s.removedAt;
+  if (s.archivedAt) next.archivedAt = s.archivedAt;
+  if (s.hallOf?.length) next.hallOf = s.hallOf.filter((n) => Number.isFinite(n));
+  if (s.hallLeft) next.hallLeft = true;
+  if (s.lastSeen) next.lastSeen = s.lastSeen;
   const grades = slimMap(s.gradeOverrides as Record<string, unknown> | undefined);
   if (grades) next.gradeOverrides = grades as RawStudent["gradeOverrides"];
   if (s.picks?.length) next.picks = s.picks;

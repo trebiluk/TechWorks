@@ -70,7 +70,7 @@ export function claimAlias(file: EconomyFile, shop: string, pin: string, alias: 
   if (!aliasAllowed(name)) return { file, error: "Pick a different name." };
   const clash = file.students.some((s) => s.id !== kid.id && s.first.trim().toLowerCase() === name.toLowerCase());
   if (clash) return { file, error: "Someone already has that name." };
-  return { file: setAlias(file, kid.id, name), error: "" };
+  return { file: setAlias({ ...file, students: file.students.map((s) => (s.id === kid.id ? { ...s, lastSeen: new Date().toISOString() } : s)) }, kid.id, name), error: "" };
 }
 
 /** New pair. The shop code is the id, so it does not change. */

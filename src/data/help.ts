@@ -572,7 +572,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Admin",
     title: "Roster ids and aliases",
     tags: ["roster", "id", "alias", "add", "save", "ferpa", "separate"],
-    body: "Admin → Records → Roster. Add an alias, or Import / CSV (Last, First, Period). The paste is used once to mint Shop IDs and aliases, then the real names are dropped. Separate: pick two aliases already on the list; they will not sit in the same crew. Clear workers snapshots first. Edit alias and crew in the table — Bench is a seat, **+ Crew A** restores a dropped table for that class. Crews is the third Records chip (Deal / Look / Crown). Scores, XP, and $ stay on the id. Auto-save on this device; tap the Save chip to write now. Backups is the other Records chip: snapshot, download full, restore.",
+    body: "Admin → Records → Roster. Add an alias, or Import / CSV (Last, First, Period). The paste is used once to mint Shop IDs and aliases, then the real names are dropped. Separate: pick two aliases already on the list; they will not sit in the same crew. Clear workers is in More → Danger zone. Type the class name. A restore point is saved first, and Undo lasts 30 seconds. Hall adds someone from any class and does not take them out of the home class. Edit alias from the row menu — Bench is a seat, **+ Crew A** restores a dropped table for that class. Crews is the third Records chip (Deal / Look / Crown). Scores, XP, and $ stay on the id. Auto-save on this device; tap the Save chip to write now. Backups is the other Records chip: snapshot, download full, restore.",
   },
   {
     id: "crib",

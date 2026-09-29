@@ -10,14 +10,16 @@ import { sessions, todayIso } from "@/lib/calendar";
 import { eachTapeMark, tapeMark } from "@/lib/tape";
 import { YEAR_CLASSES, YEAR_GROUPS, YEAR_COHORTS, sessionOfStudent, type YearCohort } from "@/lib/sections";
 import { crewAt, openCrewFor, placeBlock, setStudentCrew } from "@/lib/crew-desk";
+import { inHall } from "@/lib/roster-safety";
 import { addTypedStudent } from "@/lib/store";
 
 export { YEAR_CLASSES, YEAR_GROUPS, YEAR_COHORTS, sessionOfStudent };
 export type { YearCohort };
 
 export function inCohort(s: RawStudent, c: YearCohort, clubIds: Set<string>): boolean {
+  if (s.removedAt || s.archivedAt) return false;
   if (c.kind === "club") return Boolean(s.groups?.club) || clubIds.has(s.id) || Boolean(s.clubDays && Object.keys(s.clubDays).length);
-  if (c.kind === "hall") return s.period === 6;
+  if (c.kind === "hall") return inHall(s, c.period || 6);
   if (s.period !== c.period) return false;
   if (s.section) return s.section === c.section;
   const sem = sessionOfStudent(s);
@@ -74,7 +76,7 @@ export function rosterKid(file: EconomyFile, s: RawStudent, clubIds: Set<string>
     crewKey: s.crewKey,
     live: isLiveStudent(s, file.meta.quarterName),
     club: Boolean(s.groups?.club) || clubIds.has(s.id),
-    hall: s.period === 6,
+    hall: inHall(s),
     hold: sem === "CLUB" || sem === "HOLD",
     xp: skillXp(file, s.id),
     skills: marked,
@@ -131,7 +133,10 @@ export function quarterEffort(s: RawStudent, c: YearCohort): { n3: number; n2: n
 
 export function allYearKids(file: EconomyFile, club: ClubFile): RosterKid[] {
   const ids = clubIdSet(club, file);
-  return file.students.map((s) => rosterKid(file, s, ids)).sort((a, b) => a.first.localeCompare(b.first) || a.period - b.period);
+  return file.students
+    .filter((s) => !s.removedAt && !s.archivedAt)
+    .map((s) => rosterKid(file, s, ids))
+    .sort((a, b) => a.first.localeCompare(b.first) || a.period - b.period);
 }
 
 export function unlinkedClub(club: ClubFile, desk: EconomyFile): ClubMember[] {
@@ -182,7 +187,10 @@ export function placeStudent(file: EconomyFile, id: string, c: YearCohort): Econ
   next.students = next.students.map((s) => {
     if (s.id !== id) return s;
     if (c.kind === "club") return { ...s, groups: { ...s.groups, club: true }, sem: s.sem === "CLUB" ? "CLUB" : s.sem };
-    if (c.kind === "hall") return { ...s, period: 6, grade: 5, course: "STUDY HALL", sem: "YEAR", groups: { ...s.groups, hall: true } };
+    if (c.kind === "hall") {
+      const hallOf = [...new Set([...(s.hallOf ?? []), c.period || 6])];
+      return { ...s, hallOf, hallLeft: false, groups: { ...s.groups, hall: true } };
+    }
     return {
       ...s,
       period: c.period,
@@ -209,7 +217,7 @@ export function yearCounts(file: EconomyFile, club: ClubFile) {
     year: file.students.length,
     live: file.students.filter((s) => isLiveStudent(s, file.meta.quarterName)).length,
     club: file.students.filter((s) => s.groups?.club || ids.has(s.id)).length,
-    hall: file.students.filter((s) => s.period === 6).length,
+    hall: file.students.filter((s) => inHall(s)).length,
     hold: file.students.filter((s) => sessionOfStudent(s) === "CLUB" || sessionOfStudent(s) === "HOLD").length,
     unlinked: unlinkedClub(club, file).length,
     liveQ: sessionCode(file.meta.quarterName),

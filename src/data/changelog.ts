@@ -6,6 +6,12 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.143 — 2026-09-29
+
+- Clear workers lives in More, under Danger zone, not next to Save. Confirm stays off until the class name is typed. A restore point is saved first. Undo lasts 30 seconds. Removed workers stay in Recently removed for 30 days.
+- Each row has a menu: rename, move to a class, reset the PIN, archive, or remove. The shop code stays with the student. Bulk select can move, archive, or remove.
+- Study Hall is its own list. Add a worker from any class. They stay in the home class, with the same code and marks. Remove from Hall only drops that seat.
+
 ## 1.92.142 — 2026-09-27
 
 - Generated names are short handles a kid can answer to, like Pixel or Nova. Catalog pairs are gone. Unclaimed ones update. A chosen name and the code stay.
