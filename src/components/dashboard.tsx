@@ -42,6 +42,7 @@ import { HangFrame } from "@/components/hang-frame";
 import { PlanitWeek } from "@/components/planit-week";
 import { WallLookChips } from "@/components/wall-looks";
 import { StudentClaim } from "@/components/student-claim";
+import { KidStyleBar } from "@/components/kid-style";
 
 const SHOP_LINES = [
   "Measure twice.",
@@ -529,13 +530,14 @@ export const Dashboard = memo(function Dashboard({
         formatSchoolDate(wallDate),
       ]}
     >
-    <div className={cn("tw-web-wall relative flex w-full flex-1 flex-col gap-1.5", arrange ? "tw-arrange overflow-auto" : "min-h-0 overflow-hidden")} data-wall-stage={arrange ? "edit" : "show"}>
+    <div className={cn("tw-web-wall relative flex w-full flex-1 flex-col gap-1.5", arrange ? "tw-arrange overflow-auto" : "min-h-0 overflow-y-auto")} data-wall-stage={arrange ? "edit" : "show"}>
       {preview && viewP == null ? (
         <button type="button" onClick={onClearFocus} className="tw-tap min-h-11 shrink-0 rounded-xl bg-accent px-3 text-left text-sm font-semibold text-accent-fg">
           Showing this hour · P{preview.period}. Back to now.
         </button>
       ) : null}
       {!unlocked && onChange ? <StudentClaim file={file} onChange={onChange} /> : null}
+      {!unlocked ? <KidStyleBar /> : null}
       {unlocked && !arrange && onArrange ? (
         <div className="flex shrink-0 justify-end">
           <button type="button" onClick={onArrange} className="tw-tap min-h-9 rounded-full bg-elevated px-3 text-xs font-semibold">

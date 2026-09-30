@@ -27,6 +27,7 @@ import {
   setPlanitBeat,
   weekdayShort,
 } from "@/lib/planit";
+import { ActivityScore } from "@/components/activity-score";
 import { hourAgendaDraft } from "@/lib/hour-flow";
 import { SKILL_TRACK, SOFT_TRACK, skillTrackOf } from "@/lib/skills";
 import { DraftField } from "@/components/draft-field";
@@ -488,6 +489,8 @@ function HourDesk({
           </label>
         ))}
       </div>
+
+      <ActivityScore file={file} onChange={commit} period={p} date={d} unlocked={unlocked} />
 
       {onWall ? (
         <button type="button" onClick={() => onWall(d, p)} className="tw-tap min-h-12 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">

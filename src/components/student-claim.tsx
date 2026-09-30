@@ -1,7 +1,8 @@
 import { useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
 import { findByShop } from "@/lib/live";
-import { claimAlias, pinSet, rerollWithPin, setStudentPin } from "@/lib/student-pin";
+import { claimAlias, pinSet, pinsMatch, rerollWithPin, setStudentPin } from "@/lib/student-pin";
+import { publicHandle } from "@/lib/live";
 
 /** Shop code, then a pin, then the alias. The pin is not shown again. */
 export function StudentClaim({ file, onChange }: { file: EconomyFile; onChange: (next: EconomyFile) => void }) {
@@ -33,6 +34,26 @@ export function StudentClaim({ file, onChange }: { file: EconomyFile; onChange: 
     if (!res.error) {
       onChange(res.file);
       setAlias("");
+    }
+  }
+
+  async function signIn() {
+    if (!kid || !pinsMatch(kid, pin)) {
+      setMsg("Pin does not match.");
+      return;
+    }
+    setMsg(`Signed in as ${kid.first}.`);
+    try {
+      const res = await fetch("/api/who", {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ alias: kid.first, code: publicHandle(kid.id), pin }),
+      });
+      const body = (await res.json()) as { ok?: boolean; alias?: string };
+      if (body.ok) setMsg(`Signed in as ${body.alias || kid.first}. Apps will know you.`);
+    } catch {
+      setMsg("Signed in on this desk. Apps will catch up when the room is online.");
     }
   }
 
@@ -78,9 +99,15 @@ export function StudentClaim({ file, onChange }: { file: EconomyFile; onChange: 
         <div className="mt-2 grid gap-1">
           <input value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="Pin" aria-label="Pin" inputMode="numeric" type="password" className="min-h-12 rounded-xl bg-elevated px-3 text-lg outline-none" />
           <input value={alias} onChange={(e) => setAlias(e.target.value)} placeholder="New name" aria-label="New name" className="min-h-12 rounded-xl bg-elevated px-3 text-lg outline-none" />
-          <button type="button" onClick={saveAlias} className="tw-tap min-h-12 rounded-xl bg-fg text-sm font-semibold text-bg">
+          <button type="button" onClick={() => void signIn()} className="tw-tap min-h-12 rounded-xl bg-fg text-sm font-semibold text-bg">
+            Sign in
+          </button>
+          <button type="button" onClick={saveAlias} className="tw-tap min-h-12 rounded-xl bg-elevated text-sm font-semibold">
             Save name
           </button>
+          <a href="https://apps.kulibert.net/" className="tw-tap inline-flex min-h-12 items-center justify-center rounded-xl bg-elevated text-sm font-semibold">
+            Go to Apps
+          </a>
           <button
             type="button"
             onClick={() => {

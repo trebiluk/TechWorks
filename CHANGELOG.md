@@ -1,8 +1,14 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.143. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.92.146. -->
 
 # TechWorks changelog
 
-App version **1.92.143**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.92.146**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.92.146 — 2026-09-30
+
+- Signed-out wall has My style: a bench color, a sticker, and a build name from a list. Nothing is typed. Sound stays off until they turn it on. It saves on this Chromebook only.
+- Score cells are big and use the accent color. Notes stay folded. The score sheet sits under the four beats, not under the slides.
+- People wall says Edit roster. A tap presses in. A 4 flashes once. Motion stays off if the computer asks for less motion.
 
 ## 1.92.143 — 2026-09-29
 

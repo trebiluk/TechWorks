@@ -13,6 +13,7 @@ import {
   kidsInCohort,
   placeStudent,
   quarterEffort,
+  rosterScopeStart,
   studentsInCohort,
   unlinkedClub,
   yearCounts,
@@ -26,12 +27,13 @@ import { auditStudentIds } from "@/lib/ids";
 import { publicHandle } from "@/lib/live";
 import { addAide, aidesOf, dropAide } from "@/lib/aides";
 import { todayIso } from "@/lib/calendar";
+import { periodNow } from "@/lib/bells";
 import { bansOf, BENCH, addPeriodCrew, dropCrewBan, nextPeriodCrewKey, placeBlock, rosterLabel, separatePair, setStudentCrew, whoOf } from "@/lib/crew-desk";
 import { MarkChip } from "@/components/ui";
 import { Fold } from "@/components/fold";
 import { PinDesk } from "@/components/pin-desk";
 import { DangerZone, HallDesk, TypedConfirm, WorkerMenu } from "@/components/roster-guards";
-import { archiveStudents, moveToClass, softRemove } from "@/lib/roster-safety";
+import { archiveStudents, moveToClass, seatInHall, softRemove } from "@/lib/roster-safety";
 import { markOf } from "@/lib/nav-marks";
 import { cn } from "@/lib/utils";
 
@@ -51,7 +53,7 @@ export function YearRoster({
   const [club, setClub] = useState(() => loadClub());
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
-  const [period, setPeriod] = useState<number | null>(null);
+  const [period, setPeriod] = useState<number | null>(1);
   const [more, setMore] = useState(false);
   const [pick, setPick] = useState<string | null>(null);
   const [st, setSt] = useState(false);
@@ -71,11 +73,17 @@ export function YearRoster({
     const list = focus ? kidsInCohort(file, focus, club) : allYearKids(file, club);
     const needle = q.trim().toLowerCase();
     return list.filter((k) => {
+      const hit =
+        !needle ||
+        k.first.toLowerCase().includes(needle) ||
+        String(k.period).includes(needle) ||
+        k.id.toLowerCase().includes(needle) ||
+        k.course.toLowerCase().includes(needle);
+      if (!hit) return false;
+      if (needle) return true;
+      if (hallOn) return k.hall;
       if (period != null && k.period !== period) return false;
-      if (!more) {
-        if (needle && !k.first.toLowerCase().includes(needle) && !String(k.period).includes(needle) && !k.id.toLowerCase().includes(needle)) return false;
-        return true;
-      }
+      if (!more) return true;
       if (filter === "live" && !k.live) return false;
       if (filter === "club" && !k.club) return false;
       if (filter === "hall" && !k.hall) return false;
@@ -84,13 +92,13 @@ export function YearRoster({
       if (filter === "q2" && k.sem !== "Q2" && k.sem !== "YEAR") return false;
       if (filter === "q3" && k.sem !== "Q3" && k.sem !== "YEAR") return false;
       if (filter === "q4" && k.sem !== "Q4" && k.sem !== "YEAR") return false;
-      if (needle && !k.first.toLowerCase().includes(needle) && !String(k.period).includes(needle) && !k.id.toLowerCase().includes(needle)) return false;
       return true;
     });
   }, [file, club, focus, filter, more, period, q]);
   const ordered = useMemo(() => {
     const list = [...rows];
-    if (sort === "class") list.sort((a, b) => a.period - b.period || a.first.localeCompare(b.first));
+    if ((period == null && !hallOn) || q.trim()) list.sort((a, b) => a.period - b.period || a.first.localeCompare(b.first));
+    else if (sort === "class") list.sort((a, b) => a.period - b.period || a.first.localeCompare(b.first));
     else if (sort === "seen") {
       list.sort((a, b) => {
         const as = file.students.find((s) => s.id === a.id)?.lastSeen ?? "";
@@ -99,12 +107,26 @@ export function YearRoster({
       });
     } else list.sort((a, b) => a.first.localeCompare(b.first));
     return list;
-  }, [rows, sort, file.students]);
+  }, [rows, sort, file.students, q, period, hallOn]);
   const orphans = unlinkedClub(club, file);
   const bells = shopBells(file);
   const aidePeriod = period ?? bells[0]?.period ?? 1;
   const aides = aidesOf(file, period);
   const periods = [...new Set(YEAR_CLASSES.map((c) => c.period))];
+
+  useEffect(() => {
+    const boot = rosterScopeStart(window.localStorage.getItem("tw-roster-period"), periodNow());
+    if (boot.kind === "hall") {
+      setHallOn(true);
+      setPeriod(null);
+    } else if (boot.kind === "all") {
+      setHallOn(false);
+      setPeriod(null);
+    } else {
+      setHallOn(false);
+      setPeriod(boot.period);
+    }
+  }, []);
 
   useEffect(() => {
     const t = window.setInterval(() => setPending(deskSavePending()), 280);
@@ -119,6 +141,24 @@ export function YearRoster({
 
   function place(id: string, c: YearCohort) {
     onChange(placeStudent(file, id, c));
+  }
+
+  function remember(next: "all" | "hall" | number) {
+    try {
+      window.localStorage.setItem("tw-roster-period", String(next));
+    } catch {
+      /* this desk only */
+    }
+    if (next === "all") {
+      setPeriod(null);
+      setHallOn(false);
+    } else if (next === "hall") {
+      setHallOn(true);
+      setPeriod(null);
+    } else {
+      setHallOn(false);
+      setPeriod(next);
+    }
   }
 
   function saveNow() {
@@ -175,22 +215,16 @@ export function YearRoster({
         <div className="flex flex-wrap gap-1" aria-label="Period">
           <button
             type="button"
-            onClick={() => {
-              setPeriod(null);
-              setHallOn(false);
-            }}
+            onClick={() => remember("all")}
             className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-bold", period == null && !hallOn ? "bg-fg text-bg" : "bg-elevated text-muted")}
           >
-            All
+            All classes
           </button>
           {periods.map((p) => (
             <button
               key={p}
               type="button"
-              onClick={() => {
-                setPeriod(p);
-                setHallOn(false);
-              }}
+              onClick={() => remember(p)}
               className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-bold", period === p && !hallOn ? "bg-fg text-bg" : "bg-elevated text-muted")}
             >
               P{p}
@@ -198,7 +232,7 @@ export function YearRoster({
           ))}
           <button
             type="button"
-            onClick={() => setHallOn(true)}
+            onClick={() => remember("hall")}
             className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-bold", hallOn ? "bg-fg text-bg" : "bg-elevated text-muted")}
           >
             Hall
@@ -463,10 +497,13 @@ export function YearRoster({
               </tr>
             </thead>
             <tbody>
-              {ordered.map((k) => {
+              {ordered.flatMap((k, i) => {
                 const s = file.students.find((x) => x.id === k.id);
                 const on = pickedIds.includes(k.id);
-                return (
+                const prev = ordered[i - 1];
+                const group = Boolean(q.trim()) || (period == null && !hallOn);
+                const head = group && (!prev || prev.period !== k.period);
+                const row = (
                 <tr key={k.id} className="border-t border-border/40">
                   <td className="px-1 py-1">
                     <label className="flex min-h-11 min-w-11 items-center justify-center">
@@ -484,6 +521,7 @@ export function YearRoster({
                     <span className="ml-1 text-[10px] uppercase tracking-wider text-subtle">
                       {k.live ? "live" : k.hold ? "hold" : k.sem}
                       {k.club ? " · club" : ""}
+                      {q.trim() || period == null ? ` · ${k.course || "Class"} P${k.period}` : ""}
                     </span>
                   </td>
                   <td className="px-2 py-1.5 font-mono text-[10px] text-subtle" title={k.id}>
@@ -520,7 +558,17 @@ export function YearRoster({
                     {s ? <WorkerMenu file={file} student={s} onChange={onChange} onRemove={removeWorkers} /> : null}
                   </td>
                 </tr>
-              );
+                );
+                return head
+                  ? [
+                      <tr key={`g-${k.period}`}>
+                        <td colSpan={8} className="bg-surface px-2 pt-3 text-[11px] font-bold uppercase tracking-wider text-subtle">
+                          {k.period === 6 ? "Hall" : `P${k.period}`}
+                        </td>
+                      </tr>,
+                      row,
+                    ]
+                  : [row];
               })}
             </tbody>
           </table>
@@ -531,24 +579,33 @@ export function YearRoster({
               <button type="button" className="tw-tap min-h-11 rounded-full bg-bg px-3 text-sm font-semibold text-fg" onClick={() => onChange(archiveStudents(file, pickedIds))}>
                 Archive
               </button>
-              <label className="text-sm">
+              <label className="flex flex-wrap items-center gap-1 text-sm">
                 Move
-                <select
-                  className="ml-1 min-h-11 rounded-full bg-bg px-2 text-fg"
-                  defaultValue=""
-                  aria-label="Move to class"
-                  onChange={(e) => {
-                    const c = YEAR_CLASSES.find((x) => x.id === e.target.value);
-                    if (c) onChange(moveToClass(file, pickedIds, c.period, c.section, c.course));
-                    e.target.value = "";
+                {[1, 2, 3, 8, 9, 10].map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    className="tw-tap min-h-11 rounded-full bg-bg px-3 text-sm font-semibold text-fg"
+                    onClick={() => {
+                      const qtr = (file.meta.quarterName || "Q1").toUpperCase();
+                      const c = YEAR_CLASSES.find((x) => x.period === p && x.quarter === qtr) ?? YEAR_CLASSES.find((x) => x.period === p);
+                      if (c) onChange(moveToClass(file, pickedIds, c.period, c.section, c.course));
+                      setPickedIds([]);
+                    }}
+                  >
+                    P{p}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  className="tw-tap min-h-11 rounded-full bg-bg px-3 text-sm font-semibold text-fg"
+                  onClick={() => {
+                    onChange(seatInHall(file, pickedIds));
                     setPickedIds([]);
                   }}
                 >
-                  <option value="">to class…</option>
-                  {YEAR_CLASSES.map((c) => (
-                    <option key={c.id} value={c.id}>P{c.period} {c.course}</option>
-                  ))}
-                </select>
+                  Hall
+                </button>
               </label>
               <button type="button" className="tw-tap min-h-11 rounded-full bg-cleanup px-3 text-sm font-semibold" onClick={() => setBulkDanger(true)}>
                 Remove
@@ -884,7 +941,7 @@ function ClassBook({
                     type="number"
                     min={0}
                     max={100}
-                    placeholder={r.calc == null ? "—" : String(r.calc)}
+                    placeholder={r.excused ? "E" : r.calc == null ? "—" : String(r.calc)}
                     value={r.edited ? String(r.posted ?? "") : ""}
                     onChange={(e) => {
                       const v = e.target.value;
@@ -893,7 +950,7 @@ function ClassBook({
                     }}
                     className={cn("h-9 w-14 rounded-md bg-elevated px-1 font-mono text-sm outline-none", r.edited ? "text-fg" : "text-muted")}
                   />
-                  <span className="block text-[10px] text-subtle">{r.posted == null ? "" : letterOf(r.posted)}</span>
+                  <span className="block text-[10px] text-subtle">{r.excused ? "Excused" : r.posted == null ? "" : letterOf(r.posted)}</span>
                 </td>
               ))}
               {slots.length ? (

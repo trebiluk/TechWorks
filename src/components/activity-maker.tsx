@@ -78,7 +78,8 @@ export function ActivityMaker({
   const [ask, setAsk] = useState("");
   const [doit, setDoit] = useState("");
   const [done, setDone] = useState("");
-  const [skillId, setSkillId] = useState<string>(step.skillId);
+  const [skillIds, setSkillIds] = useState<string[]>([step.skillId]);
+  const [scoreMode, setScoreMode] = useState<"rubric" | "points" | "done">("rubric");
   const [goggles, setGoggles] = useState(false);
   const [grades, setGrades] = useState<number[]>([grade]);
   const [picked, setPicked] = useState<string[]>([start]);
@@ -91,7 +92,7 @@ export function ActivityMaker({
   function pickStep(id: (typeof STEPS)[number]["id"]) {
     const next = STEPS.find((s) => s.id === id) ?? STEPS[0];
     setStepId(id);
-    setSkillId(next.skillId);
+    setSkillIds([next.skillId]);
     setGoggles(id === "build" || id === "test" || id === "safety");
     if (!name.trim()) setName(next.label);
   }
@@ -126,7 +127,9 @@ export function ActivityMaker({
       ask,
       do: doit,
       done,
-      skillId: belong === "sub" ? "care" : skillId,
+      skillId: belong === "sub" ? "care" : skillIds[0] || step.skillId,
+      skillIds: belong === "sub" ? ["care"] : skillIds,
+      scoreMode,
       goal: belong === "sub" ? "PRODUCTIVITY" : step.goal,
       rules: goggles ? ["Goggles on"] : [],
       projectId: belong === "project" ? projectId || undefined : undefined,
@@ -217,6 +220,49 @@ export function ActivityMaker({
           ))}
         </div>
       </div>
+      <div data-skill-picker>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Skills tracked · up to 5</p>
+        <div className="mt-1 flex flex-wrap gap-1">
+          {SKILLS.map((s) => {
+            const on = skillIds.includes(s.id);
+            return (
+              <button
+                key={s.id}
+                type="button"
+                aria-pressed={on}
+                onClick={() =>
+                  setSkillIds((cur) => {
+                    if (cur.includes(s.id)) return cur.filter((id) => id !== s.id);
+                    if (cur.length >= 5) return cur;
+                    return [...cur, s.id];
+                  })
+                }
+                className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-semibold", on ? "bg-fg text-bg" : "bg-elevated text-muted")}
+              >
+                {s.label}
+              </button>
+            );
+          })}
+        </div>
+        <div className="mt-1 flex flex-wrap gap-1">
+          {(
+            [
+              ["rubric", "1–4"],
+              ["points", "Points"],
+              ["done", "Done"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setScoreMode(id)}
+              className={cn("tw-tap min-h-11 rounded-full px-3 text-sm font-semibold", scoreMode === id ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
       <button type="button" onClick={() => setModels((v) => !v)} className="tw-tap min-h-11 text-left text-sm font-semibold text-muted">
         {models ? "Less" : "More"}
       </button>
@@ -282,21 +328,6 @@ export function ActivityMaker({
           </div>
         </div>
       ) : null}
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Skill</p>
-        <div className="mt-1 flex flex-wrap gap-1">
-          {SKILLS.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => setSkillId(s.id)}
-              className={cn("tw-tap min-h-9 rounded-full px-3 text-sm font-semibold", skillId === s.id ? "bg-fg text-bg" : "bg-elevated text-muted")}
-            >
-              {s.label}
-            </button>
-          ))}
-        </div>
-      </div>
       <div>
         <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">Score</p>
         <div className="mt-1 flex flex-wrap gap-1">

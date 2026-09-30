@@ -53,6 +53,8 @@ export type PostedGrade = {
   calc: number | null;
   posted: number | null;
   edited: boolean;
+  excused: boolean;
+  note: string;
   evidence: string;
 };
 
@@ -231,6 +233,18 @@ export function postedFor(file: EconomyFile, s: RawStudent, slot: GradeSlot): Po
         : slot.kind === "cycle" && slot.cycle
           ? calcCycleGrade(s, slot.cycle, file)
           : calcSkillGrade(s, slot.skillId ?? "", file);
+  const note = (s.gradeNotes?.[slot.id] ?? "").trim();
+  if (s.gradeExcuse?.[slot.id] === true) {
+    return {
+      slot,
+      calc: raw.points,
+      posted: null,
+      edited: false,
+      excused: true,
+      note,
+      evidence: raw.evidence ? `Excused · not in the average. ${raw.evidence}` : "Excused · not in the average",
+    };
+  }
   const override = s.gradeOverrides?.[slot.id];
   const edited = override != null && Number.isFinite(override);
   return {
@@ -238,12 +252,73 @@ export function postedFor(file: EconomyFile, s: RawStudent, slot: GradeSlot): Po
     calc: raw.points,
     posted: edited ? Math.round(Number(override)) : raw.points,
     edited,
+    excused: false,
+    note,
     evidence: raw.evidence,
   };
 }
 
 export function sessionMark(rows: PostedGrade[]): number | null {
   return mean(rows.map((r) => r.posted).filter((n): n is number => n != null));
+}
+
+export type BookSnapshot = {
+  n: number;
+  avg: number | null;
+  openKids: number;
+  low: number;
+  letters: Record<"A" | "B" | "C" | "D" | "F", number>;
+};
+
+export function bookSnapshot(rows: { posted: PostedGrade[]; avg: number | null }[]): BookSnapshot {
+  const letters = { A: 0, B: 0, C: 0, D: 0, F: 0 };
+  let openKids = 0;
+  let low = 0;
+  const avgs: number[] = [];
+  for (const row of rows) {
+    if (row.posted.some((r) => !r.excused && r.posted == null)) openKids += 1;
+    if (row.avg == null) continue;
+    avgs.push(row.avg);
+    if (row.avg < 70) low += 1;
+    const letter = letterOf(row.avg);
+    if (letter === "A" || letter === "B" || letter === "C" || letter === "D" || letter === "F") letters[letter] += 1;
+  }
+  return { n: rows.length, avg: mean(avgs), openKids, low, letters };
+}
+
+export function columnSnapshot(rows: PostedGrade[]): { avg: number | null; open: number; excused: number; low: number } {
+  const nums = rows.filter((r) => !r.excused && r.posted != null).map((r) => r.posted as number);
+  return {
+    avg: mean(nums),
+    open: rows.filter((r) => !r.excused && r.posted == null).length,
+    excused: rows.filter((r) => r.excused).length,
+    low: nums.filter((n) => n < 70).length,
+  };
+}
+
+/** Alias, mark, comment — tab-separated for SchoolTool or a Sheet. */
+export function columnTsv(file: EconomyFile, students: RawStudent[], slot: GradeSlot): string {
+  const lines = ["Alias\tMark\tComment"];
+  for (const s of students) {
+    const r = postedFor(file, s, slot);
+    const mark = r.excused ? "E" : r.posted == null ? "" : String(r.posted);
+    lines.push(`${s.first.replace(/\t/g, " ")}\t${mark}\t${r.note.replace(/\t/g, " ")}`);
+  }
+  return lines.join("\n");
+}
+
+export function openWorkTsv(file: EconomyFile, students: RawStudent[], slots: GradeSlot[]): string {
+  const lines = ["Alias\tNot scored"];
+  for (const s of students) {
+    const open = slots.filter((slot) => {
+      const r = postedFor(file, s, slot);
+      return !r.excused && r.posted == null;
+    });
+    if (!open.length) continue;
+    lines.push(`${s.first.replace(/\t/g, " ")}\t${open.map((slot) => slot.title).join(", ")}`);
+  }
+  if (lines.length === 1) lines.push("Nobody\t");
+  return lines.join("\n");
 }
 
 export function letterOf(n: number | null): string {
@@ -264,7 +339,7 @@ export function classroomCsv(file: EconomyFile, opts: { names?: boolean; period?
   const bellsGrade = (p: number) => file.meta.bell?.find((b) => b.period === p)?.grade ?? 6;
   const kids = file.students.filter((s) => (opts.period ? s.period === opts.period : true));
   const slots = gradeSlots(file, bellsGrade(opts.period ?? kids[0]?.period ?? 6));
-  const header = ["Shop ID", "Alias", "Period", ...slots.map((s) => s.title), "Session mark"];
+  const header = ["Shop ID", "Alias", "Period", ...slots.map((s) => s.title), "Session mark", ...slots.map((s) => `Note — ${s.title}`)];
   const lines = [header.join(",")];
   for (const s of kids) {
     const rows = slots.map((slot) => postedFor(file, s, slot));
@@ -275,8 +350,9 @@ export function classroomCsv(file: EconomyFile, opts: { names?: boolean; period?
       csv(shop),
       csv(alias),
       String(s.period),
-      ...rows.map((r) => (r.posted == null ? "" : String(r.posted))),
+      ...rows.map((r) => (r.excused ? "E" : r.posted == null ? "" : String(r.posted))),
       avg == null ? "" : String(avg),
+      ...rows.map((r) => csv(r.note)),
     ];
     lines.push(cells.join(","));
   }

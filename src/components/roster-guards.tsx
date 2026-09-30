@@ -248,18 +248,28 @@ export function WorkerMenu({
             </form>
           ) : null}
           {mode === "move" ? (
-            <div className="max-h-64 overflow-auto">
-              {YEAR_CLASSES.map((c) => (
+            <div className="flex flex-wrap gap-1 p-1">
+              {[1, 2, 3, 8, 9, 10].map((p) => (
                 <MenuBtn
-                  key={c.id}
+                  key={p}
                   onClick={() => {
-                    onChange(moveToClass(file, [student.id], c.period, c.section, c.course));
+                    const qtr = (file.meta.quarterName || "Q1").toUpperCase();
+                    const c = YEAR_CLASSES.find((x) => x.period === p && x.quarter === qtr) ?? YEAR_CLASSES.find((x) => x.period === p);
+                    if (c) onChange(moveToClass(file, [student.id], c.period, c.section, c.course));
                     setOpen(false);
                   }}
                 >
-                  P{c.period} {c.course} {c.quarter}
+                  P{p}
                 </MenuBtn>
               ))}
+              <MenuBtn
+                onClick={() => {
+                  onChange(seatInHall(file, [student.id]));
+                  setOpen(false);
+                }}
+              >
+                Hall
+              </MenuBtn>
             </div>
           ) : null}
           {mode === "code" ? (

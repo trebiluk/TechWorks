@@ -946,9 +946,42 @@ export function setGradeOverride(
   next.students = next.students.map((s) => {
     if (s.id !== id) return s;
     const gradeOverrides = { ...(s.gradeOverrides ?? {}) };
+    const gradeExcuse = { ...(s.gradeExcuse ?? {}) };
     if (value == null || Number.isNaN(value)) delete gradeOverrides[slotId];
-    else gradeOverrides[slotId] = Math.max(0, Math.min(100, Math.round(value)));
-    return { ...s, gradeOverrides };
+    else {
+      gradeOverrides[slotId] = Math.max(0, Math.min(100, Math.round(value)));
+      delete gradeExcuse[slotId];
+    }
+    return { ...s, gradeOverrides, gradeExcuse };
+  });
+  return next;
+}
+
+/** Excuse drops the project out of the average. It does not become a zero. */
+export function setGradeExcuse(file: EconomyFile, id: string, slotId: string, on: boolean): EconomyFile {
+  const next = clone(file);
+  next.students = next.students.map((s) => {
+    if (s.id !== id) return s;
+    const gradeExcuse = { ...(s.gradeExcuse ?? {}) };
+    const gradeOverrides = { ...(s.gradeOverrides ?? {}) };
+    if (on) {
+      gradeExcuse[slotId] = true;
+      delete gradeOverrides[slotId];
+    } else delete gradeExcuse[slotId];
+    return { ...s, gradeExcuse, gradeOverrides };
+  });
+  return next;
+}
+
+export function setGradeNote(file: EconomyFile, id: string, slotId: string, note: string): EconomyFile {
+  const next = clone(file);
+  next.students = next.students.map((s) => {
+    if (s.id !== id) return s;
+    const gradeNotes = { ...(s.gradeNotes ?? {}) };
+    const t = note.trim().slice(0, 140);
+    if (t) gradeNotes[slotId] = t;
+    else delete gradeNotes[slotId];
+    return { ...s, gradeNotes };
   });
   return next;
 }

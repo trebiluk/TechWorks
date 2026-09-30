@@ -48,6 +48,10 @@ export type ProjectActivity = {
   days?: number;
   /** What you score: skill 1–4, the deliverable, or both. */
   prove?: "skill" | "done" | "both";
+  /** Up to five skills this activity tracks. `skillId` stays the first. */
+  skillIds?: string[];
+  /** How the score grid records this activity. */
+  scoreMode?: "rubric" | "points" | "done";
 };
 
 export type ProjectStage = {
@@ -949,6 +953,8 @@ export function createActivityPlan(
     done?: string;
     lookFor?: string;
     skillId?: string;
+    skillIds?: string[];
+    scoreMode?: "rubric" | "points" | "done";
     goal?: string;
     rules?: string[];
     projectId?: string;
@@ -965,7 +971,8 @@ export function createActivityPlan(
     next = addProject(next, name, grades);
     projectId = projectsOf(next).at(-1)?.id ?? "";
   }
-  const skillId = opts.skillId || (opts.belong === "sub" ? "care" : opts.belong === "train" ? "safety" : "draw");
+  const skillId = opts.skillIds?.[0] || opts.skillId || (opts.belong === "sub" ? "care" : opts.belong === "train" ? "safety" : "draw");
+  const skillIds = [...new Set((opts.skillIds?.length ? opts.skillIds : [skillId]).filter(Boolean))].slice(0, 5);
   const goal =
     opts.goal ||
     (opts.belong === "sub" ? "PRODUCTIVITY" : opts.belong === "train" ? "TRAINING" : opts.belong === "contest" ? "CRITIQUE DAY" : "IDEA STAGE");
@@ -973,6 +980,8 @@ export function createActivityPlan(
     id: `act_${Date.now().toString(36)}`,
     name,
     skillId,
+    skillIds,
+    scoreMode: opts.scoreMode ?? "rubric",
     goal,
     today: opts.do?.trim() || "",
     done: opts.done?.trim() || "",
@@ -993,7 +1002,7 @@ export function createActivityPlan(
     grades: [...new Set([...(p.grades ?? []), ...grades])],
     prompt: opts.ask?.trim() || p.prompt,
     constraints: rules,
-    skills: [...new Set([...(p.skills ?? []), skillId])].slice(0, TOP_SKILLS),
+    skills: [...new Set([...(p.skills ?? []), ...skillIds])].slice(0, 8),
     activities: [...activitiesOf(p), activity],
     start: dates[0] || p.start,
     end: dates.at(-1) || p.end,

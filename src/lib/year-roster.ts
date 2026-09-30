@@ -131,6 +131,21 @@ export function quarterEffort(s: RawStudent, c: YearCohort): { n3: number; n2: n
   return { n3, n2, n1, other };
 }
 
+export const ROSTER_PERIODS = [1, 2, 3, 8, 9, 10] as const;
+
+export type RosterScope = { kind: "period"; period: number } | { kind: "all" } | { kind: "hall" };
+
+/** Last chip wins. Otherwise the bell, if it is a shop period or Hall. */
+export function rosterScopeStart(saved: string | null, live: number | null): RosterScope {
+  if (saved === "all") return { kind: "all" };
+  if (saved === "hall") return { kind: "hall" };
+  const n = Number(saved);
+  if ((ROSTER_PERIODS as readonly number[]).includes(n)) return { kind: "period", period: n };
+  if (live === 6) return { kind: "hall" };
+  if (live != null && (ROSTER_PERIODS as readonly number[]).includes(live)) return { kind: "period", period: live };
+  return { kind: "period", period: 1 };
+}
+
 export function allYearKids(file: EconomyFile, club: ClubFile): RosterKid[] {
   const ids = clubIdSet(club, file);
   return file.students

@@ -55,7 +55,7 @@ export function RosterWall({
           <div className="mt-2 flex flex-wrap gap-2">
             {onRecords ? (
               <button type="button" onClick={onRecords} className="tw-tap min-h-11 rounded-xl bg-accent px-4 text-sm font-semibold text-accent-fg">
-                Add a class
+                Edit roster
               </button>
             ) : null}
             {onGrade ? (

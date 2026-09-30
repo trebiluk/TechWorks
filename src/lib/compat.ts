@@ -85,6 +85,8 @@ export const STUDENT_KNOWN = [
   "picks",
   "icon",
   "gradeOverrides",
+  "gradeExcuse",
+  "gradeNotes",
   "lucky",
   "pinHash",
   "removedAt",

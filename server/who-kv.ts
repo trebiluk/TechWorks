@@ -70,12 +70,13 @@ export async function enterWho(event: unknown, alias: string, code: string, pin:
   const name = alias.trim().toLowerCase();
   const shop = code.toUpperCase().replace(/[^A-Z2-9]/g, "");
   const digits = pin.replace(/\D/g, "");
-  if (name.length < 2 || shop.length !== 5 || digits.length !== 4) return { ok: false as const, error: "Need the alias, the 5-character code, and the PIN." };
-  const hit = (await read(event)).find((row) => row.alias.toLowerCase() === name && row.code === shop);
-  if (!hit) return { ok: false as const, error: "That name and code do not match." };
+  if (shop.length !== 5 || digits.length !== 4) return { ok: false as const, error: "Need the 5-character code and the PIN." };
+  const rows = (await read(event)).filter((row) => row.code === shop);
+  const hit = name.length >= 2 ? rows.find((row) => row.alias.toLowerCase() === name) : rows.length === 1 ? rows[0] : undefined;
+  if (!hit) return { ok: false as const, error: name.length >= 2 ? "That name and code do not match." : "That code is not on the list." };
   if (!hit.pinHash) return { ok: false as const, error: "Ask your teacher to set your PIN in TechWorks." };
   if (pinHashOf(hit.id, digits) !== hit.pinHash) return { ok: false as const, error: "That PIN does not match." };
-  return { ok: true as const, alias: hit.alias, code: hit.code };
+  return { ok: true as const, alias: hit.alias, code: hit.code, verified: true as const, picture: hit.avatar };
 }
 
 export async function saveWho(event: unknown, token: string, incoming: unknown[]) {

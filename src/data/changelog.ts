@@ -6,6 +6,22 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.92.146 — 2026-09-30
+
+- Signed-out wall has My style: a bench color, a sticker, and a build name from a list. Nothing is typed. Sound stays off until they turn it on. It saves on this Chromebook only.
+- Score cells are big and use the accent color. Notes stay folded. The score sheet sits under the four beats, not under the slides.
+- People wall says Edit roster. A tap presses in. A 4 flashes once. Motion stays off if the computer asks for less motion.
+
+## 1.92.145 — 2026-09-29
+
+- An activity can track up to five skills and be scored 1–4, points, or done. The grid autosaves. 1–4 updates the skill they already have. CSV is aliases only.
+- Roster opens on the class you are in. Period chips plus All classes and Hall. Search looks across every class and labels the class. Move uses those same chips.
+- A kid signs in with code and PIN. TechWorks sets cookie tw_session (HttpOnly; on kulibert.net also Secure, SameSite=None, Domain=.kulibert.net; until 3:00pm New York or 8 hours). GET /api/who with no search returns alias, code, verified true, and an optional picture. POST /api/who/logout clears it. Go to Apps opens the Hub.
+
+## 1.92.144 — 2026-09-29
+
+- Grades book matches a normal gradebook: who is not scored, who is under 70, class average, excuse (not a zero), a SchoolTool comment, and copy-a-column. Official grade stays in SchoolTool.
+
 ## 1.92.143 — 2026-09-29
 
 - Clear workers lives in More, under Danger zone, not next to Save. Confirm stays off until the class name is typed. A restore point is saved first. Undo lasts 30 seconds. Removed workers stay in Recently removed for 30 days.

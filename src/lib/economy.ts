@@ -62,6 +62,10 @@ export type RawStudent = {
   picks?: string[];
   icon?: string;
   gradeOverrides?: Record<string, number>;
+  /** Project slot left out of the average. Blank is still not a zero. */
+  gradeExcuse?: Record<string, true>;
+  /** Short comment for the official gradebook. Alias-only. */
+  gradeNotes?: Record<string, string>;
   lucky?: { ts: string; date: string; face: number; stake: number; payout: number }[];
   /** Hash of the student's own 4-digit pin. Never the pin. Empty until they set one. */
   pinHash?: string;
@@ -188,6 +192,15 @@ export type EconomyFile = {
       projectByGrade?: Record<string, string>;
       /** Cycle · period · crew → project id. Empty = grade default for that cycle. */
       crewProjects?: { cycle: number; period: number; crewKey: string; projectId: string }[];
+      /** Per-activity score grid. Alias only. Does not replace the project mark. */
+      activityMarks?: Record<
+        string,
+        {
+          mode?: "rubric" | "points" | "done";
+          skills?: string[];
+          cells?: Record<string, { scores?: Record<string, number>; note?: string; absent?: boolean }>;
+        }
+      >;
       /** Period → ordered active project slots. Empty until the teacher parks one. */
       periodProjects?: Record<string, string[]>;
       /** Adults in the room for a period. Shop name only. Not tied to a student. */

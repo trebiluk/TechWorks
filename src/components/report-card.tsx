@@ -81,11 +81,13 @@ export function ReportCard({ file, id, names, print }: { file: EconomyFile; id: 
             <span>
               <span className="font-semibold">{r.slot.title}</span>
               <span className="mt-0.5 block text-sm text-muted print:text-neutral-600">
-                {r.posted == null ? "In progress — no mark posted yet." : r.evidence}
+                {r.excused ? "Excused — not in the average." : r.posted == null ? "In progress — no mark posted yet." : r.evidence}
+                {r.note ? <span className="mt-0.5 block">{r.note}</span> : null}
               </span>
             </span>
             <span className="shrink-0 font-mono text-lg tabular-nums">
-              {r.posted == null ? "—" : r.posted} <span className="text-sm text-muted">{letterOf(r.posted)}</span>
+              {r.excused ? "E" : r.posted == null ? "—" : r.posted}{" "}
+              <span className="text-sm text-muted">{r.excused ? "" : letterOf(r.posted)}</span>
             </span>
           </li>
         ))}

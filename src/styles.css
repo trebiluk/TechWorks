@@ -2618,6 +2618,31 @@ html[data-finish="felt"] .bg-surface,
   transform: translateY(1px);
   box-shadow: 0 0 0 2px var(--color-fg);
 }
+@media (prefers-reduced-motion: no-preference) {
+  .tw-tap {
+    transition: transform 120ms ease;
+  }
+  .tw-pop {
+    animation: tw-pop 180ms ease;
+  }
+  .tw-win {
+    animation: tw-win 280ms ease;
+  }
+}
+@keyframes tw-pop {
+  50% { transform: scale(1.06); }
+}
+@keyframes tw-win {
+  40% { box-shadow: 0 0 0 3px var(--color-gold); }
+}
+.tw-kid-swatch[data-swatch="cyan"] { background: var(--color-accent); }
+.tw-kid-swatch[data-swatch="brass"] { background: var(--color-gold); }
+.tw-kid-swatch[data-swatch="violet"] { background: #7c6bf2; }
+.tw-kid-swatch[data-swatch="green"] { background: var(--color-gain, #3ddc97); }
+html[data-kid-bench="cyan"] .tw-web-wall { box-shadow: inset 0 4px 0 var(--color-accent); }
+html[data-kid-bench="brass"] .tw-web-wall { box-shadow: inset 0 4px 0 var(--color-gold); }
+html[data-kid-bench="violet"] .tw-web-wall { box-shadow: inset 0 4px 0 #7c6bf2; }
+html[data-kid-bench="green"] .tw-web-wall { box-shadow: inset 0 4px 0 var(--color-gain, #3ddc97); }
 
 /* One control language: HUD icons, rails, tiles, segments. */
 .tw-hud-row {

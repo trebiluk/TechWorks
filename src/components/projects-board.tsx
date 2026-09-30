@@ -21,6 +21,7 @@ import { currentCycleOf } from "@/lib/roles";
 import { CtrlSeg } from "@/components/ctrl";
 import { JobWrite } from "@/components/job-write";
 import { ActivityMaker } from "@/components/activity-maker";
+import { ActivityScore } from "@/components/activity-score";
 import { cn } from "@/lib/utils";
 
 type Pane = "plan" | "floor" | "options" | "job";
@@ -117,6 +118,7 @@ export function ProjectsBoard({
 
       <div className="min-h-0">
         {pane === "plan" ? (
+          <div className="grid gap-3">
           <div className="grid items-start gap-3 lg:grid-cols-2">
             <ActivityMaker
               file={file}
@@ -139,6 +141,8 @@ export function ProjectsBoard({
                 </button>
               ) : null}
             </div>
+          </div>
+          <ActivityScore file={file} onChange={onChange} period={period} unlocked={unlocked} />
           </div>
         ) : null}
         {pane === "floor" ? (
