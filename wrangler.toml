@@ -6,3 +6,12 @@ pages_build_output_dir = ".output/public"
 
 # Rooms share one desk: Cloudflare → this project → Settings → Bindings
 # → KV namespace → Add → variable name TW_DESK → create "techworks-desk".
+# Until that KV is bound, marks live in the DeskBook durable object below.
+
+[[durable_objects.bindings]]
+name = "TW_BOOK"
+class_name = "DeskBook"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["DeskBook"]

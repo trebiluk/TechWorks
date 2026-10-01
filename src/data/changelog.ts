@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.93.3 — 2026-10-01
+
+- Marks open a real book. The live door was answering store none, so a score never stuck. The book is the desk durable object when KV is not bound. The My style bar stays off the home page.
+
 ## 1.93.2 — 2026-10-01
 
 - The My style bar is off the home page. That picker belongs on ThrowIt, not here. The shop theme stays in Settings.

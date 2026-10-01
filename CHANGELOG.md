@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.93.2. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.93.3. -->
 
 # TechWorks changelog
 
-App version **1.93.2**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.93.3**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.93.3 — 2026-10-01
+
+- Marks open a real book. The live door was answering store none, so a score never stuck. The book is the desk durable object when KV is not bound. The My style bar stays off the home page.
 
 ## 1.93.2 — 2026-10-01
 
