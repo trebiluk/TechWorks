@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.93.9 — 2026-10-01
+
+- An app score can land. KulibertWho.mark still saves the line, and it also posts a v2 score when the kid has a 5-character code. Prefs sit on that same script. Hosting was not changed.
+
 ## 1.93.8 — 2026-10-01
 
 - App settings save for a test code. The code still has to be 5 characters. It does not have to be on the class list. Hosting was not changed.
