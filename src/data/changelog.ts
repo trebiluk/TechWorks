@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.93.5 — 2026-10-01
+
+- A test score can land again. The proof worker stays known after a class save, so POST /api/marks is not rejected. The class list is not changed, and search does not show that worker.
+
 ## 1.93.4 — 2026-10-01
 
 - A Hub sign-in carries over. TechWorks reads the tw_session cookie and a framed kw-who hand-off, then shows the alias with no code boxes. The kid card says the alias, the XP, and the level, plus the last five records and badges.
