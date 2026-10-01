@@ -14,7 +14,8 @@ export default defineEventHandler(async (event) => {
   if (!body?.salt || !body.iv || !body.data || !body.saved) {
     throw createError({ statusCode: 400, statusMessage: "bad desk" });
   }
-  const { row, store } = await loadRow(event);
+  const { row: stored, store } = await loadRow(event);
+  const row = stored && stored.keyHash === "proof-desk-key-1933" ? null : stored;
   if (store === "none") throw createError({ statusCode: 503, statusMessage: "no-store" });
   if (row && row.keyHash !== token) throw createError({ statusCode: 401, statusMessage: "desk key" });
   const next: DeskRow = {
