@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.93.2 — 2026-10-01
+
+- The My style bar is off the home page. That picker belongs on ThrowIt, not here. The shop theme stays in Settings.
+
 ## 1.93.1 — 2026-10-01
 
 - A kid's app settings follow their code. GET and PUT /api/prefs keep one small JSON blob per app, 8 KB, in the same book as marks. Bits & Bobs can call KulibertWho.prefs.

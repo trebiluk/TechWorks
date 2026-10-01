@@ -42,7 +42,6 @@ import { HangFrame } from "@/components/hang-frame";
 import { PlanitWeek } from "@/components/planit-week";
 import { WallLookChips } from "@/components/wall-looks";
 import { StudentClaim } from "@/components/student-claim";
-import { KidStyleBar } from "@/components/kid-style";
 import { ShopCard } from "@/components/shop-card";
 
 const SHOP_LINES = [
@@ -539,7 +538,6 @@ export const Dashboard = memo(function Dashboard({
       ) : null}
       {!unlocked && onChange ? <StudentClaim file={file} onChange={onChange} /> : null}
       {!unlocked ? <ShopCard pinned /> : null}
-      {!unlocked ? <KidStyleBar /> : null}
       {unlocked && !arrange && onArrange ? (
         <div className="flex shrink-0 justify-end">
           <button type="button" onClick={onArrange} className="tw-tap min-h-9 rounded-full bg-elevated px-3 text-xs font-semibold">

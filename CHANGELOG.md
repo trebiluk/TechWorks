@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.93.1. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.93.2. -->
 
 # TechWorks changelog
 
-App version **1.93.1**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.93.2**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.93.2 — 2026-10-01
+
+- The My style bar is off the home page. That picker belongs on ThrowIt, not here. The shop theme stays in Settings.
 
 ## 1.93.1 — 2026-10-01
 
