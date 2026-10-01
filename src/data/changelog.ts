@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.93.10 — 2026-10-01
+
+- An app can land a score. A play or a line from the shop script is stored as a v2 mark. Hosting was not changed.
+
 ## 1.93.9 — 2026-10-01
 
 - An app score can land. KulibertWho.mark still saves the line, and it also posts a v2 score when the kid has a 5-character code. Prefs sit on that same script. Hosting was not changed.

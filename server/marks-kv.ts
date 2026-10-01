@@ -11,7 +11,7 @@ export type MarkV1 = {
   saved: string;
 };
 
-export type MarkEvent = "start" | "clear" | "fail" | "score" | "badge" | "xp";
+export type MarkEvent = "start" | "clear" | "fail" | "score" | "badge" | "xp" | "play" | "line";
 
 export type MarkV2 = {
   v: 2;
@@ -37,7 +37,7 @@ const APPS = new Set([
   "drift", "holdit", "ginger", "paperlab", "logolab", "drawin", "catapult", "musiclab", "bertybeatz",
   "koderized", "throwit", "sprocket", "housekit", "techworks",
 ]);
-const EVENTS = new Set<MarkEvent>(["start", "clear", "fail", "score", "badge", "xp"]);
+const EVENTS = new Set<MarkEvent>(["start", "clear", "fail", "score", "badge", "xp", "play", "line"]);
 const DATA_KEY = "tw-marks-v2";
 const MAX = 800;
 const CODE = /^[A-Z2-9]{5}$/;
