@@ -208,10 +208,9 @@ export async function pushCloud(file: EconomyFile): Promise<boolean> {
       return false;
     }
     lastSaved = pack.saved;
-    setStatus("saved");
     const people = real.students
-      .filter((s) => s.first && s.first.trim().length >= 2)
-      .slice(0, 400)
+      .filter((s) => s.first && s.first.trim().length >= 2 && !s.removedAt)
+      .slice(0, 399)
       .map((s) => ({
         id: s.id,
         alias: s.first.trim().slice(0, 16),
@@ -219,11 +218,16 @@ export async function pushCloud(file: EconomyFile): Promise<boolean> {
         code: publicHandle(s.id),
         pinHash: s.pinHash || "",
       }));
-    fetch("/api/who", {
+    const who = await fetch("/api/who", {
       method: "PUT",
       headers: { "content-type": "application/json", "x-tw-desk": token },
       body: JSON.stringify({ people }),
-    }).catch(() => {});
+    });
+    if (!who.ok) {
+      setStatus("error", "codes");
+      return false;
+    }
+    setStatus("saved");
     return true;
   } catch {
     setStatus("error", "offline");

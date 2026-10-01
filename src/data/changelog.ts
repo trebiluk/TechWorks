@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.93.13 — 2026-10-01
+
+- After the teacher unlocks and saves, the class codes are published. The prove worker stays. A score and app settings for MBW42 can be read back. Hosting was not changed.
+
 ## 1.93.12 — 2026-10-01
 
 - One prove worker stays on the book: MbwBot, code MBW42. A class save does not remove it. Hosting was not changed.

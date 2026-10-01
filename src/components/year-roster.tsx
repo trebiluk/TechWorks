@@ -23,6 +23,8 @@ import { gradeSlots, letterOf, postedFor, sessionMark } from "@/lib/grades";
 import { skillXp } from "@/lib/skills";
 import { currentCycleOf } from "@/lib/roles";
 import { addTypedStudent, deskSavePending, saveDeskNow, setAlias, setGradeOverride } from "@/lib/store";
+import { pushCloud } from "@/lib/desk-cloud";
+import { isUnlocked } from "@/lib/pin";
 import { auditStudentIds } from "@/lib/ids";
 import { publicHandle } from "@/lib/live";
 import { addAide, aidesOf, dropAide } from "@/lib/aides";
@@ -164,6 +166,7 @@ export function YearRoster({
   function saveNow() {
     saveDeskNow(file);
     onChange({ ...file, meta: { ...file.meta, savedAt: new Date().toISOString() } });
+    if (isUnlocked()) void pushCloud(file);
     setPending(false);
   }
 
