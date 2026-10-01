@@ -1,4 +1,4 @@
-/* KZ 1.23.0 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
+/* KZ 1.24.0 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
 window.I18N = {
   en: {
     lang: "en",
@@ -17,7 +17,8 @@ window.I18N = {
     home: "Doors",
     doorList: "Doors",
     hub: "Hub",
-    hubSign: "Sign in at the Hub",
+    hubSign: "Sign in",
+    hubBack: "Back to the Hub",
     startLine: "Tap the moves to get the bot to the box.",
     help: "Help",
     menu: "Menu",
@@ -52,26 +53,28 @@ window.I18N = {
     english: "English",
     simple: "Simple",
     espanol: "Español",
+    arabic: "العربية",
     readAloud: "Read aloud",
     bigText: "Big text",
     fewerAnswers: "Fewer answers",
     on: "On",
     off: "Off",
+    remove: "Remove",
     emptyList: "No code yet — this program is blank. Pick what the bot does.",
     zoneCode: "Current code",
     zoneOptions: "Options",
     zoneOutput: "Output",
-    move: "move",
-    repeat: "repeat",
-    end: "end",
-    stop: "stop",
-    score: "score",
+    move: "Forward",
+    repeat: "Repeat",
+    end: "End",
+    stop: "Stop",
+    score: "Score",
     cost: "One cost",
     look: "Look",
-    speak: "Read",
+    speak: "Read it to me",
     stopSpeak: "Stop",
     example: "Example",
-    footer: "Koderized KZ 1.23.0 · alias only",
+    footer: "Koderized KZ 1.24.0 · alias only",
     ferpaTeacher: "Teachers only. Alias only. Do not store an IEP, a 504, or a legal name.",
     sit: "SIT", crate: "CRATE", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     clear: "CLEAR",
@@ -99,7 +102,7 @@ window.I18N = {
           predict: { say: "No code yet. Tap 1.", tap: "Tap 1" },
           run: { say: "Watch the picture.", tap: "Watch" },
           investigate: { say: "A command is one thing.", tap: "1, then Next" },
-          modify: { say: "Tap move. Then GO.", tap: "move, then GO" }
+          modify: { say: "Tap Forward. Then GO.", tap: "Forward, then GO" }
         }
       },
       line: {
@@ -124,7 +127,7 @@ window.I18N = {
           predict: { say: "Three is not enough. Tap 1.", tap: "1" },
           run: { say: "Watch three steps.", tap: "Watch" },
           investigate: { say: "Add one more move.", tap: "1, then Next" },
-          modify: { say: "Tap move. Then GO.", tap: "move, then GO" }
+          modify: { say: "Tap Forward. Then GO.", tap: "Forward, then GO" }
         }
       },
       loop: {
@@ -219,7 +222,8 @@ window.I18N = {
     home: "Puertas",
     doorList: "Puertas",
     hub: "Hub",
-    hubSign: "Entra en el Hub",
+    hubSign: "Entrar",
+    hubBack: "Volver al centro",
     startLine: "Toca los movimientos. Lleva el bot a la caja.",
     help: "Ayuda",
     menu: "Menú",
@@ -270,10 +274,10 @@ window.I18N = {
     score: "sumar",
     cost: "Un costo",
     look: "Mira",
-    speak: "Leer",
+    speak: "Léeme",
     stopSpeak: "Parar",
     example: "Ejemplo",
-    footer: "Koderized KZ 1.23.0 · solo apodo",
+    footer: "Koderized KZ 1.24.0 · solo apodo",
     ferpaTeacher: "Solo maestros. Solo apodo. No guardes un IEP, un 504, ni un nombre legal.",
     sit: "SIT", crate: "CAJA", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     doors: {
@@ -410,22 +414,24 @@ window.I18N = {
     english: "English",
     simple: "Simple",
     espanol: "Español",
+    arabic: "العربية",
     readAloud: "Read aloud",
     bigText: "Big text",
     fewerAnswers: "Fewer answers",
     on: "On",
     off: "Off",
-    speak: "Read",
+    speak: "Read it to me",
     stopSpeak: "Stop",
     home: "Doors",
     doorList: "Doors",
-    hubSign: "Sign in at the Hub",
+    hubSign: "Sign in",
+    hubBack: "Back to the Hub",
     startLine: "Tap moves. Get the bot to the box.",
     help: "Help",
     menu: "Menu",
     didIt: "You did it.",
     emptyList: "No code yet. Pick one.",
-    footer: "Koderized KZ 1.23.0 · alias only",
+    footer: "Koderized KZ 1.24.0 · alias only",
     doors: {
       zero: {
         title: "Door 1.",
@@ -448,7 +454,7 @@ window.I18N = {
           predict: { say: "Tap 1.", tap: "Tap 1" },
           run: { say: "Watch.", tap: "Watch" },
           investigate: { say: "Tap 1. Then Next.", tap: "1, then Next" },
-          modify: { say: "Tap move. Then GO.", tap: "move, then GO" }
+          modify: { say: "Tap Forward. Then GO.", tap: "Forward, then GO" }
         }
       },
       line: {
@@ -468,7 +474,7 @@ window.I18N = {
           { v: "order", t: "Wrong order" },
           { v: "wall", t: "A wall" }
         ],
-        help: { predict: { say: "Tap 1.", tap: "Tap 1" }, run: { say: "Watch.", tap: "Watch" }, investigate: { say: "Tap 1.", tap: "1" }, modify: { say: "Tap move.", tap: "move" } }
+        help: { predict: { say: "Tap 1.", tap: "Tap 1" }, run: { say: "Watch.", tap: "Watch" }, investigate: { say: "Tap 1.", tap: "1" }, modify: { say: "Tap Forward.", tap: "Forward" } }
       },
       loop: {
         title: "Door 3.",
@@ -526,5 +532,90 @@ window.I18N = {
         help: { predict: { say: "Tap 1.", tap: "Tap 1" }, run: { say: "Watch.", tap: "Watch" }, investigate: { say: "Tap 1.", tap: "1" }, modify: { say: "Tap score.", tap: "score" } }
       }
     }
+  },
+
+  ar: {
+    lang: "ar",
+    startLine: "المس الحركات. أوصل الروبوت إلى الصندوق.",
+    help: "مساعدة",
+    menu: "القائمة",
+    doorList: "الأبواب",
+    hub: "المركز",
+    hubSign: "دخول",
+    hubBack: "العودة إلى المركز",
+    settings: "الإعدادات",
+    language: "اللغة",
+    english: "English",
+    simple: "بسيط",
+    espanol: "Español",
+    arabic: "العربية",
+    readAloud: "اقرأ لي",
+    bigText: "نص كبير",
+    fewerAnswers: "إجابات أقل",
+    on: "تشغيل",
+    off: "إيقاف",
+    speak: "اقرأ لي",
+    stopSpeak: "قف",
+    look: "انظر",
+    roll: "ابدأ",
+    didIt: "لقد فعلتها.",
+    emptyList: "لا يوجد كود بعد. هذا البرنامج فارغ. اختر ما يفعله الروبوت.",
+    move: "إلى الأمام",
+    repeat: "كرر",
+    end: "انته",
+    stop: "قف",
+    score: "نقطة",
+    go: "انطلق",
+    teacher: "المعلم",
+    notes: "ملاحظات",
+    zoneCode: "الكود",
+    zoneOptions: "الخيارات",
+    zoneOutput: "النتيجة",
+    guess: "خمّن",
+    watch: "شاهد",
+    find: "جد",
+    fix: "أصلح",
+    done: "تم",
+    footer: "Koderized KZ 1.24.0 · اسم مستعار فقط",
+    remove: "احذف",
+    doors: {
+      zero: {
+        title: "الباب 1 · حركة واحدة",
+        idea: "صورة واحدة. لمسة واحدة. الروبوت يفعل ذلك.",
+        help: {
+          predict: { say: "لا يوجد كود. المس 1.", tap: "المس 1" },
+          run: { say: "شاهد الصورة.", tap: "شاهد" },
+          investigate: { say: "الأمر شيء واحد يفعله الروبوت.", tap: "1 ثم التالي" },
+          modify: { say: "المس إلى الأمام. ثم انطلق.", tap: "إلى الأمام ثم انطلق" }
+        }
+      },
+      line: {
+        title: "الباب 2 · حركات أكثر",
+        idea: "من الأعلى إلى الأسفل. واحدة بعد واحدة.",
+        ask: "ثلاث حركات. أين يتوقف؟",
+        help: {
+          predict: { say: "المس 1.", tap: "1" },
+          run: { say: "شاهد الصورة.", tap: "شاهد" },
+          investigate: { say: "نحتاج حركات أكثر.", tap: "1" },
+          modify: { say: "المس إلى الأمام. ثم انطلق.", tap: "إلى الأمام" }
+        }
+      },
+      loop: {
+        title: "الباب 3 · كرر",
+        idea: "كرر نفس الحركة.",
+        help: { predict: { say: "المس 1.", tap: "1" }, run: { say: "شاهد.", tap: "شاهد" }, investigate: { say: "كرر.", tap: "1" }, modify: { say: "اجعل الرقم 4. ثم انطلق.", tap: "4" } }
+      },
+      wall: {
+        title: "الباب 4 · قف",
+        idea: "قف عند الجدار.",
+        help: { predict: { say: "شاهد.", tap: "شاهد" }, run: { say: "شاهد.", tap: "شاهد" }, investigate: { say: "قف داخل كرر.", tap: "1" }, modify: { say: "انطلق.", tap: "انطلق" } }
+      },
+      score: {
+        title: "الباب 5 · نقطة",
+        idea: "قف. ثم عد.",
+        help: { predict: { say: "المس 1.", tap: "1" }, run: { say: "شاهد.", tap: "شاهد" }, investigate: { say: "النقطة عند الجدار.", tap: "1" }, modify: { say: "المس نقطة. ثم انطلق.", tap: "نقطة" } }
+      }
+    }
   }
+
 };

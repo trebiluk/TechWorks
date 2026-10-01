@@ -115,7 +115,7 @@ body.big-type h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); }
   .glow { animation: none; }
 }
 .ladder li:nth-child(1) { border-color: var(--gold); color: var(--gold); }
-.block.empty { background: transparent; border: 1px dashed #4b5d74; color: #9fb0c3; justify-content: center; }
+.block.empty { background: transparent; border: 1px dashed #4b5d74; color: #c9d6e3; justify-content: center; }
 .door-btn.go { background: linear-gradient(180deg, #22c55e, #15803d); }
 .hero-bot { max-width: 420px; margin: 0 auto 8px; }
 .hero-bot canvas { width: 100%; border-radius: 16px; display: block; background: #071018; border: 2px solid #234; }
@@ -146,11 +146,11 @@ body.big-type h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); }
 .btn:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .teacher-head { justify-content: space-between; align-items: flex-end; margin-bottom: 4px; }
-label { display: block; font-size: 12px; font-weight: 800; color: var(--muted); margin: 8px 0 4px; text-transform: uppercase; }
+label { display: block; font-size: 12px; font-weight: 800; color: #c9d6e3; margin: 8px 0 4px; text-transform: uppercase; }
 input { width: 100%; border: 2px solid var(--line); border-radius: 8px; padding: 10px; background: #fff; color: var(--navy); }
 .k { font-size: 11px; font-weight: 800; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; background: #f8fafc; }
 .chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 12px; }
-.chip { padding: 4px 10px; border-radius: 999px; background: #1e293b; font-size: 12px; font-weight: 800; color: #94a3b8; }
+.chip { padding: 4px 10px; border-radius: 999px; background: #1e293b; font-size: 12px; font-weight: 800; color: #e8eef4; }
 .chip.on { background: var(--gold); color: #1b365d; }
 .chip.done { background: var(--teal); color: #fff; }
 .mode-tabs {
@@ -248,7 +248,7 @@ canvas#world {
 }
 .block .poke {
   background: var(--gold); color: var(--navy-2); border: 0;
-  border-radius: 8px; font-weight: 900; padding: 4px 12px; min-width: 44px;
+  border-radius: 8px; font-weight: 900; padding: 4px 12px; min-width: 44px; min-height: 44px;
   font-size: 16px;
 }
 .block .poke:disabled { opacity: .85; }
@@ -256,7 +256,7 @@ canvas#world {
 .kpis { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 12px 0; }
 .kpi { background: #0b1c33; border: 1px solid #234; border-radius: 12px; text-align: center; padding: 8px; color: #e8eef4; }
 .kpi b { display: block; font-size: 22px; color: #fff; }
-.kpi span { font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; }
+.kpi span { font-size: 11px; font-weight: 800; color: #c9d6e3; text-transform: uppercase; }
 .kpi.hot b { color: var(--gold); }
 .table-wrap { overflow-x: auto; }
 .table { width: 100%; border-collapse: collapse; font-size: 14px; }
@@ -275,8 +275,9 @@ canvas#world {
 .test.fail { color: var(--red); }
 .banner { background: #7f1d1d; color: #fff; text-align: center; padding: 16px; font-size: 22px; font-weight: 800; border-radius: 10px; margin-bottom: 8px; }
 .banner.spot { background: #0f766e; font-size: 16px; }
-.hint { color: #9fb0c3; font-size: 13px; }
-.footer-note { text-align: center; color: #7a8aa0; font-size: .8rem; padding: 1.2rem; }
+.hint { color: #c9d6e3; font-size: 13px; }
+.aide-card .hint, .card .hint { color: #1b365d; }
+.footer-note { text-align: center; color: #c9d6e3; font-size: .8rem; padding: 1.2rem; }
 @media (max-width: 900px) {
   .split { grid-template-columns: 1fr; }
   .kpis { grid-template-columns: repeat(3, 1fr); }
@@ -308,7 +309,7 @@ body.big-type canvas#world {
 body.big-type .top-tools .btn { min-height: 48px; }
 
 
-/* CUT A touch-first — hide keycaps (KZ 1.23.0: also phone-width + any-pointer coarse) */
+/* CUT A touch-first — hide keycaps (KZ 1.24.0: also phone-width + any-pointer coarse) */
 @media (pointer: coarse), (any-pointer: coarse), (hover: none), (max-width: 640px) {
   .k { display: none !important; }
 }
@@ -448,7 +449,7 @@ body.touch-ui .student-tools {
   border-color: #f87171;
 }
 
-/* KZ 1.23.0 — OK and Watch stay fat. Keycaps hide on a phone. */
+/* KZ 1.24.0 — OK and Watch stay fat. Keycaps hide on a phone. */
 #btn-predict,
 #btn-run-example {
   min-height: 48px;
@@ -463,7 +464,7 @@ body.touch-ui .student-tools {
   .k { display: none !important; }
 }
 
-/* KZ 1.23.0 — Guess Door 1 plates. Code, then Options, then Output. */
+/* KZ 1.24.0 — Guess Door 1 plates. Code, then Options, then Output. */
 .one-board .play,
 .zones {
   display: flex;
@@ -512,8 +513,12 @@ body.touch-ui .student-tools {
 }
 .zone-ask { margin: 0 0 8px; }
 #zone-options .choice,
-#zone-options .palette .btn {
-  min-height: 48px;
+#zone-options .palette .btn,
+.palette .btn,
+.block .btn,
+#cost-fields .btn {
+  min-height: 44px;
+  min-width: 44px;
 }
 .block.empty.blank-code {
   min-height: 48px;
@@ -526,7 +531,7 @@ body.touch-ui .student-tools {
   justify-content: center;
 }
 
-/* KZ 1.23.0 — short Chromebook: bot picture on the first screen. Order stays code, Options, Output. */
+/* KZ 1.24.0 — short Chromebook: bot picture on the first screen. Order stays code, Options, Output. */
 @media (max-height: 820px) {
   .one-board.wrap { padding-top: 8px; padding-bottom: 8px; }
   .one-board .quest-bar { gap: 8px; }
@@ -585,7 +590,7 @@ body.touch-ui .student-tools {
   box-shadow: inset 0 0 0 2px #e0b45a;
 }
 
-/* KZ 1.23.0 — left menu, board on the right. No kid name box. */
+/* KZ 1.24.0 — left menu, board on the right. No kid name box. */
 .app-shell { display: flex; align-items: stretch; min-height: 100vh; }
 .board { flex: 1; min-width: 0; }
 .side {
@@ -632,7 +637,7 @@ body.touch-ui .student-tools {
   line-height: 1.2;
 }
 .alias-line { margin: 0; min-height: 1.2em; color: var(--gold); font-weight: 900; font-size: 1.2rem; }
-#btn-student, #btn-hub-signin {
+#btn-student, #btn-hub-signin, #btn-hub-back {
   width: auto;
   max-width: 360px;
   min-height: 52px;
@@ -645,7 +650,7 @@ body.touch-ui .student-tools {
   align-items: center;
   justify-content: center;
 }
-#btn-hub-signin {
+#btn-hub-signin, #btn-hub-back {
   background: var(--gold);
   color: var(--navy-2);
   border-radius: 14px;
@@ -719,9 +724,85 @@ body.kb-on .side { top: 48px; }
   body.kb-on .side { min-height: calc(100vh - 48px); }
 }
 body.touch-ui #btn-student,
-body.touch-ui #btn-hub-signin {
+body.touch-ui #btn-hub-signin,
+body.touch-ui #btn-hub-back {
   min-width: 200px;
   min-height: 52px;
   font-size: 1.25rem;
   padding: 14px 28px;
+}
+
+.kz-caption {
+  min-height: 1.3em;
+  margin: 6px 0 0;
+  font-weight: 800;
+  color: #1b365d;
+}
+html[lang="ar"] .help-rtl {
+  font-family: "Noto Sans Arabic", "Noto Sans", "Segoe UI", sans-serif;
+}
+.zones, .blocks, .palette, .stage-frame, .zone-code { direction: ltr; }
+
+@media (max-height: 700px) {
+  body.short-fit .board {
+    height: calc(100dvh - 48px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  body.short-fit #start-line,
+  body.short-fit #alias-line,
+  body.short-fit #screen-student .quest-bar,
+  body.short-fit #screen-student .guide,
+  body.short-fit #screen-student .mode-tabs,
+  body.short-fit #screen-student .zone-code,
+  body.short-fit #screen-student .zone-label,
+  body.short-fit #screen-student .clue-chips,
+  body.short-fit #modify-wrap > .row:not(#palette),
+  body.short-fit #trade-wrap { display: none !important; }
+  body.short-fit #screen-student.one-board {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0;
+  }
+  body.short-fit #zone-output {
+    max-height: 60vh;
+    overflow: hidden;
+    padding: 0 8px;
+  }
+  body.short-fit canvas#world {
+    display: block;
+    width: 100%;
+    height: min(60vh, calc(100vh - 160px));
+    max-height: min(60vh, calc(100vh - 160px));
+  }
+  body.short-fit #zone-options {
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    bottom: 60px;
+    z-index: 30;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    height: 48px;
+    padding: 0;
+    overflow: hidden;
+    background: #0f1a2b;
+  }
+  body.short-fit #choices { display: flex !important; flex-direction: row; flex: 0 1 auto; gap: 6px; margin: 0; min-width: 0; }
+  body.short-fit #modify-wrap { display: flex !important; flex: 0 0 auto; }
+  body.short-fit .choice { width: auto; min-height: 44px; min-width: 44px; padding: 6px 8px; }
+  body.short-fit #screen-landing {
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    bottom: 4px;
+    z-index: 30;
+    padding: 0;
+  }
+  body.short-fit #palette { display: flex; flex-wrap: nowrap; gap: 6px; }
+  body.short-fit #btn-student { min-height: 52px; }
 }

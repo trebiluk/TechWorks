@@ -1,4 +1,4 @@
-/* Koderized KZ 1.23.0 — Hub sign-in. Door clear is saved. Not red until GO. */
+/* Koderized KZ 1.24.0 — Hub sign-in. Door clear is saved. Not red until GO. */
 
 function preferTouchUi() {
   const coarse = window.matchMedia("(pointer: coarse)").matches
@@ -170,7 +170,7 @@ const DOORS = [
 /* CUT D — quest packs */
 async function loadQuestPacks() {
   try {
-    const res = await fetch("quests.json?v=1.23.0", { cache: "no-store" });
+    const res = await fetch("quests.json?v=1.24.0", { cache: "no-store" });
     if (!res.ok) return;
     const data = await res.json();
     const packs = (data && data.quests) || [];
@@ -244,6 +244,7 @@ function L() {
   const en = (window.I18N && I18N.en) || { doors: {} };
   if (code === "es") return (window.I18N && I18N.es) || en;
   if (code === "simple") return mergePack(en, (window.I18N && I18N.simple) || {});
+  if (code === "ar") return mergePack(en, (window.I18N && I18N.ar) || {});
   return en;
 }
 function simpleDoor(id) {
@@ -251,9 +252,9 @@ function simpleDoor(id) {
 }
 let lastReadCard = "";
 let skipAuto = false;
-function setLang(code) {
+function setLang(code, opts) {
   const a = readA();
-  a.lang = code === "es" || code === "simple" ? code : "en";
+  a.lang = code === "es" || code === "simple" || code === "ar" ? code : "en";
   if (window.writeAccess) writeAccess(a);
   skipAuto = true;
   applyChrome();
@@ -261,14 +262,19 @@ function setLang(code) {
   if (session.role === "teacher") renderTeacher();
   skipAuto = false;
   lastReadCard = cardId();
-  const line = a.lang === "es" ? "Español." : a.lang === "simple" ? "Simple words." : "English.";
+  if (opts && opts.silent) return;
+  const line = a.lang === "es" ? "Español." : a.lang === "simple" ? "Simple words." : a.lang === "ar" ? "العربية." : "English.";
   if (window.say) say(line, a.lang);
 }
 function applyChrome() {
   const pack = L();
-  document.documentElement.lang = lang() === "es" ? "es" : "en";
-  document.documentElement.dataset.lang = lang();
+  const code = lang();
+  document.documentElement.lang = code === "es" ? "es" : code === "ar" ? "ar" : "en";
+  document.documentElement.dir = "ltr";
+  document.documentElement.dataset.lang = code;
   document.documentElement.dataset.big = readA().big ? "1" : "0";
+  document.querySelectorAll(".help-rtl").forEach(el => { el.dir = code === "ar" ? "rtl" : "ltr"; });
+  document.querySelectorAll(".zones, .blocks, .palette, .stage-frame, #block-list, .zone-code").forEach(el => { el.dir = "ltr"; });
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const k = el.getAttribute("data-i18n");
     if (pack[k]) el.textContent = pack[k];
@@ -277,10 +283,13 @@ function applyChrome() {
     const k = el.getAttribute("data-i18n-ph");
     if (pack[k]) el.placeholder = pack[k];
   });
+  [["pal-move", "move"], ["pal-repeat", "repeat"], ["pal-end", "end"], ["pal-stop", "stop"], ["pal-score", "score"]].forEach(([id, key]) => {
+    if ($(id) && pack[key]) $(id).setAttribute("aria-label", pack[key]);
+  });
   document.body.classList.toggle("big-type", !!readA().big);
   syncSettings();
-  if ($("btn-lang-en")) $("btn-lang-en").setAttribute("aria-pressed", lang() === "en" ? "true" : "false");
-  if ($("btn-lang-es")) $("btn-lang-es").setAttribute("aria-pressed", lang() === "es" ? "true" : "false");
+  if ($("btn-lang-en")) $("btn-lang-en").setAttribute("aria-pressed", code === "en" ? "true" : "false");
+  if ($("btn-lang-es")) $("btn-lang-es").setAttribute("aria-pressed", code === "es" ? "true" : "false");
   if ($("btn-big")) $("btn-big").setAttribute("aria-pressed", localStorage.getItem("kz-big") === "1" ? "true" : "false");
   syncSpeakBtn();
 }
@@ -623,13 +632,23 @@ function draw(canvas, sim) {
   ctx.fillStyle = "#0b1c33"; ctx.fillRect(0, 0, W, H);
 }
 
+function shortFit() { return window.matchMedia("(max-height: 700px)").matches; }
 function goLanding() {
   if (window.stopSay) stopSay();
   else if (window.KZSpeak) KZSpeak.stop();
   lastReadCard = "";
-  hide("screen-student"); hide("screen-teacher"); show("screen-landing"); applyChrome();
+  hide("screen-student"); hide("screen-teacher"); show("screen-landing");
+  document.body.classList.remove("short-fit");
+  applyChrome();
 }
-function goStudent() { hide("screen-landing"); hide("screen-teacher"); show("screen-student"); renderStudent(); }
+function goStudent() {
+  hide("screen-teacher");
+  show("screen-student");
+  document.body.classList.toggle("short-fit", shortFit());
+  if (shortFit()) show("screen-landing");
+  else hide("screen-landing");
+  renderStudent();
+}
 function goTeacher() { if (window.stopSay) stopSay(); lastReadCard = ""; hide("screen-landing"); hide("screen-student"); show("screen-teacher"); renderTeacher(); }
 $("btn-student").onclick = () => {
   if (!who.verified || !who.alias || !who.code) return;
@@ -646,26 +665,25 @@ $("btn-student").onclick = () => {
   goStudent();
 };
 $("btn-teacher").onclick = () => {
-  if (!who.verified && !($("teacher-code") && cleanCode($("teacher-code").value))) {
+  if (!who.verified || !who.code) {
     location.href = "https://apps.kulibert.net/";
     return;
   }
   session.role = "teacher";
-  session.code = cleanCode($("teacher-code") && $("teacher-code").value) || who.code;
+  session.code = who.code;
   const st = load(session.code);
   if (!st.door) st.door = "zero";
   log(st, "Room", "START", "Period open. Door 1.");
   save(st);
   if ($("top-meta")) $("top-meta").textContent = who.alias ? who.alias : "";
-  if ($("teacher-code") && !$("teacher-code").value) $("teacher-code").value = session.code;
   goTeacher();
 };
 if ($("btn-doors")) $("btn-doors").onclick = () => { document.body.classList.remove("menu-open"); goLanding(); };
-if ($("teacher-code")) $("teacher-code").addEventListener("change", () => {
-  if (session.role !== "teacher") return;
-  session.code = cleanCode($("teacher-code").value) || who.code;
-  renderTeacher();
-});
+function hear(text) {
+  const line = String(text || "").replace(/\s+/g, " ").trim();
+  if (!line || !window.say) return;
+  say(line, lang() === "simple" ? "en" : lang());
+}
 function label(b) {
   const pack = L();
   if (b.t === "move") return pack.move || "move forward";
@@ -714,7 +732,9 @@ function syncSpeakBtn() {
   b.classList.toggle("on", on);
   b.setAttribute("aria-pressed", on ? "true" : "false");
   const lab = $("speak-label");
-  if (lab) lab.textContent = on ? (pack.stopSpeak || "Stop") : (pack.speak || "Speak");
+  const name = on ? (pack.stopSpeak || "Stop") : (pack.speak || "Read it to me");
+  if (lab) lab.textContent = name;
+  b.setAttribute("aria-label", name);
   const said = on ? guideSpeech() : "";
   ["door-idea", "guide-line", "guide-sub"].forEach(id => {
     const el = $(id);
@@ -769,6 +789,13 @@ function renderBlocks(el, program, editable) {
     const d = document.createElement("div");
     d.className = "block" + (b.t === "repeat" || b.t === "end" ? " control" : b.t.indexOf("if") === 0 ? " sense" : "");
     d.appendChild(pictoSvg(PIC[b.t] || "move"));
+    d.tabIndex = 0;
+    d.setAttribute("role", "group");
+    d.setAttribute("aria-label", label(b));
+    d.addEventListener("click", ev => {
+      if (ev.target.closest("button")) return;
+      hear(label(b));
+    });
     if (b.t === "repeat") {
       const lab = document.createElement("span");
       lab.textContent = L().repeat || "repeat";
@@ -777,7 +804,8 @@ function renderBlocks(el, program, editable) {
       poke.type = "button";
       poke.className = "poke";
       poke.textContent = String(b.n || 1);
-      poke.title = "Poke the number";
+      poke.setAttribute("aria-label", "Repeat count");
+      poke.title = "Repeat count";
       if (editable) {
         poke.onclick = () => {
           const st = load(session.code);
@@ -799,6 +827,7 @@ function renderBlocks(el, program, editable) {
       const rm = document.createElement("button");
       rm.className = "btn ghost";
       rm.textContent = "×";
+      rm.setAttribute("aria-label", L().remove || "Remove");
       rm.onclick = () => {
         const st = load(session.code);
         const s = st.students[session.id];
@@ -859,7 +888,7 @@ function renderStudent() {
   if ($("ask")) $("ask").classList.toggle("hidden", walk || !(loc.ask && String(loc.ask).trim()));
   $("probe-wrap").classList.toggle("hidden", walk || s.phase !== "investigate");
   if ($("btn-predict")) $("btn-predict").parentElement.classList.toggle("hidden", walk);
-  $("modify-wrap").classList.toggle("hidden", !(s.phase === "modify" || s.phase === "make"));
+  $("modify-wrap").classList.toggle("hidden", !(s.phase === "modify" || s.phase === "make" || shortFit()));
   const ready = !!(s.ran && s.tests && s.tests[0] && s.tests[1]);
   $("trade-wrap").classList.toggle("hidden", !ready || !(s.phase === "modify" || s.phase === "make"));
   const last = d.n === 5;
@@ -868,7 +897,6 @@ function renderStudent() {
     $("btn-next-door").classList.toggle("hidden", !ready || last);
     $("btn-next-door").disabled = st.frozen || spotting;
   }
-  if ($("tradeoff")) $("tradeoff").value = s.tradeoff || "";
   const pal = d.palette;
   [["pal-move", "move"], ["pal-repeat", "repeat"], ["pal-end", "end"], ["pal-stop", "stop"], ["pal-score", "score"]].forEach(([id, name]) => {
     if ($(id)) $(id).classList.toggle("hidden", pal.indexOf(name) < 0);
@@ -876,7 +904,13 @@ function renderStudent() {
   const who = spotting && st.students[st.spotlight] ? st.students[st.spotlight] : s;
   const prog = (!walk && s.phase === "predict") ? EXAMPLE : who.program;
   renderBlocks($("block-list"), prog, !spotting && !st.frozen && (s.phase === "modify" || s.phase === "make"));
-  $("palette").classList.toggle("hidden", spotting || st.frozen || !(s.phase === "modify" || s.phase === "make"));
+  $("palette").classList.toggle("hidden", spotting || st.frozen || !(s.phase === "modify" || s.phase === "make" || shortFit()));
+  const editing = s.phase === "modify" || s.phase === "make";
+  ["pal-move", "pal-repeat", "pal-end", "pal-stop", "pal-score"].forEach(id => {
+    const btn = $(id);
+    if (!btn || btn.classList.contains("hidden")) return;
+    btn.disabled = !!(st.frozen || spotting || (shortFit() && !editing));
+  });
   const ev = evaluate(prog, who);
   draw($("world"), ev.result);
   $("tests").innerHTML = "";
@@ -907,6 +941,7 @@ function renderStudent() {
 $("choices").onclick = e => {
   const b = e.target.closest(".choice");
   if (!b || !b.getAttribute("data-p")) return;
+  hear(b.innerText);
   const st = load(session.code);
   const s = st.students[session.id];
   if (!s || s.predicted) return;
@@ -959,11 +994,11 @@ function addBlock(t, n) {
   if (s.ran && s.tests[0] && s.tests[1]) s.phase = "make";
   save(st); renderStudent();
 }
-$("pal-move").onclick = () => addBlock("move");
-$("pal-repeat").onclick = () => addBlock("repeat", 8);
-$("pal-end").onclick = () => addBlock("end");
-$("pal-stop").onclick = () => addBlock("if-wall-stop");
-$("pal-score").onclick = () => addBlock("if-wall-score");
+$("pal-move").onclick = () => { hear(L().move || "Forward"); addBlock("move"); };
+$("pal-repeat").onclick = () => { hear(L().repeat || "Repeat"); addBlock("repeat", 8); };
+$("pal-end").onclick = () => { hear(L().end || "End"); addBlock("end"); };
+$("pal-stop").onclick = () => { hear(L().stop || "Stop"); addBlock("if-wall-stop"); };
+$("pal-score").onclick = () => { hear(L().score || "Score"); addBlock("if-wall-score"); };
 $("btn-run-mine").onclick = () => {
   const st = load(session.code);
   const s = st.students[session.id];
@@ -982,15 +1017,20 @@ $("btn-restore").onclick = () => {
   log(st, s.alias, "RESTORE", "Last green");
   bump(s); save(st); renderStudent();
 };
-if ($("btn-tradeoff")) $("btn-tradeoff").onclick = () => {
-  const st = load(session.code);
-  const s = st.students[session.id];
-  s.tradeoff = $("tradeoff").value.trim();
-  if (!s.tradeoff) return;
-  s.phase = "make";
-  log(st, s.alias, "TRADEOFF", s.tradeoff);
-  save(st); renderStudent();
-};
+document.querySelectorAll("[data-cost]").forEach(btn => {
+  btn.onclick = () => {
+    const st = load(session.code);
+    const s = st.students[session.id];
+    if (!s) return;
+    s.tradeoff = btn.getAttribute("data-cost") || "";
+    if (!s.tradeoff) return;
+    hear(s.tradeoff);
+    s.phase = "make";
+    log(st, s.alias, "TRADEOFF", s.tradeoff);
+    save(st); renderStudent();
+  };
+});
+if ($("btn-tradeoff")) $("btn-tradeoff").onclick = () => {};
 if ($("btn-next-door")) $("btn-next-door").onclick = () => {
   const st = load(session.code);
   const s = st.students[session.id];
@@ -1109,7 +1149,7 @@ document.addEventListener("keydown", e => {
     if (e.key === "1" && ch[0]) ch[0].click();
     if (e.key === "2" && ch[1]) ch[1].click();
     if (e.key === "Enter") { e.preventDefault(); $("btn-probe").click(); }
-  } else if ((s.phase === "modify" || s.phase === "make") && e.code === "Space" && document.activeElement.id !== "tradeoff") {
+  } else if ((s.phase === "modify" || s.phase === "make") && e.code === "Space") {
     e.preventDefault(); $("btn-run-mine").click();
   }
 });
@@ -1207,7 +1247,7 @@ applyChrome();
 function doorClear(s) {
   const rec = {
     app: "koderized",
-    version: "KZ 1.23.0",
+    version: "KZ 1.24.0",
     event: "clear",
     level: "door-" + doorOf(s.door).n,
     score: shopHeat(load(session.code)),
@@ -1232,7 +1272,9 @@ function paintWho(next) {
   if ($("alias-line")) $("alias-line").textContent = who.verified ? who.alias : "";
   if ($("top-meta") && session.role !== "teacher") $("top-meta").textContent = who.verified ? who.alias : "";
   if ($("btn-student")) $("btn-student").classList.toggle("hidden", !who.verified);
-  if ($("btn-hub-signin")) $("btn-hub-signin").classList.toggle("hidden", who.verified);
+  const outside = window.parent === window;
+  if ($("btn-hub-signin")) $("btn-hub-signin").classList.toggle("hidden", who.verified || !outside);
+  if ($("btn-hub-back")) $("btn-hub-back").classList.toggle("hidden", who.verified || !outside);
   if ($("teacher-code") && who.code && !$("teacher-code").value) $("teacher-code").value = who.code;
   const framed = window.parent !== window;
   const barHome = document.querySelector("[data-kulibert-home], .kb-home, a.kulibert-home");
@@ -1313,5 +1355,78 @@ document.addEventListener("DOMContentLoaded", () => {
     }).then(res => res.json()).catch(() => ({ ok: false }));
   };
 });
-loadWho().then(() => setTimeout(() => paintWho(who), 80));
+function parseKp(raw) {
+  if (!raw) return null;
+  let text = String(raw);
+  try { text = decodeURIComponent(text); } catch (e) {}
+  text = text.trim();
+  if (!text) return null;
+  if (text.charAt(0) === "{") {
+    try { return JSON.parse(text); } catch (e2) {}
+  }
+  try {
+    const json = atob(text.replace(/-/g, "+").replace(/_/g, "/"));
+    if (json && json.charAt(0) === "{") return JSON.parse(json);
+  } catch (e3) {}
+  const out = {};
+  text.split(/[,+&|]/).forEach(part => {
+    const bit = part.trim();
+    if (!bit) return;
+    const kv = bit.split(":");
+    if (kv.length === 2) {
+      const key = kv[0].trim().toLowerCase();
+      let val = kv[1].trim();
+      if (val === "true") val = true;
+      else if (val === "false") val = false;
+      out[key] = val;
+      return;
+    }
+    const v = bit.toLowerCase();
+    if (v === "xl" || v === "big") out.big = true;
+    else if (v === "ar" || v === "es" || v === "en" || v === "simple") out.lang = v;
+    else if (v === "speak" || v === "read") out.speak = true;
+    else if (v === "fewer") out.fewer = true;
+  });
+  return Object.keys(out).length ? out : null;
+}
+function kpRaw() {
+  const bag = (location.hash || "") + "&" + (location.search || "");
+  const m = bag.match(/(?:^#|[?&#])kp=([^&#]*)/);
+  return m ? m[1] : "";
+}
+let kpHit = false;
+function applySeed(prefs, fromHash) {
+  if (!prefs || typeof prefs !== "object") return;
+  const a = readA();
+  const size = String(prefs.size || prefs.text || "").toLowerCase();
+  if (prefs.lang === "ar" || prefs.lang === "es" || prefs.lang === "simple" || prefs.lang === "en") a.lang = prefs.lang;
+  if (prefs.big === true || prefs.xl === true || size === "xl") a.big = true;
+  if (typeof prefs.speak === "boolean") a.speak = prefs.speak;
+  if (typeof prefs.fewer === "boolean") a.fewer = prefs.fewer;
+  if (window.writeAccess) writeAccess(a);
+  if (fromHash) kpHit = true;
+  applyChrome();
+}
+function seedAccess() {
+  try {
+    if (window.KulibertPrefs && typeof window.KulibertPrefs.forApp === "function") applySeed(window.KulibertPrefs.forApp("koderized"), false);
+    else if (window.KulibertPrefs && typeof window.KulibertPrefs.read === "function") applySeed(window.KulibertPrefs.read("koderized"), false);
+  } catch (e) {}
+  const hashed = parseKp(kpRaw());
+  if (hashed) applySeed(hashed, true);
+}
+function pullPrefs() {
+  if (kpHit || !who.verified || !who.code) return;
+  fetch("https://tw.kulibert.net/api/prefs?app=koderized&code=" + encodeURIComponent(who.code), { credentials: "include", cache: "no-store" })
+    .then(res => res.ok ? res.json() : null)
+    .then(pack => {
+      if (!pack || !pack.prefs || kpHit) return;
+      applySeed(pack.prefs, false);
+      if (session.role === "student") renderStudent();
+    }).catch(() => {});
+}
+seedAccess();
+document.addEventListener("DOMContentLoaded", () => { seedAccess(); if (!session.role) applyChrome(); });
+window.addEventListener("hashchange", seedAccess);
+loadWho().then(() => { pullPrefs(); setTimeout(() => paintWho(who), 80); });
 loadQuestPacks().then(function () { goLanding(); }).catch(function () { goLanding(); });

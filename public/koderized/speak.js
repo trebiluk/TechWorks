@@ -48,7 +48,7 @@
   function pickVoice(code) {
     var voices = [];
     try { voices = window.speechSynthesis.getVoices() || []; } catch (e) { voices = []; }
-    var want = code === "es" ? "es" : "en"; /* simple uses English voice */
+    var want = code === "es" ? "es" : code === "ar" ? "ar" : "en"; /* simple uses English voice */
     var local = null;
     var any = null;
     var i, v;
@@ -65,7 +65,7 @@
   function start(text, code) {
     if (!pending) return;
     var u = new SpeechSynthesisUtterance(text);
-    u.lang = code === "es" ? "es-US" : "en-US";
+    u.lang = code === "es" ? "es-US" : code === "ar" ? "ar" : "en-US";
     u.rate = code === "simple" ? 0.85 : 0.95;
     u.pitch = 1;
     var voice = pickVoice(code);
@@ -128,7 +128,7 @@
           fewer: false
         };
       }
-      var lang = raw.lang === "simple" || raw.lang === "es" ? raw.lang : "en";
+      var lang = raw.lang === "simple" || raw.lang === "es" || raw.lang === "ar" ? raw.lang : "en";
       return { lang: lang, speak: !!raw.speak, big: !!raw.big, fewer: !!raw.fewer };
     } catch (e) {
       return { lang: "en", speak: false, big: false, fewer: false };
@@ -136,7 +136,7 @@
   }
 
   function writeAccess(next) {
-    var lang = next.lang === "simple" || next.lang === "es" ? next.lang : "en";
+    var lang = next.lang === "simple" || next.lang === "es" || next.lang === "ar" ? next.lang : "en";
     var clean = { lang: lang, speak: !!next.speak, big: !!next.big, fewer: !!next.fewer };
     try { localStorage.setItem(ACCESS_KEY, JSON.stringify(clean)); } catch (e) {}
     document.documentElement.dataset.big = clean.big ? "1" : "0";
@@ -145,7 +145,16 @@
     return clean;
   }
 
-  function say(text, code) { return speak(text, code || readAccess().lang); }
+  function paintCaption(text) {
+    var el = document.getElementById("kz-caption");
+    if (!el) return;
+    el.textContent = String(text || "").replace(/\s+/g, " ").trim();
+  }
+
+  function say(text, code) {
+    paintCaption(text);
+    return speak(text, code || readAccess().lang);
+  }
   function stopSay() { stop(); }
 
   window.say = say;
