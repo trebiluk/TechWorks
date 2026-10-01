@@ -308,7 +308,7 @@ body.big-type canvas#world {
 body.big-type .top-tools .btn { min-height: 48px; }
 
 
-/* CUT A touch-first — hide keycaps (KZ 1.22.0: also phone-width + any-pointer coarse) */
+/* CUT A touch-first — hide keycaps (KZ 1.23.0: also phone-width + any-pointer coarse) */
 @media (pointer: coarse), (any-pointer: coarse), (hover: none), (max-width: 640px) {
   .k { display: none !important; }
 }
@@ -448,7 +448,7 @@ body.touch-ui .student-tools {
   border-color: #f87171;
 }
 
-/* KZ 1.22.0 — OK and Watch stay fat. Keycaps hide on a phone. */
+/* KZ 1.23.0 — OK and Watch stay fat. Keycaps hide on a phone. */
 #btn-predict,
 #btn-run-example {
   min-height: 48px;
@@ -463,7 +463,7 @@ body.touch-ui .student-tools {
   .k { display: none !important; }
 }
 
-/* KZ 1.22.0 — Guess Door 1 plates. Code, then Options, then Output. */
+/* KZ 1.23.0 — Guess Door 1 plates. Code, then Options, then Output. */
 .one-board .play,
 .zones {
   display: flex;
@@ -526,7 +526,7 @@ body.touch-ui .student-tools {
   justify-content: center;
 }
 
-/* KZ 1.22.0 — short Chromebook: bot picture on the first screen. Order stays code, Options, Output. */
+/* KZ 1.23.0 — short Chromebook: bot picture on the first screen. Order stays code, Options, Output. */
 @media (max-height: 820px) {
   .one-board.wrap { padding-top: 8px; padding-bottom: 8px; }
   .one-board .quest-bar { gap: 8px; }
@@ -583,4 +583,145 @@ body.touch-ui .student-tools {
 .settings-panel .btn[aria-pressed="true"] {
   border-color: #e0b45a;
   box-shadow: inset 0 0 0 2px #e0b45a;
+}
+
+/* KZ 1.23.0 — left menu, board on the right. No kid name box. */
+.app-shell { display: flex; align-items: stretch; min-height: 100vh; }
+.board { flex: 1; min-width: 0; }
+.side {
+  flex: 0 0 200px;
+  width: 200px;
+  background: #0a1628;
+  border-right: 3px solid var(--gold);
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 26;
+}
+.side .btn, .side .menu-link {
+  min-height: 48px;
+  min-width: 48px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 800;
+  background: transparent;
+  border: 2px solid #4b5d74;
+}
+.side .settings-panel { position: static; width: 100%; }
+#btn-menu { min-height: 48px; min-width: 48px; }
+.landing-only {
+  display: grid;
+  justify-items: start;
+  align-content: start;
+  gap: 14px;
+  padding: 28px 16px 48px;
+}
+.start-line {
+  margin: 0;
+  max-width: 18ch;
+  font-size: clamp(1.45rem, 3vw, 2.1rem);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.2;
+}
+.alias-line { margin: 0; min-height: 1.2em; color: var(--gold); font-weight: 900; font-size: 1.2rem; }
+#btn-student, #btn-hub-signin {
+  width: auto;
+  max-width: 360px;
+  min-height: 52px;
+  min-width: 200px;
+  padding: 14px 28px;
+  font-size: 1.25rem;
+  font-weight: 900;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+#btn-hub-signin {
+  background: var(--gold);
+  color: var(--navy-2);
+  border-radius: 14px;
+}
+#teacher-code {
+  display: block;
+  min-height: 48px;
+  width: min(220px, 100%);
+  margin: 6px 0 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 2px solid var(--gold);
+  background: #0b1c33;
+  color: #fff;
+}
+.kz-help {
+  margin: 0 16px 24px;
+  padding: 14px 16px;
+  border: 2px solid var(--gold);
+  border-radius: 12px;
+  background: #0b1c33;
+  color: #fff;
+  max-width: 36rem;
+}
+@media (max-width: 800px) {
+  .side {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(280px, 88vw);
+    transform: translateX(-110%);
+  }
+  body.menu-open .side { transform: none; }
+  body.menu-open::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .45);
+    z-index: 24;
+  }
+}
+@media (min-width: 801px) {
+  .side { position: sticky; top: 0; align-self: flex-start; min-height: 100vh; }
+}
+/* Bar CSS lives on apps.kulibert.net. The door origins 404 that file, so the same rules live here. */
+.kb-bar{
+  position:fixed;top:0;left:0;right:0;z-index:60;height:48px;
+  display:flex;align-items:center;gap:.4rem;padding:0 .45rem;
+  background:#050814;color:#e8f7ff;
+  font-family:Outfit,system-ui,-apple-system,"Segoe UI",sans-serif;
+  border-bottom:1px solid #1e3a55;box-sizing:border-box;
+}
+.kb-home,.kb-help,.kb-settings{
+  min-width:44px;min-height:44px;height:44px;padding:0 .7rem;
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:999px;border:1px solid #24506d;background:#0b152c;color:#e8f7ff;
+  font:700 .85rem/1 Outfit,system-ui,sans-serif;text-decoration:none;cursor:pointer;
+}
+.kb-plate{flex:1 1 auto;min-width:0;font-weight:700;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kb-alias{
+  margin-left:auto;max-width:9rem;min-height:44px;height:44px;padding:0 .7rem;
+  display:inline-flex;align-items:center;border-radius:999px;border:1px solid #24506d;
+  background:#0b152c;color:#e8f7ff;font:650 .8rem/1 Outfit,system-ui,sans-serif;
+}
+.kb-settings[hidden],.kb-toast[hidden]{display:none !important}
+body.kb-on{padding-top:48px}
+html.kb-framed body.kb-on{padding-top:0}
+body.kb-on .side { top: 48px; }
+@media (min-width: 801px) {
+  body.kb-on .side { min-height: calc(100vh - 48px); }
+}
+body.touch-ui #btn-student,
+body.touch-ui #btn-hub-signin {
+  min-width: 200px;
+  min-height: 52px;
+  font-size: 1.25rem;
+  padding: 14px 28px;
 }

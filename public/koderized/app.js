@@ -1,4 +1,4 @@
-/* Koderized KZ 1.22.0 — Speak beside the line. Not red until GO. One board. No IEP stored. */
+/* Koderized KZ 1.23.0 — Hub sign-in. Door clear is saved. Not red until GO. */
 
 function preferTouchUi() {
   const coarse = window.matchMedia("(pointer: coarse)").matches
@@ -170,7 +170,7 @@ const DOORS = [
 /* CUT D — quest packs */
 async function loadQuestPacks() {
   try {
-    const res = await fetch("quests.json?v=1.22.0", { cache: "no-store" });
+    const res = await fetch("quests.json?v=1.23.0", { cache: "no-store" });
     if (!res.ok) return;
     const data = await res.json();
     const packs = (data && data.quests) || [];
@@ -516,7 +516,11 @@ function save(st) {
 }
 let bc;
 try { bc = new BroadcastChannel("kz18"); } catch (e) { bc = { postMessage() {}, addEventListener() {} }; }
-const session = { role: null, code: "QUEST4", alias: "", id: null };
+const session = { role: null, code: "", alias: "", id: null };
+const who = { alias: "", code: "", verified: false };
+function cleanCode(raw) {
+  return String(raw || "").toUpperCase().replace(/[^A-Z2-9]/g, "").slice(0, 5);
+}
 function uid() { return "s" + Math.random().toString(36).slice(2, 8); }
 function log(st, alias, kind, text) {
   st.logs.unshift({ t: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), alias, kind, text });
@@ -535,6 +539,8 @@ function openDoor(s, id) {
   s.tradeoff = "";
   s.status = "gray";
   s.ran = false;
+  s.reported = false;
+  s.doorAt = Date.now();
   s.lastChange = "Door " + d.n;
 }
 function ensure(st, alias, id) {
@@ -626,27 +632,40 @@ function goLanding() {
 function goStudent() { hide("screen-landing"); hide("screen-teacher"); show("screen-student"); renderStudent(); }
 function goTeacher() { if (window.stopSay) stopSay(); lastReadCard = ""; hide("screen-landing"); hide("screen-student"); show("screen-teacher"); renderTeacher(); }
 $("btn-student").onclick = () => {
+  if (!who.verified || !who.alias || !who.code) return;
   session.role = "student";
-  session.code = ($("join-code").value || "QUEST4").toUpperCase();
-  session.alias = ($("join-alias").value || "Player").trim();
+  session.code = who.code;
+  session.alias = who.alias;
   session.id = session.id || uid();
   const st = load(session.code);
-  ensure(st, session.alias, session.id).alias = session.alias;
+  const s = ensure(st, session.alias, session.id);
+  if (!s.doorAt) s.doorAt = Date.now();
   save(st);
-  $("top-meta").textContent = session.alias + " · " + session.code;
+  if ($("top-meta")) $("top-meta").textContent = session.alias;
+  if ($("alias-line")) $("alias-line").textContent = session.alias;
   goStudent();
 };
 $("btn-teacher").onclick = () => {
+  if (!who.verified && !($("teacher-code") && cleanCode($("teacher-code").value))) {
+    location.href = "https://apps.kulibert.net/";
+    return;
+  }
   session.role = "teacher";
-  session.code = ($("join-code").value || "QUEST4").toUpperCase();
+  session.code = cleanCode($("teacher-code") && $("teacher-code").value) || who.code;
   const st = load(session.code);
   if (!st.door) st.door = "zero";
   log(st, "Room", "START", "Period open. Door 1.");
   save(st);
-  $("top-meta").textContent = "Teacher · " + session.code;
+  if ($("top-meta")) $("top-meta").textContent = who.alias ? who.alias : "";
+  if ($("teacher-code") && !$("teacher-code").value) $("teacher-code").value = session.code;
   goTeacher();
 };
-$("btn-home").onclick = goLanding;
+if ($("btn-doors")) $("btn-doors").onclick = () => { document.body.classList.remove("menu-open"); goLanding(); };
+if ($("teacher-code")) $("teacher-code").addEventListener("change", () => {
+  if (session.role !== "teacher") return;
+  session.code = cleanCode($("teacher-code").value) || who.code;
+  renderTeacher();
+});
 function label(b) {
   const pack = L();
   if (b.t === "move") return pack.move || "move forward";
@@ -876,6 +895,11 @@ function renderStudent() {
   });
   glow(hint.id, hint.poke);
   renderGuide(s, d, loc, hint);
+  if (s.phase === "make" && s.tests && s.tests[0] && s.tests[1] && !s.reported) {
+    s.reported = true;
+    save(st);
+    doorClear(s);
+  }
   if (window.KZSpeak && KZSpeak.speaking() && KZSpeak.current() !== cardBits(true)) KZSpeak.stop();
   syncSpeakBtn();
   maybeReadCard();
@@ -1180,4 +1204,114 @@ if ($("btn-walk")) $("btn-walk").onclick = () => {
   save(st); renderStudent();
 };
 applyChrome();
+function doorClear(s) {
+  const rec = {
+    app: "koderized",
+    version: "KZ 1.23.0",
+    event: "clear",
+    level: "door-" + doorOf(s.door).n,
+    score: shopHeat(load(session.code)),
+    max: 100,
+    stars: (s.tests || []).filter(Boolean).length,
+    xp: 10,
+    skill: "sequencing",
+    ms: Math.max(0, Date.now() - (s.doorAt || Date.now())),
+    alias: session.alias,
+    code: session.code
+  };
+  const fn = (typeof window.record === "function") ? window.record : (window.KulibertWho && window.KulibertWho.record);
+  try { if (typeof fn === "function") fn(rec); } catch (e) {}
+  try { window.dispatchEvent(new CustomEvent("kz-clear", { detail: rec })); } catch (e2) {}
+}
+function paintWho(next) {
+  who.alias = String((next && next.alias) || "").trim().slice(0, 16);
+  who.code = cleanCode(next && next.code);
+  who.verified = !!(next && next.verified && who.alias && who.code.length === 5);
+  session.alias = who.verified ? who.alias : "";
+  if (who.verified) session.code = who.code;
+  if ($("alias-line")) $("alias-line").textContent = who.verified ? who.alias : "";
+  if ($("top-meta") && session.role !== "teacher") $("top-meta").textContent = who.verified ? who.alias : "";
+  if ($("btn-student")) $("btn-student").classList.toggle("hidden", !who.verified);
+  if ($("btn-hub-signin")) $("btn-hub-signin").classList.toggle("hidden", who.verified);
+  if ($("teacher-code") && who.code && !$("teacher-code").value) $("teacher-code").value = who.code;
+  const framed = window.parent !== window;
+  const barHome = document.querySelector("[data-kulibert-home], .kb-home, a.kulibert-home");
+  if ($("btn-hub")) $("btn-hub").classList.toggle("hidden", framed || !!barHome);
+  syncBarAlias();
+}
+function syncBarAlias() {
+  const node = document.querySelector(".kb-alias");
+  if (!node || !who.verified || !who.alias) return;
+  if (node.textContent !== who.alias) node.textContent = who.alias;
+}
+function watchBarAlias() {
+  const node = document.querySelector(".kb-alias");
+  if (!node || node.dataset.kzWatch) return;
+  node.dataset.kzWatch = "1";
+  new MutationObserver(syncBarAlias).observe(node, { childList: true, characterData: true, subtree: true });
+  syncBarAlias();
+}
+function readHandOff() {
+  try {
+    const raw = sessionStorage.getItem("kw-who-v1") || localStorage.getItem("kw-who-v1") || sessionStorage.getItem("tw-shop-session");
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed && parsed.alias) return parsed;
+  } catch (e) {}
+  return null;
+}
+function loadWho() {
+  const handed = readHandOff();
+  if (handed) paintWho({ alias: handed.alias, code: handed.code, verified: handed.verified !== false });
+  return fetch("https://tw.kulibert.net/api/who", { credentials: "include", cache: "no-store" }).then(res => {
+    if (!res.ok) { if (!handed) paintWho({ verified: false }); return; }
+    return res.json().then(pack => {
+      if (pack && pack.verified && pack.alias) paintWho(pack);
+      else if (!handed) paintWho({ verified: false });
+    });
+  }).catch(() => { if (!handed) paintWho({ verified: false }); });
+}
+window.addEventListener("message", ev => {
+  const ok = ev.origin === location.origin || ev.origin === "https://apps.kulibert.net" || ev.origin === "https://tw.kulibert.net" || ev.origin === "https://koderized.kulibert.net";
+  if (!ok || !ev.data || typeof ev.data !== "object") return;
+  const data = ev.data;
+  if ((data.type === "tw-session" || data.type === "kw-who" || data.type === "kulibert-who") && data.alias) {
+    paintWho({ alias: data.alias, code: data.code || who.code, verified: data.on !== false && data.verified !== false });
+  }
+});
+if ($("btn-menu")) $("btn-menu").onclick = () => {
+  const open = document.body.classList.toggle("menu-open");
+  $("btn-menu").setAttribute("aria-expanded", open ? "true" : "false");
+};
+if ($("btn-help")) $("btn-help").onclick = () => {
+  const help = $("kz-help");
+  if (help) help.classList.toggle("hidden");
+};
+if (window.KulibertBar && typeof window.KulibertBar.setHelp === "function") {
+  window.KulibertBar.setHelp(() => { if ($("btn-help")) $("btn-help").click(); });
+}
+watchBarAlias();
+document.addEventListener("click", e => {
+  if (!document.body.classList.contains("menu-open")) return;
+  if (window.matchMedia("(min-width: 801px)").matches) return;
+  const menu = $("app-menu");
+  const btn = $("btn-menu");
+  if (menu && menu.contains(e.target)) return;
+  if (btn && btn.contains(e.target)) return;
+  document.body.classList.remove("menu-open");
+  if (btn) btn.setAttribute("aria-expanded", "false");
+});
+document.addEventListener("DOMContentLoaded", () => {
+  if (typeof window.record === "function") return;
+  window.record = function (rec) {
+    const row = Object.assign({ v: 2, alias: session.alias, code: session.code }, rec || {});
+    return fetch("https://tw.kulibert.net/api/marks", {
+      method: "POST",
+      credentials: "include",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ v: 2, marks: [row] })
+    }).then(res => res.json()).catch(() => ({ ok: false }));
+  };
+});
+loadWho().then(() => setTimeout(() => paintWho(who), 80));
 loadQuestPacks().then(function () { goLanding(); }).catch(function () { goLanding(); });
