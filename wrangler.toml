@@ -2,16 +2,9 @@
 name = "kulibert-desk"
 compatibility_date = "2026-09-08"
 compatibility_flags = ["nodejs_compat"]
-pages_build_output_dir = "./dist"
+pages_build_output_dir = ".output/public"
 
-# Rooms share one desk: Cloudflare → this project → Settings → Bindings
-# → KV namespace → Add → variable name TW_DESK → create "techworks-desk".
-# Until that KV is bound, marks live in the DeskBook durable object below.
-
-[[durable_objects.bindings]]
-name = "TW_BOOK"
-class_name = "DeskBook"
-
-[[migrations]]
-tag = "v1"
-new_sqlite_classes = ["DeskBook"]
+# Marks, prefs, and the alias list. Binding name TW_DESK.
+[[kv_namespaces]]
+binding = "TW_DESK"
+id = "82e0fdcc993042918568e0b0f4b88b3a"
