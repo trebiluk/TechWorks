@@ -171,6 +171,100 @@ function weatherPlugin(): Plugin {
   };
 }
 
+function shopApiPlugin(): Plugin {
+  const readBody = (req: import("node:http").IncomingMessage) =>
+    new Promise<string>((resolve) => {
+      const chunks: Buffer[] = [];
+      req.on("data", (c) => chunks.push(c as Buffer));
+      req.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+    });
+  return {
+    name: "techworks-shop-api",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const pathOnly = (req.url ?? "").split("?", 1)[0] ?? "";
+        if (pathOnly !== "/api/marks" && pathOnly !== "/api/who") {
+          next();
+          return;
+        }
+        const method = (req.method ?? "GET").toUpperCase();
+        const json = (code: number, body: unknown) => {
+          res.statusCode = code;
+          res.setHeader("content-type", "application/json; charset=utf-8");
+          res.setHeader("cache-control", "no-store");
+          res.setHeader("access-control-allow-origin", String(req.headers.origin || "*"));
+          res.setHeader("access-control-allow-headers", "content-type, x-tw-pin");
+          res.end(JSON.stringify(body));
+        };
+        if (method === "OPTIONS") {
+          res.statusCode = 204;
+          res.setHeader("access-control-allow-origin", String(req.headers.origin || "*"));
+          res.setHeader("access-control-allow-methods", "GET, POST, OPTIONS");
+          res.setHeader("access-control-allow-headers", "content-type, x-tw-pin");
+          res.end();
+          return;
+        }
+        void (async () => {
+          const q = new URL(req.url ?? "/", "http://tw.local").searchParams;
+          if (pathOnly === "/api/marks" && method === "GET") {
+            const { loadMarks, marksForCode } = await server.ssrLoadModule("/server/marks-kv.ts");
+            const { marks, store } = await loadMarks({});
+            const code = q.get("code") ?? "";
+            const period = q.get("period") ?? "";
+            if (code) {
+              json(200, { ok: true, store, marks: marksForCode(marks, code) });
+              return;
+            }
+            if (period) {
+              const pin = String(req.headers["x-tw-pin"] ?? "").replace(/\D/g, "");
+              if (pin !== "7879") {
+                json(401, { ok: false });
+                return;
+              }
+              json(200, { ok: true, store, marks });
+              return;
+            }
+            json(200, { ok: true, store, marks: [] });
+            return;
+          }
+          if (pathOnly === "/api/marks" && method === "POST") {
+            const { sanitizeV1, sanitizeV2, saveMarks, loadMarks } = await server.ssrLoadModule("/server/marks-kv.ts");
+            const body = JSON.parse((await readBody(req)) || "{}") as { marks?: unknown[] };
+            const incoming = Array.isArray(body.marks) ? body.marks : [body];
+            const parsed = incoming.filter((row) => sanitizeV2(row) || sanitizeV1(row));
+            if (!parsed.length) {
+              json(400, { ok: false });
+              return;
+            }
+            const store = await saveMarks({}, parsed);
+            if (store === "reject") {
+              json(400, { ok: false, error: "code" });
+              return;
+            }
+            if (store === "none") {
+              json(503, { ok: false });
+              return;
+            }
+            const loaded = await loadMarks({});
+            json(200, { ok: true, store, n: loaded.marks.length });
+            return;
+          }
+          if (pathOnly === "/api/who" && method === "POST") {
+            const { enterWho } = await server.ssrLoadModule("/server/who-kv.ts");
+            const body = JSON.parse((await readBody(req)) || "{}") as { alias?: string; code?: string; pin?: string };
+            json(200, await enterWho({}, String(body.alias ?? ""), String(body.code ?? ""), String(body.pin ?? "")));
+            return;
+          }
+          next();
+        })().catch((err) => {
+          console.error("[shop-api]", err);
+          if (!res.headersSent) json(500, { ok: false });
+        });
+      });
+    },
+  };
+}
+
 function deskCloudPlugin(): Plugin {
   const dest = () => join(process.cwd(), ".data", "desk-cloud.json");
   type Row = { keyHash: string; saved: string; app: string; n: number; salt: string; iv: string; data: string };
@@ -463,6 +557,7 @@ export default defineConfig(({ command, isPreview }) => {
     lunchPlugin(),
     livePlugin(),
     deskCloudPlugin(),
+    shopApiPlugin(),
     doorLinksPlugin(),
     // Before tanstackStart so /auth/popup never falls through to the SPA.
     authPopupPlugin(),

@@ -43,6 +43,7 @@ import { PlanitWeek } from "@/components/planit-week";
 import { WallLookChips } from "@/components/wall-looks";
 import { StudentClaim } from "@/components/student-claim";
 import { KidStyleBar } from "@/components/kid-style";
+import { ShopCard } from "@/components/shop-card";
 
 const SHOP_LINES = [
   "Measure twice.",
@@ -537,6 +538,7 @@ export const Dashboard = memo(function Dashboard({
         </button>
       ) : null}
       {!unlocked && onChange ? <StudentClaim file={file} onChange={onChange} /> : null}
+      {!unlocked ? <ShopCard pinned /> : null}
       {!unlocked ? <KidStyleBar /> : null}
       {unlocked && !arrange && onArrange ? (
         <div className="flex shrink-0 justify-end">

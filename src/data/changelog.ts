@@ -6,6 +6,13 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.93.0 — 2026-10-01
+
+- App results stay in the shop book. A kid signs in with five boxes and a PIN pad. The server checks the code. My card shows the alias, the level, the XP, one badge per app, and the last five clears. The code stays off the wall.
+- Score on a student screen is My card, not the teacher PIN. The teacher Score page is the app progress board: skills, stars, this week's XP, a CSV for the book. The wall board is off until the teacher turns it on.
+- A fresh visit does not write the cloud desk. Saved shows only after the cloud accepts the write. Otherwise it says Not saved.
+- The door list names Berty's Run and the rest of the Hub doors.
+
 ## 1.92.146 — 2026-09-30
 
 - Signed-out wall has My style: a bench color, a sticker, and a build name from a list. Nothing is typed. Sound stays off until they turn it on. It saves on this Chromebook only.

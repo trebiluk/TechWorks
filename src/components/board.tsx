@@ -35,6 +35,7 @@ import { applyTheme, applyVibe, paintContrast, storedContrast, storedTheme, stor
 import { bootLang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n-hook";
 import { LangChip } from "@/components/lang-chip";
+import { ShopCard, ShopName } from "@/components/shop-card";
 import { SavedChip, VersionChip } from "@/components/version-chip";
 import { ErrorGate } from "@/components/error-gate";
 import { AdminHub } from "@/components/admin-hub";
@@ -78,7 +79,7 @@ const DeckBoard = lazy(() => import("@/components/deck-board").then((m) => ({ de
 
 const RANK_KEY = "techworks-rank-board";
 
-type View = "crew" | "score" | "overview" | "week" | "year" | "data" | "wallet" | "lucky" | "skills" | "store" | "prints" | "crib" | "portal" | "grades" | "studyhall" | "hallwall" | "club" | "clubwall" | "projects" | "admin" | "teach" | "polls" | "deck" | "roster" | "shop";
+type View = "crew" | "score" | "overview" | "week" | "year" | "data" | "wallet" | "lucky" | "skills" | "store" | "prints" | "crib" | "portal" | "grades" | "studyhall" | "hallwall" | "club" | "clubwall" | "projects" | "admin" | "teach" | "polls" | "deck" | "roster" | "shop" | "mycard";
 type DeskPanel = "score" | "schedule" | "config";
 
 function gearHint(view: string): string {
@@ -308,7 +309,7 @@ export function Board() {
 
   function saveNow(period?: number) {
     saveDeskNow(file);
-    if (file.students.length > 0 || hourCount(file) > 0) void pushCloud(file);
+    if (unlocked) void pushCloud(file);
     setFile((cur) => stampLiveExport(cur, todayIso(), period ?? liveP ?? undefined));
     window.setTimeout(() => flashMsg(saveCloudHint(), "ok"), 80);
   }
@@ -358,7 +359,7 @@ export function Board() {
             if (local.students.length === 0) {
               const seated = neutralizeOpenNames(fillQuarterOne(local));
               setFile(seated);
-              void pushCloud(seated);
+              if (isUnlocked()) void pushCloud(seated);
             }
             return;
           }
@@ -370,26 +371,26 @@ export function Board() {
             if (local.students.length === 0) {
               const seated = neutralizeOpenNames(fillQuarterOne(local));
               setFile(seated);
-              void pushCloud(seated);
+              if (isUnlocked()) void pushCloud(seated);
             }
             return;
           }
           if (plan === "push") {
-            void pushCloud(local);
+            if (isUnlocked()) void pushCloud(local);
             return;
           }
           const cloudFile = await applyCloudPack(pack);
           if (!cloudFile) return;
           const recovered = recoverHours(recoverHours(cloudFile, hourPlanOf(local)), readHours());
           if (localN > 0 && recovered.students.length === 0) {
-            void pushCloud(local);
+            if (isUnlocked()) void pushCloud(local);
             flashMsg("Cloud desk was empty · kept this PC's roster", "warn");
             return;
           }
           const kept = neutralizeOpenNames(ensureP6StudyHall(recovered));
           const seated = kept.students.length === 0 ? neutralizeOpenNames(fillQuarterOne(kept)) : kept;
           setFile(seated);
-          if (seated !== kept) void pushCloud(seated);
+          if (seated !== kept && isUnlocked()) void pushCloud(seated);
           if (localN === 0 && seated.students.length > 0 && seated === kept) {
             flashMsg(`Loaded ${kept.students.length} workers from the cloud`, "ok");
           }
@@ -568,12 +569,13 @@ export function Board() {
       setLearnStart("plan");
       go("skills");
     } else if (next === "crew") {
-      if (unlocked) {
-        setDeskPad("effort");
-        goDesk("score");
+      if (!unlocked) {
+        startTransition(() => setView("mycard"));
         return;
       }
-      askPin("crew");
+      setDeskPad("effort");
+      goDesk("score");
+      return;
     } else if (next === "roster") {
       if (unlocked) go("roster");
       else askPin("roster");
@@ -693,7 +695,7 @@ export function Board() {
                   <div className="grid grid-cols-2 gap-1">
                     <button type="button" onClick={() => go("overview")} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">Wall</button>
                     <button type="button" onClick={() => { setLearnStart("plan"); if (!unlocked) { setPendingLearn("plan"); askPin("skills"); return; } go("skills"); }} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">This hour</button>
-                    <button type="button" onClick={() => goDesk()} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">Score</button>
+                    <button type="button" onClick={() => (unlocked ? goDesk() : startTransition(() => setView("mycard")))} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">{unlocked ? "Score" : "My card"}</button>
                     <button type="button" onClick={() => go("roster")} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">People</button>
                     <button type="button" onClick={() => go("shop")} className="tw-tap min-h-11 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">Admin</button>
                   </div>
@@ -793,6 +795,7 @@ export function Board() {
               <button type="button" onClick={() => go("overview")} title="Shop names only" className="shrink-0">
                 <TwWordmark compact={phone} />
               </button>
+              {!unlocked ? <ShopName /> : null}
               <div className="nav-chips min-w-0">
                 <FrameFacts file={wallFile} />
               </div>
@@ -902,6 +905,10 @@ export function Board() {
           onTips={setDescribeOn}
           wallDesk={wallDash(true)}
         />
+      ) : view === "mycard" ? (
+        <div className="min-h-0 flex-1 overflow-auto p-3">
+          <ShopCard />
+        </div>
       ) : view === "score" && unlocked ? (
         <ScoreDesk
           file={wallFile}
@@ -1066,6 +1073,7 @@ export function Board() {
           navV2
           onBoard={() => go("overview")}
           onCrew={() => goSection("crew")}
+          kid={!unlocked}
           onTeach={() => {
             go("teach");
           }}

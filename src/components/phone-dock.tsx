@@ -18,6 +18,7 @@ export function PhoneDock({
   onTeach: _onTeach,
   onOther,
   onRoster,
+  kid = false,
 }: {
   view: string;
   pad?: "effort" | "skill";
@@ -30,6 +31,7 @@ export function PhoneDock({
   onTeach?: () => void;
   onOther?: () => void;
   onRoster?: () => void;
+  kid?: boolean;
 }) {
   const { t } = useLang();
   if (navV2) {
@@ -37,7 +39,7 @@ export function PhoneDock({
     const items: { id: AppSection; label: string; go: () => void }[] = [
       { id: "dash", label: t("Wall"), go: onBoard },
       { id: "learn", label: t("Hour"), go: onSkills },
-      { id: "crew", label: t("Score"), go: onCrew },
+      { id: "crew", label: kid ? "My card" : t("Score"), go: onCrew },
       { id: "roster", label: t("People"), go: onRoster ?? onOther ?? onDesk },
       { id: "admin", label: t("Admin"), go: onOther ?? onDesk },
     ];

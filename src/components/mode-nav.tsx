@@ -19,7 +19,7 @@ const MODES: { id: Mode; label: string }[] = [
 ];
 
 export function modeOf(view: string): Mode {
-  if (view === "overview" || view === "week" || view === "year" || view === "prints" || view === "teach" || view === "polls" || view === "deck") return "board";
+  if (view === "overview" || view === "week" || view === "year" || view === "prints" || view === "teach" || view === "polls" || view === "deck" || view === "mycard") return "board";
   if (view === "score" || view === "crew") return "desk";
   if (view === "skills" || view === "grades" || view === "projects") return "learn";
   return "admin";

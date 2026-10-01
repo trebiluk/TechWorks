@@ -2,25 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { deskToken, ensureDeskKey, formatDeskKey, storedDeskKey } from "@/lib/desk-cloud";
+import { HUB_DOORS } from "@/lib/hub-doors";
 import { cn } from "@/lib/utils";
 
 const ICONS = ["link", "globe", "bookmark", "video", "file", "game", "music", "calc", "news", "school"] as const;
 const MAX_NOTE = 80;
-const APPS = [
-  ["techworks", "TechWorks"],
-  ["baboo", "Baboo"],
-  ["koderized", "Koderized"],
-  ["bertycad", "BertyCAD"],
-  ["bertybots", "Berty's Botz"],
-  ["berty-run", "Pipe Draft"],
-  ["paperlab", "PaperLab"],
-  ["logolab", "LogoLab"],
-  ["sprocket", "Sprocket"],
-  ["den", "Bearcat Den"],
-  ["bistro", "Bearcat Bistro"],
-  ["housekit", "HouseKit"],
-  ["drift", "Drift"],
-] as const;
+const APPS = HUB_DOORS;
 
 type LinkRow = { id: string; name: string; href: string; icon: string };
 

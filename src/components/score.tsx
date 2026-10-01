@@ -18,6 +18,7 @@ import {
   Wrench,
   Zap,
 } from "lucide-react";
+import { ProgressBoard } from "@/components/progress-board";
 import type { DayCode, EconomyFile, RawStudent } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
 import { formatSchoolDate, isSchoolDay, scoreDate as nearestScoreDate, stepSchoolDay, todayIso } from "@/lib/calendar";
@@ -232,6 +233,7 @@ export function ScoreDesk({
       className={cn("flex min-h-0 flex-1 flex-col overflow-hidden", crewMode ? "bg-bg p-2" : "")}
       data-score-pad={crewMode ? "crew" : "teacher"}
     >
+      {crewMode ? null : <ProgressBoard file={file} onChange={onChange} />}
       <header className="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-1 px-1 pb-2">
         {crewMode ? (
           <>

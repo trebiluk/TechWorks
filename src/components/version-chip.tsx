@@ -1,20 +1,33 @@
 import { VERSION_LABEL } from "@/lib/version";
 import { COPYRIGHT_LINE } from "@/lib/copy";
 import { BertyPeek } from "@/components/berty";
-import { deskSavePending } from "@/lib/store";
+import { cloudStatus, type CloudStatus } from "@/lib/desk-cloud";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
 /** Quiet proof the gradebook landed on this PC. */
 export function SavedChip() {
-  const [pending, setPending] = useState(false);
+  const [label, setLabel] = useState("");
   useEffect(() => {
-    const t = window.setInterval(() => setPending(deskSavePending()), 400);
-    return () => window.clearInterval(t);
+    const sync = () => {
+      const st: CloudStatus = cloudStatus();
+      if (st === "saving") setLabel("Saving…");
+      else if (st === "saved") setLabel("Saved");
+      else if (st === "error" || st === "this-pc") setLabel("Not saved");
+      else setLabel("");
+    };
+    sync();
+    window.addEventListener("techworks-cloud", sync);
+    const t = window.setInterval(sync, 400);
+    return () => {
+      window.removeEventListener("techworks-cloud", sync);
+      window.clearInterval(t);
+    };
   }, []);
+  if (!label) return null;
   return (
     <span className="hidden min-h-11 items-center font-mono text-[11px] font-semibold text-muted sm:inline-flex" aria-live="polite">
-      {pending ? "Saving…" : "Saved"}
+      {label}
     </span>
   );
 }

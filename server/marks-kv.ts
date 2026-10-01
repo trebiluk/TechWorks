@@ -1,8 +1,10 @@
-/** Grade-book inbox. Alias and one line per app. No real names. */
+/** App results. Alias and a shop code. No real names. KV when bound, else a local file. Never the cache. */
 
-import { deskKv, type Kv } from "./cf-env";
+import { openKv } from "./cf-env";
+import { codeKnown } from "./who-kv";
 
-export type MarkRow = {
+export type MarkV1 = {
+  v: 1;
   alias: string;
   code: string;
   app: string;
@@ -10,37 +12,39 @@ export type MarkRow = {
   saved: string;
 };
 
-const APPS = new Set([
-  "baboo",
-  "bertycad",
-  "visualizer",
-  "bits",
-  "bertybots",
-  "berty-run",
-  "spancraft",
-  "spire-lab",
-  "drift",
-  "holdit",
-  "ginger",
-  "paperlab",
-  "logolab",
-  "drawin",
-  "catapult",
-  "musiclab",
-  "bertybeatz",
-  "koderized",
-]);
-const DATA_KEY = "tw-marks-v1";
-const CACHE_DATA = "https://tw.kulibert.net/__kv/tw-marks-v1";
-const MAX = 400;
+export type MarkEvent = "start" | "clear" | "fail" | "score" | "badge" | "xp";
 
-function cacheOf() {
-  try {
-    const cachesObj = (globalThis as unknown as { caches?: { default?: { match: (req: Request) => Promise<Response | undefined>; put: (req: Request, res: Response) => Promise<void> } } }).caches;
-    return cachesObj?.default ?? null;
-  } catch {
-    return null;
-  }
+export type MarkV2 = {
+  v: 2;
+  app: string;
+  version: string;
+  code: string;
+  alias: string;
+  event: MarkEvent;
+  level: string;
+  score: number;
+  max: number;
+  stars: number;
+  xp: number;
+  skill: string;
+  ms: number;
+  ts: string;
+};
+
+export type MarkRecord = MarkV1 | MarkV2;
+
+const APPS = new Set([
+  "baboo", "bertycad", "visualizer", "bits", "bertybots", "berty-run", "spancraft", "spire-lab",
+  "drift", "holdit", "ginger", "paperlab", "logolab", "drawin", "catapult", "musiclab", "bertybeatz",
+  "koderized", "throwit", "sprocket", "housekit", "techworks",
+]);
+const EVENTS = new Set<MarkEvent>(["start", "clear", "fail", "score", "badge", "xp"]);
+const DATA_KEY = "tw-marks-v2";
+const MAX = 800;
+const CODE = /^[A-Z2-9]{5}$/;
+
+function clip(raw: unknown, max: number) {
+  return String(raw ?? "").replace(/\s+/g, " ").trim().slice(0, max);
 }
 
 function cleanAlias(raw: unknown) {
@@ -64,82 +68,113 @@ function codeOf(alias: string) {
   return s.toUpperCase() + "-" + chars[Math.floor(n / chars.length)] + chars[n % chars.length];
 }
 
-function clip(raw: unknown, max: number) {
-  return String(raw ?? "").replace(/\s+/g, " ").trim().slice(0, max);
+function shopCode(raw: unknown) {
+  return String(raw ?? "").toUpperCase().replace(/[^A-Z2-9]/g, "").slice(0, 5);
 }
 
-export function sanitizeMark(src: unknown): MarkRow | null {
+export function sanitizeV1(src: unknown): MarkV1 | null {
   if (!src || typeof src !== "object") return null;
-  const row = src as { alias?: unknown; app?: unknown; line?: unknown };
+  const row = src as { alias?: unknown; app?: unknown; line?: unknown; saved?: unknown };
+  if ("event" in (src as object) || (src as { v?: unknown }).v === 2) return null;
   const alias = cleanAlias(row.alias);
   const code = codeOf(alias);
   const app = clip(row.app, 24);
   const line = clip(row.line, 32);
   if (!alias || !code || !APPS.has(app) || !line) return null;
-  return { alias, code, app, line, saved: new Date().toISOString() };
+  return { v: 1, alias, code, app, line, saved: clip(row.saved, 40) || new Date().toISOString() };
 }
 
-function pack(rows: MarkRow[]) {
-  const map = new Map<string, MarkRow>();
+export function sanitizeV2(src: unknown): MarkV2 | null {
+  if (!src || typeof src !== "object") return null;
+  const row = src as Partial<MarkV2>;
+  const code = shopCode(row.code);
+  const alias = cleanAlias(row.alias);
+  const app = clip(row.app, 24);
+  const event = clip(row.event, 12) as MarkEvent;
+  if (!CODE.test(code) || alias.length < 2 || !APPS.has(app) || !EVENTS.has(event)) return null;
+  const stars = Math.max(0, Math.min(5, Math.round(Number(row.stars) || 0)));
+  const score = Math.max(0, Math.min(9999, Math.round(Number(row.score) || 0)));
+  const max = Math.max(0, Math.min(9999, Math.round(Number(row.max) || 0)));
+  const xp = Math.max(0, Math.min(999, Math.round(Number(row.xp) || 0)));
+  const ms = Math.max(0, Math.min(86_400_000, Math.round(Number(row.ms) || 0)));
+  return {
+    v: 2,
+    app,
+    version: clip(row.version, 16),
+    code,
+    alias,
+    event,
+    level: clip(row.level, 40),
+    score,
+    max,
+    stars,
+    xp,
+    skill: clip(row.skill, 24),
+    ms,
+    ts: clip(row.ts, 40) || new Date().toISOString(),
+  };
+}
+
+export function dedupeMarks(rows: MarkRecord[]): MarkRecord[] {
+  const map = new Map<string, MarkRecord>();
   for (const row of rows) {
-    const clean = sanitizeMark(row);
-    if (!clean) continue;
-    clean.saved = clip(row.saved, 40) || clean.saved;
-    map.set(clean.code + "\n" + clean.app, clean);
+    if (row.v === 2) map.set(`${row.code}\n${row.app}\n${row.event}\n${row.level}\n${row.ts}`, row);
+    else map.set(`v1\n${row.code}\n${row.app}`, row);
   }
   return [...map.values()].slice(-MAX);
 }
 
-async function cacheGet(): Promise<string | null> {
-  const cache = cacheOf();
-  if (!cache) return null;
-  const hit = await cache.match(new Request(CACHE_DATA));
-  if (!hit) return null;
-  try {
-    return await hit.text();
-  } catch {
-    return null;
+function packStored(rows: unknown[]): MarkRecord[] {
+  const out: MarkRecord[] = [];
+  for (const row of rows) {
+    const v2 = sanitizeV2(row);
+    if (v2) {
+      out.push(v2);
+      continue;
+    }
+    const v1 = sanitizeV1(row);
+    if (v1) out.push(v1);
   }
+  return dedupeMarks(out);
 }
 
-async function cachePut(value: string) {
-  const cache = cacheOf();
-  if (!cache) return false;
-  await cache.put(
-    new Request(CACHE_DATA),
-    new Response(value, { headers: { "content-type": "application/json; charset=utf-8" } }),
-  );
-  return true;
-}
-
-async function readRaw(kv: Kv | null): Promise<{ raw: string | null; store: "kv" | "cache" | "none" }> {
-  if (kv) return { raw: await kv.get(DATA_KEY), store: "kv" };
-  const cached = await cacheGet();
-  if (cached != null || cacheOf()) return { raw: cached, store: "cache" };
-  return { raw: null, store: "none" };
-}
-
-export async function loadMarks(event: unknown): Promise<{ marks: MarkRow[]; store: "kv" | "cache" | "none" }> {
-  const kv = deskKv(event);
-  const { raw, store } = await readRaw(kv);
+export async function loadMarks(event: unknown): Promise<{ marks: MarkRecord[]; store: "kv" | "file" | "none" }> {
+  const kv = await openKv(event);
+  if (!kv) return { marks: [], store: "none" };
+  const raw = await kv.get(DATA_KEY);
+  const store = process.env.CF_PAGES || process.env.NITRO_PRESET === "cloudflare_pages" ? "kv" : "file";
   if (!raw) return { marks: [], store };
   try {
-    const parsed = JSON.parse(raw) as { marks?: MarkRow[] };
-    return { marks: pack(Array.isArray(parsed.marks) ? parsed.marks : []), store };
+    const parsed = JSON.parse(raw) as { marks?: unknown[] };
+    return { marks: packStored(Array.isArray(parsed.marks) ? parsed.marks : []), store };
   } catch {
     return { marks: [], store };
   }
 }
 
-export async function saveMarks(event: unknown, incoming: unknown[]): Promise<"kv" | "cache" | "none"> {
-  const kv = deskKv(event);
-  const { marks } = await loadMarks(event);
-  const next = pack(marks.concat(incoming as MarkRow[]));
-  const body = JSON.stringify({ v: 1, marks: next });
-  if (kv) {
-    await kv.put(DATA_KEY, body);
-    return "kv";
+export async function saveMarks(event: unknown, incoming: unknown[]): Promise<"kv" | "file" | "none" | "reject"> {
+  const kv = await openKv(event);
+  if (!kv) return "none";
+  const known: MarkRecord[] = [];
+  for (const src of incoming) {
+    const v2 = sanitizeV2(src);
+    if (v2) {
+      if (!(await codeKnown(event, v2.code))) continue;
+      known.push(v2);
+      continue;
+    }
+    const v1 = sanitizeV1(src);
+    if (v1) known.push(v1);
   }
-  if (await cachePut(body)) return "cache";
-  return "none";
+  if (!known.length) return "reject";
+  const { marks } = await loadMarks(event);
+  const next = dedupeMarks(marks.concat(known));
+  await kv.put(DATA_KEY, JSON.stringify({ v: 2, marks: next }));
+  return process.env.CF_PAGES || process.env.NITRO_PRESET === "cloudflare_pages" ? "kv" : "file";
+}
+
+export function marksForCode(marks: MarkRecord[], code: string): MarkRecord[] {
+  const shop = shopCode(code);
+  if (!CODE.test(shop)) return [];
+  return marks.filter((row) => row.v === 2 && row.code === shop);
 }

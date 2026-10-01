@@ -160,6 +160,7 @@ export type EconomyFile = {
       };
       periodRewards?: Record<string, { title?: string; xp?: number; grade?: number; effort?: number }>;
       housePicks?: string[];
+      progressBoard?: boolean;
       boardCards?: { title: string; body: string }[];
       meetings?: { title: string; date?: string; dow?: number; time?: string }[];
       crewBans?: { a: string; b: string; note?: string; by?: string; since?: string }[];

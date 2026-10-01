@@ -1,8 +1,15 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.92.146. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.93.0. -->
 
 # TechWorks changelog
 
-App version **1.92.146**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.93.0**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.93.0 — 2026-10-01
+
+- App results stay in the shop book. A kid signs in with five boxes and a PIN pad. The server checks the code. My card shows the alias, the level, the XP, one badge per app, and the last five clears. The code stays off the wall.
+- Score on a student screen is My card, not the teacher PIN. The teacher Score page is the app progress board. The wall board is off until the teacher turns it on.
+- A fresh visit does not write the cloud desk. Saved shows only after the cloud accepts the write.
+- The door list names Berty's Run and the rest of the Hub doors.
 
 ## 1.92.146 — 2026-09-30
 

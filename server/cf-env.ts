@@ -29,3 +29,15 @@ export function deskKv(event: unknown): Kv | null {
   if (ns && typeof ns.get === "function" && typeof ns.put === "function") return ns;
   return null;
 }
+
+export async function openKv(event: unknown): Promise<Kv | null> {
+  const live = deskKv(event);
+  if (live) return live;
+  if (process.env.CF_PAGES || process.env.NITRO_PRESET === "cloudflare_pages") return null;
+  try {
+    const mod = await import("./local-kv");
+    return mod.fileKv();
+  } catch {
+    return null;
+  }
+}
