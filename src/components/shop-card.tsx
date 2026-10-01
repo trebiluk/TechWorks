@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { badgesOf, levelName, recentClears, weekXp, type ProgressMark } from "@/lib/app-progress";
+import { badgesOf, weekXp, type ProgressMark } from "@/lib/app-progress";
+import { doorName } from "@/lib/hub-doors";
+import { LEVEL_MAX, XP_PER_LEVEL } from "@/lib/skills";
 import { clearShopSession, loadShopSession, type ShopSession } from "@/lib/shop-session";
 
 export function ShopName() {
@@ -42,30 +44,27 @@ export function ShopCard({ pinned = false }: { pinned?: boolean }) {
 
   const xp = marks.reduce((sum, row) => sum + Math.max(0, Number(row.xp) || 0), 0);
   const week = weekXp(marks);
-  const band = levelName(xp);
+  const level = Math.min(LEVEL_MAX, Math.floor(xp / XP_PER_LEVEL) + 1);
   const badges = badgesOf(marks);
-  const clears = recentClears(marks);
-  const next = [0, 6, 12, 18, 24, 30, 36, 42].find((n) => n > xp) ?? xp + 6;
-  const pct = Math.max(8, Math.min(100, Math.round((xp / next) * 100)));
+  const rows = marks
+    .slice()
+    .sort((a, b) => Date.parse(b.ts || "") - Date.parse(a.ts || ""))
+    .slice(0, 5);
 
   return (
-    <section className="shrink-0 rounded-xl bg-surface p-3" data-shop-card>
+    <section className="shrink-0 rounded-xl bg-surface p-3" data-shop-card data-alias={session.alias}>
       <div className="flex items-center gap-3">
         <span className="inline-flex size-14 items-center justify-center rounded-full bg-elevated text-3xl" aria-hidden>
           {session.picture || "🐾"}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="font-display text-2xl font-bold tracking-tight">{session.alias}</p>
-          <p className="text-sm font-semibold text-gold">{band} · {xp} XP</p>
+          <p className="font-display text-xl font-bold leading-tight tracking-tight">{session.alias} · {xp} XP · Level {level}</p>
+          <p className="text-xs text-muted">{week} XP this week</p>
         </div>
         <button type="button" onClick={() => clearShopSession()} className="tw-tap min-h-11 text-sm font-semibold text-muted">
           Sign out
         </button>
       </div>
-      <div className="mt-2 h-3 overflow-hidden rounded-full bg-elevated" aria-label={`${xp} XP`}>
-        <div className="h-full rounded-full bg-accent" style={{ width: `${pct}%` }} />
-      </div>
-      <p className="mt-1 text-xs text-muted">{week} XP this week</p>
       <div className="mt-2 flex flex-wrap gap-1">
         {badges.length ? badges.map((b) => (
           <span key={b.app} className="inline-flex min-h-11 items-center rounded-full bg-elevated px-3 text-sm font-semibold">
@@ -73,11 +72,23 @@ export function ShopCard({ pinned = false }: { pinned?: boolean }) {
           </span>
         )) : <span className="text-sm text-muted">No badges yet. Finish a level in an app.</span>}
       </div>
-      {clears.length ? (
+      {rows.length ? (
         <ul className="mt-2 grid gap-1">
-          {clears.map((line) => (
-            <li key={line} className="text-sm">{line}</li>
-          ))}
+          {rows.map((row, i) => {
+            const stars = Math.max(0, Number(row.stars) || 0);
+            const score = Number(row.score) || 0;
+            const max = Number(row.max) || 0;
+            return (
+              <li key={`${row.app}-${row.ts}-${i}`} className="flex min-h-11 items-center gap-2">
+                <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-xl bg-elevated text-xs font-bold" aria-hidden>
+                  {doorName(row.app || "").slice(0, 2).toUpperCase()}
+                </span>
+                <span className="min-w-0 flex-1 truncate text-sm font-semibold">{doorName(row.app || "")}</span>
+                <span className="text-sm text-gold">{"★".repeat(Math.min(5, stars)) || "—"}</span>
+                {max ? <span className="font-mono text-sm">{score}/{max}</span> : null}
+              </li>
+            );
+          })}
         </ul>
       ) : null}
     </section>

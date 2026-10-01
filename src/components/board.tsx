@@ -36,6 +36,7 @@ import { bootLang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n-hook";
 import { LangChip } from "@/components/lang-chip";
 import { ShopCard, ShopName } from "@/components/shop-card";
+import { listenForHub } from "@/lib/shop-session";
 import { SavedChip, VersionChip } from "@/components/version-chip";
 import { ErrorGate } from "@/components/error-gate";
 import { AdminHub } from "@/components/admin-hub";
@@ -337,6 +338,7 @@ export function Board() {
   useEffect(() => {
     installLayoutWatch();
     ensureDefaultPin();
+    const stopHub = listenForHub();
     try {
       const q = new URLSearchParams(window.location.search);
       setEmbed(q.get("embed") === "1");
@@ -413,6 +415,7 @@ export function Board() {
     } catch (err) {
       console.error("[TechWorks] boot", err);
     }
+    return stopHub;
   }, [seed]);
 
   useEffect(() => {

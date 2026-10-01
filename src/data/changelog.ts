@@ -6,6 +6,12 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.93.4 — 2026-10-01
+
+- A Hub sign-in carries over. TechWorks reads the tw_session cookie and a framed kw-who hand-off, then shows the alias with no code boxes. The kid card says the alias, the XP, and the level, plus the last five records and badges.
+- The Hub bar is on the page: Home, the version, and Help. Marks for one code come back newest first, and apps.kulibert.net can read them with credentials.
+- A locked desk does not write /api/desk. A 503 or a missing cloud row says Not saved, never Saved.
+
 ## 1.93.3 — 2026-10-01
 
 - Marks open a real book. The live door was answering store none, so a score never stuck. The book is the desk durable object when KV is not bound. The My style bar stays off the home page.

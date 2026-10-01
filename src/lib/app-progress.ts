@@ -11,6 +11,8 @@ export type ProgressMark = {
   event?: string;
   level?: string;
   stars?: number;
+  score?: number;
+  max?: number;
   xp?: number;
   skill?: string;
   ts?: string;

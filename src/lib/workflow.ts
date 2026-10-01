@@ -30,11 +30,11 @@ export function schooltoolOpened(date: string): boolean {
 
 export function saveCloudHint(): string {
   const st = cloudStatus();
-  if (st === "saved" || st === "saving") return "Saved on this PC · cloud ok";
-  if (st === "this-pc" || st === "off") return "Saved on this PC · cloud off";
-  if (st === "need-key") return "Saved on this PC · need desk key";
-  if (st === "error" || st === "behind") return "Saved on this PC · cloud missed";
-  return "Saved on this PC";
+  if (st === "saving") return "Saving…";
+  if (st === "saved") return "Saved";
+  if (st === "need-key") return "Need the desk key";
+  if (st === "this-pc" || st === "off" || st === "error" || st === "behind") return "Not saved";
+  return "";
 }
 
 export type RoleId = "teacher" | "crew" | "worker" | "hall" | "club" | "family" | "sub";

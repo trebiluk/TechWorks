@@ -27,7 +27,7 @@ export function whoCors(event: H3Event) {
     setHeader(event, "access-control-allow-credentials", "true");
   }
   setHeader(event, "access-control-allow-methods", "GET, POST, PUT, OPTIONS");
-  setHeader(event, "access-control-allow-headers", "content-type, authorization, x-tw-desk");
+  setHeader(event, "access-control-allow-headers", "content-type, authorization, x-tw-desk, x-tw-pin");
   setHeader(event, "vary", "origin");
   setHeader(event, "cache-control", "no-store");
 }

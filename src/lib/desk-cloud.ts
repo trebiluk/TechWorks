@@ -8,6 +8,7 @@ import { mergeNames, persistNamesVault, readNamesVault, stripNames } from "@/lib
 import { hourCount } from "@/lib/hour-persist";
 import { publicHandle } from "@/lib/shop-code";
 import { avatarOf } from "@/lib/avatars";
+import { isUnlocked } from "@/lib/pin";
 
 const KEY = "techworks-desk-key";
 const ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -178,7 +179,12 @@ export function buildCloudPack(file: EconomyFile): CloudPack {
 
 export async function pushCloud(file: EconomyFile): Promise<boolean> {
   if (typeof window === "undefined") return false;
-  const pass = ensureDeskKey();
+  if (!isUnlocked()) return false;
+  const pass = storedDeskKey();
+  if (!pass) {
+    setStatus("need-key");
+    return false;
+  }
   const token = await deskToken(pass);
   const real = stripFakeDemo(file);
   persistNamesVault(real);
@@ -236,7 +242,7 @@ export async function pullCloud(): Promise<CloudPack | null> {
   try {
     const res = await fetch(`/api/desk?k=${encodeURIComponent(token)}`);
     if (res.status === 404) {
-      setStatus("saved");
+      setStatus("this-pc");
       return null;
     }
     if (res.status === 401) {
@@ -303,6 +309,7 @@ function realCount(file: EconomyFile): number {
 let pushTimer = 0;
 export function scheduleCloudPush(file: EconomyFile) {
   if (typeof window === "undefined") return;
+  if (!isUnlocked() || !storedDeskKey()) return;
   if (realCount(file) === 0 && hourCount(file) === 0) return;
   if (realCount(file) === 0 && !storedDeskKey()) return;
   if (pushTimer) window.clearTimeout(pushTimer);

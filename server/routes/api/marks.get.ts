@@ -1,5 +1,6 @@
-import { createError, defineEventHandler, getHeader, getQuery, setHeader } from "h3";
+import { createError, defineEventHandler, getHeader, getQuery } from "h3";
 import { loadMarks, marksForCode } from "../../marks-kv";
+import { whoCors } from "../../who-cors";
 
 function deskPinOk(header: string | undefined) {
   const pin = String(header ?? "").replace(/\D/g, "");
@@ -8,12 +9,7 @@ function deskPinOk(header: string | undefined) {
 }
 
 export default defineEventHandler(async (event) => {
-  const origin = getHeader(event, "origin") ?? "";
-  setHeader(event, "access-control-allow-origin", origin || "*");
-  setHeader(event, "access-control-allow-methods", "GET, POST, OPTIONS");
-  setHeader(event, "access-control-allow-headers", "content-type, x-tw-pin");
-  setHeader(event, "vary", "origin");
-  setHeader(event, "cache-control", "no-store");
+  whoCors(event);
   const q = getQuery(event);
   const code = String(q.code ?? "");
   const period = String(q.period ?? "");

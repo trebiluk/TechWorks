@@ -61,6 +61,7 @@ export const Route = createRootRoute({
     <html lang="en" suppressHydrationWarning data-theme="solvay" data-kind="dark" data-layout="one" style={{ background: "#06122B", color: "#F7F9FF" }}>
       <head>
         <HeadContent />
+        <script defer src="https://apps.kulibert.net/shared/kulibert-bar.js" data-app="techworks" data-version={`TW ${APP_VERSION}`} />
         <style id="tw-css" dangerouslySetInnerHTML={{ __html: twCss }} />
         <script
           dangerouslySetInnerHTML={{

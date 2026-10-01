@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
 import { findByShop } from "@/lib/live";
 import { pinSet, pinsMatch, rerollWithPin, setStudentPin } from "@/lib/student-pin";
-import { saveShopSession } from "@/lib/shop-session";
+import { loadShopSession, saveShopSession } from "@/lib/shop-session";
 
 /** Five boxes, a pin pad, then a name. The server is the list. Nothing typed as a real name. */
 export function StudentClaim({ file, onChange }: { file: EconomyFile; onChange: (next: EconomyFile) => void }) {
   const [open, setOpen] = useState(false);
+  const [signed, setSigned] = useState(false);
   const [boxes, setBoxes] = useState(["", "", "", "", ""]);
   const [pin, setPin] = useState("");
   const [again, setAgain] = useState("");
@@ -14,6 +15,13 @@ export function StudentClaim({ file, onChange }: { file: EconomyFile; onChange: 
   const code = boxes.join("");
   const kid = findByShop(file.students, code);
   const ready = Boolean(kid && pinSet(kid));
+
+  useEffect(() => {
+    const sync = () => setSigned(Boolean(loadShopSession()));
+    sync();
+    window.addEventListener("tw-shop", sync);
+    return () => window.removeEventListener("tw-shop", sync);
+  }, []);
 
   function setBox(i: number, raw: string) {
     const ch = raw.toUpperCase().replace(/[^A-Z2-9]/g, "").slice(-1);
@@ -87,6 +95,7 @@ export function StudentClaim({ file, onChange }: { file: EconomyFile; onChange: 
     if (!res.error) onChange(res.file);
   }
 
+  if (signed) return null;
   if (!open) {
     return (
       <button type="button" onClick={() => setOpen(true)} className="tw-tap min-h-11 shrink-0 rounded-xl bg-elevated px-3 text-sm font-semibold">

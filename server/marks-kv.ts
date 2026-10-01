@@ -176,5 +176,9 @@ export async function saveMarks(event: unknown, incoming: unknown[]): Promise<"k
 export function marksForCode(marks: MarkRecord[], code: string): MarkRecord[] {
   const shop = shopCode(code);
   if (!CODE.test(shop)) return [];
-  return marks.filter((row) => row.v === 2 && row.code === shop);
+  const when = (row: MarkRecord) => Date.parse(row.v === 2 ? row.ts : row.saved) || 0;
+  return marks
+    .filter((row) => row.code === shop)
+    .map((row) => (row.v === 1 ? { ...row, event: "line" as const } : row))
+    .sort((a, b) => when(b) - when(a));
 }
