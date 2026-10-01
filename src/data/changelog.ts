@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.93.11 — 2026-10-01
+
+- An app score keeps a real time. A millisecond stamp from the shop script is stored as a date, so the kid card can sort it.
+
 ## 1.93.10 — 2026-10-01
 
 - An app can land a score. A play or a line from the shop script is stored as a v2 mark. Hosting was not changed.

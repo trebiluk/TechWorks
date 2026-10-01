@@ -67,6 +67,16 @@ function codeOf(alias: string) {
   return s.toUpperCase() + "-" + chars[Math.floor(n / chars.length)] + chars[n % chars.length];
 }
 
+function stamp(raw: unknown) {
+  if (typeof raw === "number" && Number.isFinite(raw)) return new Date(raw).toISOString();
+  const text = clip(raw, 40);
+  if (/^\d{12,}$/.test(text)) {
+    const ms = Number(text);
+    if (Number.isFinite(ms)) return new Date(ms).toISOString();
+  }
+  return text || new Date().toISOString();
+}
+
 function shopCode(raw: unknown) {
   return String(raw ?? "").toUpperCase().replace(/[^A-Z2-9]/g, "").slice(0, 5);
 }
@@ -110,7 +120,7 @@ export function sanitizeV2(src: unknown): MarkV2 | null {
     xp,
     skill: clip(row.skill, 24),
     ms,
-    ts: clip(row.ts, 40) || new Date().toISOString(),
+    ts: stamp(row.ts),
   };
 }
 
