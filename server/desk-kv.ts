@@ -1,6 +1,6 @@
 /** Cloudflare KV when bound as TW_DESK. Preview uses the Vite /api/desk plugin. */
 
-import { deskKv } from "./cf-env";
+import { openKv } from "./cf-env";
 
 export type DeskRow = {
   keyHash: string;
@@ -13,7 +13,7 @@ export type DeskRow = {
 };
 
 export async function loadRow(event: unknown): Promise<{ row: DeskRow | null; store: "kv" | "none" }> {
-  const kv = deskKv(event);
+  const kv = await openKv(event);
   if (!kv) return { row: null, store: "none" };
   const raw = await kv.get("desk");
   if (!raw) return { row: null, store: "kv" };
@@ -25,7 +25,7 @@ export async function loadRow(event: unknown): Promise<{ row: DeskRow | null; st
 }
 
 export async function saveRow(event: unknown, row: DeskRow): Promise<"kv" | "none"> {
-  const kv = deskKv(event);
+  const kv = await openKv(event);
   if (!kv) return "none";
   await kv.put("desk", JSON.stringify(row));
   return "kv";

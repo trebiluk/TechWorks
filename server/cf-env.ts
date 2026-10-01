@@ -1,4 +1,4 @@
-/** Durable desk. KV when TW_DESK is bound, otherwise the DeskBook object. Never the cache. */
+/** Durable desk. KV when one is bound, otherwise the DeskBook object. Never the cache. */
 
 export type Kv = {
   get: (k: string) => Promise<string | null>;
@@ -40,6 +40,18 @@ function asKv(ns: unknown): Kv | null {
   return null;
 }
 
+function namedKv(env: Record<string, unknown> | null): Kv | null {
+  const bound = asKv(env?.TW_DESK);
+  if (bound) return bound;
+  if (!env) return null;
+  for (const [key, value] of Object.entries(env)) {
+    if (key === "ASSETS" || key === "TW_BOOK") continue;
+    const kv = asKv(value);
+    if (kv) return kv;
+  }
+  return null;
+}
+
 function asBook(ns: unknown): BookNs | null {
   if (!ns || typeof ns !== "object") return null;
   const row = ns as BookNs & { put?: unknown };
@@ -64,12 +76,12 @@ function bookKv(ns: BookNs): Kv {
 }
 
 export function deskKv(event: unknown): Kv | null {
-  return asKv(envOf(event)?.TW_DESK);
+  return namedKv(envOf(event));
 }
 
 export async function openKv(event: unknown): Promise<Kv | null> {
   const env = envOf(event);
-  const live = asKv(env?.TW_DESK);
+  const live = namedKv(env);
   if (live) return live;
   const book = asBook(env?.TW_BOOK);
   if (book) return bookKv(book);
