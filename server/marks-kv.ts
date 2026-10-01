@@ -1,7 +1,6 @@
 /** App results. Alias and a shop code. No real names. KV when bound, else a local file. Never the cache. */
 
 import { openKv } from "./cf-env";
-import { codeKnown } from "./who-kv";
 
 export type MarkV1 = {
   v: 1;
@@ -159,7 +158,6 @@ export async function saveMarks(event: unknown, incoming: unknown[]): Promise<"k
   for (const src of incoming) {
     const v2 = sanitizeV2(src);
     if (v2) {
-      if (!(await codeKnown(event, v2.code))) continue;
       known.push(v2);
       continue;
     }
