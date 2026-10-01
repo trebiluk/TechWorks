@@ -183,7 +183,7 @@ function shopApiPlugin(): Plugin {
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const pathOnly = (req.url ?? "").split("?", 1)[0] ?? "";
-        if (pathOnly !== "/api/marks" && pathOnly !== "/api/who") {
+        if (pathOnly !== "/api/marks" && pathOnly !== "/api/who" && pathOnly !== "/api/prefs") {
           next();
           return;
         }
@@ -199,7 +199,7 @@ function shopApiPlugin(): Plugin {
         if (method === "OPTIONS") {
           res.statusCode = 204;
           res.setHeader("access-control-allow-origin", String(req.headers.origin || "*"));
-          res.setHeader("access-control-allow-methods", "GET, POST, OPTIONS");
+          res.setHeader("access-control-allow-methods", "GET, POST, PUT, OPTIONS");
           res.setHeader("access-control-allow-headers", "content-type, x-tw-pin");
           res.end();
           return;
@@ -247,6 +247,45 @@ function shopApiPlugin(): Plugin {
             }
             const loaded = await loadMarks({});
             json(200, { ok: true, store, n: loaded.marks.length });
+            return;
+          }
+          if (pathOnly === "/api/prefs" && (method === "GET" || method === "PUT")) {
+            const { loadPrefs, savePrefs, shopCode, appSlug } = await server.ssrLoadModule("/server/prefs-kv.ts");
+            const { codeKnown } = await server.ssrLoadModule("/server/who-kv.ts");
+            if (method === "GET") {
+              const code = shopCode(q.get("code") ?? "");
+              const app = appSlug(q.get("app") ?? "");
+              if (!/^[a-z0-9-]{1,24}$/.test(app)) {
+                json(400, { ok: false, error: "app" });
+                return;
+              }
+              if (!(await codeKnown({}, code))) {
+                json(400, { ok: false, error: "code" });
+                return;
+              }
+              const row = await loadPrefs({}, code, app);
+              if (row.store === "none") {
+                json(503, { ok: false });
+                return;
+              }
+              json(200, { ok: true, store: row.store, app, prefs: row.prefs });
+              return;
+            }
+            const body = JSON.parse((await readBody(req)) || "{}") as { code?: string; app?: string; prefs?: unknown };
+            const saved = await savePrefs({}, String(body.code ?? ""), String(body.app ?? ""), body.prefs);
+            if (saved === "big") {
+              json(413, { ok: false, error: "too big" });
+              return;
+            }
+            if (saved === "reject" || saved === "shape") {
+              json(400, { ok: false, error: saved });
+              return;
+            }
+            if (saved === "none") {
+              json(503, { ok: false });
+              return;
+            }
+            json(200, { ok: true, store: saved, app: appSlug(body.app) });
             return;
           }
           if (pathOnly === "/api/who" && method === "POST") {

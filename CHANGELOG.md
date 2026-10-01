@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.93.0. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.93.1. -->
 
 # TechWorks changelog
 
-App version **1.93.0**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.93.1**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.93.1 — 2026-10-01
+
+- A kid's app settings follow their code. GET and PUT /api/prefs keep one small JSON blob per app, 8 KB, in the same book as marks. Bits & Bobs can call KulibertWho.prefs.
 
 ## 1.93.0 — 2026-10-01
 
