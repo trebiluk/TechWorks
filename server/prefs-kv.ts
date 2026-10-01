@@ -1,7 +1,6 @@
 /** Per-app settings for one shop code. Same book as marks. Never the cache. */
 
 import { openKv } from "./cf-env";
-import { codeKnown } from "./who-kv";
 
 const DATA_KEY = "tw-prefs-v1";
 const CAP = 8 * 1024;
@@ -50,7 +49,6 @@ export async function loadPrefs(event: unknown, code: string, app: string): Prom
   const shop = shopCode(code);
   const slug = appSlug(app);
   if (!CODE.test(shop) || !APP.test(slug)) return { prefs: {}, store: "none" };
-  if (!(await codeKnown(event, shop))) return { prefs: {}, store: "none" };
   const { book, store } = await readBook(event);
   const row = book[shop]?.[slug];
   const prefs = row && typeof row === "object" && !Array.isArray(row) ? (row as Record<string, unknown>) : {};
@@ -66,7 +64,6 @@ export async function savePrefs(
   const shop = shopCode(code);
   const slug = appSlug(app);
   if (!CODE.test(shop) || !APP.test(slug)) return "reject";
-  if (!(await codeKnown(event, shop))) return "reject";
   const fit = fitPrefs(raw);
   if (!fit.ok) return fit.reason;
   const kv = await openKv(event);
