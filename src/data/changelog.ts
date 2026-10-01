@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.93.7 — 2026-10-01
+
+- The old proof score for PNZM4 is gone. That code was not on the class list. The class list and hosting were not changed.
+
 ## 1.93.6 — 2026-10-01
 
 - A new v2 score with a test code is stored. It no longer has to already be on the class list. The code still has to be 5 characters. Prefs stay limited to a real code. Hosting was not changed.
