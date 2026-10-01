@@ -1,6 +1,7 @@
 /** Public alias book. No legal names. The pin stays a hash. */
 
 import { openKv } from "./cf-env";
+import { loadMarks } from "./marks-kv";
 import { hashStudentPin } from "./pin-hash";
 import { loadRow } from "./desk-kv";
 
@@ -74,7 +75,9 @@ export async function codeKnown(event: unknown, code: string): Promise<boolean> 
   const shop = code.toUpperCase().replace(/[^A-Z2-9]/g, "");
   if (shop.length !== 5) return false;
   const rows = await read(event);
-  return rows.some((row) => row.code === shop);
+  if (rows.some((row) => row.code === shop)) return true;
+  const { marks } = await loadMarks(event);
+  return marks.some((row) => row.code === shop);
 }
 
 export async function whoByCode(event: unknown, code: string): Promise<WhoRow | null> {

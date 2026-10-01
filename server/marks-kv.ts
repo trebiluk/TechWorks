@@ -156,9 +156,7 @@ export async function loadMarks(event: unknown): Promise<{ marks: MarkRecord[]; 
   try {
     const parsed = JSON.parse(raw) as { marks?: unknown[] };
     const marks = packStored(Array.isArray(parsed.marks) ? parsed.marks : []);
-    const kept = marks.filter((row) => !((row.code === "PNZM4" && row.alias === "Nova") || (row.code === "K7Q2M" && row.alias === "Test")));
-    if (kept.length !== marks.length) await kv.put(DATA_KEY, JSON.stringify({ v: 2, marks: kept }));
-    return { marks: kept, store };
+    return { marks, store };
   } catch {
     return { marks: [], store };
   }
