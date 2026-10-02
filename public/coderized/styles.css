@@ -21,7 +21,7 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; min-height: 100%; }
 body {
-  font-family: "Noto Sans", "Segoe UI", "Trebuchet MS", Arial, sans-serif;
+  font-family: var(--kp-font, Outfit, "Noto Sans", "Noto Sans Arabic", "Noto Sans Ethiopic", system-ui, sans-serif);
   background:
     radial-gradient(900px 420px at 8% -20%, #1a4a40 0%, transparent 55%),
     radial-gradient(700px 360px at 100% 0%, #4a3210 0%, transparent 48%),
@@ -309,7 +309,7 @@ body.big-type canvas#world {
 body.big-type .top-tools .btn { min-height: 48px; }
 
 
-/* CUT A touch-first — hide keycaps (KZ 1.24.0: also phone-width + any-pointer coarse) */
+/* CUT A touch-first — hide keycaps (KZ 1.25.0: also phone-width + any-pointer coarse) */
 @media (pointer: coarse), (any-pointer: coarse), (hover: none), (max-width: 640px) {
   .k { display: none !important; }
 }
@@ -449,7 +449,7 @@ body.touch-ui .student-tools {
   border-color: #f87171;
 }
 
-/* KZ 1.24.0 — OK and Watch stay fat. Keycaps hide on a phone. */
+/* KZ 1.25.0 — OK and Watch stay fat. Keycaps hide on a phone. */
 #btn-predict,
 #btn-run-example {
   min-height: 48px;
@@ -464,7 +464,7 @@ body.touch-ui .student-tools {
   .k { display: none !important; }
 }
 
-/* KZ 1.24.0 — Guess Door 1 plates. Code, then Options, then Output. */
+/* KZ 1.25.0 — Guess Door 1 plates. Code, then Options, then Output. */
 .one-board .play,
 .zones {
   display: flex;
@@ -531,7 +531,7 @@ body.touch-ui .student-tools {
   justify-content: center;
 }
 
-/* KZ 1.24.0 — short Chromebook: bot picture on the first screen. Order stays code, Options, Output. */
+/* KZ 1.25.0 — short Chromebook: bot picture on the first screen. Order stays code, Options, Output. */
 @media (max-height: 820px) {
   .one-board.wrap { padding-top: 8px; padding-bottom: 8px; }
   .one-board .quest-bar { gap: 8px; }
@@ -577,20 +577,20 @@ body.touch-ui .student-tools {
   gap: 8px;
 }
 .set-label { margin: 0; font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #e0b45a; }
-.set-row { display: flex; gap: 6px; }
+.set-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .settings-panel .btn {
   min-height: 44px;
   color: #fff;
   border: 2px solid #4b5d74;
   background: #132033;
 }
-.set-row .btn { flex: 1; }
+.set-row .btn { flex: 1 1 100%; min-width: 0; white-space: normal; text-align: start; height: auto; overflow: visible; }
 .settings-panel .btn[aria-pressed="true"] {
   border-color: #e0b45a;
   box-shadow: inset 0 0 0 2px #e0b45a;
 }
 
-/* KZ 1.24.0 — left menu, board on the right. No kid name box. */
+/* KZ 1.25.0 — left menu, board on the right. No kid name box. */
 .app-shell { display: flex; align-items: stretch; min-height: 100vh; }
 .board { flex: 1; min-width: 0; }
 .side {
@@ -618,6 +618,10 @@ body.touch-ui .student-tools {
   font-weight: 800;
   background: transparent;
   border: 2px solid #4b5d74;
+  white-space: normal;
+  height: auto;
+  overflow: visible;
+  text-align: start;
 }
 .side .settings-panel { position: static; width: 100%; }
 #btn-menu { min-height: 48px; min-width: 48px; }
@@ -738,10 +742,52 @@ body.touch-ui #btn-hub-back {
   font-weight: 800;
   color: #1b365d;
 }
-html[lang="ar"] .help-rtl {
-  font-family: "Noto Sans Arabic", "Noto Sans", "Segoe UI", sans-serif;
+html[lang="ar"],
+html[lang="fa-AF"],
+html[lang="ti"] { line-height: 1.5; }
+html[dir="rtl"] .app-shell { direction: ltr; flex-direction: row; }
+html[dir="rtl"] .board,
+html[dir="rtl"] .side,
+html[dir="rtl"] .settings-panel,
+html[dir="rtl"] .start-line,
+html[dir="rtl"] .kz-help,
+html[dir="rtl"] #guide,
+html[dir="rtl"] .kz-caption { direction: rtl; text-align: start; }
+html[dir="rtl"] .zones,
+html[dir="rtl"] .zone-code,
+html[dir="rtl"] .blocks,
+html[dir="rtl"] .palette,
+html[dir="rtl"] .stage-frame,
+html[dir="rtl"] .play,
+html[dir="rtl"] .brand { direction: ltr; text-align: left; }
+.brand bdi, .brand { unicode-bidi: isolate; }
+body, .help-rtl, .start-line, .side, .settings-panel {
+  font-family: var(--kp-font), "Noto Sans", "Noto Sans Arabic", "Noto Sans Ethiopic", "Segoe UI", Arial, sans-serif;
 }
-.zones, .blocks, .palette, .stage-frame, .zone-code { direction: ltr; }
+@font-face {
+  font-family: "Noto Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("https://apps.kulibert.net/fonts/noto-sans-cyrillic-700.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: "Noto Sans Arabic";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("https://apps.kulibert.net/fonts/noto-sans-arabic-700.woff2") format("woff2");
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+@font-face {
+  font-family: "Noto Sans Ethiopic";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("https://apps.kulibert.net/fonts/noto-sans-ethiopic-700.woff2") format("woff2");
+  unicode-range: U+1200-1399, U+2D80-2DDE, U+AB00-AB2E;
+}
 
 @media (max-height: 700px) {
   body.short-fit .board {

@@ -1,4 +1,4 @@
-/* Koderized KZ 1.24.0 — Hub sign-in. Door clear is saved. Not red until GO. */
+/* Koderized KZ 1.25.0 — Hub sign-in. Door clear is saved. Not red until GO. */
 
 function preferTouchUi() {
   const coarse = window.matchMedia("(pointer: coarse)").matches
@@ -170,7 +170,7 @@ const DOORS = [
 /* CUT D — quest packs */
 async function loadQuestPacks() {
   try {
-    const res = await fetch("quests.json?v=1.24.0", { cache: "no-store" });
+    const res = await fetch("quests.json?v=1.25.0", { cache: "no-store" });
     if (!res.ok) return;
     const data = await res.json();
     const packs = (data && data.quests) || [];
@@ -239,42 +239,73 @@ function mergePack(base, over) {
   out.doors = doors;
   return out;
 }
+const HUB_LANGS = { en: 1, simple: 1, uk: 1, ru: 1, es: 1, ar: 1, "fa-AF": 1, rw: 1, ti: 1 };
+function hubLang(code) { return HUB_LANGS[code] ? code : "en"; }
+function classicTheme() {
+  try {
+    const q = new URLSearchParams(location.search);
+    if (q.get("theme") === "classic" || q.get("hub") === "classic") return true;
+    if (localStorage.getItem("tech-room-hub") === "classic") return true;
+  } catch (e) {}
+  return false;
+}
+function queryLang() {
+  try { return new URLSearchParams(location.search).get("lang") || ""; } catch (e) { return ""; }
+}
+const SHARED_KEYS = { settings: "settings", help: "help", menu: "menu", language: "language", readAloud: "readAloud", hubSign: "signIn", hubBack: "back", hub: "home" };
+function withShared(pack) {
+  const out = Object.assign({}, pack || {});
+  if (!window.KulibertI18n || !KulibertI18n.t) return out;
+  Object.keys(SHARED_KEYS).forEach(k => {
+    let v = "";
+    try { v = KulibertI18n.t(SHARED_KEYS[k]) || ""; } catch (e) {}
+    if (v) out[k] = v;
+  });
+  return out;
+}
 function L() {
-  const code = lang();
+  const code = classicTheme() ? "en" : lang();
   const en = (window.I18N && I18N.en) || { doors: {} };
-  if (code === "es") return (window.I18N && I18N.es) || en;
-  if (code === "simple") return mergePack(en, (window.I18N && I18N.simple) || {});
-  if (code === "ar") return mergePack(en, (window.I18N && I18N.ar) || {});
-  return en;
+  if (code === "en") return withShared(en);
+  if (code === "es" && window.I18N && I18N.es) return withShared(I18N.es);
+  return withShared(mergePack(en, (window.I18N && I18N[code]) || {}));
 }
 function simpleDoor(id) {
   return window.I18N && I18N.simple && I18N.simple.doors && I18N.simple.doors[id];
 }
 let lastReadCard = "";
 let skipAuto = false;
+let applyingLang = false;
 function setLang(code, opts) {
+  if (classicTheme()) code = "en";
   const a = readA();
-  a.lang = code === "es" || code === "simple" || code === "ar" ? code : "en";
+  a.lang = hubLang(code);
   if (window.writeAccess) writeAccess(a);
+  if (window.KulibertPrefs && KulibertPrefs.acceptLang && KulibertPrefs.lang !== a.lang) {
+    applyingLang = true;
+    try { KulibertPrefs.acceptLang(a.lang); } catch (e) {}
+    applyingLang = false;
+  }
   skipAuto = true;
   applyChrome();
   if (session.role === "student") renderStudent();
   if (session.role === "teacher") renderTeacher();
   skipAuto = false;
   lastReadCard = cardId();
+  warmShared(a.lang);
   if (opts && opts.silent) return;
-  const line = a.lang === "es" ? "Español." : a.lang === "simple" ? "Simple words." : a.lang === "ar" ? "العربية." : "English.";
-  if (window.say) say(line, a.lang);
+  const names = { en: "English.", simple: "Simple words.", uk: "Українська.", ru: "Русский.", es: "Español.", ar: "العربية.", "fa-AF": "دری.", rw: "Ikinyarwanda.", ti: "ትግርኛ." };
+  if (window.say) say(names[a.lang] || "English.", a.lang);
 }
 function applyChrome() {
   const pack = L();
-  const code = lang();
-  document.documentElement.lang = code === "es" ? "es" : code === "ar" ? "ar" : "en";
-  document.documentElement.dir = "ltr";
+  const code = classicTheme() ? "en" : lang();
+  const rtl = !classicTheme() && (code === "ar" || code === "fa-AF");
+  document.documentElement.lang = code === "simple" ? "en" : code;
+  document.documentElement.dir = rtl ? "rtl" : "ltr";
   document.documentElement.dataset.lang = code;
   document.documentElement.dataset.big = readA().big ? "1" : "0";
-  document.querySelectorAll(".help-rtl").forEach(el => { el.dir = code === "ar" ? "rtl" : "ltr"; });
-  document.querySelectorAll(".zones, .blocks, .palette, .stage-frame, #block-list, .zone-code").forEach(el => { el.dir = "ltr"; });
+  document.querySelectorAll(".zones, .blocks, .palette, .stage-frame, #block-list, .zone-code, .play, #world").forEach(el => { el.dir = "ltr"; });
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const k = el.getAttribute("data-i18n");
     if (pack[k]) el.textContent = pack[k];
@@ -1247,7 +1278,7 @@ applyChrome();
 function doorClear(s) {
   const rec = {
     app: "koderized",
-    version: "KZ 1.24.0",
+    version: "KZ 1.25.0",
     event: "clear",
     level: "door-" + doorOf(s.door).n,
     score: shopHeat(load(session.code)),
@@ -1320,6 +1351,9 @@ window.addEventListener("message", ev => {
   if ((data.type === "tw-session" || data.type === "kw-who" || data.type === "kulibert-who") && data.alias) {
     paintWho({ alias: data.alias, code: data.code || who.code, verified: data.on !== false && data.verified !== false });
   }
+  if ((data.type === "kulibert-lang" || data.type === "kp-lang") && data.lang && window.KulibertPrefs && KulibertPrefs.acceptLang) {
+    KulibertPrefs.acceptLang(data.lang);
+  }
 });
 if ($("btn-menu")) $("btn-menu").onclick = () => {
   const open = document.body.classList.toggle("menu-open");
@@ -1361,6 +1395,10 @@ function parseKp(raw) {
   try { text = decodeURIComponent(text); } catch (e) {}
   text = text.trim();
   if (!text) return null;
+  const dotted = text.split(".");
+  if (dotted.length >= 7 && text.charAt(0) !== "{") {
+    return { size: dotted[0], contrast: dotted[1] === "1", motion: dotted[2] === "1" ? "less" : "full", sound: dotted[3] !== "0", captions: dotted[4] !== "0", read: dotted[5] === "1", lang: dotted[6] };
+  }
   if (text.charAt(0) === "{") {
     try { return JSON.parse(text); } catch (e2) {}
   }
@@ -1383,7 +1421,7 @@ function parseKp(raw) {
     }
     const v = bit.toLowerCase();
     if (v === "xl" || v === "big") out.big = true;
-    else if (v === "ar" || v === "es" || v === "en" || v === "simple") out.lang = v;
+    else if (HUB_LANGS[bit]) out.lang = bit;
     else if (v === "speak" || v === "read") out.speak = true;
     else if (v === "fewer") out.fewer = true;
   });
@@ -1398,22 +1436,44 @@ let kpHit = false;
 function applySeed(prefs, fromHash) {
   if (!prefs || typeof prefs !== "object") return;
   const a = readA();
-  const size = String(prefs.size || prefs.text || "").toLowerCase();
-  if (prefs.lang === "ar" || prefs.lang === "es" || prefs.lang === "simple" || prefs.lang === "en") a.lang = prefs.lang;
-  if (prefs.big === true || prefs.xl === true || size === "xl") a.big = true;
-  if (typeof prefs.speak === "boolean") a.speak = prefs.speak;
+  const size = String(prefs.size || prefs.text || "");
+  if (classicTheme()) a.lang = "en";
+  else if (HUB_LANGS[prefs.lang]) a.lang = prefs.lang;
+  if (prefs.big === true || prefs.xl === true || size === "XL" || size === "L" || size.toLowerCase() === "xl") a.big = true;
+  if (prefs.read === true || prefs.speak === true) a.speak = true;
   if (typeof prefs.fewer === "boolean") a.fewer = prefs.fewer;
+  else if (prefs.motion === "less") a.fewer = true;
   if (window.writeAccess) writeAccess(a);
   if (fromHash) kpHit = true;
+  if (!applyingLang && !classicTheme() && window.KulibertPrefs && KulibertPrefs.acceptLang && KulibertPrefs.lang !== a.lang) {
+    applyingLang = true;
+    try { KulibertPrefs.acceptLang(a.lang); } catch (e) {}
+    applyingLang = false;
+  }
   applyChrome();
 }
+function warmShared(code, cb) {
+  const file = !code || code === "simple" ? "en" : code;
+  const finish = () => { applyChrome(); if (cb) cb(); };
+  fetch("https://apps.kulibert.net/shared/i18n/" + encodeURIComponent(file) + ".json", { credentials: "omit" })
+    .then(res => res.ok ? res.json() : null)
+    .then(data => {
+      if (data) { try { sessionStorage.setItem("kulibert-i18n-v2:" + file, JSON.stringify(data)); } catch (e) {} }
+      if (window.KulibertI18n && KulibertI18n.ready) KulibertI18n.ready(file, finish);
+      else finish();
+    }).catch(finish);
+}
 function seedAccess() {
-  try {
-    if (window.KulibertPrefs && typeof window.KulibertPrefs.forApp === "function") applySeed(window.KulibertPrefs.forApp("koderized"), false);
-    else if (window.KulibertPrefs && typeof window.KulibertPrefs.read === "function") applySeed(window.KulibertPrefs.read("koderized"), false);
-  } catch (e) {}
+  if (classicTheme()) { applySeed({ lang: "en" }, false); warmShared("en"); return; }
+  const fromQuery = queryLang();
+  let prefs = null;
+  try { if (window.KulibertPrefs && KulibertPrefs.get) prefs = KulibertPrefs.get(); } catch (e) {}
   const hashed = parseKp(kpRaw());
+  if (prefs) applySeed(prefs, !!kpRaw());
   if (hashed) applySeed(hashed, true);
+  if (fromQuery) applySeed({ lang: fromQuery }, true);
+  if (!prefs && !hashed && !fromQuery) applySeed({ lang: "en" }, false);
+  warmShared(lang());
 }
 function pullPrefs() {
   if (kpHit || !who.verified || !who.code) return;
@@ -1422,11 +1482,18 @@ function pullPrefs() {
     .then(pack => {
       if (!pack || !pack.prefs || kpHit) return;
       applySeed(pack.prefs, false);
-      if (session.role === "student") renderStudent();
+      warmShared(lang(), () => { if (session.role === "student") renderStudent(); });
     }).catch(() => {});
 }
 seedAccess();
+window.addEventListener("kulibert-lang", ev => {
+  if (applyingLang || classicTheme()) return;
+  const code = ev.detail && ev.detail.lang;
+  if (!code) return;
+  applySeed({ lang: code }, false);
+  warmShared(code, () => { if (session.role === "student") renderStudent(); });
+});
 document.addEventListener("DOMContentLoaded", () => { seedAccess(); if (!session.role) applyChrome(); });
-window.addEventListener("hashchange", seedAccess);
+window.addEventListener("hashchange", () => seedAccess());
 loadWho().then(() => { pullPrefs(); setTimeout(() => paintWho(who), 80); });
 loadQuestPacks().then(function () { goLanding(); }).catch(function () { goLanding(); });

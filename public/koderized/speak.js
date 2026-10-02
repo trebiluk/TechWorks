@@ -45,35 +45,52 @@
     finish();
   }
 
+  var LANG_OK = { en: 1, simple: 1, uk: 1, ru: 1, es: 1, ar: 1, "fa-AF": 1, rw: 1, ti: 1 };
+
+  function langOk(code) {
+    return LANG_OK[code] ? code : "en";
+  }
+
+  function noVoiceLine() {
+    try {
+      if (window.KulibertI18n && KulibertI18n.t) {
+        var v = KulibertI18n.t("noVoice");
+        if (v) return v;
+      }
+    } catch (e) {}
+    return "No voice yet. Read the words.";
+  }
+
   function pickVoice(code) {
+    var want = langOk(code);
+    if (window.KulibertPrefs && typeof KulibertPrefs.voiceFor === "function") {
+      try { return KulibertPrefs.voiceFor(want); } catch (e) { return null; }
+    }
     var voices = [];
-    try { voices = window.speechSynthesis.getVoices() || []; } catch (e) { voices = []; }
-    var want = code === "es" ? "es" : code === "ar" ? "ar" : "en"; /* simple uses English voice */
-    var local = null;
-    var any = null;
+    try { voices = window.speechSynthesis.getVoices() || []; } catch (e2) { voices = []; }
+    var tag = want === "es" ? "es" : want === "uk" ? "uk" : want === "ru" ? "ru" : want === "ar" ? "ar" : want === "fa-AF" ? "fa" : want === "en" || want === "simple" ? "en" : "";
+    if (!tag) return null;
     var i, v;
     for (i = 0; i < voices.length; i++) {
       v = voices[i];
-      if ((v.lang || "").toLowerCase().indexOf(want) === 0) {
-        if (v.localService && !local) local = v;
-        if (!any) any = v;
-      }
+      if ((v.lang || "").toLowerCase().replace(/_/g, "-").indexOf(tag) === 0) return v;
     }
-    return local || any;
+    return null;
   }
 
   function start(text, code) {
     if (!pending) return;
     var u = new SpeechSynthesisUtterance(text);
-    u.lang = code === "es" ? "es-US" : code === "ar" ? "ar" : "en-US";
-    u.rate = code === "simple" ? 0.85 : 0.95;
-    u.pitch = 1;
     var voice = pickVoice(code);
-    if (voice) { try { u.voice = voice; } catch (e) {} }
+    if (!voice) return;
+    u.lang = voice.lang || "en-US";
     u.onend = function () { if (alive === u) finish(); };
     u.onerror = function () { if (alive === u) finish(); };
+    u.rate = code === "simple" ? 0.85 : 0.95;
+    u.pitch = 1;
+    try { u.voice = voice; } catch (e) {}
     alive = u;
-    try { window.speechSynthesis.resume(); } catch (e) {}
+    try { window.speechSynthesis.resume(); } catch (e2) {}
     window.speechSynthesis.speak(u);
     clearKick();
     kick = setInterval(function () {
@@ -128,7 +145,7 @@
           fewer: false
         };
       }
-      var lang = raw.lang === "simple" || raw.lang === "es" || raw.lang === "ar" ? raw.lang : "en";
+      var lang = langOk(raw.lang);
       return { lang: lang, speak: !!raw.speak, big: !!raw.big, fewer: !!raw.fewer };
     } catch (e) {
       return { lang: "en", speak: false, big: false, fewer: false };
@@ -136,7 +153,7 @@
   }
 
   function writeAccess(next) {
-    var lang = next.lang === "simple" || next.lang === "es" || next.lang === "ar" ? next.lang : "en";
+    var lang = langOk(next.lang);
     var clean = { lang: lang, speak: !!next.speak, big: !!next.big, fewer: !!next.fewer };
     try { localStorage.setItem(ACCESS_KEY, JSON.stringify(clean)); } catch (e) {}
     document.documentElement.dataset.big = clean.big ? "1" : "0";
@@ -152,8 +169,14 @@
   }
 
   function say(text, code) {
-    paintCaption(text);
-    return speak(text, code || readAccess().lang);
+    var words = String(text || "").replace(/\s+/g, " ").trim();
+    var use = langOk(code || readAccess().lang);
+    if (!pickVoice(use)) {
+      paintCaption(words ? words + " " + noVoiceLine() : noVoiceLine());
+      return false;
+    }
+    paintCaption(words);
+    return speak(words, use);
   }
   function stopSay() { stop(); }
 

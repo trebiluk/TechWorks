@@ -1,4 +1,4 @@
-/* KZ 1.24.0 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
+/* KZ 1.25.0 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
 window.I18N = {
   en: {
     lang: "en",
@@ -74,7 +74,7 @@ window.I18N = {
     speak: "Read it to me",
     stopSpeak: "Stop",
     example: "Example",
-    footer: "Koderized KZ 1.24.0 · alias only",
+    footer: "Koderized KZ 1.25.0 · alias only",
     ferpaTeacher: "Teachers only. Alias only. Do not store an IEP, a 504, or a legal name.",
     sit: "SIT", crate: "CRATE", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     clear: "CLEAR",
@@ -277,7 +277,7 @@ window.I18N = {
     speak: "Léeme",
     stopSpeak: "Parar",
     example: "Ejemplo",
-    footer: "Koderized KZ 1.24.0 · solo apodo",
+    footer: "Koderized KZ 1.25.0 · solo apodo",
     ferpaTeacher: "Solo maestros. Solo apodo. No guardes un IEP, un 504, ni un nombre legal.",
     sit: "SIT", crate: "CAJA", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     doors: {
@@ -431,7 +431,7 @@ window.I18N = {
     menu: "Menu",
     didIt: "You did it.",
     emptyList: "No code yet. Pick one.",
-    footer: "Koderized KZ 1.24.0 · alias only",
+    footer: "Koderized KZ 1.25.0 · alias only",
     doors: {
       zero: {
         title: "Door 1.",
@@ -576,7 +576,7 @@ window.I18N = {
     find: "جد",
     fix: "أصلح",
     done: "تم",
-    footer: "Koderized KZ 1.24.0 · اسم مستعار فقط",
+    footer: "Koderized KZ 1.25.0 · اسم مستعار فقط",
     remove: "احذف",
     doors: {
       zero: {
@@ -616,6 +616,242 @@ window.I18N = {
         help: { predict: { say: "المس 1.", tap: "1" }, run: { say: "شاهد.", tap: "شاهد" }, investigate: { say: "النقطة عند الجدار.", tap: "1" }, modify: { say: "المس نقطة. ثم انطلق.", tap: "نقطة" } }
       }
     }
-  }
+  },
+
+  uk: {
+    lang: "uk",
+    startLine: "Торкнись ходів. Доведи бота до коробки.",
+    roll: "Старт",
+    doorList: "Двері",
+    teacher: "Вчитель",
+    notes: "Нотатки",
+    bigText: "Великий текст",
+    fewerAnswers: "Менше відповідей",
+    on: "Увімк",
+    off: "Вимк",
+    emptyList: "Коду ще немає. Ця програма порожня. Обери, що робить бот.",
+    move: "Вперед",
+    repeat: "Повтори",
+    end: "Кінець",
+    stop: "Стоп",
+    score: "Бал",
+    didIt: "Ти зміг.",
+    look: "Дивись",
+    speak: "Прочитай мені",
+    stopSpeak: "Стоп",
+    guess: "Вгадай",
+    watch: "Дивись",
+    find: "Знайди",
+    fix: "Виправ",
+    done: "Готово",
+    go: "ПУСК",
+    undo: "Назад",
+    zoneCode: "Код",
+    zoneOptions: "Варіанти",
+    zoneOutput: "Результат",
+    lock: "Гаразд",
+    nextDoor: "Наступні двері",
+    footer: "Koderized KZ 1.25.0 · лише псевдонім",
+    doors: {
+      zero: {
+        title: "Двері 1 · Один хід",
+        idea: "Одна картинка. Один дотик. Бот це робить.",
+        help: {
+          predict: { say: "Коду ще немає. Торкнись 1.", tap: "1" },
+          run: { say: "Дивись на картинку.", tap: "Дивись" },
+          investigate: { say: "Команда — це одна дія.", tap: "1" },
+          modify: { say: "Торкнись Вперед. Потім ПУСК.", tap: "Вперед" }
+        }
+      }
+    }
+  },
+  ru: {
+    lang: "ru",
+    startLine: "Нажми ходы. Доведи бота до коробки.",
+    roll: "Старт",
+    doorList: "Двери",
+    teacher: "Учитель",
+    notes: "Заметки",
+    bigText: "Крупный текст",
+    fewerAnswers: "Меньше ответов",
+    on: "Вкл",
+    off: "Выкл",
+    emptyList: "Кода ещё нет. Эта программа пустая. Выбери, что делает бот.",
+    move: "Вперёд",
+    repeat: "Повтори",
+    end: "Конец",
+    stop: "Стоп",
+    score: "Балл",
+    didIt: "Ты смог.",
+    look: "Смотри",
+    speak: "Прочитай мне",
+    stopSpeak: "Стоп",
+    guess: "Угадай",
+    watch: "Смотри",
+    find: "Найди",
+    fix: "Исправь",
+    done: "Готово",
+    go: "ПУСК",
+    undo: "Назад",
+    zoneCode: "Код",
+    zoneOptions: "Варианты",
+    zoneOutput: "Результат",
+    lock: "Ок",
+    nextDoor: "Следующая дверь",
+    footer: "Koderized KZ 1.25.0 · только псевдоним",
+    doors: {
+      zero: {
+        title: "Дверь 1 · Один ход",
+        idea: "Одна картинка. Одно нажатие. Бот это делает.",
+        help: {
+          predict: { say: "Кода ещё нет. Нажми 1.", tap: "1" },
+          run: { say: "Смотри на картинку.", tap: "Смотри" },
+          investigate: { say: "Команда — это одно действие.", tap: "1" },
+          modify: { say: "Нажми Вперёд. Потом ПУСК.", tap: "Вперёд" }
+        }
+      }
+    }
+  },
+  "fa-AF": {
+    lang: "fa-AF",
+    startLine: "حرکت‌ها را لمس کن. ربات را به جعبه برسان.",
+    roll: "شروع",
+    doorList: "درها",
+    teacher: "معلم",
+    notes: "یادداشت",
+    bigText: "متن بزرگ",
+    fewerAnswers: "جواب کمتر",
+    on: "روشن",
+    off: "خاموش",
+    emptyList: "هنوز کود نیست. این برنامه خالی است. انتخاب کن ربات چه کند.",
+    move: "به پیش",
+    repeat: "تکرار",
+    end: "پایان",
+    stop: "ایست",
+    score: "نمره",
+    didIt: "توانستی.",
+    look: "ببین",
+    speak: "برایم بخوان",
+    stopSpeak: "ایست",
+    guess: "حدس",
+    watch: "ببین",
+    find: "پیدا کن",
+    fix: "درست کن",
+    done: "تمام",
+    go: "برو",
+    undo: "برگشت",
+    zoneCode: "کود",
+    zoneOptions: "گزینه‌ها",
+    zoneOutput: "نتیجه",
+    lock: "خوب",
+    nextDoor: "در بعدی",
+    footer: "Koderized KZ 1.25.0 · فقط نام مستعار",
+    doors: {
+      zero: {
+        title: "در ۱ · یک حرکت",
+        idea: "یک تصویر. یک لمس. ربات همان را می‌کند.",
+        help: {
+          predict: { say: "هنوز کود نیست. ۱ را لمس کن.", tap: "۱" },
+          run: { say: "تصویر را ببین.", tap: "ببین" },
+          investigate: { say: "فرمان یک کار است.", tap: "۱" },
+          modify: { say: "به پیش را لمس کن. سپس برو.", tap: "به پیش" }
+        }
+      }
+    }
+  },
+  rw: {
+    lang: "rw",
+    startLine: "Kanda intambwe. Egeza roboti ku gasanduku.",
+    roll: "Tangira",
+    doorList: "Inzugi",
+    teacher: "Umwarimu",
+    notes: "Inyandiko",
+    bigText: "Inyandiko nini",
+    fewerAnswers: "Ibisubizo bike",
+    on: "Kuri",
+    off: "Hafi",
+    emptyList: "Nta kode irahari. Iyi porogaramu irimo ubusa. Hitamo icyo roboti ikora.",
+    move: "Imbere",
+    repeat: "Subiramo",
+    end: "Soza",
+    stop: "Hagarara",
+    score: "Amanota",
+    didIt: "Warabikoze.",
+    look: "Reba",
+    speak: "Msome",
+    stopSpeak: "Hagarara",
+    guess: "Tekereza",
+    watch: "Reba",
+    find: "Shaka",
+    fix: "Kosora",
+    done: "Byarangiye",
+    go: "Genda",
+    undo: "Subira",
+    zoneCode: "Kode",
+    zoneOptions: "Amahitamo",
+    zoneOutput: "Igisubizo",
+    lock: "Sawa",
+    nextDoor: "Urugi rukurikira",
+    footer: "Koderized KZ 1.25.0 · izina ry'umukino gusa",
+    doors: {
+      zero: {
+        title: "Urugi 1 · Intambwe imwe",
+        idea: "Ishusho imwe. Ukanda rimwe. Roboti ikora ibyo.",
+        help: {
+          predict: { say: "Nta kode. Kanda 1.", tap: "1" },
+          run: { say: "Reba ishusho.", tap: "Reba" },
+          investigate: { say: "Itegeko ni ikintu kimwe.", tap: "1" },
+          modify: { say: "Kanda Imbere. Hanyuma Genda.", tap: "Imbere" }
+        }
+      }
+    }
+  },
+  ti: {
+    lang: "ti",
+    startLine: "እንቅስቃሰታት ጠውቕ። ነቲ ሮቦት ናብ ሳንዱቕ ኣብጽሖ።",
+    roll: "ጀምር",
+    doorList: "ማዕጾታት",
+    teacher: "መምህር",
+    notes: "መዘኻኸሪ",
+    bigText: "ዓቢ ጽሑፍ",
+    fewerAnswers: "ውሑዳት መልስታት",
+    on: "ወልዕ",
+    off: "ኣጥፍእ",
+    emptyList: "ኮድ የለን። እዚ ፕሮግራም ባዶ እዩ። ነቲ ሮቦት እንታይ ከም ዝገብር ምረጽ።",
+    move: "ንቕድሚት",
+    repeat: "ድገም",
+    end: "መወዳእታ",
+    stop: "ደው ኣብል",
+    score: "ነጥቢ",
+    didIt: "ገይርካዮ።",
+    look: "ርአ",
+    speak: "ኣንብበለይ",
+    stopSpeak: "ደው ኣብል",
+    guess: "ግመት",
+    watch: "ርአ",
+    find: "ረኽብ",
+    fix: "ኣዐሪ",
+    done: "ተወዲኡ",
+    go: "ኪድ",
+    undo: "ምለስ",
+    zoneCode: "ኮድ",
+    zoneOptions: "ምርጫታት",
+    zoneOutput: "ውጽኢት",
+    lock: "ሕራይ",
+    nextDoor: "ዝቕጽል ማዕጾ",
+    footer: "Koderized KZ 1.25.0 · ሳጓ ብቻ",
+    doors: {
+      zero: {
+        title: "ማዕጾ 1 · ሓደ ምንቅስቓስ",
+        idea: "ሓንቲ ስእሊ። ሓንቲ ምጥዋቕ። ሮቦት እዚ ይገብር።",
+        help: {
+          predict: { say: "ኮድ የለን። 1 ጠውቕ።", tap: "1" },
+          run: { say: "ነቲ ስእሊ ርአ።", tap: "ርአ" },
+          investigate: { say: "ትእዛዝ ሓደ ነገር እዩ።", tap: "1" },
+          modify: { say: "ንቕድሚት ጠውቕ። ድሕሪኡ ኪድ።", tap: "ንቕድሚት" }
+        }
+      }
+    }
+  },
 
 };
