@@ -6,6 +6,11 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.93.16 — 2026-10-02
+
+- The wall follows your Hub language. Top buttons have names.
+- A signed-out visit no longer logs a 401 from who.
+
 ## 1.93.15 — 2026-10-01
 
 - TechWorks follows the Hub language. Arabic, Dari, Spanish, Kinyarwanda, and Tigrinya added.

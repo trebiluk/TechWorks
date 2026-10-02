@@ -1,5 +1,5 @@
 import { CHROME_RU, CHROME_UK } from "../data/i18n-chrome.ts";
-import { EXTRA_AR, EXTRA_ES, EXTRA_FA, EXTRA_RW, EXTRA_TI, SIMPLE } from "../data/i18n-extra.ts";
+import { EXTRA_AR, EXTRA_ES, EXTRA_FA, EXTRA_RW, EXTRA_TI, SIMPLE, WALL_AR, WALL_ES, WALL_FA, WALL_RU, WALL_RW, WALL_TI, WALL_UK } from "../data/i18n-extra.ts";
 import { GLOSS_I18N } from "../data/i18n-glossary.ts";
 import { HELP_I18N } from "../data/i18n-help.ts";
 import { ensureLangFont, packOf, storedFont } from "./fonts.ts";
@@ -47,13 +47,13 @@ const SHARED_KEY: Record<string, string> = {
 
 const DICT: Record<LangId, Record<string, string>> = {
   en: {},
-  uk: CHROME_UK,
-  ru: CHROME_RU,
-  es: EXTRA_ES,
-  ar: EXTRA_AR,
-  "fa-AF": EXTRA_FA,
-  rw: EXTRA_RW,
-  ti: EXTRA_TI,
+  uk: { ...WALL_UK, ...CHROME_UK },
+  ru: { ...WALL_RU, ...CHROME_RU },
+  es: { ...EXTRA_ES, ...WALL_ES },
+  ar: { ...EXTRA_AR, ...WALL_AR },
+  "fa-AF": { ...EXTRA_FA, ...WALL_FA },
+  rw: { ...EXTRA_RW, ...WALL_RW },
+  ti: { ...EXTRA_TI, ...WALL_TI },
 };
 
 function normalize(raw: string | null | undefined): HubLang | null {
@@ -198,11 +198,22 @@ function sharedLine(phrase: string, id: HubLang): string {
   return line;
 }
 
+const MORE: Record<LangId, Record<string, string>> = {
+  en: {},
+  uk: { "This hour": "Ця година" },
+  ru: { "This hour": "Этот час" },
+  es: { "This hour": "Esta hora" },
+  ar: { "This hour": "هذه الحصة" },
+  "fa-AF": { "This hour": "این ساعت" },
+  rw: { "This hour": "Iyi saha" },
+  ti: { "This hour": "እዚ ሰዓት" },
+};
+
 export function t(phrase: string, id: HubLang = copyMode()): string {
   const shared = sharedLine(phrase, id);
   if (id === "en") return shared || phrase;
   if (id === "simple") return SIMPLE[phrase] || shared || phrase;
-  return DICT[id]?.[phrase] || shared || phrase;
+  return MORE[id]?.[phrase] || DICT[id]?.[phrase] || shared || phrase;
 }
 
 export function articleCopy(id: string, title: string, body: string, langId: LangId = storedLang()): { title: string; body: string } {

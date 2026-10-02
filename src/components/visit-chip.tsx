@@ -1,6 +1,7 @@
 import { VISIT_STATES, setVisit, setVisitAll, visitOn, type VisitState } from "@/lib/store";
 import type { EconomyFile } from "@/lib/economy";
 import { cn } from "@/lib/utils";
+import { useLang } from "@/lib/i18n-hook";
 
 const TONE: Record<VisitState, string> = {
   OPEN: "bg-gain text-bg",
@@ -28,6 +29,7 @@ export function VisitChip({
   onClick?: () => void;
   className?: string;
 }) {
+  const { t } = useLang();
   return (
     <button
       type="button"
@@ -36,12 +38,12 @@ export function VisitChip({
       onPointerDown={(e) => e.stopPropagation()}
       aria-label={onClick ? `Room ${state}. Tap to change.` : `Room ${state}`}
       className={cn(
-        "tw-visit tw-tap inline-flex min-h-10 items-center rounded-full px-3 text-xs font-semibold uppercase tracking-wide disabled:cursor-default",
+        "tw-visit tw-tap inline-flex min-h-11 items-center rounded-full px-3 text-xs font-semibold uppercase tracking-wide disabled:cursor-default",
         TONE[state],
         className,
       )}
     >
-      {state}
+      {t(state)}
     </button>
   );
 }

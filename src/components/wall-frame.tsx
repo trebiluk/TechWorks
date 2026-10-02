@@ -4,6 +4,7 @@ import { lunchOn } from "@/lib/store";
 import { BISTRO_DOOR, lunchLineOf, seedLastBistro, writeLastBistro, type BistroLine } from "@/lib/lunch";
 import { todayIso } from "@/lib/calendar";
 import { featureOn } from "@/lib/features";
+import { useLang } from "@/lib/i18n-hook";
 import { SKY_ICON, useSky } from "@/components/weather-chip";
 
 function useBistroLunch(file: EconomyFile, date: string): BistroLine {
@@ -41,6 +42,7 @@ function useBistroLunch(file: EconomyFile, date: string): BistroLine {
 }
 
 export function FrameFacts({ file, date = todayIso() }: { file: EconomyFile; date?: string }) {
+  const { t } = useLang();
   const weatherOn = featureOn(file, "weather");
   const sky = useSky(weatherOn);
   const lunch = useBistroLunch(file, date);
@@ -51,19 +53,19 @@ export function FrameFacts({ file, date = todayIso() }: { file: EconomyFile; dat
       {weatherOn && sky && Icon ? (
         <span className="tw-wall-frame-sky" title={`Solvay · ${sky.word} · ${sky.f}°F`}>
           <Icon className="size-4 shrink-0" aria-hidden />
-          <span>Sky</span>
-          <strong>{sky.f}° {sky.word}</strong>
+          <span>{t("Sky")}</span>
+          <strong>{sky.f}° {t(sky.word)}</strong>
         </span>
       ) : null}
       {lunchBit ? (
         <a href={BISTRO_DOOR} target="_blank" rel="noreferrer" className="tw-wall-frame-lunch" title="Bearcat Bistro">
-          <span>Lunch</span>
+          <span>{t("Lunch")}</span>
           <strong>{lunchBit}</strong>
         </a>
       ) : (
         <span className="tw-wall-frame-lunch">
-          <span>Lunch</span>
-          <strong>Weekend</strong>
+          <span>{t("Lunch")}</span>
+          <strong>{t("Weekend")}</strong>
         </span>
       )}
     </>

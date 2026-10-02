@@ -690,17 +690,17 @@ export function Board() {
         <header className="desk-chrome tw-gadget tw-hud mb-1 min-w-0">
             <div className="nav-cluster flex min-w-0 flex-nowrap items-center gap-1">
               <EdgePocket
-                label={t("More")}
+                label={t("Menu")}
                 lamp={overlayOn}
                 badge={unlocked && dueN && mode !== "board" ? String(dueN) : undefined}
               >
                 {!phone ? (
                   <div className="grid grid-cols-2 gap-1">
-                    <button type="button" onClick={() => go("overview")} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">Wall</button>
-                    <button type="button" onClick={() => { setLearnStart("plan"); if (!unlocked) { setPendingLearn("plan"); askPin("skills"); return; } go("skills"); }} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">This hour</button>
-                    <button type="button" onClick={() => (unlocked ? goDesk() : startTransition(() => setView("mycard")))} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">{unlocked ? "Score" : "My card"}</button>
-                    <button type="button" onClick={() => go("roster")} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">People</button>
-                    <button type="button" onClick={() => go("shop")} className="tw-tap min-h-11 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">Admin</button>
+                    <button type="button" onClick={() => go("overview")} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">{t("Wall")}</button>
+                    <button type="button" onClick={() => { setLearnStart("plan"); if (!unlocked) { setPendingLearn("plan"); askPin("skills"); return; } go("skills"); }} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">{t("This hour")}</button>
+                    <button type="button" onClick={() => (unlocked ? goDesk() : startTransition(() => setView("mycard")))} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">{unlocked ? t("Score") : t("My card")}</button>
+                    <button type="button" onClick={() => go("roster")} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">{t("People")}</button>
+                    <button type="button" onClick={() => go("shop")} className="tw-tap min-h-11 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">{t("Admin")}</button>
                   </div>
                 ) : null}
                 {view === "skills" && learnStart === "plan" ? (
@@ -776,6 +776,7 @@ export function Board() {
                 />
                 <LangChip />
                 {verChip}
+                <p className="px-1 text-xs leading-snug text-muted">{t("The wall follows your Hub language. Top buttons have names.")}</p>
                 </div>
                 {unlocked && dueN && mode !== "board" ? (
                   <button
@@ -795,7 +796,7 @@ export function Board() {
                   Back
                 </button>
               ) : null}
-              <button type="button" onClick={() => go("overview")} title="Shop names only" className="shrink-0">
+              <button type="button" onClick={() => go("overview")} title="TechWorks" aria-label="TechWorks" className="tw-tap inline-flex min-h-11 min-w-11 shrink-0 items-center">
                 <TwWordmark compact={phone} />
               </button>
               {!unlocked ? <ShopName /> : null}

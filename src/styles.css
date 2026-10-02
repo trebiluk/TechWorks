@@ -7,11 +7,6 @@ html {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
-/* Diego: the left dock stays on the left in Arabic and Dari. */
-html[dir="rtl"] .tw-edge-pocket-menu {
-  left: 0;
-  right: auto;
-}
 html[dir="rtl"] {
   overflow-x: hidden;
 }
@@ -2018,10 +2013,13 @@ header.desk-chrome .min-h-11,
 header.desk-chrome .tw-hud-btn {
   min-height: 2.75rem;
 }
-header.desk-chrome .size-11 {
-  width: 2.75rem;
-  height: 2.75rem;
-  min-height: 2.75rem;
+header.desk-chrome .size-11,
+header.desk-chrome button,
+header.desk-chrome .tw-hud-btn,
+header.desk-chrome .tw-edge-pocket-chip,
+header.desk-chrome .tw-lockup {
+  min-height: 44px;
+  min-width: 44px;
 }
 
 /* Paint-only previews. Mini walls / swatches never steal HUD hits. Tiles themselves stay tappable. */
@@ -2852,18 +2850,29 @@ html[data-edit="on"] .edit-field { box-shadow: inset 0 0 0 1.5px var(--color-los
 html[dir="rtl"] .board-root { direction: rtl; }
 
 @media (max-width: 899px) {
-  html { font-size: min(var(--ui-base, 16px), 15px); }
-  html[data-look] .board-main .min-h-11 { min-height: 2.5rem; }
+  html { font-size: min(var(--ui-base, 16px), 16px); }
+  html[data-look] .board-main .min-h-11 { min-height: 44px; }
+  header.desk-chrome button,
+  header.desk-chrome a,
+  .tw-visit,
+  .tw-wall-frame-sky,
+  .tw-wall-frame-lunch,
+  .tw-edge-pocket-chip,
+  .tw-hud-btn,
+  .phone-dock button {
+    min-height: 44px;
+  }
+  .tw-lockup {
+    height: auto;
+    min-height: 44px;
+    gap: 0.28rem;
+    padding: 0 0.45rem 0 0.2rem;
+  }
   .board-root {
     padding-left: max(0.5rem, env(safe-area-inset-left));
     padding-right: max(0.5rem, env(safe-area-inset-right));
     padding-top: max(0.35rem, env(safe-area-inset-top));
     padding-bottom: 0;
-  }
-  .tw-lockup {
-    height: 2rem;
-    gap: 0.28rem;
-    padding: 0 0.45rem 0 0.2rem;
   }
   .tw-lockup-mark {
     width: 1.35rem;
@@ -3504,9 +3513,6 @@ html[dir="rtl"] .board-root { direction: rtl; }
   font-size: 1.05rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 .tw-wall-frame-sky span,
@@ -3518,9 +3524,13 @@ html[dir="rtl"] .board-root { direction: rtl; }
   text-transform: uppercase;
   color: var(--color-accent);
 }
-.tw-wall-frame-lunch {
-  margin-left: auto;
-  max-width: min(28rem, 58%);
+@media (max-width: 420px) {
+  .nav-chips { flex-wrap: wrap; height: auto; overflow: visible; }
+  .tw-wall-frame-lunch { margin-left: 0; max-width: 100%; }
+}
+@media (max-height: 420px) {
+  .board-root { overflow-y: auto; }
+  .tw-ticker { position: sticky; bottom: 0; z-index: 4; }
 }
 .tw-ticker {
   flex: 0 0 auto;
@@ -3537,11 +3547,13 @@ html[dir="rtl"] .board-root { direction: rtl; }
 }
 .tw-now-sub {
   font-size: 0.95rem;
-  line-height: 1.2;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  line-height: 1.35;
+  white-space: normal;
+  overflow: visible;
+}
+.tw-now-card,
+.tw-now-card .min-w-0 {
+  overflow: visible;
 }
 .tw-agenda-on {
   background: color-mix(in oklab, var(--color-gold) 14%, var(--color-elevated));
@@ -4582,9 +4594,10 @@ html[data-theme="new-look"] .tw-gadget {
   align-items: center;
   gap: 0.75rem;
 }
+.tw-card-stage,
 .tw-card-stage p {
   margin: 0;
-  font-family: var(--font-display, ui-sans-serif);
+  font-family: var(--kp-font), var(--font-sans), "Outfit", "Noto Sans", system-ui, sans-serif;
   font-size: clamp(1.05rem, 5cqi, 1.45rem);
   font-weight: 650;
   line-height: 1.15;

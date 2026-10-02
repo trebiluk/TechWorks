@@ -8,6 +8,7 @@ import { Berty } from "@/components/berty";
 import { TwWordmark } from "@/components/tw-mark";
 import { COPYRIGHT_LINE } from "@/lib/copy";
 import { cn } from "@/lib/utils";
+import { useLang } from "@/lib/i18n-hook";
 
 export function PinField({
   value,
@@ -200,32 +201,36 @@ export function LockBar({
   onAsk: () => void;
   onLock: () => void;
 }) {
+  const { t } = useLang();
+  const word = t("Teacher");
   return unlocked ? (
     <button
       type="button"
-      title="Lock desk"
-      aria-label="Lock desk"
+      title={word}
+      aria-label={word}
       onClick={(e) => {
         e.stopPropagation();
         lock();
         onLock();
       }}
-      className="tw-hud-btn tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-xl text-gain hover:bg-elevated"
+      className="tw-hud-btn tw-tap relative z-30 inline-flex h-11 min-h-11 min-w-11 shrink-0 items-center justify-center gap-1 rounded-xl px-2 text-sm font-semibold text-gain hover:bg-elevated"
     >
-      <Unlock className="size-5" />
+      <Unlock className="size-5 shrink-0" aria-hidden />
+      <span>{word}</span>
     </button>
   ) : (
     <button
       type="button"
-      title="Unlock desk"
-      aria-label="Unlock desk"
+      title={word}
+      aria-label={word}
       onClick={(e) => {
         e.stopPropagation();
         onAsk();
       }}
-      className="tw-hud-btn tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-xl text-fg hover:bg-elevated"
+      className="tw-hud-btn tw-tap relative z-30 inline-flex h-11 min-h-11 min-w-11 shrink-0 items-center justify-center gap-1 rounded-xl px-2 text-sm font-semibold text-fg hover:bg-elevated"
     >
-      <Lock className="size-5" />
+      <Lock className="size-5 shrink-0" aria-hidden />
+      <span>{word}</span>
     </button>
   );
 }

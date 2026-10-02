@@ -4,6 +4,7 @@ import { hourAgendaDraft, hourAgendaWall, saveAgendaLine, type AgendaCard } from
 import { DraftField } from "@/components/draft-field";
 import { Berty } from "@/components/berty";
 import { cn } from "@/lib/utils";
+import { useLang } from "@/lib/i18n-hook";
 import type { ProcedureId } from "@/lib/procedure";
 
 const STEP_CARD: Record<ProcedureId, AgendaCard["id"]> = {
@@ -14,10 +15,11 @@ const STEP_CARD: Record<ProcedureId, AgendaCard["id"]> = {
 };
 
 export function KitChip({ kit }: { kit: string }) {
+  const { t } = useLang();
   if (!kit.trim()) return null;
   return (
     <p className="tw-kit shrink-0 truncate" data-kit>
-      <span>Need</span> {kit}
+      <span>{t("Need")}</span> {kit}
     </p>
   );
 }
@@ -71,6 +73,7 @@ export function AgendaWall({
   onChange?: (next: EconomyFile) => void;
   active?: ProcedureId;
 }) {
+  const { t } = useLang();
   const write = Boolean(unlocked && editing && onChange);
   const shown: AgendaCard[] = write ? hourAgendaDraft(file, date, period) : hourAgendaWall(file, date, period);
   const onId = active ? STEP_CARD[active] : undefined;
@@ -83,7 +86,7 @@ export function AgendaWall({
             {Number(c.n)}
           </span>
           <div className="tw-agenda-copy flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-1 overflow-hidden">
-            <p className="tw-agenda-kicker font-bold uppercase tracking-[0.16em] text-gold">{c.kicker}</p>
+            <p className="tw-agenda-kicker font-bold uppercase tracking-[0.16em] text-gold">{t(c.kicker)}</p>
             {write ? (
               <DraftField
                 value={c.body}
@@ -94,7 +97,7 @@ export function AgendaWall({
                 className="mt-1 min-h-11 w-full flex-1 rounded-xl bg-bg px-2 py-1 text-base font-semibold"
               />
             ) : (
-              <AgendaBody text={c.body} />
+              <AgendaBody text={t(c.body)} />
             )}
           </div>
         </li>

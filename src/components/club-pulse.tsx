@@ -2,6 +2,7 @@ import { clubPulse, loadClub, type ClubPulse } from "@/lib/club";
 import { todayIso } from "@/lib/calendar";
 import { cn } from "@/lib/utils";
 import { useMemo } from "react";
+import { useLang } from "@/lib/i18n-hook";
 
 export function ClubPulse({
   onOpen,
@@ -16,8 +17,10 @@ export function ClubPulse({
 }
 
 export function ClubPulseCard({ pulse, onOpen }: { pulse: ClubPulse; onOpen?: () => void }) {
+  const { t } = useLang();
   const hot = pulse.kind === "live" || pulse.kind === "cleanup";
   const cancel = pulse.kind === "cancelled";
+  const title = pulse.title.startsWith("Next club") ? pulse.title.replace("Next club", t("Next club")) : t(pulse.title);
   return (
     <button
       type="button"
@@ -27,7 +30,7 @@ export function ClubPulseCard({ pulse, onOpen }: { pulse: ClubPulse; onOpen?: ()
         cancel ? "bg-elevated" : hot ? (pulse.kind === "cleanup" ? "bg-cleanup text-accent-fg" : "bg-accent text-bg") : "bg-elevated",
       )}
     >
-      <span className="w-full truncate font-display text-sm font-semibold">{pulse.title}</span>
+      <span className="w-full font-display text-sm font-semibold">{title}</span>
       <span className={cn("w-full truncate font-sans text-xs font-medium", hot || cancel ? "opacity-80" : "text-muted")}>{pulse.sub}</span>
     </button>
   );

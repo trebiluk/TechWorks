@@ -3,9 +3,11 @@ import type { EconomyFile } from "@/lib/economy";
 import { findByShop } from "@/lib/live";
 import { pinSet, pinsMatch, rerollWithPin, setStudentPin } from "@/lib/student-pin";
 import { loadShopSession, saveShopSession } from "@/lib/shop-session";
+import { useLang } from "@/lib/i18n-hook";
 
 /** Five boxes, a pin pad, then a name. The server is the list. Nothing typed as a real name. */
 export function StudentClaim({ file, onChange }: { file: EconomyFile; onChange: (next: EconomyFile) => void }) {
+  const { t } = useLang();
   const [open, setOpen] = useState(false);
   const [signed, setSigned] = useState(false);
   const [boxes, setBoxes] = useState(["", "", "", "", ""]);
@@ -98,8 +100,8 @@ export function StudentClaim({ file, onChange }: { file: EconomyFile; onChange: 
   if (signed) return null;
   if (!open) {
     return (
-      <button type="button" onClick={() => setOpen(true)} className="tw-tap min-h-11 shrink-0 rounded-xl bg-elevated px-3 text-sm font-semibold">
-        My code
+      <button type="button" onClick={() => setOpen(true)} className="tw-tap inline-flex min-h-11 items-center rounded-xl bg-elevated px-3 text-sm font-semibold">
+        {t("My code")}
       </button>
     );
   }
@@ -107,7 +109,7 @@ export function StudentClaim({ file, onChange }: { file: EconomyFile; onChange: 
   return (
     <section className="shrink-0 rounded-xl bg-surface p-3" data-shop-signin>
       <div className="flex items-center gap-2">
-        <p className="font-display text-lg font-semibold">My code</p>
+        <p className="font-display text-lg font-semibold">{t("My code")}</p>
         <button type="button" onClick={() => setOpen(false)} className="tw-tap ml-auto min-h-11 text-sm font-semibold text-muted">
           Close
         </button>

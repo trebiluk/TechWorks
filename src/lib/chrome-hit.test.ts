@@ -96,7 +96,7 @@ describe("chrome hit layer", () => {
     const pocketAt = header.indexOf("<EdgePocket");
     const fakeAt = header.indexOf("Fake data");
     assert.ok(pocketAt > 0 && fakeAt > pocketAt, "Fake data sits inside EdgePocket");
-    assert.match(header, /label=\{t\("More"\)\}/);
+    assert.match(header, /label=\{t\("Menu"\)\}/);
     assert.doesNotMatch(header, /nav-cluster flex min-w-0 flex-wrap/);
   });
 });

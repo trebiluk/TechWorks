@@ -35,11 +35,12 @@ export function LangChip({ className }: { className?: string }) {
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "tw-hud-btn tw-tap relative z-30 inline-flex size-11 shrink-0 items-center justify-center rounded-xl hover:bg-elevated",
+          "tw-hud-btn tw-tap relative z-30 inline-flex h-11 min-h-11 min-w-11 shrink-0 items-center justify-center gap-1 rounded-xl px-2 text-sm font-semibold hover:bg-elevated",
           open || lang !== "en" ? "bg-elevated text-fg" : "text-fg",
         )}
       >
-        <Languages className="size-5" />
+        <Languages className="size-5 shrink-0" aria-hidden />
+        <span>{t("Language")}</span>
         <span className="absolute -bottom-0.5 right-0 rounded bg-elevated px-1 font-mono text-[9px] font-bold leading-none">{row.short}</span>
         <span className="sr-only">{row.native}</span>
       </button>

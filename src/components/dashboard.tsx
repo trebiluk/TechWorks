@@ -3,7 +3,7 @@ import { ClipboardList, Coins, RotateCcw, Trophy } from "lucide-react";
 import { markOf } from "@/lib/nav-marks";
 import { MarkChip } from "@/components/ui";
 import type { Bell, EconomyFile, ScoredStudent } from "@/lib/economy";
-import { periodTitle, shopBells } from "@/lib/economy";
+import { shopBells } from "@/lib/economy";
 import { formatBell, periodClock, periodNext, periodNow, SCHOOLTOOL_URL } from "@/lib/bells";
 import { applySort, byCombo } from "@/lib/rank";
 import { XpBit, PerkBit } from "@/components/marks";
@@ -62,10 +62,11 @@ function shopLine(seed: string): string {
 }
 
 function CardStage({ seed, berty }: { seed: string; berty?: boolean }) {
+  const { t } = useLang();
   return (
     <aside className="tw-card-stage" data-card-stage>
       {berty ? <Berty pose="think" size="md" /> : null}
-      <p>{shopLine(seed)}</p>
+      <p>{t(shopLine(seed))}</p>
     </aside>
   );
 }
@@ -160,6 +161,11 @@ export const Dashboard = memo(function Dashboard({
   onClearFocus?: () => void;
 }) {
   const { t } = useLang();
+  const titled = (period: number) => {
+    if (period === 6) return `${t("Period")} 6 · ${t("Study Hall")}`;
+    const g = bells.find((b) => b.period === period)?.grade;
+    return g ? `${t("Period")} ${period} · ${t("Gr")} ${g}` : `${t("Period")} ${period}`;
+  };
   const fold = useDashFold();
   const dash = useDashLayout();
   const { layout } = dash;
@@ -219,7 +225,7 @@ export const Dashboard = memo(function Dashboard({
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <p className="font-display text-3xl font-semibold tracking-tight text-fg">
               {live != null ? `P${live}` : nxt ? `P${nxt.period}` : "—"}
-              <span className="ml-2 text-lg font-medium text-muted">{live != null ? periodTitle(live, bells) : nxt ? t("next") : t("done")}</span>
+              <span className="ml-2 text-lg font-medium text-muted">{live != null ? titled(live) : nxt ? t("next") : t("done")}</span>
             </p>
             <VisitChip state="SUB" />
             <span className="font-display text-4xl font-semibold tabular-nums text-fg sm:text-5xl">
@@ -265,9 +271,9 @@ export const Dashboard = memo(function Dashboard({
           </p>
           <p className="tw-now-sub mt-1 text-muted">
             {clock?.live
-              ? `${periodTitle(live!, bells)} · ${formatBell(clock.start)}–${formatBell(clock.end)}`
+              ? `${t("Period")} ${live}${bells.find((b) => b.period === live)?.grade ? ` · ${t("Gr")} ${bells.find((b) => b.period === live)?.grade}` : ""} · ${formatBell(clock.start)}–${formatBell(clock.end)}`
               : nxt
-                ? `${periodTitle(nxt.period, bells)} · ${formatBell(nxt.start)}`
+                ? `${t("Period")} ${nxt.period}${bells.find((b) => b.period === nxt.period)?.grade ? ` · ${t("Gr")} ${bells.find((b) => b.period === nxt.period)?.grade}` : ""} · ${formatBell(nxt.start)}`
                 : wallJob.question || wallJob.today || `Opens ${formatSchoolDate(openDay)} P1`}
           </p>
         </div>
@@ -285,20 +291,20 @@ export const Dashboard = memo(function Dashboard({
       {viewMine ? (
         <>
           <p className="tw-now-band tw-chamfer">
-            <span>Now</span>
-            <strong>{wallSpine.job || wallSpine.ask || periodTitle(shown, bells)}</strong>
+            <span>{t("Now")}</span>
+            <strong>{wallSpine.job || wallSpine.ask || titled(shown)}</strong>
           </p>
           {wallSpine.ask || wallSpine.prove ? (
             <dl className="tw-hour-spine" data-hour-spine>
               {wallSpine.ask ? (
                 <div data-wall-ask>
-                  <dt>Guiding Q</dt>
+                  <dt>{t("Guiding Q")}</dt>
                   <dd>{wallSpine.ask}</dd>
                 </div>
               ) : null}
               {wallSpine.prove ? (
                 <div data-wall-prove>
-                  <dt>Prove</dt>
+                  <dt>{t("Prove")}</dt>
                   <dd>{wallSpine.prove}</dd>
                 </div>
               ) : null}
@@ -325,7 +331,7 @@ export const Dashboard = memo(function Dashboard({
           ) : null}
           {!arrange && wallJob.lookFor ? (
             <p className="tw-skill-bar" data-skill-bar>
-              <span>{skillName(wallJob.skillId) || "Skill"} · a {wallJob.expect}</span>
+              <span>{t(skillName(wallJob.skillId) || "Skill")} · a {wallJob.expect}</span>
               {wallJob.lookFor.replace(/^\d\s*=\s*/, "")}
             </p>
           ) : null}
@@ -523,7 +529,7 @@ export const Dashboard = memo(function Dashboard({
       showBar={showStatus}
       tickerBits={[
         `P${shown}`,
-        wallSpine.job || wallSpine.ask || periodTitle(shown, bells),
+        wallSpine.job || wallSpine.ask || titled(shown),
         hourKit(file, wallDate, shown) ? `Need ${hourKit(file, wallDate, shown)}` : "Need —",
         clock?.live ? (clock.cleanup ? "Cleanup" : `${Math.max(0, Math.ceil(clock.left))}m left`) : nxt ? `Next P${nxt.period}` : "Shop",
         nxt ? `P${nxt.period} ${formatBell(nxt.start)}` : "Last bell",

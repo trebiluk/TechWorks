@@ -39,7 +39,7 @@ export function PhoneDock({
     const items: { id: AppSection; label: string; go: () => void }[] = [
       { id: "dash", label: t("Wall"), go: onBoard },
       { id: "learn", label: t("Hour"), go: onSkills },
-      { id: "crew", label: kid ? "My card" : t("Score"), go: onCrew },
+      { id: "crew", label: kid ? t("My card") : t("Score"), go: onCrew },
       { id: "roster", label: t("People"), go: onRoster ?? onOther ?? onDesk },
       { id: "admin", label: t("Admin"), go: onOther ?? onDesk },
     ];

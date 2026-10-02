@@ -76,11 +76,12 @@ export function EdgePocket({
         aria-haspopup="menu"
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "tw-edge-pocket-chip tw-hud-btn tw-tap relative z-30 inline-flex size-11 min-h-11 shrink-0 items-center justify-center rounded-xl text-fg hover:bg-elevated",
+          "tw-edge-pocket-chip tw-hud-btn tw-tap relative z-30 inline-flex h-11 min-h-11 min-w-11 shrink-0 items-center justify-center gap-1 rounded-xl px-2 text-sm font-semibold text-fg hover:bg-elevated",
           open ? "bg-accent text-accent-fg" : "",
         )}
       >
-        <Menu className="size-5" strokeWidth={2.2} aria-hidden />
+        <Menu className="size-5 shrink-0" strokeWidth={2.2} aria-hidden />
+        <span>{label}</span>
         {lamp ? <span className="tw-edge-pocket-lamp" aria-hidden /> : null}
         {badge ? <span className="absolute -right-1 -top-1 rounded-full bg-loss px-1.5 py-0.5 text-[10px] font-bold text-accent-fg">{badge}</span> : null}
       </button>
