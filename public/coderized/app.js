@@ -1,4 +1,4 @@
-/* Koderized KZ 1.25.0 — Hub sign-in. Door clear is saved. Not red until GO. */
+/* Koderized KZ 1.25.1 — Hub sign-in. Door clear is saved. Not red until GO. */
 
 function preferTouchUi() {
   const coarse = window.matchMedia("(pointer: coarse)").matches
@@ -170,7 +170,7 @@ const DOORS = [
 /* CUT D — quest packs */
 async function loadQuestPacks() {
   try {
-    const res = await fetch("quests.json?v=1.25.0", { cache: "no-store" });
+    const res = await fetch("quests.json?v=1.25.1", { cache: "no-store" });
     if (!res.ok) return;
     const data = await res.json();
     const packs = (data && data.quests) || [];
@@ -252,7 +252,7 @@ function classicTheme() {
 function queryLang() {
   try { return new URLSearchParams(location.search).get("lang") || ""; } catch (e) { return ""; }
 }
-const SHARED_KEYS = { settings: "settings", help: "help", menu: "menu", language: "language", readAloud: "readAloud", hubSign: "signIn", hubBack: "back", hub: "home" };
+const SHARED_KEYS = { settings: "settings", help: "help", menu: "menu", language: "language", readAloud: "readAloud", hubSign: "signIn", hubBack: "back", hub: "home", whatsNew: "whatsNew" };
 function withShared(pack) {
   const out = Object.assign({}, pack || {});
   if (!window.KulibertI18n || !KulibertI18n.t) return out;
@@ -1278,7 +1278,7 @@ applyChrome();
 function doorClear(s) {
   const rec = {
     app: "koderized",
-    version: "KZ 1.25.0",
+    version: "KZ 1.25.1",
     event: "clear",
     level: "door-" + doorOf(s.door).n,
     score: shopHeat(load(session.code)),
@@ -1337,12 +1337,14 @@ function loadWho() {
   const handed = readHandOff();
   if (handed) paintWho({ alias: handed.alias, code: handed.code, verified: handed.verified !== false });
   return fetch("https://tw.kulibert.net/api/who", { credentials: "include", cache: "no-store" }).then(res => {
-    if (!res.ok) { if (!handed) paintWho({ verified: false }); return; }
+    if (!res.ok) { if (!handed) paintWho({ verified: false }); return null; }
     return res.json().then(pack => {
+      if (pack && pack.signedIn === false) { if (!handed) paintWho({ verified: false }); return null; }
       if (pack && pack.verified && pack.alias) paintWho(pack);
       else if (!handed) paintWho({ verified: false });
-    });
-  }).catch(() => { if (!handed) paintWho({ verified: false }); });
+      return null;
+    }).catch(() => { if (!handed) paintWho({ verified: false }); return null; });
+  }).catch(() => { if (!handed) paintWho({ verified: false }); return null; });
 }
 window.addEventListener("message", ev => {
   const ok = ev.origin === location.origin || ev.origin === "https://apps.kulibert.net" || ev.origin === "https://tw.kulibert.net" || ev.origin === "https://koderized.kulibert.net";

@@ -37,11 +37,27 @@ button:focus-visible, input:focus-visible, .choice:focus-visible {
 h1, h2, h3 { margin: 0 0 .4rem; color: #f8fafc; }
 .hidden { display: none !important; }
 .top {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  display: flex; align-items: center; justify-content: flex-start; gap: 12px;
+  direction: ltr;
   background: #0a1628; color: #fff; padding: 8px 16px; min-height: 48px;
-  position: sticky; top: 0; z-index: 20;
+  position: sticky; top: 0; z-index: 30;
   border-bottom: 3px solid var(--gold);
 }
+#btn-menu {
+  direction: ltr;
+  position: relative;
+  left: 0;
+  margin-left: 0;
+  margin-right: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  min-height: 48px;
+  min-width: 48px;
+  flex: 0 0 auto;
+}
+.menu-mark { font-size: 1.15rem; line-height: 1; }
 .brand { font-weight: 800; letter-spacing: .08em; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .brand em { color: var(--gold); font-style: normal; }
 .pill {
@@ -590,8 +606,9 @@ body.touch-ui .student-tools {
   box-shadow: inset 0 0 0 2px #e0b45a;
 }
 
-/* KZ 1.25.0 — left menu, board on the right. No kid name box. */
-.app-shell { display: flex; align-items: stretch; min-height: 100vh; }
+/* KZ 1.25.1 — header spans the top. Menu stays on the physical left. */
+.app-shell { display: flex; flex-direction: column; align-items: stretch; min-height: 100vh; }
+.app-main { display: flex; flex-direction: row; align-items: stretch; flex: 1; min-width: 0; }
 .board { flex: 1; min-width: 0; }
 .side {
   flex: 0 0 200px;
@@ -624,7 +641,17 @@ body.touch-ui .student-tools {
   text-align: start;
 }
 .side .settings-panel { position: static; width: 100%; }
-#btn-menu { min-height: 48px; min-width: 48px; }
+.whats-new {
+  margin: 0;
+  padding: 8px 4px;
+  font-size: .85rem;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #e8eef4;
+}
+.whats-new b { display: block; color: var(--gold); font-size: .75rem; letter-spacing: .04em; text-transform: uppercase; }
+.footer-whats { text-align: center; color: #c9d6e3; padding: 0 16px 1.2rem; }
+.footer-whats b { display: inline; margin-right: .4rem; }
 .landing-only {
   display: grid;
   justify-items: start;
@@ -687,6 +714,7 @@ body.touch-ui .student-tools {
     bottom: 0;
     width: min(280px, 88vw);
     transform: translateX(-110%);
+    overflow: auto;
   }
   body.menu-open .side { transform: none; }
   body.menu-open::before {
@@ -698,7 +726,7 @@ body.touch-ui .student-tools {
   }
 }
 @media (min-width: 801px) {
-  .side { position: sticky; top: 0; align-self: flex-start; min-height: 100vh; }
+  .side { position: sticky; top: 67px; align-self: flex-start; min-height: calc(100vh - 67px); }
 }
 /* Bar CSS lives on apps.kulibert.net. The door origins 404 that file, so the same rules live here. */
 .kb-bar{
@@ -723,9 +751,10 @@ body.touch-ui .student-tools {
 .kb-settings[hidden],.kb-toast[hidden]{display:none !important}
 body.kb-on{padding-top:48px}
 html.kb-framed body.kb-on{padding-top:0}
+body.kb-on .top { top: 48px; }
 body.kb-on .side { top: 48px; }
 @media (min-width: 801px) {
-  body.kb-on .side { min-height: calc(100vh - 48px); }
+  body.kb-on .side { top: 115px; min-height: calc(100vh - 115px); }
 }
 body.touch-ui #btn-student,
 body.touch-ui #btn-hub-signin,
@@ -745,7 +774,10 @@ body.touch-ui #btn-hub-back {
 html[lang="ar"],
 html[lang="fa-AF"],
 html[lang="ti"] { line-height: 1.5; }
-html[dir="rtl"] .app-shell { direction: ltr; flex-direction: row; }
+html[dir="rtl"] .app-shell { direction: ltr; flex-direction: column; }
+html[dir="rtl"] .app-main { direction: ltr; flex-direction: row; }
+html[dir="rtl"] .top,
+html[dir="rtl"] #btn-menu { direction: ltr; text-align: left; }
 html[dir="rtl"] .board,
 html[dir="rtl"] .side,
 html[dir="rtl"] .settings-panel,

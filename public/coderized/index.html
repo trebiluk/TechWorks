@@ -13,12 +13,30 @@
   <link rel="stylesheet" href="https://apps.kulibert.net/fonts/room.css" />
   <script src="https://apps.kulibert.net/shared/kulibert-prefs.js"></script>
   <script src="https://apps.kulibert.net/shared/kulibert-i18n.js"></script>
-  <script src="https://apps.kulibert.net/shared/kulibert-bar.js" data-app="koderized" data-version="KZ 1.25.0" data-help="#kz-help" defer></script>
+  <script src="https://apps.kulibert.net/shared/kulibert-bar.js" data-app="koderized" data-version="KZ 1.25.1" data-help="#kz-help" defer></script>
 </head>
 <body>
   <div class="app-shell">
+  <header class="top">
+    <button class="btn ghost" id="btn-menu" type="button" aria-expanded="false" aria-controls="app-menu">
+      <span class="menu-mark" aria-hidden="true">☰</span>
+      <span data-i18n="menu">Menu</span>
+    </button>
+    <div class="brand"><bdi>KODER<em>IZED</em></bdi> <span class="pill" id="version-chip">KZ 1.25.1</span></div>
+    <div class="meta" id="top-meta"></div>
+    <div class="row top-tools">
+      <button class="btn ghost hidden" id="btn-lang-en" type="button" aria-pressed="true">EN</button>
+      <button class="btn ghost hidden" id="btn-lang-es" type="button" aria-pressed="false">ES</button>
+      <button class="btn ghost hidden" id="btn-big" type="button" data-i18n="big">Big words</button>
+    </div>
+  </header>
+  <div class="app-main">
   <nav id="app-menu" class="side" aria-label="Menu">
     <a class="menu-link" id="btn-hub" href="https://apps.kulibert.net/" data-i18n="hub">Hub</a>
+    <p class="whats-new" id="whats-new-menu">
+      <b data-i18n="whatsNew">What's new</b>
+      <span data-i18n="whatsNewLine">Menu stays top-left in every language.</span>
+    </p>
     <button class="btn ghost" id="btn-doors" type="button" data-i18n="doorList">Doors</button>
     <div class="settings">
       <button class="btn ghost" id="btn-settings" type="button" aria-expanded="false" aria-controls="settings-panel" data-i18n="settings">Settings</button>
@@ -45,16 +63,6 @@
     <button class="btn ghost" id="btn-help" type="button" data-i18n="help">Help</button>
   </nav>
   <div class="board">
-  <header class="top">
-    <button class="btn ghost" id="btn-menu" type="button" aria-expanded="false" aria-controls="app-menu" data-i18n="menu">Menu</button>
-    <div class="brand"><bdi>KODER<em>IZED</em></bdi> <span class="pill" id="version-chip">KZ 1.25.0</span></div>
-    <div class="meta" id="top-meta"></div>
-    <div class="row top-tools">
-      <button class="btn ghost hidden" id="btn-lang-en" type="button" aria-pressed="true">EN</button>
-      <button class="btn ghost hidden" id="btn-lang-es" type="button" aria-pressed="false">ES</button>
-      <button class="btn ghost hidden" id="btn-big" type="button" data-i18n="big">Big words</button>
-    </div>
-  </header>
   <section id="screen-landing" class="wrap landing-only">
     <p class="start-line help-rtl" id="start-line" data-i18n="startLine">Tap the moves to get the bot to the box.</p>
     <p class="alias-line" id="alias-line"></p>
@@ -172,7 +180,7 @@
         <p class="hint">Class <b id="t-code"></b> · <span id="t-quest"></span> · Freeze / Spotlight / Restore. No ranks.</p>
         <p class="hint teacher-notes">Five doors from zero. Walk with me is for aides and short periods. Heat is tests, not a kid rank. <a href="teacher.html" data-i18n="notes">Notes</a></p>
         <p class="hint" data-i18n="ferpaTeacher">Teachers only. Alias only. Do not store an IEP, a 504, or a legal name.</p>
-        <p class="hint" id="ship-note">2026-10-01 · KZ 1.25.0 · Koderized follows the Hub language. Arabic now reads right to left.</p>
+        <p class="hint" id="ship-note">2026-10-02 · KZ 1.25.1 · Menu stays top-left in every language.</p>
         <div class="row" id="door-picks" style="margin-top:8px;"></div>
       </div>
       <div class="row">
@@ -202,7 +210,11 @@
       </div>
     </div>
   </section>
-  <p class="footer-note" data-i18n="footer">Koderized KZ 1.25.0 · alias only</p>
+  <p class="footer-note" data-i18n="footer">Koderized KZ 1.25.1 · alias only</p>
+  <p class="whats-new footer-whats" id="whats-new-foot">
+    <b data-i18n="whatsNew">What's new</b>
+    <span data-i18n="whatsNewLine">Menu stays top-left in every language.</span>
+  </p>
   <section id="kz-help" class="kz-help help-rtl hidden">
     <h2 data-i18n="help">Help</h2>
     <p data-i18n="startLine">Tap the moves to get the bot to the box.</p>
@@ -210,10 +222,11 @@
   </section>
   </div>
   </div>
-  <script src="speak.js"></script>
-  <script src="origin.js"></script>
-  <script src="i18n.js"></script>
-  <script src="app.js"></script>
-  <script src="juice.js"></script>
+  </div>
+  <script src="speak.js?v=1.25.1"></script>
+  <script src="origin.js?v=1.25.1"></script>
+  <script src="i18n.js?v=1.25.1"></script>
+  <script src="app.js?v=1.25.1"></script>
+  <script src="juice.js?v=1.25.1"></script>
 </body>
 </html>

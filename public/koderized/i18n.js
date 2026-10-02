@@ -1,4 +1,4 @@
-/* KZ 1.25.0 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
+/* KZ 1.25.1 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
 window.I18N = {
   en: {
     lang: "en",
@@ -74,7 +74,8 @@ window.I18N = {
     speak: "Read it to me",
     stopSpeak: "Stop",
     example: "Example",
-    footer: "Koderized KZ 1.25.0 · alias only",
+    footer: "Koderized KZ 1.25.1 · alias only",
+    whatsNewLine: "Menu stays top-left in every language.",
     ferpaTeacher: "Teachers only. Alias only. Do not store an IEP, a 504, or a legal name.",
     sit: "SIT", crate: "CRATE", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     clear: "CLEAR",
@@ -277,7 +278,8 @@ window.I18N = {
     speak: "Léeme",
     stopSpeak: "Parar",
     example: "Ejemplo",
-    footer: "Koderized KZ 1.25.0 · solo apodo",
+    footer: "Koderized KZ 1.25.1 · solo apodo",
+    whatsNewLine: "El menú queda arriba a la izquierda.",
     ferpaTeacher: "Solo maestros. Solo apodo. No guardes un IEP, un 504, ni un nombre legal.",
     sit: "SIT", crate: "CAJA", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     doors: {
@@ -431,7 +433,8 @@ window.I18N = {
     menu: "Menu",
     didIt: "You did it.",
     emptyList: "No code yet. Pick one.",
-    footer: "Koderized KZ 1.25.0 · alias only",
+    footer: "Koderized KZ 1.25.1 · alias only",
+    whatsNewLine: "Menu stays top-left in every language.",
     doors: {
       zero: {
         title: "Door 1.",
@@ -576,7 +579,8 @@ window.I18N = {
     find: "جد",
     fix: "أصلح",
     done: "تم",
-    footer: "Koderized KZ 1.25.0 · اسم مستعار فقط",
+    footer: "Koderized KZ 1.25.1 · اسم مستعار فقط",
+    whatsNewLine: "القائمة تبقى في أعلى اليسار بكل لغة.",
     remove: "احذف",
     doors: {
       zero: {
@@ -623,6 +627,7 @@ window.I18N = {
     startLine: "Торкнись ходів. Доведи бота до коробки.",
     roll: "Старт",
     doorList: "Двері",
+    menu: "Меню",
     teacher: "Вчитель",
     notes: "Нотатки",
     bigText: "Великий текст",
@@ -651,7 +656,8 @@ window.I18N = {
     zoneOutput: "Результат",
     lock: "Гаразд",
     nextDoor: "Наступні двері",
-    footer: "Koderized KZ 1.25.0 · лише псевдонім",
+    footer: "Koderized KZ 1.25.1 · лише псевдонім",
+    whatsNewLine: "Меню лишається зліва зверху.",
     doors: {
       zero: {
         title: "Двері 1 · Один хід",
@@ -670,6 +676,7 @@ window.I18N = {
     startLine: "Нажми ходы. Доведи бота до коробки.",
     roll: "Старт",
     doorList: "Двери",
+    menu: "Меню",
     teacher: "Учитель",
     notes: "Заметки",
     bigText: "Крупный текст",
@@ -698,7 +705,8 @@ window.I18N = {
     zoneOutput: "Результат",
     lock: "Ок",
     nextDoor: "Следующая дверь",
-    footer: "Koderized KZ 1.25.0 · только псевдоним",
+    footer: "Koderized KZ 1.25.1 · только псевдоним",
+    whatsNewLine: "Меню остаётся слева сверху.",
     doors: {
       zero: {
         title: "Дверь 1 · Один ход",
@@ -717,6 +725,7 @@ window.I18N = {
     startLine: "حرکت‌ها را لمس کن. ربات را به جعبه برسان.",
     roll: "شروع",
     doorList: "درها",
+    menu: "فهرست",
     teacher: "معلم",
     notes: "یادداشت",
     bigText: "متن بزرگ",
@@ -745,7 +754,8 @@ window.I18N = {
     zoneOutput: "نتیجه",
     lock: "خوب",
     nextDoor: "در بعدی",
-    footer: "Koderized KZ 1.25.0 · فقط نام مستعار",
+    footer: "Koderized KZ 1.25.1 · فقط نام مستعار",
+    whatsNewLine: "فهرست در هر زبان بالا چپ می‌ماند.",
     doors: {
       zero: {
         title: "در ۱ · یک حرکت",
@@ -764,6 +774,7 @@ window.I18N = {
     startLine: "Kanda intambwe. Egeza roboti ku gasanduku.",
     roll: "Tangira",
     doorList: "Inzugi",
+    menu: "Menyu",
     teacher: "Umwarimu",
     notes: "Inyandiko",
     bigText: "Inyandiko nini",
@@ -792,7 +803,8 @@ window.I18N = {
     zoneOutput: "Igisubizo",
     lock: "Sawa",
     nextDoor: "Urugi rukurikira",
-    footer: "Koderized KZ 1.25.0 · izina ry'umukino gusa",
+    footer: "Koderized KZ 1.25.1 · izina ry'umukino gusa",
+    whatsNewLine: "Menyu iguma hejuru ibumoso.",
     doors: {
       zero: {
         title: "Urugi 1 · Intambwe imwe",
@@ -811,6 +823,7 @@ window.I18N = {
     startLine: "እንቅስቃሰታት ጠውቕ። ነቲ ሮቦት ናብ ሳንዱቕ ኣብጽሖ።",
     roll: "ጀምር",
     doorList: "ማዕጾታት",
+    menu: "ዝርዝር",
     teacher: "መምህር",
     notes: "መዘኻኸሪ",
     bigText: "ዓቢ ጽሑፍ",
@@ -839,7 +852,8 @@ window.I18N = {
     zoneOutput: "ውጽኢት",
     lock: "ሕራይ",
     nextDoor: "ዝቕጽል ማዕጾ",
-    footer: "Koderized KZ 1.25.0 · ሳጓ ብቻ",
+    footer: "Koderized KZ 1.25.1 · ሳጓ ብቻ",
+    whatsNewLine: "ዝርዝር ኣብ ላዕሊ ጸጋም ይጸንሕ።",
     doors: {
       zero: {
         title: "ማዕጾ 1 · ሓደ ምንቅስቓስ",
@@ -855,3 +869,4 @@ window.I18N = {
   },
 
 };
+
