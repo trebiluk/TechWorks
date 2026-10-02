@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { articleCopy, glossCopy, onLang, storedLang, t, type LangId } from "@/lib/i18n";
+import { articleCopy, copyMode, glossCopy, onLang, storedLang, t, type LangId } from "@/lib/i18n";
 
 export function useLang(): {
   lang: LangId;
@@ -11,7 +11,7 @@ export function useLang(): {
   useEffect(() => onLang(() => setLang(storedLang())), []);
   return {
     lang,
-    t: (phrase: string) => t(phrase, lang),
+    t: (phrase: string) => t(phrase, copyMode()),
     article: (id, title, body) => articleCopy(id, title, body, lang),
     gloss: (id, def, use) => glossCopy(id, def, use, lang),
   };

@@ -7,6 +7,19 @@ html {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
+/* Diego: the left dock stays on the left in Arabic and Dari. */
+html[dir="rtl"] .tw-edge-pocket-menu {
+  left: 0;
+  right: auto;
+}
+html[dir="rtl"] {
+  overflow-x: hidden;
+}
+html[data-lang="ar"] body,
+html[data-lang="fa-AF"] body,
+html[data-lang="ti"] body {
+  line-height: 1.5;
+}
 @layer base {
   button:not(:disabled),
   [role="button"]:not(:disabled) { cursor: pointer; }
@@ -21,6 +34,8 @@ html[data-edit="on"] .edit-field {
 /* Locked brand lockup. T + word. Never a PNG inside a second plate. */
 .tw-lockup {
   display: inline-flex;
+  direction: ltr;
+  unicode-bidi: isolate;
   position: relative;
   height: 2.35rem;
   align-items: center;

@@ -18,12 +18,12 @@ export function TwMark({ className, size = 28 }: { className?: string; size?: nu
 /** T + TECHWORKS. Navy plate is the lockup — not a PNG dropped in a second box. */
 export function TwWordmark({ className, compact }: { className?: string; compact?: boolean }) {
   return (
-    <span className={cn("tw-lockup", compact && "tw-lockup-compact", className)} title={LEGAL_TITLE} aria-label="TechWorks">
+    <span className={cn("tw-lockup", compact && "tw-lockup-compact", className)} title={LEGAL_TITLE} aria-label="TechWorks" dir="ltr">
       <TwMark size={28} />
-      <span className="tw-lockup-word">
+      <bdi className="tw-lockup-word">
         <span className="tw-lockup-tech">TECH</span>
         <span className="tw-lockup-works">WORKS</span>
-      </span>
+      </bdi>
     </span>
   );
 }

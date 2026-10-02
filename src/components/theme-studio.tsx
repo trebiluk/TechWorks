@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { PALETTE_FIELDS, TEXT_FIELDS, paletteStyle, type Palette } from "@/lib/palette";
 import { FONT_PACKS, type FontId } from "@/lib/fonts";
 import { FINISHES, LOOK_FIELDS, lookStyle, type CapsMode, type FinishId, type Look } from "@/lib/look";
-import { CLASS_LANGS, commitLang, LANGS, storedLang, type LangId } from "@/lib/i18n";
+import { commitLang, LANGS, storedLang, type LangId } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n-hook";
 import { cn } from "@/lib/utils";
 
@@ -220,43 +220,21 @@ export function ThemeStudio({
 
           {tab === "lang" ? (
             <div className="mt-3 space-y-3">
-              <p className="text-xs leading-snug text-muted">{t("This quarter: English, Ukrainian, Russian.")}</p>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">{t("This quarter")}</p>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                {CLASS_LANGS.map((l) => (
-                  <button
-                    key={l.id}
-                    type="button"
-                    onClick={() => {
-                      setLangId(l.id);
-                      commitLang(l.id);
-                      if (l.id === "uk" || l.id === "ru") onFont("noto");
-                    }}
-                    className={cn("min-h-14 rounded-md px-3 py-2 text-left", langId === l.id ? "bg-gold text-bg" : "bg-elevated")}
-                    dir={l.dir}
-                  >
-                    <span className="block text-sm font-semibold">{l.native}</span>
-                    <span className="text-xs opacity-70">{l.short} · {t(l.label)}</span>
-                  </button>
-                ))}
-              </div>
               <p className="text-xs leading-snug text-muted">{t("Shop words stay English. Help and Words change.")}</p>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-subtle">{t("More languages")}</p>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {LANGS.filter((l) => !l.classLang).map((l) => (
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {LANGS.map((l) => (
                   <button
                     key={l.id}
                     type="button"
                     onClick={() => {
                       setLangId(l.id);
                       commitLang(l.id);
-                      if (l.id === "ar" || l.id === "fa") onFont("naskh");
                     }}
-                    className={cn("min-h-14 rounded-md px-3 py-2 text-left", langId === l.id ? "bg-gold text-bg" : "bg-elevated")}
+                    className={cn("min-h-11 rounded-md px-3 py-2 text-start", langId === l.id ? "bg-gold text-bg" : "bg-elevated")}
                     dir={l.dir}
                   >
                     <span className="block text-sm font-semibold">{l.native}</span>
-                    <span className="text-xs opacity-70">{l.label}</span>
+                    <span className="text-xs opacity-70">{l.short}</span>
                   </button>
                 ))}
               </div>

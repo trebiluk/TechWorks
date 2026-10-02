@@ -3,18 +3,22 @@ import { describe, it } from "node:test";
 import { articleCopy, CLASS_LANGS, glossCopy, LANGS, t } from "./i18n.ts";
 
 describe("class languages", () => {
-  it("this quarter is English, Ukrainian, Russian", () => {
+  it("follows the eight Hub languages", () => {
     assert.deepEqual(
       CLASS_LANGS.map((l) => l.id),
-      ["en", "uk", "ru"],
+      ["en", "uk", "ru", "es", "ar", "fa-AF", "rw", "ti"],
     );
   });
 
-  it("keeps Cubano, Arabic, and Farsi as extras", () => {
-    assert.deepEqual(
-      LANGS.filter((l) => !l.classLang).map((l) => l.id),
-      ["es", "ar", "fa"],
-    );
+  it("turns Arabic and Dari on, and keeps shop words English", () => {
+    assert.equal(LANGS.find((l) => l.id === "ar")?.classLang, true);
+    assert.equal(LANGS.find((l) => l.id === "fa-AF")?.native, "دری");
+    assert.equal(LANGS.find((l) => l.id === "ar")?.dir, "rtl");
+    assert.equal(t("XP", "ar"), "XP");
+    assert.equal(t("Now", "es"), "Ahora");
+    assert.equal(t("Help", "rw"), "Ubufasha");
+    assert.notEqual(t("Today", "ti"), "Today");
+    assert.equal(t("No such key", "es"), "No such key");
   });
 });
 

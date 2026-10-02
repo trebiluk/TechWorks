@@ -327,7 +327,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "English, Ukrainian, Russian",
     tags: ["language", "translate", "ukrainian", "russian", "english", "globe", "words", "help"],
     wall: true,
-    body: "Globe next to Help. This quarter the class languages are English, Ukrainian, and Russian. Pick one. Help and Words switch to grade-6 reading. Shop words (kerf, grit, XP) stay English so you can learn them. Admin → Theme → Language still has Cubano, Arabic, and Farsi if you need them.",
+    body: "The globe follows the Hub language: English, Ukrainian, Russian, Spanish, Arabic, Dari, Kinyarwanda, and Tigrinya. XP and shop words stay English. Arabic and Dari read right to left. The TECH WORKS mark stays left to right.",
   },
   {
     id: "copyright",

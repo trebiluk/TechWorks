@@ -6,6 +6,11 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.93.15 — 2026-10-01
+
+- TechWorks follows the Hub language. Arabic, Dari, Spanish, Kinyarwanda, and Tigrinya added.
+- Needs a native check: the Dari, Kinyarwanda, and Tigrinya lines. XP and shop words stay English. The left menu stays on the left in Arabic and Dari.
+
 ## 1.93.14 — 2026-10-01
 
 - A code that already has a score stays usable. The next save does not drop that row. Hosting was not changed.
