@@ -1,0 +1,42 @@
+import { defineEventHandler, setHeader } from "h3";
+
+const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Koderized teacher / aide notes — KZ 1.25.2</title>
+  <link rel="stylesheet" href="/koderized/styles.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="brand">KODER<em>IZED</em> <span class="pill">KZ 1.25.2</span></div>
+    <a class="btn ghost" href="/koderized/">Back</a>
+  </header>
+  <section class="wrap">
+    <div class="card" style="max-width: 720px; margin: 24px auto;">
+      <h1>Teacher and aide notes</h1>
+      <p>Point at the picture. Read the gold strip. Tap the glow. Short words, same in English and Spanish.</p>
+      <p><strong>Door 1 is a win today.</strong> Walk with me skips Guess/Watch.</p>
+      <p>Speak reads the line on the screen. Stop is the same button. Nothing speaks by itself.</p>
+      <p>EN / ES and Big words stay on this device.</p>
+      <p>Alias only. Not a real name.</p>
+      <p>On a phone, the top Menu button opens this door's menu. Notes opens this page.</p>
+      <p>2026-10-02 · KZ 1.25.2 · Menu opens on phones. Notes opens the teacher notes.</p>
+      <p>2026-10-02 · KZ 1.25.1 · Menu stays top-left in every language.</p>
+      <p>2026-10-01 · KZ 1.25.0 · Koderized follows the Hub language. Arabic now reads right to left.</p>
+      <h2>Needs native check</h2>
+      <p>Dari (fa-AF), Ikinyarwanda (rw), and Tigrinya (ti) lines in i18n.js were drafted, not confirmed by a native speaker. Dari is not Iranian Persian. Please check startLine, doorList, emptyList, move, Door 1 help, and the What's new line.</p>
+      <p class="hint">Door: tw.kulibert.net/koderized/ · Hard refresh if the chip is old.</p>
+    </div>
+  </section>
+</body>
+</html>
+`;
+
+/** Desk worker owns /koderized/teacher (slash redirects here). Static index never wins that path. */
+export default defineEventHandler((event) => {
+  setHeader(event, "content-type", "text/html; charset=utf-8");
+  setHeader(event, "cache-control", "no-cache, must-revalidate");
+  return html;
+});
