@@ -39,7 +39,7 @@ export function DayStrip({
               disabled={!onPeriod}
               onClick={() => onPeriod?.(b.period)}
               className={cn(
-                "tw-gadget flex h-full min-h-10 w-full flex-col items-start justify-center px-1.5 py-1 text-left",
+                "tw-gadget flex h-full min-h-11 w-full flex-col items-start justify-center px-1.5 py-1 text-left",
                 hit && !current ? "ring-1 ring-gold" : "",
                 current
                   ? "bg-accent text-accent-fg ring-2 ring-accent tw-live"

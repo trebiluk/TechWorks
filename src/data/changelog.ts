@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.93.19 — 2026-10-02
+
+- Study Hall speaks your language, and the Dari clean-up screen is in Dari.
+
 ## 1.93.18 — 2026-10-02
 
 - The clean-up screen speaks your language.

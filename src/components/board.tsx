@@ -777,7 +777,7 @@ export function Board() {
                 <LangChip />
                 {verChip}
                 <p className="px-1 text-[11px] font-bold uppercase tracking-wide text-gold">{t("What's new")}</p>
-                <p className="px-1 text-xs leading-snug text-muted">{t("The clean-up screen speaks your language.")}</p>
+                <p className="px-1 text-xs leading-snug text-muted">{t("Study Hall speaks your language, and the Dari clean-up screen is in Dari.")}</p>
                 </div>
                 {unlocked && dueN && mode !== "board" ? (
                   <button

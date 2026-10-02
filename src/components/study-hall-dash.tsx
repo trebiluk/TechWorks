@@ -12,6 +12,7 @@ import { featureOn } from "@/lib/features";
 import { Btn, Chip } from "@/components/ui";
 import { Berty, BertyPeek } from "@/components/berty";
 import { cn } from "@/lib/utils";
+import { useLang } from "@/lib/i18n-hook";
 
 const P6 = 6;
 const OUT = new Set(["nurse", "library", "teacher", "testing", "office", "excused", "absent"]);
@@ -57,6 +58,7 @@ export function StudyHallDash({
   const notesOn = hall.showNotes && hall.notes.length > 0;
   const owesOn = hall.showOwes && hall.owes.length > 0;
   const nameOf = (id: string) => kids.find((s) => s.id === id)?.first ?? file.students.find((s) => s.id === id)?.first ?? "friend";
+  const { t } = useLang();
 
   function play(mode: LinePick) {
     if (!unlocked || !onChange || !here.length) return;
@@ -88,7 +90,7 @@ export function StudyHallDash({
       <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-surface px-4 py-2">
         {featureOn(file, "weather") ? <WeatherChip compact /> : null}
         <span className="rounded-full bg-elevated px-3 py-1 text-sm font-semibold text-fg">Day {letter}</span>
-        <span className="text-sm text-muted">Study Hall</span>
+        <span className="text-sm text-muted">{t("Study Hall")}</span>
         {unlocked && onChange ? (
           <div className="flex flex-wrap gap-1">
             <Chip on={hall.showNotes} onClick={() => onChange(setHallShow(file, "notes", !hall.showNotes))}>
@@ -102,20 +104,20 @@ export function StudyHallDash({
       </div>
 
       <section className="tw-gadget tw-fill-wide px-5 py-4">
-        <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold">Study Hall Today</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold">{t("Study Hall Today")}</p>
         {unlocked && onChange ? (
           <input
             key={`hall-today-${today}`}
             defaultValue={happened}
-            placeholder="Productive or peaceful."
+            placeholder={t("Productive or peaceful.")}
             onBlur={(e) => onChange(setHappened(file, today, P6, e.target.value))}
             className="tw-field tw-fill-hero mt-2 font-display text-3xl font-semibold tracking-tight"
-            aria-label="Study Hall Today"
+            aria-label={t("Study Hall Today")}
           />
         ) : (
-          <h1 className="tw-fill-hero mt-1 font-display font-semibold tracking-tight">{happened || "Productive or peaceful."}</h1>
+          <h1 className="tw-fill-hero mt-1 font-display font-semibold tracking-tight">{happened || t("Productive or peaceful.")}</h1>
         )}
-        <p className="tw-fill-line mt-2 max-w-3xl text-muted">Work, rest quietly, or both. Kind voices. Calm bodies.</p>
+        <p className="tw-fill-line mt-2 max-w-3xl text-muted">{t("Work, rest quietly, or both. Kind voices. Calm bodies.")}</p>
       </section>
 
       {notesOn ? (
@@ -155,27 +157,27 @@ export function StudyHallDash({
 
       <section className="grid gap-2 lg:grid-cols-[minmax(0,1.2fr)_minmax(12rem,0.7fr)]">
         <article className="rounded-3xl bg-surface px-5 py-4">
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted">Helper this week</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted">{t("Helper this week")}</p>
           <div className="mt-2 flex items-center gap-3">
             {lead && !spin ? (
               <span className="flex size-16 shrink-0 items-center justify-center rounded-full bg-elevated text-4xl">{avatarOf(lead.icon, lead.id)}</span>
             ) : null}
             <div className="min-w-0">
               <p className={cn("font-display font-semibold tracking-tight", spin ? "text-5xl text-gold sm:text-6xl" : "text-5xl")}>
-                {spin ?? lead?.first ?? "Let’s pick"}
+                {spin ?? lead?.first ?? t("Let\u2019s pick")}
               </p>
-              <p className="mt-1 text-lg text-muted">{lead ? "Line leader · one job, kind voice" : "Tap Fair, XP, or Draw"}</p>
+              <p className="mt-1 text-lg text-muted">{lead ? t("Line leader · one job, kind voice") : t("Tap Fair, XP, or Draw")}</p>
             </div>
           </div>
           {unlocked && onChange ? (
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <Btn kind="do" onClick={() => play("fair")}>Fair</Btn>
+              <Btn kind="do" onClick={() => play("fair")}>{t("Fair")}</Btn>
               <Btn kind="quiet" onClick={() => play("xp")}>XP</Btn>
-              <Btn kind="quiet" onClick={() => play("draw")}>Draw</Btn>
+              <Btn kind="quiet" onClick={() => play("draw")}>{t("Draw")}</Btn>
               <span className="text-sm text-muted">or tap a friend below</span>
             </div>
           ) : (
-            <p className="mt-2 text-sm text-muted">Watch the draw. Be ready if your name pops.</p>
+            <p className="mt-2 text-sm text-muted">{t("Watch the draw. Be ready if your name pops.")}</p>
           )}
         </article>
         <HallTime clock={clock} live={live === P6} />
@@ -183,7 +185,7 @@ export function StudyHallDash({
 
       <section className="grid min-h-0 flex-1 gap-2 lg:grid-cols-[minmax(0,1.5fr)_minmax(14rem,0.7fr)]">
         <article className="rounded-3xl bg-surface px-4 py-4">
-          <p className="text-lg font-semibold">With us · {here.length}</p>
+          <p className="text-lg font-semibold">{t("With us")} · {here.length}</p>
           {!kids.length ? (
             <p className="mt-3 text-sm text-muted">{HALL_EMPTY_COPY}</p>
           ) : (
@@ -207,7 +209,7 @@ export function StudyHallDash({
                     <span className="flex size-10 items-center justify-center rounded-full bg-surface text-xl">{avatarOf(s.icon, s.id)}</span>
                     <span className="min-w-0">
                       <span className={cn("block truncate font-semibold", s.id === leadId ? "text-gold" : "")}>{s.first}</span>
-                      <span className="block text-xs text-muted">{reset ? "reset" : s.id === leadId ? "helper" : "you’ve got this"}</span>
+                      <span className="block text-xs text-muted">{reset ? t("reset") : s.id === leadId ? t("helper") : t("you\u2019ve got this")}</span>
                     </span>
                   </button>
                 </li>
@@ -217,7 +219,7 @@ export function StudyHallDash({
           )}
         </article>
         <article className="rounded-3xl bg-surface px-4 py-4">
-          <p className="text-lg font-semibold">With someone else · {away.length}</p>
+          <p className="text-lg font-semibold">{t("With someone else")} · {away.length}</p>
           {away.length ? (
             <ul className="mt-3 space-y-2">
               {away.map((s) => (
@@ -244,6 +246,7 @@ function HallTime({
   clock: ReturnType<typeof periodClock>;
   live: boolean;
 }) {
+  const { t } = useLang();
   const hot = Boolean(clock?.cleanup);
   const tick = clock?.live ? leftClock(clock.left) : null;
   const pct = clock?.live ? clock.pct : 0;
@@ -287,10 +290,10 @@ function HallTime({
         </div>
         <div className="min-w-0">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] opacity-80">
-            {hot ? "Pack up" : clock?.live ? "Still time" : "Hall next"}
+            {hot ? t("Pack up") : clock?.live ? t("Still time") : t("Hall next")}
           </p>
           <p className="mt-1 font-display text-2xl font-semibold tracking-tight sm:text-3xl">
-            {hot ? "Five-minute glow" : tick ? `${tick.mm} to shine` : "Hang tight"}
+            {hot ? t("Five-minute glow") : tick ? `${tick.mm} ${t("to shine")}` : t("Hang tight")}
           </p>
           <p className="mt-1 text-sm opacity-80">
             {clock ? `${formatBell(clock.start)} – ${formatBell(clock.end)}` : "11:18 – 11:55"}

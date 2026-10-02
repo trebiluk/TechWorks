@@ -1257,6 +1257,9 @@ html[data-contrast="high"] {
   gap: 0.25rem;
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
+[data-day-strip] button {
+  min-height: 44px;
+}
 @media (min-width: 900px) {
   [data-day-strip] {
     grid-template-columns: repeat(10, minmax(0, 1fr));
