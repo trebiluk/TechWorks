@@ -1,4 +1,4 @@
-/* KZ 1.25.1 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
+/* KZ 1.25.2 — short lines, 1:1 EN/ES. Pictograms carry the rest. */
 window.I18N = {
   en: {
     lang: "en",
@@ -74,8 +74,8 @@ window.I18N = {
     speak: "Read it to me",
     stopSpeak: "Stop",
     example: "Example",
-    footer: "Koderized KZ 1.25.1 · alias only",
-    whatsNewLine: "Menu stays top-left in every language.",
+    footer: "Koderized KZ 1.25.2 · alias only",
+    whatsNewLine: "Menu opens on phones. Notes opens the teacher notes.",
     ferpaTeacher: "Teachers only. Alias only. Do not store an IEP, a 504, or a legal name.",
     sit: "SIT", crate: "CRATE", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     clear: "CLEAR",
@@ -278,8 +278,8 @@ window.I18N = {
     speak: "Léeme",
     stopSpeak: "Parar",
     example: "Ejemplo",
-    footer: "Koderized KZ 1.25.1 · solo apodo",
-    whatsNewLine: "El menú queda arriba a la izquierda.",
+    footer: "Koderized KZ 1.25.2 · solo apodo",
+    whatsNewLine: "El menú se abre en el teléfono. Notas abre las notas del maestro.",
     ferpaTeacher: "Solo maestros. Solo apodo. No guardes un IEP, un 504, ni un nombre legal.",
     sit: "SIT", crate: "CAJA", rollShout: "ROLL", safe: "SAFE", bonk: "BONK",
     doors: {
@@ -433,8 +433,8 @@ window.I18N = {
     menu: "Menu",
     didIt: "You did it.",
     emptyList: "No code yet. Pick one.",
-    footer: "Koderized KZ 1.25.1 · alias only",
-    whatsNewLine: "Menu stays top-left in every language.",
+    footer: "Koderized KZ 1.25.2 · alias only",
+    whatsNewLine: "Menu opens on phones. Notes opens the teacher notes.",
     doors: {
       zero: {
         title: "Door 1.",
@@ -579,8 +579,8 @@ window.I18N = {
     find: "جد",
     fix: "أصلح",
     done: "تم",
-    footer: "Koderized KZ 1.25.1 · اسم مستعار فقط",
-    whatsNewLine: "القائمة تبقى في أعلى اليسار بكل لغة.",
+    footer: "Koderized KZ 1.25.2 · اسم مستعار فقط",
+    whatsNewLine: "القائمة تفتح على الهاتف. الملاحظات تفتح ملاحظات المعلم.",
     remove: "احذف",
     doors: {
       zero: {
@@ -656,8 +656,8 @@ window.I18N = {
     zoneOutput: "Результат",
     lock: "Гаразд",
     nextDoor: "Наступні двері",
-    footer: "Koderized KZ 1.25.1 · лише псевдонім",
-    whatsNewLine: "Меню лишається зліва зверху.",
+    footer: "Koderized KZ 1.25.2 · лише псевдонім",
+    whatsNewLine: "Меню відкривається на телефоні. Нотатки відкривають нотатки вчителя.",
     doors: {
       zero: {
         title: "Двері 1 · Один хід",
@@ -705,8 +705,8 @@ window.I18N = {
     zoneOutput: "Результат",
     lock: "Ок",
     nextDoor: "Следующая дверь",
-    footer: "Koderized KZ 1.25.1 · только псевдоним",
-    whatsNewLine: "Меню остаётся слева сверху.",
+    footer: "Koderized KZ 1.25.2 · только псевдоним",
+    whatsNewLine: "Меню открывается на телефоне. Заметки открывают заметки учителя.",
     doors: {
       zero: {
         title: "Дверь 1 · Один ход",
@@ -754,8 +754,8 @@ window.I18N = {
     zoneOutput: "نتیجه",
     lock: "خوب",
     nextDoor: "در بعدی",
-    footer: "Koderized KZ 1.25.1 · فقط نام مستعار",
-    whatsNewLine: "فهرست در هر زبان بالا چپ می‌ماند.",
+    footer: "Koderized KZ 1.25.2 · فقط نام مستعار",
+    whatsNewLine: "فهرست در موبایل باز می‌شود. یادداشت، یادداشت معلم را باز می‌کند.",
     doors: {
       zero: {
         title: "در ۱ · یک حرکت",
@@ -803,8 +803,8 @@ window.I18N = {
     zoneOutput: "Igisubizo",
     lock: "Sawa",
     nextDoor: "Urugi rukurikira",
-    footer: "Koderized KZ 1.25.1 · izina ry'umukino gusa",
-    whatsNewLine: "Menyu iguma hejuru ibumoso.",
+    footer: "Koderized KZ 1.25.2 · izina ry'umukino gusa",
+    whatsNewLine: "Menyu ifunguka kuri telefone. Inyandiko ifungura inyandiko z'umwarimu.",
     doors: {
       zero: {
         title: "Urugi 1 · Intambwe imwe",
@@ -852,8 +852,8 @@ window.I18N = {
     zoneOutput: "ውጽኢት",
     lock: "ሕራይ",
     nextDoor: "ዝቕጽል ማዕጾ",
-    footer: "Koderized KZ 1.25.1 · ሳጓ ብቻ",
-    whatsNewLine: "ዝርዝር ኣብ ላዕሊ ጸጋም ይጸንሕ።",
+    footer: "Koderized KZ 1.25.2 · ሳጓ ብቻ",
+    whatsNewLine: "ዝርዝር ኣብ ስልኪ ይኽፈት። ማስታወሻ ናይ መምህር ይኽፈት።",
     doors: {
       zero: {
         title: "ማዕጾ 1 · ሓደ ምንቅስቓስ",

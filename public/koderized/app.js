@@ -1,4 +1,4 @@
-/* Koderized KZ 1.25.1 — Hub sign-in. Door clear is saved. Not red until GO. */
+/* Koderized KZ 1.25.2 — Hub sign-in. Door clear is saved. Not red until GO. */
 
 function preferTouchUi() {
   const coarse = window.matchMedia("(pointer: coarse)").matches
@@ -170,7 +170,7 @@ const DOORS = [
 /* CUT D — quest packs */
 async function loadQuestPacks() {
   try {
-    const res = await fetch("quests.json?v=1.25.1", { cache: "no-store" });
+    const res = await fetch("quests.json?v=1.25.2", { cache: "no-store" });
     if (!res.ok) return;
     const data = await res.json();
     const packs = (data && data.quests) || [];
@@ -671,6 +671,7 @@ function goLanding() {
   hide("screen-student"); hide("screen-teacher"); show("screen-landing");
   document.body.classList.remove("short-fit");
   applyChrome();
+  syncDoors();
 }
 function goStudent() {
   hide("screen-teacher");
@@ -679,8 +680,17 @@ function goStudent() {
   if (shortFit()) show("screen-landing");
   else hide("screen-landing");
   renderStudent();
+  syncDoors();
 }
-function goTeacher() { if (window.stopSay) stopSay(); lastReadCard = ""; hide("screen-landing"); hide("screen-student"); show("screen-teacher"); renderTeacher(); }
+function goTeacher() { if (window.stopSay) stopSay(); lastReadCard = ""; hide("screen-landing"); hide("screen-student"); show("screen-teacher"); renderTeacher(); syncDoors(); }
+function syncDoors() {
+  const btn = $("btn-doors");
+  if (!btn) return;
+  const student = $("screen-student");
+  const teacher = $("screen-teacher");
+  const away = (student && !student.classList.contains("hidden")) || (teacher && !teacher.classList.contains("hidden"));
+  btn.classList.toggle("hidden", !away);
+}
 $("btn-student").onclick = () => {
   if (!who.verified || !who.alias || !who.code) return;
   session.role = "student";
@@ -709,7 +719,11 @@ $("btn-teacher").onclick = () => {
   if ($("top-meta")) $("top-meta").textContent = who.alias ? who.alias : "";
   goTeacher();
 };
-if ($("btn-doors")) $("btn-doors").onclick = () => { document.body.classList.remove("menu-open"); goLanding(); };
+if ($("btn-doors")) $("btn-doors").onclick = () => {
+  document.body.classList.remove("menu-open");
+  if ($("btn-menu")) $("btn-menu").setAttribute("aria-expanded", "false");
+  goLanding();
+};
 function hear(text) {
   const line = String(text || "").replace(/\s+/g, " ").trim();
   if (!line || !window.say) return;
@@ -1278,7 +1292,7 @@ applyChrome();
 function doorClear(s) {
   const rec = {
     app: "koderized",
-    version: "KZ 1.25.1",
+    version: "KZ 1.25.2",
     event: "clear",
     level: "door-" + doorOf(s.door).n,
     score: shopHeat(load(session.code)),
@@ -1376,6 +1390,7 @@ document.addEventListener("click", e => {
   const btn = $("btn-menu");
   if (menu && menu.contains(e.target)) return;
   if (btn && btn.contains(e.target)) return;
+  if (e.target.closest && e.target.closest(".kb-menu")) return;
   document.body.classList.remove("menu-open");
   if (btn) btn.setAttribute("aria-expanded", "false");
 });
