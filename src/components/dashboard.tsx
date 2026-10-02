@@ -530,8 +530,8 @@ export const Dashboard = memo(function Dashboard({
       tickerBits={[
         `P${shown}`,
         wallSpine.job || wallSpine.ask || titled(shown),
-        hourKit(file, wallDate, shown) ? `Need ${hourKit(file, wallDate, shown)}` : "Need —",
-        clock?.live ? (clock.cleanup ? "Cleanup" : `${Math.max(0, Math.ceil(clock.left))}m left`) : nxt ? `Next P${nxt.period}` : "Shop",
+        hourKit(file, wallDate, shown) ? `${t("Need")} ${hourKit(file, wallDate, shown)}` : `${t("Need")} —`,
+        clock?.live ? (clock.cleanup ? t("Cleanup") : `${Math.max(0, Math.ceil(clock.left))}m ${t("left")}`) : nxt ? `${t("Next")} P${nxt.period}` : t("Shop"),
         nxt ? `P${nxt.period} ${formatBell(nxt.start)}` : "Last bell",
         formatSchoolDate(wallDate),
       ]}

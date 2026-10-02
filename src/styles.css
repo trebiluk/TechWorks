@@ -1942,9 +1942,22 @@ header.desk-chrome .tw-edge-pocket {
   flex: 0 0 auto;
   pointer-events: auto;
 }
+header.desk-chrome .tw-edge-pocket {
+  position: absolute;
+  left: 0;
+  right: auto;
+  top: 0;
+  z-index: 6;
+}
+header.desk-chrome .nav-cluster {
+  padding-left: 8.25rem;
+}
 header.desk-chrome .tw-edge-pocket-chip {
   min-height: 2.75rem;
+  min-width: 44px;
 }
+.tw-chip-mark { display: none; }
+.tw-visit { min-width: 44px; min-height: 44px; }
 .tw-edge-pocket-scrim {
   position: fixed;
   inset: 0;
@@ -3529,8 +3542,10 @@ html[dir="rtl"] .board-root { direction: rtl; }
   .tw-wall-frame-lunch { margin-left: 0; max-width: 100%; }
 }
 @media (max-height: 420px) {
-  .board-root { overflow-y: auto; }
-  .tw-ticker { position: sticky; bottom: 0; z-index: 4; }
+  .board-root { height: 100svh; overflow-x: hidden; overflow-y: auto; }
+  .tw-now-card { display: block; max-width: 100%; }
+  .tw-now-sub { display: block; max-width: 100%; }
+  .tw-ticker { position: sticky; left: 0; right: 0; bottom: 0; z-index: 4; }
 }
 .tw-ticker {
   flex: 0 0 auto;

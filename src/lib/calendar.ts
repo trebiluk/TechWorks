@@ -242,9 +242,15 @@ export function todayIso(now = new Date()): string {
   return `${y}-${m}-${d}`;
 }
 
+function hubLocale(): string {
+  if (typeof document === "undefined") return "en-US";
+  const lang = document.documentElement.lang || "en";
+  return lang === "fa" ? "fa-AF" : lang;
+}
+
 export function formatSchoolDate(iso: string): string {
   const d = atNoon(iso);
-  return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  return d.toLocaleDateString(hubLocale(), { weekday: "short", month: "short", day: "numeric" });
 }
 
 /** Week title: "Sep 21 – 25". Not "Mon – Fri" (the grid already names the days). */

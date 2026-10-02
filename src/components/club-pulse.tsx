@@ -21,6 +21,7 @@ export function ClubPulseCard({ pulse, onOpen }: { pulse: ClubPulse; onOpen?: ()
   const hot = pulse.kind === "live" || pulse.kind === "cleanup";
   const cancel = pulse.kind === "cancelled";
   const title = pulse.title.startsWith("Next club") ? pulse.title.replace("Next club", t("Next club")) : t(pulse.title);
+  const sub = pulse.sub.replace("choice stations", t("choice stations"));
   return (
     <button
       type="button"
@@ -31,7 +32,7 @@ export function ClubPulseCard({ pulse, onOpen }: { pulse: ClubPulse; onOpen?: ()
       )}
     >
       <span className="w-full font-display text-sm font-semibold">{title}</span>
-      <span className={cn("w-full truncate font-sans text-xs font-medium", hot || cancel ? "opacity-80" : "text-muted")}>{pulse.sub}</span>
+      <span className={cn("w-full font-sans text-xs font-medium", hot || cancel ? "opacity-80" : "text-muted")}>{sub}</span>
     </button>
   );
 }

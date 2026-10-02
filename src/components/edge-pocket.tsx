@@ -80,7 +80,7 @@ export function EdgePocket({
           open ? "bg-accent text-accent-fg" : "",
         )}
       >
-        <Menu className="size-5 shrink-0" strokeWidth={2.2} aria-hidden />
+        <Menu className="tw-chip-mark size-5 shrink-0" strokeWidth={2.2} aria-hidden />
         <span>{label}</span>
         {lamp ? <span className="tw-edge-pocket-lamp" aria-hidden /> : null}
         {badge ? <span className="absolute -right-1 -top-1 rounded-full bg-loss px-1.5 py-0.5 text-[10px] font-bold text-accent-fg">{badge}</span> : null}

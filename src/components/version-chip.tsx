@@ -55,8 +55,9 @@ export function VersionChip({
     <span className={cn("inline-flex items-center gap-1 font-mono text-xs font-semibold tabular-nums text-gold sm:text-[11px]", className)} title={COPYRIGHT_LINE}>
       {peek ? (
         onBerty ? (
-          <button type="button" title="Berty’s profile" onClick={onBerty} className="tw-tap rounded-md">
+          <button type="button" title="Berty" aria-label="Berty" onClick={onBerty} className="tw-tap inline-flex min-h-11 min-w-11 items-center gap-1 rounded-md px-2 text-sm font-semibold">
             <BertyPeek pose="icon" />
+            <span>Berty</span>
           </button>
         ) : (
           <BertyPeek pose="icon" />

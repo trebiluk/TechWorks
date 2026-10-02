@@ -63,7 +63,7 @@ export const Route = createRootRoute({
         <HeadContent />
         <script defer src="https://apps.kulibert.net/shared/kulibert-prefs.js"></script>
         <script defer src="https://apps.kulibert.net/shared/kulibert-i18n.js"></script>
-        <script defer src="https://apps.kulibert.net/shared/kulibert-bar.js" data-app="techworks" data-version={`TW ${APP_VERSION}`} />
+        <script defer src="https://apps.kulibert.net/shared/kulibert-bar.js" data-app="techworks" data-version={`TW ${APP_VERSION}`} data-menu=".tw-edge-pocket-chip" />
         <style id="tw-css" dangerouslySetInnerHTML={{ __html: twCss }} />
         <script
           dangerouslySetInnerHTML={{

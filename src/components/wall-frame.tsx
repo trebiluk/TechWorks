@@ -86,10 +86,11 @@ export function WallFrame({
   showBar?: boolean;
   children: ReactNode;
 }) {
+  const { t } = useLang();
   const weatherOn = featureOn(file, "weather");
   const sky = useSky(weatherOn);
   const lunch = useBistroLunch(file, date);
-  const skyBit = sky ? `${sky.word} ${sky.f}°` : "";
+  const skyBit = sky ? `${t(sky.word)} ${sky.f}°` : "";
   const lunchBit = lunch.label;
   const line = [...tickerBits, skyBit, lunchBit].filter(Boolean).join("  ·  ");
 

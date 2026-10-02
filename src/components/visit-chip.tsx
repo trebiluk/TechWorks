@@ -38,7 +38,7 @@ export function VisitChip({
       onPointerDown={(e) => e.stopPropagation()}
       aria-label={onClick ? `Room ${state}. Tap to change.` : `Room ${state}`}
       className={cn(
-        "tw-visit tw-tap inline-flex min-h-11 items-center rounded-full px-3 text-xs font-semibold uppercase tracking-wide disabled:cursor-default",
+        "tw-visit tw-tap inline-flex min-h-11 min-w-11 items-center justify-center rounded-full px-3 text-xs font-semibold uppercase tracking-wide disabled:cursor-default",
         TONE[state],
         className,
       )}

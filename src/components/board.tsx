@@ -776,7 +776,8 @@ export function Board() {
                 />
                 <LangChip />
                 {verChip}
-                <p className="px-1 text-xs leading-snug text-muted">{t("The wall follows your Hub language. Top buttons have names.")}</p>
+                <p className="px-1 text-[11px] font-bold uppercase tracking-wide text-gold">{t("What's new")}</p>
+                <p className="px-1 text-xs leading-snug text-muted">{t("Menu stays top left in every language, and the last buttons have names.")}</p>
                 </div>
                 {unlocked && dueN && mode !== "board" ? (
                   <button
@@ -797,7 +798,7 @@ export function Board() {
                 </button>
               ) : null}
               <button type="button" onClick={() => go("overview")} title="TechWorks" aria-label="TechWorks" className="tw-tap inline-flex min-h-11 min-w-11 shrink-0 items-center">
-                <TwWordmark compact={phone} />
+                <TwWordmark />
               </button>
               {!unlocked ? <ShopName /> : null}
               <div className="nav-chips min-w-0">

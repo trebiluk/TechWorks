@@ -26,7 +26,8 @@ export function planitMoveOf(id: string) {
 }
 
 export function weekdayShort(iso: string): string {
-  return new Date(`${iso}T12:00:00`).toLocaleDateString("en-US", { weekday: "short" });
+  const lang = typeof document === "undefined" ? "en-US" : document.documentElement.lang || "en-US";
+  return new Date(`${iso}T12:00:00`).toLocaleDateString(lang === "fa" ? "fa-AF" : lang, { weekday: "short" });
 }
 
 export type PlanitStripDay = {
