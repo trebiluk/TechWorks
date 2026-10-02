@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.93.18 — 2026-10-02
+
+- The clean-up screen speaks your language.
+
 ## 1.93.17 — 2026-10-02
 
 - Menu stays top left in every language, and the last buttons have names.

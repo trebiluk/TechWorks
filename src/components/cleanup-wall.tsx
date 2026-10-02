@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { cleanupMinsNow, formatBell, leftClock, periodClock, periodNext, periodNow } from "@/lib/bells";
+import { cleanupMinsNow, leftClock, periodClock, periodNext, periodNow } from "@/lib/bells";
 import { useShopClock } from "@/lib/use-clock";
 import { deskBellId } from "@/lib/store";
 import { todayIso } from "@/lib/calendar";
@@ -10,8 +10,17 @@ import { DraftField } from "@/components/draft-field";
 import { Berty } from "@/components/berty";
 import { isPhone } from "@/lib/layout";
 import { cn } from "@/lib/utils";
+import { useLang } from "@/lib/i18n-hook";
 import { agendaFor, prettyStage } from "@/lib/projects";
 import { packOf, teachObjective } from "@/lib/teach";
+
+function bellSpoken(hhmm: string): string {
+  const [h, m] = hhmm.split(":").map(Number);
+  const d = new Date();
+  d.setHours(h || 0, m || 0, 0, 0);
+  const lang = typeof document === "undefined" ? "en" : document.documentElement.lang || "en";
+  return d.toLocaleTimeString(lang === "fa" ? "fa-AF" : lang, { hour: "numeric", minute: "2-digit" });
+}
 
 export function CleanupStage({
   file,
@@ -60,29 +69,30 @@ export function CleanupJobsPad({
   period?: number;
 }) {
   const jobs = cleanupJobsOf(file);
+  const { t } = useLang();
   const [edit, setEdit] = useState(false);
   const writing = Boolean(unlocked && edit);
   return (
     <section className="tw-gadget tw-cleanup-mini shrink-0 bg-cleanup p-3 text-accent-fg" data-cleanup-pad>
       <div className="flex items-center gap-2">
-        <p className="min-w-0 flex-1 text-[11px] font-bold uppercase tracking-[0.18em]">Cleanup jobs · this hour</p>
+        <p className="min-w-0 flex-1 text-[11px] font-bold uppercase tracking-[0.18em]">{t("Cleanup jobs · this hour")}</p>
         {unlocked ? (
           <button
             type="button"
             onClick={() => setEdit((v) => !v)}
             className="tw-tap min-h-9 rounded-md bg-black/35 px-3 text-[11px] font-semibold uppercase tracking-widest"
           >
-            {edit ? "Done jobs" : "Edit jobs"}
+            {edit ? t("Done jobs") : t("Edit jobs")}
           </button>
         ) : null}
       </div>
       <div className="mt-2 grid gap-2 sm:grid-cols-2">
         {hall ? (
-          <JobCard title="Hall tidy" jobs={jobs.hall} editing={writing} onSave={(lines) => onChange(setCleanupJobs(file, { hall: lines }))} />
+          <JobCard title={t("Hall tidy")} jobs={jobs.hall} editing={writing} onSave={(lines) => onChange(setCleanupJobs(file, { hall: lines }))} />
         ) : (
           <>
-            <JobCard title="Workshop" kicker="Still in the shop" jobs={jobs.shop} editing={writing} onSave={(lines) => onChange(setCleanupJobs(file, { shop: lines }))} />
-            <JobCard title="Classroom" kicker="Waiting in the room" jobs={jobs.room} editing={writing} onSave={(lines) => onChange(setCleanupJobs(file, { room: lines }))} />
+            <JobCard title={t("Workshop")} kicker={t("Still in the shop")} jobs={jobs.shop} editing={writing} onSave={(lines) => onChange(setCleanupJobs(file, { shop: lines }))} />
+            <JobCard title={t("Classroom")} kicker={t("Waiting in the room")} jobs={jobs.room} editing={writing} onSave={(lines) => onChange(setCleanupJobs(file, { room: lines }))} />
           </>
         )}
       </div>
@@ -179,9 +189,10 @@ function CleanupWall({
   const nxt = periodNext(bellsId, now);
   const lead = Math.max(1, cleanupMinsNow());
   const leftPct = Math.max(0, Math.min(100, (clock.left / lead) * 100));
+  const { t } = useLang();
   const urgent = clock.left < 1;
   const phase = prettyStage(agenda.goal) || agenda.activityName || pack.label;
-  const sub = [agenda.title, phase, obj].filter((x, i, a) => Boolean(x) && a.indexOf(x) === i).join(" · ");
+  const sub = [agenda.title, phase, obj].filter((x, i, a) => Boolean(x) && a.indexOf(x) === i).map((x) => t(x)).join(" · ");
 
   return (
     <section
@@ -200,8 +211,8 @@ function CleanupWall({
         <Berty pose="point" size={phone ? "lg" : "xl"} alert />
         <div className="min-w-0 flex-1">
           <p className="tw-cleanup-kicker font-black uppercase tracking-[0.18em]">
-            Clean up now · P{live}
-            {nxt ? ` · next P${nxt.period} ${formatBell(nxt.start)}` : " · last bell"}
+            {t("Clean up now")} · P{live}
+            {nxt ? ` · ${t("Next")} P${nxt.period} ${bellSpoken(nxt.start)}` : ` · ${t("Last bell")}`}
           </p>
           <p
             className={cn(
@@ -214,7 +225,7 @@ function CleanupWall({
           <div className="tw-cleanup-drain tw-led" aria-hidden>
             <span style={{ width: `${leftPct}%` }} />
           </div>
-          <p className="tw-cleanup-sub mt-1 font-bold uppercase tracking-widest">Left</p>
+          <p className="tw-cleanup-sub mt-1 font-bold uppercase tracking-widest">{t("Left")}</p>
           {sub ? <p className="tw-cleanup-sub mt-0.5 truncate opacity-90">{sub}</p> : null}
         </div>
         {unlocked ? (
@@ -224,7 +235,7 @@ function CleanupWall({
               onClick={() => setEditJobs((v) => !v)}
               className="tw-tap min-h-10 rounded-md bg-black/40 px-3 text-xs font-semibold uppercase tracking-widest"
             >
-              {editJobs ? "Done jobs" : "Edit jobs"}
+              {editJobs ? t("Done jobs") : t("Edit jobs")}
             </button>
             <button type="button" onClick={onDesk} className="tw-tap min-h-10 rounded-md bg-black/40 px-3 text-xs font-semibold uppercase tracking-widest">
               Desk
@@ -261,10 +272,11 @@ function JobCard({
   onSave?: (lines: string[]) => void;
 }) {
   const rows = editing ? (jobs.length < 5 ? [...jobs, ...Array(5 - jobs.length).fill("")] : jobs).slice(0, 8) : jobs;
+  const { t } = useLang();
   return (
     <div className="tw-cleanup-card">
-      {kicker ? <p className="tw-cleanup-tag">{kicker}</p> : null}
-      <h2>{title}</h2>
+      {kicker ? <p className="tw-cleanup-tag">{t(kicker)}</p> : null}
+      <h2>{t(title)}</h2>
       <ol>
         {rows.map((j, i) => (
           <li key={`${title}-${i}`}>
@@ -282,7 +294,7 @@ function JobCard({
                 className="min-h-9 min-w-0 flex-1 rounded-lg bg-black/25 px-2 text-sm font-semibold"
               />
             ) : (
-              <span>{j}</span>
+              <span>{t(j)}</span>
             )}
           </li>
         ))}

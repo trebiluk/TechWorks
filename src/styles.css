@@ -1957,7 +1957,31 @@ header.desk-chrome .tw-edge-pocket-chip {
   min-width: 44px;
 }
 .tw-chip-mark { display: none; }
-.tw-visit { min-width: 44px; min-height: 44px; }
+html[data-kb-bar="1"] .tw-edge-pocket-chip {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+html[data-kb-bar="1"] header.desk-chrome .nav-cluster {
+  padding-left: 0;
+}
+.kb-plate {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.25;
+}
+@media (max-width: 520px) {
+  .kb-bar { height: auto; min-height: 48px; flex-wrap: wrap; }
+  .kb-plate { flex: 1 0 100%; order: 8; font-size: 0.78rem; }
+  body.kb-on { padding-top: 5.25rem; }
+}
 .tw-edge-pocket-scrim {
   position: fixed;
   inset: 0;

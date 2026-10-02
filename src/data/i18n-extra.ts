@@ -667,7 +667,7 @@ export const WALL_FA: Pack = {
   Weekend: "آخر هفته",
   "My code": "کود من",
   "My card": "کارت من",
-  Menu: "منو",
+  Menu: "فهرست",
   Teacher: "معلم",
   "Do this": "این کار را بکن",
   Then: "سپس",
