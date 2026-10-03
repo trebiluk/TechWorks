@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.93.21 — 2026-10-03
+
+- My settings works inside the Hub too.
+
 ## 1.93.20 — 2026-10-03
 
 - The Menu opens below the top bar. My settings is in the Menu.

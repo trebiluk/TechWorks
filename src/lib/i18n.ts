@@ -198,36 +198,51 @@ function sharedLine(phrase: string, id: HubLang): string {
   return line;
 }
 
+const HUB_NOTE = "My settings works inside the Hub too.";
 const MENU_NOTE = "The Menu opens below the top bar. My settings is in the Menu.";
 const BAR: Record<LangId, Record<string, string>> = {
   en: {},
   uk: {
+    [HUB_NOTE]: "Мої налаштування працюють і всередині Хаба.",
     [MENU_NOTE]: "Меню відкривається під верхньою смугою. Мої налаштування є в меню.",
     "My settings": "Мої налаштування",
+    Close: "Закрити",
   },
   ru: {
+    [HUB_NOTE]: "Мои настройки работают и внутри Хаба.",
     [MENU_NOTE]: "Меню открывается под верхней полосой. Мои настройки — в меню.",
     "My settings": "Мои настройки",
+    Close: "Закрыть",
   },
   es: {
+    [HUB_NOTE]: "Mis ajustes también funcionan dentro del Hub.",
     [MENU_NOTE]: "El menú se abre bajo la barra de arriba. Mis ajustes están en el menú.",
     "My settings": "Mis ajustes",
+    Close: "Cerrar",
   },
   ar: {
+    [HUB_NOTE]: "إعداداتي تعمل داخل المحور أيضاً.",
     [MENU_NOTE]: "القائمة تفتح تحت الشريط العلوي. إعداداتي في القائمة.",
     "My settings": "إعداداتي",
+    Close: "إغلاق",
   },
   "fa-AF": {
+    [HUB_NOTE]: "تنظیمات من در هاب هم کار می‌کند.",
     [MENU_NOTE]: "فهرست زیر نوار بالا باز می‌شود. تنظیمات من در فهرست است.",
     "My settings": "تنظیمات من",
+    Close: "بستن",
   },
   rw: {
+    [HUB_NOTE]: "Igenamiterere ryanjye rikora no mu Hub.",
     [MENU_NOTE]: "Ibikubiyemo bifunguka munsi y'umurongo wo hejuru. Igenamiterere ryanjye riri mu bikubiyemo.",
     "My settings": "Igenamiterere ryanjye",
+    Close: "Funga",
   },
   ti: {
+    [HUB_NOTE]: "ናተይ ቅንጅት ኣብ ውሽጢ ሃብ እውን ይሰርሕ።",
     [MENU_NOTE]: "ዝርዝር ኣብ ትሕቲ ናይ ላዕሊ መስመር ይኽፈት። ናተይ ቅንጅት ኣብ ዝርዝር ኣሎ።",
     "My settings": "ናተይ ቅንጅት",
+    Close: "ዕጸው",
   },
 };
 

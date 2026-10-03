@@ -113,6 +113,9 @@ function openHubSettings() {
 export function Board() {
   const seed = snapshot as unknown as EconomyFile;
   const { t } = useLang();
+  const settingsRow = useRef<HTMLButtonElement>(null);
+  const settingsClose = useRef<HTMLButtonElement>(null);
+  const [hubLangOpen, setHubLangOpen] = useState(false);
   const [embed, setEmbed] = useState(false);
   const [portalMode, setPortalMode] = useState(false);
   const [file, setFile] = useState<EconomyFile>(seed);
@@ -123,6 +126,19 @@ export function Board() {
     return paintDemo(hall, demoId);
   }, [file, demoId]);
   const wallFile = useDeferredValue(graphFile);
+  useEffect(() => {
+    if (!hubLangOpen) return;
+    settingsClose.current?.focus();
+    function onKey(e: KeyboardEvent) {
+      if (e.key !== "Escape") return;
+      e.preventDefault();
+      e.stopPropagation();
+      setHubLangOpen(false);
+      settingsRow.current?.focus();
+    }
+    document.addEventListener("keydown", onKey, true);
+    return () => document.removeEventListener("keydown", onKey, true);
+  }, [hubLangOpen]);
   const overlayOn = featureOn(file, "debug") && demoId !== "off";
   const list = useMemo(() => score(wallFile), [wallFile]);
   const bells = useMemo(() => bellFor(wallFile), [wallFile]);
@@ -724,7 +740,62 @@ export function Board() {
                     <button type="button" onClick={() => go("shop")} className="tw-tap min-h-11 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">{t("Admin")}</button>
                   </div>
                 ) : null}
-                <button type="button" onClick={openHubSettings} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-left text-sm font-semibold">{t("My settings")}</button>
+                <button
+                  ref={settingsRow}
+                  type="button"
+                  onClick={(e) => {
+                    if (document.documentElement.classList.contains("kb-framed")) {
+                      e.stopPropagation();
+                      setHubLangOpen(true);
+                      return;
+                    }
+                    openHubSettings();
+                  }}
+                  className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-left text-sm font-semibold"
+                >
+                  {t("My settings")}
+                </button>
+                {hubLangOpen ? (
+                  <div className="grid gap-1" data-keep-pocket role="dialog" aria-label={t("My settings")} onClick={(e) => e.stopPropagation()}>
+                    <button
+                      ref={settingsClose}
+                      type="button"
+                      onClick={() => {
+                        setHubLangOpen(false);
+                        settingsRow.current?.focus();
+                      }}
+                      className="tw-tap min-h-11 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg"
+                    >
+                      {t("Close")}
+                    </button>
+                    {(
+                      [
+                        ["en", "English"],
+                        ["uk", "Українська"],
+                        ["ru", "Русский"],
+                        ["es", "Español"],
+                        ["ar", "العربية"],
+                        ["fa-AF", "دری"],
+                        ["rw", "Ikinyarwanda"],
+                        ["ti", "ትግርኛ"],
+                      ] as const
+                    ).map(([code, label]) => (
+                      <button
+                        key={code}
+                        type="button"
+                        lang={code === "fa-AF" ? "fa" : code}
+                        dir={code === "ar" || code === "fa-AF" ? "rtl" : "ltr"}
+                        onClick={() => {
+                          const prefs = (window as Window & { KulibertPrefs?: { acceptLang?: (c: string) => void } }).KulibertPrefs;
+                          prefs?.acceptLang?.(code);
+                        }}
+                        className="tw-tap min-h-11 min-w-11 rounded-xl bg-elevated px-3 text-left text-sm font-semibold"
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
                 {view === "skills" && learnStart === "plan" ? (
                   <div className="grid grid-cols-2 gap-1">
                     <p className="col-span-2 px-1 text-[11px] font-bold uppercase tracking-wider text-muted">This hour</p>
@@ -799,7 +870,7 @@ export function Board() {
                 <LangChip />
                 {verChip}
                 <p className="px-1 text-[11px] font-bold uppercase tracking-wide text-gold">{t("What's new")}</p>
-                <p className="px-1 text-xs leading-snug text-muted">{t("The Menu opens below the top bar. My settings is in the Menu.")}</p>
+                <p className="px-1 text-xs leading-snug text-muted">{t("My settings works inside the Hub too.")}</p>
                 </div>
                 {unlocked && dueN && mode !== "board" ? (
                   <button
