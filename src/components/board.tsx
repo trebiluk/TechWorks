@@ -89,6 +89,27 @@ function gearHint(view: string): string {
   return "";
 }
 
+/** Opens the Hub bar's own My settings row. Does not copy that panel. */
+function openHubSettings() {
+  const bar = document.querySelector(".kb-bar .kb-menu");
+  const chip = document.querySelector(".tw-edge-pocket-chip");
+  if (!document.getElementById("kb-drawer") && bar instanceof HTMLElement) {
+    chip?.classList.remove("tw-edge-pocket-chip");
+    bar.click();
+    chip?.classList.add("tw-edge-pocket-chip");
+  }
+  const box = document.getElementById("kb-drawer");
+  if (!box) return;
+  box.hidden = false;
+  const back = document.getElementById("kb-drawer-backdrop");
+  if (back) back.hidden = false;
+  const langs = box.querySelector(".kb-drawer-langs");
+  const settings = box.querySelector(".kb-drawer-settings");
+  if (langs instanceof HTMLElement && langs.hidden && settings instanceof HTMLElement) settings.click();
+  const close = box.querySelector(".kb-drawer-close");
+  if (close instanceof HTMLElement) close.focus();
+}
+
 export function Board() {
   const seed = snapshot as unknown as EconomyFile;
   const { t } = useLang();
@@ -703,6 +724,7 @@ export function Board() {
                     <button type="button" onClick={() => go("shop")} className="tw-tap min-h-11 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">{t("Admin")}</button>
                   </div>
                 ) : null}
+                <button type="button" onClick={openHubSettings} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-left text-sm font-semibold">{t("My settings")}</button>
                 {view === "skills" && learnStart === "plan" ? (
                   <div className="grid grid-cols-2 gap-1">
                     <p className="col-span-2 px-1 text-[11px] font-bold uppercase tracking-wider text-muted">This hour</p>
@@ -777,7 +799,7 @@ export function Board() {
                 <LangChip />
                 {verChip}
                 <p className="px-1 text-[11px] font-bold uppercase tracking-wide text-gold">{t("What's new")}</p>
-                <p className="px-1 text-xs leading-snug text-muted">{t("Study Hall speaks your language, and the Dari clean-up screen is in Dari.")}</p>
+                <p className="px-1 text-xs leading-snug text-muted">{t("The Menu opens below the top bar. My settings is in the Menu.")}</p>
                 </div>
                 {unlocked && dueN && mode !== "board" ? (
                   <button

@@ -198,6 +198,39 @@ function sharedLine(phrase: string, id: HubLang): string {
   return line;
 }
 
+const MENU_NOTE = "The Menu opens below the top bar. My settings is in the Menu.";
+const BAR: Record<LangId, Record<string, string>> = {
+  en: {},
+  uk: {
+    [MENU_NOTE]: "Меню відкривається під верхньою смугою. Мої налаштування є в меню.",
+    "My settings": "Мої налаштування",
+  },
+  ru: {
+    [MENU_NOTE]: "Меню открывается под верхней полосой. Мои настройки — в меню.",
+    "My settings": "Мои настройки",
+  },
+  es: {
+    [MENU_NOTE]: "El menú se abre bajo la barra de arriba. Mis ajustes están en el menú.",
+    "My settings": "Mis ajustes",
+  },
+  ar: {
+    [MENU_NOTE]: "القائمة تفتح تحت الشريط العلوي. إعداداتي في القائمة.",
+    "My settings": "إعداداتي",
+  },
+  "fa-AF": {
+    [MENU_NOTE]: "فهرست زیر نوار بالا باز می‌شود. تنظیمات من در فهرست است.",
+    "My settings": "تنظیمات من",
+  },
+  rw: {
+    [MENU_NOTE]: "Ibikubiyemo bifunguka munsi y'umurongo wo hejuru. Igenamiterere ryanjye riri mu bikubiyemo.",
+    "My settings": "Igenamiterere ryanjye",
+  },
+  ti: {
+    [MENU_NOTE]: "ዝርዝር ኣብ ትሕቲ ናይ ላዕሊ መስመር ይኽፈት። ናተይ ቅንጅት ኣብ ዝርዝር ኣሎ።",
+    "My settings": "ናተይ ቅንጅት",
+  },
+};
+
 const PICK = "Let\u2019s pick";
 const GOT = "you\u2019ve got this";
 const HALL_NEWS = "Study Hall speaks your language, and the Dari clean-up screen is in Dari.";
@@ -646,7 +679,7 @@ export function t(phrase: string, id: HubLang = copyMode()): string {
   const shared = sharedLine(phrase, id);
   if (id === "en") return shared || phrase;
   if (id === "simple") return SIMPLE[phrase] || shared || phrase;
-  return HALL[id]?.[phrase] || CLEAN[id]?.[phrase] || MORE[id]?.[phrase] || DICT[id]?.[phrase] || shared || phrase;
+  return BAR[id]?.[phrase] || HALL[id]?.[phrase] || CLEAN[id]?.[phrase] || MORE[id]?.[phrase] || DICT[id]?.[phrase] || shared || phrase;
 }
 
 export function articleCopy(id: string, title: string, body: string, langId: LangId = storedLang()): { title: string; body: string } {
