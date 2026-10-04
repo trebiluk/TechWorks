@@ -1,5 +1,4 @@
 import { defineEventHandler, getHeader, getRequestURL, readBody, setHeader, setResponseStatus, type H3Event } from "h3";
-import { generateAuthenticationOptions } from "@simplewebauthn/server";
 import { hkdfReady, recoveryKey, hmacText, randomBytes, b64url } from "../../../kn-keys";
 import { ensureKn } from "../../../kn-db";
 import { getStaff, STAFF_COOKIE, staffExpiry } from "../../../kn-session";
@@ -28,17 +27,30 @@ function staffCors(event: H3Event) {
   setHeader(event, "cache-control", "no-store");
 }
 
+function notSetUp(event: H3Event) {
+  setResponseStatus(event, 503);
+  return { ok: false, reason: "staff-login-not-set-up" };
+}
+
+export default defineEventHandler(async (event) => {
+  staffCors(event);
+  try {
+    return await handle(event);
+  } catch {
+    return notSetUp(event);
+  }
+});
+
 function deny(event: H3Event, status: number, error: string) {
   setResponseStatus(event, status);
   return { error };
 }
 
-export default defineEventHandler(async (event) => {
-  staffCors(event);
+async function handle(event: H3Event) {
   const path = getRequestURL(event).pathname.replace(/\/$/, "");
   const method = event.method || "GET";
   if (method === "OPTIONS") return "";
-  if (!hkdfReady(event)) return deny(event, 503, "server-not-ready");
+  if (!hkdfReady(event)) return notSetUp(event);
   if (method === "POST") {
     const type = (getHeader(event, "content-type") ?? "").toLowerCase();
     if (!type.includes("application/json") || getHeader(event, "x-kn-staff") !== "1") return deny(event, 403, "csrf");
@@ -53,6 +65,7 @@ export default defineEventHandler(async (event) => {
   }
   if (path.endsWith("/api/staff/login/options") && method === "POST") {
     const host = getRequestURL(event).hostname;
+    const { generateAuthenticationOptions } = await import("@simplewebauthn/server");
     const options = await generateAuthenticationOptions({
       rpID: host === "localhost" || host === "127.0.0.1" ? "localhost" : "kulibert.net",
       userVerification: "required",
@@ -93,4 +106,4 @@ export default defineEventHandler(async (event) => {
   }
   setResponseStatus(event, 404);
   return { error: "missing", id: b64url(randomBytes(3)) };
-});
+}

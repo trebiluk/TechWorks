@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.94.0. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.94.1. -->
 
 # TechWorks changelog
 
-App version **1.94.0**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.94.1**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.94.1 — 2026-10-03
+
+- Staff check says the login is not set up, instead of crashing.
 
 ## 1.94.0 — 2026-10-03
 
