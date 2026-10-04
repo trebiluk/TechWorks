@@ -5,6 +5,8 @@ dist/
 *.local
 .env
 .env.*
+.dev.vars
+.dev.vars*
 .project_id
 .node_modules.lock
 attachments/

@@ -1,6 +1,7 @@
 import { defineEventHandler, getHeader, setHeader, setResponseStatus, type H3Event } from "h3";
-import { hkdfReady } from "../../../kn-keys";
+import { b64url, hkdfReady, randomBytes } from "../../../kn-keys";
 import { getStaff } from "../../../kn-session";
+import { knDb } from "../../../cf-env";
 
 const ALLOW = new Set(["https://apps.kulibert.net", "https://tw.kulibert.net"]);
 
@@ -30,24 +31,22 @@ function notSetUp(event: H3Event) {
   return { ok: false, reason: "staff-login-not-set-up" };
 }
 
-/** GET /api/staff/me. Missing key is a clean 503. No session is 401. Never throws. */
+/** GET /api/staff/me. 503 only when the key or KN_DB is missing. */
 export default defineEventHandler(async (event) => {
   staffCors(event);
   try {
-    if (!hkdfReady(event)) return notSetUp(event);
+    if (!hkdfReady(event) || !knDb(event)) return notSetUp(event);
     const staff = await getStaff(event);
     if (!staff) {
       setResponseStatus(event, 401);
       return { staff: false };
     }
     return { staff: true, exp: staff.exp, method: staff.method, label: staff.label, mustAddPasskey: staff.mustAddPasskey };
-  } catch {
-    try {
-      if (!hkdfReady(event)) return notSetUp(event);
-    } catch {
-      return notSetUp(event);
-    }
-    setResponseStatus(event, 401);
-    return { staff: false };
+  } catch (err) {
+    if (!hkdfReady(event) || !knDb(event)) return notSetUp(event);
+    const id = b64url(randomBytes(3));
+    console.error("staff", id, err);
+    setResponseStatus(event, 500);
+    return { error: "internal", id };
   }
 });

@@ -630,6 +630,20 @@ export default defineConfig(({ command, isPreview }) => {
             // manifest + head-tag middleware). Nitro v3 defaults serverDir to
             // false, so removing this silently unwires /?install=1 on deploys.
             serverDir: "./server",
+            rolldownConfig: { output: { strictExecutionOrder: true } },
+            hooks: {
+              "rollup:before"(_nitro, config) {
+                const output = (config.output ??= {});
+                output.strictExecutionOrder = true;
+                const splitting = (output.codeSplitting ??= {});
+                const groups = Array.isArray(splitting.groups) ? splitting.groups : [];
+                groups.unshift({
+                  test: /@peculiar|tsyringe|@simplewebauthn/,
+                  name: "passkey",
+                });
+                splitting.groups = groups;
+              },
+            },
           }),
         ]
       : []),

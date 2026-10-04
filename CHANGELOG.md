@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.94.1. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.94.2. -->
 
 # TechWorks changelog
 
-App version **1.94.1**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.94.2**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.94.2 — 2026-10-03
+
+- Staff sign-in: fixed passkey library load order; removed open setup-code route; real errors now return 500.
 
 ## 1.94.1 — 2026-10-03
 
