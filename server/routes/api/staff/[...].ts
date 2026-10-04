@@ -54,6 +54,13 @@ async function handle(event: H3Event) {
   const path = getRequestURL(event).pathname.replace(/\/$/, "");
   const method = event.method || "GET";
   if (method === "OPTIONS") return "";
+  if (
+    path.endsWith("/api/staff/setup-code") ||
+    path.endsWith("/api/staff/login/totp")
+  ) {
+    setResponseStatus(event, 404);
+    return { error: "missing" };
+  }
   if (!hkdfReady(event) || !knDb(event)) return notSetUp(event);
   if (method === "POST") {
     const type = (getHeader(event, "content-type") ?? "").toLowerCase();
