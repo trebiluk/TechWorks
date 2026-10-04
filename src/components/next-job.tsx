@@ -34,20 +34,19 @@ export const NextJobChip = memo(function NextJobChip({
       : job.tone === "warn"
         ? "bg-cleanup text-accent-fg"
         : job.tone === "due"
-          ? "bg-loss text-accent-fg"
-          : "bg-elevated text-muted";
+          ? "border border-amber-500 bg-elevated text-fg"
+          : "bg-elevated text-fg";
   return (
     <button
       type="button"
       title={`${job.label} · ${job.hint}`}
       onClick={() => onGo(job)}
-      className={cn("tw-next-job tw-tap", tone)}
+      className={cn("tw-next-job tw-tap min-h-12 w-full justify-start text-sm", tone)}
     >
-      <Icon className="size-5 shrink-0" strokeWidth={2.3} aria-hidden />
-      <span className="sr-only">{`${job.label} · ${job.hint}`}</span>
-      <span className="hidden min-w-0 text-left xl:block">
-        <span className="block truncate leading-tight">{job.label}</span>
-        <span className="truncate font-mono text-[10px] font-medium normal-case tracking-normal opacity-80">{job.hint}</span>
+      {job.tone === "due" ? <span aria-hidden>⚠</span> : <Icon className="size-5 shrink-0" strokeWidth={2.3} aria-hidden />}
+      <span className="min-w-0 text-left">
+        <span className="block truncate text-sm leading-tight">{job.label}</span>
+        {job.hint ? <span className="block truncate text-xs font-medium normal-case tracking-normal opacity-80">{job.hint}</span> : null}
       </span>
     </button>
   );

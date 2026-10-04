@@ -58,6 +58,7 @@ export function installLayoutWatch() {
   const mq = window.matchMedia(PHONE_MQ);
   mq.addEventListener("change", paintPhoneChrome);
   window.visualViewport?.addEventListener("resize", paintPhoneChrome);
+  window.visualViewport?.addEventListener("scroll", paintPhoneChrome);
   window.addEventListener("orientationchange", paintPhoneChrome);
 }
 

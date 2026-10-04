@@ -730,6 +730,30 @@ export function Board() {
                 label={t("Menu")}
                 lamp={overlayOn}
                 badge={unlocked && dueN && mode !== "board" ? String(dueN) : undefined}
+                footer={
+                  <>
+                    <LockBar
+                      unlocked={unlocked || crewOn}
+                      onAsk={() => askPin()}
+                      onLock={() => {
+                        setUnlocked(false);
+                        setCrewOn(false);
+                        setArrangeOn(false);
+                        const stay = lockView(view);
+                        if (stay !== view) setView(stay as View);
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => (unlocked ? go("shop") : askPin("shop"))}
+                      className="tw-sheet-admin tw-tap inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg"
+                    >
+                      <span aria-hidden>🛠️</span>
+                      {t("Admin")}
+                      {unlocked && dueN ? <span className="rounded-full bg-black/30 px-2 py-0.5 text-xs">⚠ {dueN}</span> : null}
+                    </button>
+                  </>
+                }
               >
                 {!phone ? (
                   <div className="grid grid-cols-2 gap-1">
@@ -851,39 +875,17 @@ export function Board() {
                 ) : null}
                 {unlocked ? <NextJobChip file={file} onGo={runJob} /> : null}
                 <NowDock
+                  liveOnly
                   schedule={deskBellId(file)}
                   lunch={lunchOn(file, todayIso())}
                   onClick={() => runJob({ id: "now", label: "Now", hint: "", tone: "ok", go: "overview" })}
                 />
                 <div className="tw-hud-row tw-edge-pocket-utils">
-                <LockBar
-                  unlocked={unlocked || crewOn}
-                  onAsk={() => askPin()}
-                  onLock={() => {
-                    setUnlocked(false);
-                    setCrewOn(false);
-                    setArrangeOn(false);
-                    const stay = lockView(view);
-                    if (stay !== view) setView(stay as View);
-                  }}
-                />
                 <LangChip />
                 {verChip}
                 <p className="px-1 text-[11px] font-bold uppercase tracking-wide text-gold">{t("What's new")}</p>
                 <p className="px-1 text-xs leading-snug text-muted">{t("My settings works inside the Hub too.")}</p>
                 </div>
-                {unlocked && dueN && mode !== "board" ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAdminPane("today");
-                      go("admin");
-                    }}
-                    className="tw-tap min-h-11 rounded-full bg-loss px-3 text-xs font-semibold uppercase tracking-wide text-accent-fg"
-                  >
-                    {dueN} due
-                  </button>
-                ) : null}
               </EdgePocket>
               {showBack ? (
                 <button type="button" onClick={goBack} className="tw-tap min-h-11 shrink-0 rounded-xl bg-elevated px-3 text-sm font-semibold" title="Back">
