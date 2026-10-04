@@ -8,7 +8,7 @@ const APP = /^[a-z0-9-]{1,24}$/;
 export default defineEventHandler(async (event) => {
   whoCors(event);
   const q = getQuery(event);
-  const session = await readSession(getCookie(event, WHO_COOKIE));
+  const session = await readSession(event, getCookie(event, WHO_COOKIE));
   const code = shopCode(q.code || session?.code || "");
   const app = appSlug(q.app);
   if (!APP.test(app)) throw createError({ statusCode: 400, statusMessage: "app" });

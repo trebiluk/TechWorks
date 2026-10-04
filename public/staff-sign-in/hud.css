@@ -1,0 +1,18 @@
+@font-face { font-family: Orbitron; src: url("/fonts/orbitron-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "JetBrains Mono"; src: url("/fonts/jetbrains-mono-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: linear-gradient(#05121A, #0B1626); color: #E6FBFF; font: 16px/1.4 "JetBrains Mono", ui-monospace, monospace; }
+body { padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left)); }
+.sheet { max-width: 32rem; margin: 0 auto; }
+.card { background: rgba(6, 20, 28, 0.92); border: 1px solid #14B8A6; padding: 1rem; margin: 0 0 1rem; }
+h1, button { font-family: Orbitron, sans-serif; }
+button { min-height: 52px; min-width: 44px; width: 100%; margin: 0.4rem 0; padding: 0.6rem 0.8rem; border: 1px solid #22D3EE; background: #0B1626; color: #E6FBFF; font-size: 1rem; cursor: pointer; }
+button:focus-visible { outline: 2px solid #22D3EE; outline-offset: 2px; }
+.boxes { display: flex; gap: 0.35rem; }
+.boxes input { width: 48px; height: 48px; text-align: center; font-size: 1.2rem; background: #05121A; color: #E6FBFF; border: 1px solid #14B8A6; }
+.status { font-size: 0.95rem; }
+label { display: flex; gap: 0.5rem; align-items: center; min-height: 44px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+html[dir="rtl"] body { direction: rtl; }
+html[data-kp-contrast="1"] .card { background: #000; color: #fff; border-color: #fff; }

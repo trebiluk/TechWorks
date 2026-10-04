@@ -1,5 +1,7 @@
 /** Kid session for the Hub. Alias and shop code only. Never a PIN or a real name. */
 
+import { b64url, hmacText, kidSessionKey } from "./kn-keys";
+
 export const WHO_COOKIE = "tw_session";
 
 export type WhoSession = {
@@ -9,26 +11,12 @@ export type WhoSession = {
   exp: number;
 };
 
-const SECRET = "tw-who-session-v1";
-
-function b64url(bytes: Uint8Array): string {
-  let raw = "";
-  for (const b of bytes) raw += String.fromCharCode(b);
-  return btoa(raw).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
-}
-
 function fromB64url(text: string): Uint8Array {
   const pad = text.length % 4 === 0 ? "" : "=".repeat(4 - (text.length % 4));
   const bin = atob(text.replace(/-/g, "+").replace(/_/g, "/") + pad);
   const out = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
   return out;
-}
-
-async function hmac(payload: string): Promise<string> {
-  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(SECRET), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payload));
-  return b64url(new Uint8Array(sig));
 }
 
 /** End of the school day (3:00pm America/New_York) or 8 hours, whichever is sooner. */
@@ -51,7 +39,16 @@ export function sessionExpiry(now = Date.now()): number {
   return Math.min(eight, now + left * 60 * 1000);
 }
 
-export async function mintSession(row: { alias: string; code: string; picture?: string }, now = Date.now()): Promise<string> {
+export async function mintSession(
+  event: unknown,
+  row: { alias: string; code: string; picture?: string },
+  now = Date.now(),
+): Promise<string> {
+  const key = await kidSessionKey(event);
+  if (!key) {
+    const err = new Error("server-key");
+    throw err;
+  }
   const body: WhoSession = {
     alias: row.alias.slice(0, 16),
     code: row.code.slice(0, 5),
@@ -59,13 +56,14 @@ export async function mintSession(row: { alias: string; code: string; picture?: 
     exp: sessionExpiry(now),
   };
   const payload = b64url(new TextEncoder().encode(JSON.stringify(body)));
-  return `${payload}.${await hmac(payload)}`;
+  return `${payload}.${await hmacText(key, payload)}`;
 }
 
-export async function readSession(token: string | undefined, now = Date.now()): Promise<WhoSession | null> {
-  if (!token || !token.includes(".")) return null;
+export async function readSession(event: unknown, token: string | undefined, now = Date.now()): Promise<WhoSession | null> {
+  const key = await kidSessionKey(event);
+  if (!key || !token || !token.includes(".")) return null;
   const [payload, sig] = token.split(".");
-  if (!payload || !sig || sig !== (await hmac(payload))) return null;
+  if (!payload || !sig || sig !== (await hmacText(key, payload))) return null;
   try {
     const body = JSON.parse(new TextDecoder().decode(fromB64url(payload))) as WhoSession;
     if (!body.alias || !body.code || !body.exp || body.exp <= now) return null;

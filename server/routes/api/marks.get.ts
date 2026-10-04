@@ -4,8 +4,8 @@ import { whoCors } from "../../who-cors";
 
 function deskPinOk(header: string | undefined) {
   const pin = String(header ?? "").replace(/\D/g, "");
-  const expect = String(process.env.TW_DESK_PIN || "7879").replace(/\D/g, "");
-  return pin.length >= 4 && pin === expect;
+  const expect = String(process.env.TW_DESK_PIN ?? "").replace(/\D/g, "");
+  return expect.length >= 4 && pin.length >= 4 && pin === expect;
 }
 
 export default defineEventHandler(async (event) => {

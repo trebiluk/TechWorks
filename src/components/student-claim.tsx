@@ -80,7 +80,7 @@ export function StudentClaim({ file, onChange }: { file: EconomyFile; onChange: 
       });
       const body = (await res.json()) as { ok?: boolean; alias?: string; error?: string; picture?: string; code?: string };
       if (!body.ok || !body.alias) {
-        setMsg(body.error || "That code is not on the list.");
+        setMsg(body.error === "server-key" ? t("Sign-in is resting. Tell Mr. K.") : body.error || "That code is not on the list.");
         return;
       }
       saveShopSession({ alias: body.alias, code: body.code || code, picture: body.picture || "🐾" });

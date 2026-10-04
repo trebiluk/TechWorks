@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.94.0 — 2026-10-03
+
+- Staff now sign in with a phone passkey or a code. Kids sign in again once. The phone menu scrolls and Admin is always in reach.
+
 ## 1.93.22 — 2026-10-03
 
 - The phone menu scrolls, and Admin stays in reach.

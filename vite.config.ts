@@ -217,7 +217,8 @@ function shopApiPlugin(): Plugin {
             }
             if (period) {
               const pin = String(req.headers["x-tw-pin"] ?? "").replace(/\D/g, "");
-              if (pin !== "7879") {
+              const expect = String(process.env.TW_DESK_PIN ?? "").replace(/\D/g, "");
+              if (!expect || pin !== expect) {
                 json(401, { ok: false });
                 return;
               }

@@ -3,11 +3,9 @@ const UNLOCK = "techworks-unlocked";
 const CREW_UNLOCK = "techworks-crew";
 const PORTAL_STORE = "techworks-portal-pin";
 const PORTAL_UNLOCK = "techworks-portal";
-/** Factory desk PIN. Always unlocks teacher. Not printed on the student wall. */
-export const DEFAULT_PIN = "7879";
+/** A desk PIN is one the teacher set. There is no factory PIN. */
 export const CREW_PIN = "2222";
 export const REJECT_PIN = "1111";
-export const DEFAULT_PORTAL_PIN = "2627";
 
 export type UnlockKind = "teacher" | "crew";
 
@@ -36,9 +34,7 @@ export function savePin(next: string) {
 }
 
 export function ensureDefaultPin() {
-  if (typeof window === "undefined") return;
-  const p = window.localStorage.getItem(PIN_STORE);
-  if (!p || p === REJECT_PIN) window.localStorage.setItem(PIN_STORE, DEFAULT_PIN);
+  return;
 }
 
 function openTeacher() {
@@ -67,11 +63,6 @@ export function unlockKind(code: string): UnlockKind | null {
     window.sessionStorage.setItem(CREW_UNLOCK, "1");
     return "crew";
   }
-  if (c === DEFAULT_PIN) {
-    window.localStorage.setItem(PIN_STORE, DEFAULT_PIN);
-    openTeacher();
-    return "teacher";
-  }
   if (pinReady() && c === storedPin()) {
     openTeacher();
     return "teacher";
@@ -92,13 +83,15 @@ export function lockCrew() {
 }
 
 export function storedPortalPin(): string {
-  if (typeof window === "undefined") return DEFAULT_PORTAL_PIN;
-  return window.localStorage.getItem(PORTAL_STORE) || DEFAULT_PORTAL_PIN;
+  if (typeof window === "undefined") return "";
+  return window.localStorage.getItem(PORTAL_STORE) || "";
 }
 
 export function savePortalPin(next: string) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(PORTAL_STORE, digits(next) || DEFAULT_PORTAL_PIN);
+  const n = digits(next);
+  if (n.length < 4) return;
+  window.localStorage.setItem(PORTAL_STORE, n);
 }
 
 export function portalOpen(): boolean {

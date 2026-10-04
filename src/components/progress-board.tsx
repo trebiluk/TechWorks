@@ -23,7 +23,7 @@ export function ProgressBoard({ file, onChange }: { file: EconomyFile; onChange:
   const on = Boolean(file.meta.config?.progressBoard);
 
   useEffect(() => {
-    const pin = storedPin() || "7879";
+    const pin = storedPin();
     void fetch("/api/marks?period=1", { headers: { "x-tw-pin": pin } })
       .then(async (res) => {
         if (!res.ok) throw new Error(String(res.status));

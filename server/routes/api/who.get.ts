@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   whoCors(event);
   const q = String(getQuery(event).q ?? "");
   if (q.trim().length >= 2) return { ok: true, people: await searchWho(event, q) };
-  const session = await readSession(getCookie(event, WHO_COOKIE));
+  const session = await readSession(event, getCookie(event, WHO_COOKIE));
   if (!session) return { ok: true, signedIn: false, verified: false };
   return {
     alias: session.alias,

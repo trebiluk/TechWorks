@@ -8,3 +8,9 @@ pages_build_output_dir = ".output/public"
 [[kv_namespaces]]
 binding = "TW_DESK"
 id = "82e0fdcc993042918568e0b0f4b88b3a"
+
+[[d1_databases]]
+binding = "KN_DB"
+database_name = "kulinet"
+database_id = "d628fb13-8149-4c3a-b959-c6f5368b28f9"
+

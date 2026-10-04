@@ -884,7 +884,7 @@ export function Board() {
                 <LangChip />
                 {verChip}
                 <p className="px-1 text-[11px] font-bold uppercase tracking-wide text-gold">{t("What's new")}</p>
-                <p className="px-1 text-xs leading-snug text-muted">{t("My settings works inside the Hub too.")}</p>
+                <p className="px-1 text-xs leading-snug text-muted">{t("Staff now sign in with a phone passkey or a code. Kids sign in again once. The phone menu scrolls and Admin is always in reach.")}</p>
                 </div>
               </EdgePocket>
               {showBack ? (

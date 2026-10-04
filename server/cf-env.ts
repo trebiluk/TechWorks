@@ -16,7 +16,7 @@ type BookNs = {
   get: (id: unknown) => { fetch: (input: string, init?: { method?: string; body?: string }) => Promise<Response> };
 };
 
-function envOf(event: unknown): Record<string, unknown> | null {
+export function envOf(event: unknown): Record<string, unknown> | null {
   const e = (event ?? {}) as Loose;
   const ctx = e.context ?? {};
   const cf = ctx.cloudflare as { env?: Record<string, unknown> } | undefined;
@@ -77,6 +77,22 @@ function bookKv(ns: BookNs): Kv {
 
 export function deskKv(event: unknown): Kv | null {
   return namedKv(envOf(event));
+}
+
+export function knDb(event: unknown): { prepare: (sql: string) => { bind: (...args: unknown[]) => { first: <T>() => Promise<T | null>; all: <T>() => Promise<{ results?: T[] }>; run: () => Promise<unknown> } } } | null {
+  const env = envOf(event);
+  const db = env?.KN_DB;
+  if (db && typeof db === "object" && typeof (db as { prepare?: unknown }).prepare === "function") {
+    return db as { prepare: (sql: string) => { bind: (...args: unknown[]) => { first: <T>() => Promise<T | null>; all: <T>() => Promise<{ results?: T[] }>; run: () => Promise<unknown> } } };
+  }
+  return null;
+}
+
+export function knSecret(event: unknown, name: string): string {
+  const env = envOf(event);
+  const fromEnv = env && typeof env[name] === "string" ? String(env[name]) : "";
+  const fromProc = typeof process !== "undefined" && process.env ? String(process.env[name] ?? "") : "";
+  return (fromEnv || fromProc).trim();
 }
 
 export async function openKv(event: unknown): Promise<Kv | null> {

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it, beforeEach } from "node:test";
-import { CREW_PIN, DEFAULT_PIN, ensureDefaultPin, lock, pinReady, savePin, storedPin, unlockKind } from "./pin.ts";
+import { CREW_PIN, ensureDefaultPin, lock, pinReady, savePin, storedPin, unlockKind } from "./pin.ts";
 
 function mem() {
   const m = new Map<string, string>();
@@ -22,18 +22,18 @@ beforeEach(() => {
 });
 
 describe("desk PIN", () => {
-  it("seeds factory 7879 and unlocks", () => {
+  it("does not seed a factory PIN", () => {
     ensureDefaultPin();
-    assert.equal(storedPin(), DEFAULT_PIN);
-    assert.equal(pinReady(), true);
-    assert.equal(unlockKind("7879"), "teacher");
+    assert.equal(storedPin(), "");
+    assert.equal(pinReady(), false);
+    assert.equal(unlockKind("9999"), null);
   });
 
-  it("factory PIN recovers a forgotten custom PIN", () => {
+  it("a custom PIN unlocks and the old factory value does not replace it", () => {
     savePin("4567");
     assert.equal(storedPin(), "4567");
-    assert.equal(unlockKind("7879"), "teacher");
-    assert.equal(storedPin(), DEFAULT_PIN);
+    assert.equal(unlockKind("9999"), null);
+    assert.equal(storedPin(), "4567");
   });
 
   it("rejects 1111 and 2222 as teacher PIN", () => {

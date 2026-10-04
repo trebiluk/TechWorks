@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.93.3. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.94.0. -->
 
 # TechWorks changelog
 
-App version **1.93.3**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.94.0**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.94.0 — 2026-10-03
+
+- Staff now sign in with a phone passkey or a code. Kids sign in again once. The phone menu scrolls and Admin is always in reach.
 
 ## 1.93.3 — 2026-10-01
 

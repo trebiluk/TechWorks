@@ -304,7 +304,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Family path",
     tags: ["parent", "family"],
     wall: true,
-    body: "Web on the HUD, or ?web=1. Parents, crew leaders, and students enter with the class web code (Settings → Worker portal PIN, default 2627 — not the teacher PIN). Aliases only. Charts are skills in words. Family sheet has the project mark. Wallet and Lucky stay off. Copy link from that page.",
+    body: "Web on the HUD, or ?web=1. Parents, crew leaders, and students enter with the class web code you set in Settings. Aliases only. Charts are skills in words. Family sheet has the project mark. Wallet and Lucky stay off. Copy link from that page.",
   },
   {
     id: "roles-sub",
@@ -356,7 +356,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Start",
     title: "PINs and who can tap what",
     tags: ["pin", "1111", "2222", "lock", "unlock", "teacher", "crew"],
-    body: "Factory desk PIN is 7879 (not printed on the student wall). 1111 is rejected. It unlocks scoring, Store, and roster. Crew override 2222 opens other periods on the crew pad only. Locked chrome: Wall, Teach, Deck, Week, Club, Hall, Learn Words, Help. Embed ?embed=1 is Wall only.",
+    body: "Set a desk PIN in Settings. 1111 is rejected. A PIN you set unlocks scoring, Store, and roster. Crew override 2222 opens other periods on the crew pad only. Locked chrome: Wall, Teach, Deck, Week, Club, Hall, Learn Words, Help. Embed ?embed=1 is Wall only.",
   },
   {
     id: "nav",
@@ -609,8 +609,8 @@ export const HELP_ARTICLES: HelpArticle[] = [
     id: "portal",
     category: "Data privacy",
     title: "Family web code",
-    tags: ["web", "portal", "family", "crew", "student", "pin", "2627"],
-    body: "Web on the HUD, or ?web=1. Class web code is the portal PIN (default 2627 — change in Settings). Not the teacher PIN. Then type the Shop ID from your teacher. No class list. Aliases, skill charts, family sheet. No wallet.",
+    tags: ["web", "portal", "family", "crew", "student", "pin"],
+    body: "Web on the HUD, or ?web=1. The class web code is the one you set in Settings. Not the teacher PIN. Then type the Shop ID from your teacher. No class list. Aliases, skill charts, family sheet. No wallet.",
   },
   {
     id: "ferpa",
@@ -751,7 +751,7 @@ Help in the app: tap **?**. This file is the IT / teacher print. Twin of docs/TE
 
 - **Students** — Wall, Teach (locked), Deck Present, Help Welcome / Wall. No legal names.
 - **Crew leads** — Crew pad, 3 / 2 / 1. PIN 2222 for another period. No wallet, bonus, or grades.
-- **Families** — Web on the HUD or ?web=1. Class web code (portal PIN, default 2627), then Shop ID. One project mark, skills in words. No wallet.
+- **Families** — Web on the HUD or ?web=1. Class web code from Settings, then Shop ID. One project mark, skills in words. No wallet.
 - **Teacher** — Set teacher PIN (never 1111). Teach → Deck → Wall. Score one-row pad. Cog = Admin.
 - **Sub** — Do not open this app. Teacher taps SUB. Wall stays up.
 - **IT / second room** — Same desk key, Pull. Public GitHub ships students: []. Do not print the teacher PIN.
@@ -768,7 +768,7 @@ The PIN is not a backup. The desk key is not the PIN. Layout, theme, PIN, and Fa
 
 - Teacher unlock = Lock → Set teacher PIN. 1111 is rejected. Never print the real PIN.
 - Crew 2222 = crew pad only. Off the student About card.
-- Family web / portal default 2627 (Settings → Worker portal PIN). Not the teacher PIN.
+- Family web stays off until you set a class web code in Settings. Not the teacher PIN.
 
 ## Chrome (must stay tappable)
 

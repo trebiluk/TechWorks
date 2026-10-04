@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Staff sign-in</title>
+  <link rel="stylesheet" href="./hud.css" />
+</head>
+<body>
+  <main class="sheet" id="app">
+    <p class="status" id="status">🔒 Signed out</p>
+    <section class="card" id="pass">
+      <h1>Staff sign-in</h1>
+      <button class="go" id="passkey" type="button">🔑 Sign in with passkey</button>
+      <ol>
+        <li>Use a phone or tablet</li>
+        <li>Scan</li>
+        <li>Unlock on phone</li>
+      </ol>
+      <button type="button" id="use-code">🔢 Use code instead</button>
+      <button type="button" id="use-recovery">🧯 Lost your phone? Use a recovery code</button>
+    </section>
+    <section class="card" id="code" hidden>
+      <p id="code-line">No passkey? Use the 6-digit code from Google Authenticator.</p>
+      <div class="boxes" id="boxes"></div>
+      <label class="row"><input type="checkbox" id="shared" /> Shared Chromebook? End at the last bell</label>
+      <button class="go" id="code-go" type="button">✅ Sign in</button>
+      <p id="lock" hidden></p>
+    </section>
+  </main>
+  <script src="./vendor/simplewebauthn-browser.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

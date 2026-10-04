@@ -6,7 +6,7 @@ import { WHO_COOKIE, readSession } from "../../who-session";
 export default defineEventHandler(async (event) => {
   whoCors(event);
   const body = (await readBody<{ code?: unknown; app?: unknown; prefs?: unknown }>(event)) ?? {};
-  const session = await readSession(getCookie(event, WHO_COOKIE));
+  const session = await readSession(event, getCookie(event, WHO_COOKIE));
   const code = shopCode(body.code || session?.code || "");
   const app = appSlug(body.app);
   const store = await savePrefs(event, code, app, body.prefs);
