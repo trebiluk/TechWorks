@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.94.3. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.94.4. -->
 
 # TechWorks changelog
 
-App version **1.94.3**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.94.4**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.94.4 — 2026-10-05
+
+- Cleanup no longer covers the menu. Menu stays on the cleanup screen even when the desk is locked.
 
 ## 1.94.3 — 2026-10-05
 

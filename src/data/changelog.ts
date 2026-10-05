@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.94.4 — 2026-10-05
+
+- Cleanup no longer covers the menu. Menu stays on the cleanup screen even when the desk is locked.
+
 ## 1.94.3 — 2026-10-05
 
 - Staff sign-in page matches the desk. Plain buttons, a way back to the wall, and a clear line when sign-in is not set up yet.

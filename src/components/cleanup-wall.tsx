@@ -14,6 +14,10 @@ import { useLang } from "@/lib/i18n-hook";
 import { agendaFor, prettyStage } from "@/lib/projects";
 import { packOf, teachObjective } from "@/lib/teach";
 
+function openDeskMenu() {
+  document.querySelector<HTMLButtonElement>(".tw-edge-pocket-chip")?.click();
+}
+
 function bellSpoken(hhmm: string): string {
   const [h, m] = hhmm.split(":").map(Number);
   const d = new Date();
@@ -197,10 +201,10 @@ function CleanupWall({
   return (
     <section
       className={cn(
-        "tw-cleanup flex flex-col overflow-hidden bg-cleanup text-accent-fg",
+        "tw-cleanup flex min-h-0 flex-1 flex-col overflow-hidden bg-cleanup text-accent-fg",
         phone
-          ? "fixed inset-0 z-[80] px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.5rem,env(safe-area-inset-top))]"
-          : "min-h-0 flex-1 rounded-xl px-5 py-3",
+          ? "px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2"
+          : "rounded-xl px-5 py-3",
       )}
       data-cleanup-wall
       data-urgent={urgent ? "1" : undefined}
@@ -228,20 +232,29 @@ function CleanupWall({
           <p className="tw-cleanup-sub mt-1 font-bold uppercase tracking-widest">{t("Left")}</p>
           {sub ? <p className="tw-cleanup-sub mt-0.5 truncate opacity-90">{sub}</p> : null}
         </div>
-        {unlocked ? (
-          <div className="flex shrink-0 flex-col gap-1">
-            <button
-              type="button"
-              onClick={() => setEditJobs((v) => !v)}
-              className="tw-tap min-h-10 rounded-md bg-black/40 px-3 text-xs font-semibold uppercase tracking-widest"
-            >
-              {editJobs ? t("Done jobs") : t("Edit jobs")}
-            </button>
-            <button type="button" onClick={onDesk} className="tw-tap min-h-10 rounded-md bg-black/40 px-3 text-xs font-semibold uppercase tracking-widest">
-              Desk
-            </button>
-          </div>
-        ) : null}
+        <div className="flex shrink-0 flex-col gap-1">
+          <button
+            type="button"
+            onClick={openDeskMenu}
+            className="tw-tap min-h-11 rounded-md bg-black/40 px-3 text-xs font-semibold uppercase tracking-widest"
+          >
+            {t("Menu")}
+          </button>
+          {unlocked ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setEditJobs((v) => !v)}
+                className="tw-tap min-h-11 rounded-md bg-black/40 px-3 text-xs font-semibold uppercase tracking-widest"
+              >
+                {editJobs ? t("Done jobs") : t("Edit jobs")}
+              </button>
+              <button type="button" onClick={onDesk} className="tw-tap min-h-11 rounded-md bg-black/40 px-3 text-xs font-semibold uppercase tracking-widest">
+                {t("Desk")}
+              </button>
+            </>
+          ) : null}
+        </div>
       </header>
 
       <div className="tw-cleanup-cards" data-stack={phone || hall ? "1" : undefined}>

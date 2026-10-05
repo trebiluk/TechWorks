@@ -199,6 +199,7 @@ function sharedLine(phrase: string, id: HubLang): string {
 }
 
 const PASS_NOTE = "Staff now sign in with a phone passkey or a code. Kids sign in again once. The phone menu scrolls and Admin is always in reach.";
+const CLEAN_NOTE = "Cleanup no longer covers the Menu. The Menu button stays on the cleanup screen.";
 const HUB_NOTE = "My settings works inside the Hub too.";
 const REST = "Sign-in is resting. Tell Mr. K.";
 const MENU_NOTE = "The Menu opens below the top bar. My settings is in the Menu.";
@@ -206,6 +207,7 @@ const BAR: Record<LangId, Record<string, string>> = {
   en: {},
   uk: {
     [PASS_NOTE]: "Персонал входить ключем телефону або кодом. Діти входять ще раз. Меню на телефоні гортається, і Адмін завжди під рукою.",
+    [CLEAN_NOTE]: "Прибирання більше не ховає меню. Кнопка меню лишається на екрані прибирання.",
     [REST]: "Вхід відпочиває. Скажи пану К.",
     [HUB_NOTE]: "Мої налаштування працюють і всередині Хаба.",
     [MENU_NOTE]: "Меню відкривається під верхньою смугою. Мої налаштування є в меню.",
@@ -214,6 +216,7 @@ const BAR: Record<LangId, Record<string, string>> = {
   },
   ru: {
     [PASS_NOTE]: "Сотрудники входят ключом телефона или кодом. Дети входят ещё раз. Меню на телефоне листается, и Админ всегда рядом.",
+    [CLEAN_NOTE]: "Уборка больше не закрывает меню. Кнопка меню остаётся на экране уборки.",
     [REST]: "Вход отдыхает. Скажи мистеру К.",
     [HUB_NOTE]: "Мои настройки работают и внутри Хаба.",
     [MENU_NOTE]: "Меню открывается под верхней полосой. Мои настройки — в меню.",
@@ -222,6 +225,7 @@ const BAR: Record<LangId, Record<string, string>> = {
   },
   es: {
     [PASS_NOTE]: "El personal entra con una llave del teléfono o un código. Los chicos entran otra vez. El menú del teléfono se desplaza y Admin siempre está a mano.",
+    [CLEAN_NOTE]: "La limpieza ya no tapa el menú. El botón Menú se queda en la pantalla de limpieza.",
     [REST]: "La entrada descansa. Dile al Sr. K.",
     [HUB_NOTE]: "Mis ajustes también funcionan dentro del Hub.",
     [MENU_NOTE]: "El menú se abre bajo la barra de arriba. Mis ajustes están en el menú.",
@@ -230,6 +234,7 @@ const BAR: Record<LangId, Record<string, string>> = {
   },
   ar: {
     [PASS_NOTE]: "المعلمون يدخلون بمفتاح الهاتف أو برمز. الطلاب يدخلون مرة أخرى. قائمة الهاتف تتحرك والمدير دائماً في المتناول.",
+    [CLEAN_NOTE]: "الترتيب لم يعد يغطي القائمة. زر القائمة يبقى على شاشة الترتيب.",
     [REST]: "الدخول يرتاح. أخبر السيد ك.",
     [HUB_NOTE]: "إعداداتي تعمل داخل المحور أيضاً.",
     [MENU_NOTE]: "القائمة تفتح تحت الشريط العلوي. إعداداتي في القائمة.",
@@ -238,6 +243,7 @@ const BAR: Record<LangId, Record<string, string>> = {
   },
   "fa-AF": {
     [PASS_NOTE]: "کارکنان با کلید تلفن یا کود وارد می‌شوند. شاگردان یک بار دیگر وارد می‌شوند. فهرست تلفن حرکت می‌کند و مدیر همیشه در دسترس است.",
+    [CLEAN_NOTE]: "پاک‌کاری دیگر فهرست را نمی‌پوشاند. دکمهٔ فهرست روی صفحهٔ پاک‌کاری می‌ماند.",
     [REST]: "ورود آرام است. به آقای ک بگویید.",
     [HUB_NOTE]: "تنظیمات من در هاب هم کار می‌کند.",
     [MENU_NOTE]: "فهرست زیر نوار بالا باز می‌شود. تنظیمات من در فهرست است.",
@@ -246,6 +252,7 @@ const BAR: Record<LangId, Record<string, string>> = {
   },
   rw: {
     [PASS_NOTE]: "Abakozi binjira n'urufunguzo rw'iterefone cyangwa kode. Abana binjira incuro imwe. Ibikubiyemo by'iterefone birasokoroka kandi Admin iri hafi.",
+    [CLEAN_NOTE]: "Isuku ntikubuza menu. Buto ya Menu iguma ku rupapuro rw'isuku.",
     [REST]: "Kwinjira kiraruhuka. Bwira Bwana K.",
     [HUB_NOTE]: "Igenamiterere ryanjye rikora no mu Hub.",
     [MENU_NOTE]: "Ibikubiyemo bifunguka munsi y'umurongo wo hejuru. Igenamiterere ryanjye riri mu bikubiyemo.",
@@ -254,6 +261,7 @@ const BAR: Record<LangId, Record<string, string>> = {
   },
   ti: {
     [PASS_NOTE]: "ሰራሕተኛታት ብመፍትሕ ተሌፎን ወይ ቁጽሪ ይኣትዉ። ቆልዑ ደጊሞም ይኣትዉ። ናይ ተሌፎን ዝርዝር ይንቀሳቐስ፣ ኣድሚን ድማ ኩሉ ግዜ ኣብ ኢድ ኣሎ።",
+    [CLEAN_NOTE]: "ጽሬት ዝርዝር ኣይሽፍን። ናይ ዝርዝር መልጎም ኣብ ገጽ ጽሬት ይቕመጥ።",
     [REST]: "ምእታው ይዕርፍ ኣሎ። ንሚስተር ኬ ንገሮ።",
     [HUB_NOTE]: "ናተይ ቅንጅት ኣብ ውሽጢ ሃብ እውን ይሰርሕ።",
     [MENU_NOTE]: "ዝርዝር ኣብ ትሕቲ ናይ ላዕሊ መስመር ይኽፈት። ናተይ ቅንጅት ኣብ ዝርዝር ኣሎ።",

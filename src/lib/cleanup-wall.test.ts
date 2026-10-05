@@ -15,7 +15,9 @@ describe("Cleanup wall 1.92.90", () => {
     assert.match(wall, /tw-cleanup-clock/);
     assert.match(wall, /tw-cleanup-drain/);
     assert.doesNotMatch(wall, /ProgressRing/);
-    assert.doesNotMatch(wall, /go get caught/);
+    assert.match(wall, /openDeskMenu/);
+    assert.match(wall, /\{t\("Menu"\)\}/);
+    assert.doesNotMatch(wall, /fixed inset-0 z-\[80\]/);
   });
 
   it("keeps Extra tidy / +$5 catch on Teach, not the student wall", () => {
