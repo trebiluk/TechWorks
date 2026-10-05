@@ -64,9 +64,10 @@ describe("PlanIt Mr Fortnite chrome", () => {
   it("names TEACH as the live board, not a second Wall chrome", () => {
     assert.match(planit, /data-planit-mf/);
     assert.match(teachLive, /data-teach-live/);
-    assert.match(teachLive, /LIVE_BOARD_TABS/);
     assert.match(teachBoard, /<TeachLive/);
-    assert.match(teachLive, /Top XP/);
-    assert.match(teachLive, /Top \$/);
+    assert.match(teachBoard, /LIVE_BOARD_TABS/);
+    assert.match(teachBoard, /<TeachPocket/);
+    assert.doesNotMatch(teachLive, /Top XP/);
+    assert.doesNotMatch(teachLive, /data-live-thirds/);
   });
 });

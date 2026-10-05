@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.94.6 — 2026-10-05
+
+- Plan book: scoreboard is off this screen. Period, goal, and section tools sit in the left menu so the hour can use the page.
+
 ## 1.94.5 — 2026-10-05
 
 - The header logo is the real TechWorks lockup again.

@@ -1,11 +1,6 @@
-import { useMemo, useState, type ReactNode } from "react";
-import { Briefcase, Camera, ClipboardList, Coins, Link2, MessageSquare, Pencil, Trophy } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { Briefcase, Camera, Link2, MessageSquare, Pencil } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
-import { money } from "@/lib/economy";
-import { periodClock } from "@/lib/bells";
-import { deskBellId } from "@/lib/store";
-import { todayIso } from "@/lib/calendar";
-import { useShopClock } from "@/lib/use-clock";
 import { DraftField } from "@/components/draft-field";
 import { HangFrame } from "@/components/hang-frame";
 import { addTeachHang, dropTeachHang, hangOf } from "@/lib/teach";
@@ -17,13 +12,9 @@ import {
 } from "@/lib/planit";
 import {
   LIVE_BEATS,
-  LIVE_BOARD_TABS,
-  TOOL_MAP,
-  liveBoardRanks,
   liveBoardSpine,
   type LiveBoardTab,
 } from "@/lib/live-board";
-import { cn } from "@/lib/utils";
 
 export function TeachLive({
   file,
@@ -32,11 +23,7 @@ export function TeachLive({
   unlocked,
   onEdit,
   onNeedPin,
-  onOpenId,
-  onPlan,
-  onDeck,
   tab,
-  onTab,
 }: {
   file: EconomyFile;
   date: string;
@@ -44,24 +31,12 @@ export function TeachLive({
   unlocked: boolean;
   onEdit: (next: EconomyFile) => void;
   onNeedPin?: () => void;
-  onOpenId?: (id: string) => void;
-  onPlan?: () => void;
-  onDeck?: () => void;
   tab?: LiveBoardTab;
-  onTab?: (tab: LiveBoardTab) => void;
 }) {
-  const [inner, setInner] = useState<LiveBoardTab>("teach");
+  const [inner] = useState<LiveBoardTab>("teach");
   const pane = tab ?? inner;
-  const setPane = onTab ?? setInner;
-  const today = todayIso();
-  const bellsId = deskBellId(file, date);
-  const now = useShopClock(bellsId, "beat");
-  const clock = date === today ? periodClock(period, bellsId, now) : null;
   const spine = liveBoardSpine(file, date, period);
-  const ranks = useMemo(() => liveBoardRanks(file), [file]);
   const hangs = hangOf(file, date, period);
-  const live = Boolean(clock?.live);
-  const left = clock?.left ?? 0;
 
   function gate(): boolean {
     if (unlocked) return true;
@@ -76,25 +51,6 @@ export function TeachLive({
 
   return (
     <section className="tw-teach-live tw-lcars" data-teach-live>
-      <nav className="tw-mf-tabs" aria-label="TEACH live board">
-        {LIVE_BOARD_TABS.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => setPane(t.id)}
-            data-on={pane === t.id ? "on" : undefined}
-            className="tw-tap tw-mf-tab"
-          >
-            {t.label}
-          </button>
-        ))}
-        {onPlan ? (
-          <button type="button" onClick={onPlan} className="tw-tap tw-mf-tab tw-mf-tab-aux ml-auto">
-            This hour
-          </button>
-        ) : null}
-      </nav>
-
       <div className="tw-mf-live-body">
         {pane === "guide" ? (
           <article className="tw-mf-panel">
@@ -149,8 +105,7 @@ export function TeachLive({
 
         {pane === "job" || pane === "teach" ? (
           <>
-            <div className="tw-mf-job-row">
-              <article className="tw-mf-panel tw-mf-job-hero">
+            <article className="tw-mf-panel tw-mf-job-hero">
                 <p className="tw-mf-kicker">
                   <Briefcase className="size-3.5" aria-hidden />
                   Our job today
@@ -165,26 +120,6 @@ export function TeachLive({
                   className="tw-mf-quote min-h-11"
                 />
               </article>
-              <article className="tw-mf-panel tw-mf-tools">
-                <p className="tw-mf-kicker">Tool map</p>
-                <ol className="tw-mf-tool-map">
-                  {TOOL_MAP.map((step, i) => (
-                    <li key={step.id}>
-                      {i ? <span className="tw-mf-tool-arrow" aria-hidden /> : null}
-                      <button
-                        type="button"
-                        data-step={step.id}
-                        data-on={pane === step.tab ? "on" : undefined}
-                        onClick={() => setPane(step.tab)}
-                        className="tw-tap tw-mf-tool"
-                      >
-                        {step.label}
-                      </button>
-                    </li>
-                  ))}
-                </ol>
-              </article>
-            </div>
             {spine.ask ? (
               <article className="tw-mf-panel">
                 <p className="tw-mf-kicker">Guiding question</p>
@@ -219,111 +154,7 @@ export function TeachLive({
           </>
         ) : null}
       </div>
-
-      <footer className="tw-mf-round">
-        <p className="tw-mf-kicker tw-mf-round-label">Beats this round</p>
-        <div className="tw-mf-stats">
-          <Stat label="Time left" value={live ? `${Math.max(0, Math.ceil(left))}m` : "—"} />
-          <Stat label="Tasks done" value={`${spine.tasksDone} / 4`} icon={ClipboardList} />
-          <Stat label="Crew sync" value={spine.job ? "High" : "—"} />
-          <Stat label="Focus" value={spine.ask ? "Clarity" : "Job"} />
-        </div>
-        <div className="tw-mf-thirds" data-live-thirds>
-          <RankCard
-            kicker="Top XP"
-            alias={ranks.topXp?.alias}
-            value={ranks.topXp ? `${ranks.topXp.xp} XP` : "—"}
-            period={ranks.topXp?.period}
-            gold
-            onOpen={ranks.topXp && onOpenId ? () => onOpenId(ranks.topXp!.id) : undefined}
-          />
-          <RankCard
-            kicker="Top $"
-            alias={ranks.topMoney?.alias}
-            value={ranks.topMoney ? money(ranks.topMoney.money) : "—"}
-            period={ranks.topMoney?.period}
-            gold
-            icon={Coins}
-            onOpen={ranks.topMoney && onOpenId ? () => onOpenId(ranks.topMoney!.id) : undefined}
-          />
-          <ol className="tw-mf-classic">
-            <p className="tw-mf-kicker">Board</p>
-            {ranks.list.length ? (
-              ranks.list.map((row, i) => (
-                <li key={row.id}>
-                  <button
-                    type="button"
-                    onClick={() => onOpenId?.(row.id)}
-                    className="tw-tap tw-mf-classic-row"
-                  >
-                    <span>{i + 1}</span>
-                    <strong>{row.alias}</strong>
-                    <em>P{row.period}</em>
-                    <b>{row.xp}</b>
-                  </button>
-                </li>
-              ))
-            ) : (
-              <li className="tw-mf-classic-empty">Aliases score here.</li>
-            )}
-          </ol>
-        </div>
-      </footer>
     </section>
-  );
-}
-
-function Stat({ label, value, icon: Icon }: { label: string; value: string; icon?: typeof Trophy }) {
-  return (
-    <p className="tw-mf-stat">
-      {Icon ? <Icon className="size-3.5" aria-hidden /> : null}
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </p>
-  );
-}
-
-function RankCard({
-  kicker,
-  alias,
-  value,
-  period,
-  gold,
-  icon: Icon = Trophy,
-  onOpen,
-}: {
-  kicker: string;
-  alias?: string;
-  value: string;
-  period?: number;
-  gold?: boolean;
-  icon?: typeof Trophy;
-  onOpen?: () => void;
-}) {
-  const inner = (
-    <>
-      <p className="tw-mf-kicker">
-        <Icon className="size-3.5" aria-hidden />
-        {kicker}
-      </p>
-      <p className="tw-mf-rank-alias">{alias || "Hold the lead"}</p>
-      <p className="tw-mf-rank-val">
-        {value}
-        {period != null ? <span>P{period}</span> : null}
-      </p>
-    </>
-  );
-  if (onOpen && alias) {
-    return (
-      <button type="button" onClick={onOpen} data-gold={gold ? "on" : undefined} className="tw-tap tw-mf-rank">
-        {inner}
-      </button>
-    );
-  }
-  return (
-    <article data-gold={gold ? "on" : undefined} className="tw-mf-rank">
-      {inner}
-    </article>
   );
 }
 

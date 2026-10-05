@@ -3907,6 +3907,42 @@ html[dir="rtl"] .board-root { direction: rtl; }
   padding-top: 0.5rem;
   border-top: 1px solid var(--color-border);
 }
+.tw-teach-pocket-rail {
+  max-height: min(72dvh, 36rem);
+  overflow-y: auto;
+  width: min(20rem, calc(100vw - 1.5rem));
+}
+.tw-teach-pocket-extra button {
+  min-height: 2.75rem;
+}
+.tw-teach-stage {
+  flex-direction: column;
+}
+@media (min-width: 900px) {
+  .tw-teach-stage {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0.45rem;
+  }
+  .tw-teach-pocket {
+    flex: 0 0 16.5rem;
+    min-height: 0;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+  }
+  .tw-teach-pocket-tab {
+    display: none;
+  }
+  .tw-teach-pocket .tw-teach-pocket-rail {
+    display: flex;
+    position: static;
+    width: auto;
+    max-height: none;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+}
 
 /* Teach and This hour use the desk theme. No second cyan skin. */
 .tw-planit-mf,
