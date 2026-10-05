@@ -26,39 +26,32 @@ html[data-edit="on"] .edit-field {
   box-shadow: inset 0 0 0 1.5px var(--color-loss);
 }
 
-/* Locked brand lockup. T + word. Never a PNG inside a second plate. */
+/* Official lockup. The PNG is the logo. No second plate, no recolored word. */
 .tw-lockup {
   display: inline-flex;
   direction: ltr;
   unicode-bidi: isolate;
   position: relative;
-  height: 2.35rem;
+  height: 2.75rem;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0 0.65rem 0 0.28rem;
-  background: #06122B !important;
+  padding: 0;
+  background: transparent !important;
   border: 0 !important;
-  border-radius: 0.5rem;
+  border-radius: 0.35rem;
   overflow: hidden;
   flex-shrink: 0;
-  box-shadow:
-    inset 0 0 0 1px color-mix(in oklab, #2ee6ff 32%, transparent),
-    inset 0 1px 0 color-mix(in oklab, #fff 18%, transparent),
-    0 8px 20px -14px color-mix(in oklab, #22D3EE 35%, transparent);
+  box-shadow: none !important;
 }
 .tw-lockup::after {
-  content: "";
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    110deg,
-    transparent 28%,
-    color-mix(in oklab, #fff 38%, transparent) 46%,
-    transparent 62%
-  );
-  transform: translateX(-130%);
-  animation: tw-shine 7s ease-in-out 1.4s infinite;
+  content: none;
+}
+.tw-lockup-img {
+  display: block;
+  height: 2.5rem;
+  width: auto;
+  max-width: 12.5rem;
+  object-fit: contain;
+  object-position: left center;
 }
 .tw-lockup-mark {
   width: 1.7rem;
@@ -66,28 +59,9 @@ html[data-edit="on"] .edit-field {
   border-radius: 0.28rem;
   object-fit: contain;
 }
-.tw-lockup-word {
-  display: inline-flex;
-  align-items: baseline;
-  font-family: var(--font-display, ui-sans-serif);
-  font-weight: 800;
-  font-size: 0.78rem;
-  letter-spacing: 0.16em;
-  line-height: 1;
-  white-space: nowrap;
-}
-.tw-lockup-tech {
-  color: #2ee6ff;
-}
-.tw-lockup-works {
-  color: #f7f9ff;
-}
-.tw-lockup-compact .tw-lockup-word {
-  display: none;
-}
-.tw-lockup-compact {
-  min-width: 0;
-  padding-inline: 0.28rem;
+.tw-lockup-compact .tw-lockup-img {
+  height: 2.25rem;
+  max-width: 8.5rem;
 }
 
 .berty-seat {
@@ -2964,22 +2938,16 @@ html[dir="rtl"] .board-root { direction: rtl; }
   .tw-lockup {
     height: auto;
     min-height: 44px;
-    gap: 0.28rem;
-    padding: 0 0.45rem 0 0.2rem;
+  }
+  .tw-lockup-img {
+    height: 2.25rem;
+    max-width: 9.75rem;
   }
   .board-root {
     padding-left: max(0.5rem, env(safe-area-inset-left));
     padding-right: max(0.5rem, env(safe-area-inset-right));
     padding-top: max(0.35rem, env(safe-area-inset-top));
     padding-bottom: 0;
-  }
-  .tw-lockup-mark {
-    width: 1.35rem;
-    height: 1.35rem;
-  }
-  .tw-lockup-word {
-    font-size: 0.62rem;
-    letter-spacing: 0.12em;
   }
   .berty-seat {
     height: 3.25rem;

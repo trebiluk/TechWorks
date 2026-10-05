@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.94.4. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.94.5. -->
 
 # TechWorks changelog
 
-App version **1.94.4**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.94.5**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.94.5 — 2026-10-05
+
+- The header logo is the real TechWorks lockup again.
 
 ## 1.94.4 — 2026-10-05
 

@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.94.5 — 2026-10-05
+
+- The header logo is the real TechWorks lockup again.
+
 ## 1.94.4 — 2026-10-05
 
 - Cleanup no longer covers the menu. Menu stays on the cleanup screen even when the desk is locked.
