@@ -3,30 +3,36 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Staff sign-in</title>
+  <title>Staff sign-in · TechWorks</title>
   <link rel="stylesheet" href="./hud.css" />
 </head>
 <body>
   <main class="sheet" id="app">
-    <p class="status" id="status">🔒 Signed out</p>
+    <p class="kicker">TechWorks</p>
+    <h1>Staff sign-in</h1>
+    <p class="status" id="status" role="status">Signed out</p>
     <section class="card" id="pass">
-      <h1>Staff sign-in</h1>
-      <button class="go" id="passkey" type="button">🔑 Sign in with passkey</button>
+      <button class="go" id="passkey" type="button">Sign in with passkey</button>
       <ol>
-        <li>Use a phone or tablet</li>
-        <li>Scan</li>
-        <li>Unlock on phone</li>
+        <li>Use a phone or a tablet.</li>
+        <li>Tap the button above.</li>
+        <li>Unlock with your fingerprint or face.</li>
       </ol>
-      <button type="button" id="use-code">🔢 Use code instead</button>
-      <button type="button" id="use-recovery">🧯 Lost your phone? Use a recovery code</button>
+      <button type="button" id="use-code">Use a code instead</button>
+      <button type="button" id="use-recovery">I lost my phone</button>
     </section>
     <section class="card" id="code" hidden>
-      <p id="code-line">No passkey? Use the 6-digit code from Google Authenticator.</p>
+      <p id="code-line">No passkey? Type the 6-digit code from your authenticator app.</p>
       <div class="boxes" id="boxes"></div>
       <label class="row"><input type="checkbox" id="shared" /> Shared Chromebook? End at the last bell</label>
-      <button class="go" id="code-go" type="button">✅ Sign in</button>
+      <button class="go" id="code-go" type="button">Sign in</button>
       <p id="lock" hidden></p>
     </section>
+    <section class="card" id="recovery" hidden>
+      <p>Recovery codes are not turned on yet. Go back to the wall. The desk there still works.</p>
+    </section>
+    <a class="back" href="/">Back to the wall</a>
+    <p class="plate">TW 1.94.3</p>
   </main>
   <script src="./vendor/simplewebauthn-browser.js"></script>
   <script src="./app.js"></script>

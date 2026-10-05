@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.94.3 — 2026-10-05
+
+- Staff sign-in page matches the desk. Plain buttons, a way back to the wall, and a clear line when sign-in is not set up yet.
+
 ## 1.94.2 — 2026-10-03
 
 - Staff sign-in: fixed passkey library load order; removed open setup-code route; real errors now return 500.

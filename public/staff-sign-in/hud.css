@@ -1,18 +1,25 @@
 @font-face { font-family: Orbitron; src: url("/fonts/orbitron-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
-@font-face { font-family: "JetBrains Mono"; src: url("/fonts/jetbrains-mono-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
 :root { color-scheme: dark; }
 * { box-sizing: border-box; }
-html, body { margin: 0; min-height: 100%; background: linear-gradient(#05121A, #0B1626); color: #E6FBFF; font: 16px/1.4 "JetBrains Mono", ui-monospace, monospace; }
-body { padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left)); }
-.sheet { max-width: 32rem; margin: 0 auto; }
-.card { background: rgba(6, 20, 28, 0.92); border: 1px solid #14B8A6; padding: 1rem; margin: 0 0 1rem; }
-h1, button { font-family: Orbitron, sans-serif; }
-button { min-height: 52px; min-width: 44px; width: 100%; margin: 0.4rem 0; padding: 0.6rem 0.8rem; border: 1px solid #22D3EE; background: #0B1626; color: #E6FBFF; font-size: 1rem; cursor: pointer; }
-button:focus-visible { outline: 2px solid #22D3EE; outline-offset: 2px; }
-.boxes { display: flex; gap: 0.35rem; }
-.boxes input { width: 48px; height: 48px; text-align: center; font-size: 1.2rem; background: #05121A; color: #E6FBFF; border: 1px solid #14B8A6; }
-.status { font-size: 0.95rem; }
-label { display: flex; gap: 0.5rem; align-items: center; min-height: 44px; }
+html, body { margin: 0; min-height: 100%; background: #06122B; color: #F7F9FF; font: 18px/1.45 ui-sans-serif, system-ui, sans-serif; }
+body { padding: max(1.25rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1.5rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left)); }
+.sheet { max-width: 28rem; margin: 0 auto; }
+.kicker { margin: 0 0 0.25rem; color: #22D3EE; font-family: Orbitron, sans-serif; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; }
+h1 { margin: 0 0 0.35rem; font-family: Orbitron, sans-serif; font-size: 1.65rem; font-weight: 700; line-height: 1.15; }
+.status { margin: 0 0 1rem; color: #B7C4EA; }
+.card { background: #0B1A40; border: 1px solid #1E4BAF; border-radius: 12px; padding: 1rem 1rem 0.7rem; margin: 0 0 0.85rem; }
+ol { margin: 0.2rem 0 0.8rem; padding-left: 1.2rem; color: #B7C4EA; }
+li { margin: 0.25rem 0; }
+button, .back { min-height: 48px; min-width: 44px; width: 100%; margin: 0.35rem 0; padding: 0.7rem 0.9rem; border-radius: 10px; border: 1px solid #22D3EE; background: #132A5C; color: #F7F9FF; font: 600 1rem/1.2 ui-sans-serif, system-ui, sans-serif; cursor: pointer; text-align: center; }
+button.go { background: #22D3EE; color: #06122B; border-color: #22D3EE; }
+button:focus-visible, .back:focus-visible, input:focus-visible { outline: 2px solid #22D3EE; outline-offset: 2px; }
+.back { display: flex; align-items: center; justify-content: center; text-decoration: none; background: transparent; }
+.boxes { display: flex; gap: 0.4rem; margin: 0.6rem 0 0.4rem; }
+.boxes input { flex: 1; min-width: 0; height: 52px; text-align: center; font-size: 1.35rem; background: #06122B; color: #F7F9FF; border: 1px solid #22D3EE; border-radius: 8px; }
+label.row { display: flex; gap: 0.6rem; align-items: center; min-height: 48px; color: #B7C4EA; }
+label.row input { width: 22px; height: 22px; }
+#lock, #recovery p, #code-line { color: #F7F9FF; }
+.plate { margin: 0.4rem 0 0; color: #7e8cb8; font-size: 0.8rem; letter-spacing: 0.04em; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 html[dir="rtl"] body { direction: rtl; }
 html[data-kp-contrast="1"] .card { background: #000; color: #fff; border-color: #fff; }
