@@ -1,6 +1,7 @@
 {
   "name": "techworks",
   "private": true,
+  "version": "1.94.7",
   "license": "UNLICENSED",
   "author": "Richard Kulibert",
   "engines": {

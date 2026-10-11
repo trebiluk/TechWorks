@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.94.6. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.94.7. -->
 
 # TechWorks changelog
 
-App version **1.94.6**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.94.7**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.94.7 — 2026-10-11
+
+- Bertopia worlds can be saved in pieces. The wall looks the same.
 
 ## 1.94.6 — 2026-10-05
 

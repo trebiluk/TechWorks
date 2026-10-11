@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.94.7 — 2026-10-11
+
+- Bertopia worlds can be saved in pieces. The wall looks the same.
+
 ## 1.94.6 — 2026-10-05
 
 - Plan book: scoreboard is off this screen. Period, goal, and section tools sit in the left menu so the hour can use the page.

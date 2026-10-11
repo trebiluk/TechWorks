@@ -12,6 +12,9 @@ const SCHEMA = [
   "CREATE TABLE IF NOT EXISTS kn_control (id TEXT PRIMARY KEY, v INTEGER NOT NULL, body TEXT NOT NULL, at INTEGER NOT NULL, actor TEXT NOT NULL)",
   "CREATE TABLE IF NOT EXISTS kn_control_snap (id INTEGER PRIMARY KEY AUTOINCREMENT, at INTEGER NOT NULL, actor TEXT NOT NULL, v INTEGER NOT NULL, body TEXT NOT NULL)",
   "CREATE TABLE IF NOT EXISTS kn_status (id TEXT PRIMARY KEY, hash TEXT NOT NULL, body TEXT NOT NULL, at INTEGER NOT NULL)",
+  "CREATE TABLE IF NOT EXISTS bt_worlds (alias_ref TEXT, world TEXT, rev INTEGER NOT NULL, schema INTEGER NOT NULL, app_ver TEXT, head BLOB NOT NULL, bytes INTEGER NOT NULL, updated_at INTEGER NOT NULL, PRIMARY KEY(alias_ref, world))",
+  "CREATE TABLE IF NOT EXISTS bt_chunks (alias_ref TEXT, world TEXT, ck TEXT, hash TEXT NOT NULL, rev INTEGER NOT NULL, data BLOB NOT NULL, PRIMARY KEY(alias_ref, world, ck))",
+  "CREATE TABLE IF NOT EXISTS bt_world_revs (alias_ref TEXT, world TEXT, rev INTEGER, head BLOB, at INTEGER, why TEXT, PRIMARY KEY(alias_ref, world, rev))",
 ];
 
 let ready: Promise<void> | null = null;
