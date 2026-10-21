@@ -80,7 +80,7 @@ export function PlanitWeek({
   return (
     <article className="tw-planit-strip-card mt-1" data-planit-strip>
       <p className="tw-fill-label font-semibold uppercase tracking-wider text-muted">This week · {course}</p>
-      <div className="mt-2 flex flex-wrap items-start gap-2">
+      <div className="tw-planit-row mt-2 flex flex-wrap items-start gap-2">
         <ol className="tw-planit-strip min-w-0 flex-1">
           {days.map((d) => (
             <li
