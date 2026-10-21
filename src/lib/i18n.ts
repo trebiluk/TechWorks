@@ -738,14 +738,93 @@ const MORE: Record<LangId, Record<string, string>> = {
   },
 };
 
+const BUMP_Q = "Move this lesson and every later one in {course} by one school day?";
+const BUMP_HELP = "Bump day moves this lesson and all later ones by one school day. Undo puts them back.";
+const BUMP: Record<LangId, Record<string, string>> = {
+  en: {},
+  uk: {
+    "Bump day": "Зсунути день",
+    Bump: "Зсунути",
+    Cancel: "Скасувати",
+    Undo: "Повернути",
+    "Moved 1 lesson.": "Пересунуто 1 урок.",
+    "Moved {n} lessons.": "Пересунуто {n} уроків.",
+    [BUMP_Q]: "Пересунути цей урок і всі наступні в {course} на один навчальний день?",
+    [BUMP_HELP]: "Зсунути день переносить цей урок і всі наступні на один навчальний день. Повернути ставить їх назад.",
+  },
+  ru: {
+    "Bump day": "Сдвинуть день",
+    Bump: "Сдвинуть",
+    Cancel: "Отмена",
+    Undo: "Вернуть",
+    "Moved 1 lesson.": "Сдвинут 1 урок.",
+    "Moved {n} lessons.": "Сдвинуто {n} уроков.",
+    [BUMP_Q]: "Сдвинуть этот урок и все следующие в {course} на один учебный день?",
+    [BUMP_HELP]: "Сдвинуть день переносит этот урок и все следующие на один учебный день. Вернуть ставит их назад.",
+  },
+  es: {
+    "Bump day": "Mover el día",
+    Bump: "Mover",
+    Cancel: "Cancelar",
+    Undo: "Deshacer",
+    "Moved 1 lesson.": "Se movió 1 lección.",
+    "Moved {n} lessons.": "Se movieron {n} lecciones.",
+    [BUMP_Q]: "¿Mover esta lección y todas las posteriores en {course} un día de clase?",
+    [BUMP_HELP]: "Mover el día pasa esta lección y las siguientes un día de clase. Deshacer las devuelve.",
+  },
+  ar: {
+    "Bump day": "ترحيل اليوم",
+    Bump: "ترحيل",
+    Cancel: "إلغاء",
+    Undo: "تراجع",
+    "Moved 1 lesson.": "نُقل درس واحد.",
+    "Moved {n} lessons.": "نُقل {n} دروس.",
+    [BUMP_Q]: "أنقل هذا الدرس وكل ما بعده في {course} يوماً دراسياً واحداً؟",
+    [BUMP_HELP]: "ترحيل اليوم ينقل هذا الدرس وكل ما بعده يوماً دراسياً واحداً. التراجع يعيدها.",
+  },
+  "fa-AF": {
+    "Bump day": "روز را ببر",
+    Bump: "ببر",
+    Cancel: "لغو",
+    Undo: "برگردان",
+    "Moved 1 lesson.": "۱ درس جابه‌جا شد.",
+    "Moved {n} lessons.": "{n} درس جابه‌جا شد.",
+    [BUMP_Q]: "این درس و هر درس بعدی در {course} را یک روز مکتب جابه‌جا کنم؟",
+    [BUMP_HELP]: "روز را ببر این درس و درس‌های بعدی را یک روز مکتب می‌برد. برگردان آن‌ها را پس می‌آورد.",
+  },
+  rw: {
+    "Bump day": "Imura umunsi",
+    Bump: "Imura",
+    Cancel: "Hagarika",
+    Undo: "Subiza",
+    "Moved 1 lesson.": "Somo 1 ryimuriwe.",
+    "Moved {n} lessons.": "Amasomo {n} yimuriwe.",
+    [BUMP_Q]: "Imura iyi somo n'izikurikira muri {course} ku munsi umwe w'ishuri?",
+    [BUMP_HELP]: "Imura umunsi yimura iyi somo n'izikurikira ku munsi umwe w'ishuri. Subiza izisubiza.",
+  },
+  ti: {
+    "Bump day": "መዓልቲ ኣንቀሳቕስ",
+    Bump: "ኣንቀሳቕስ",
+    Cancel: "ኣቅርብ",
+    Undo: "መልስ",
+    "Moved 1 lesson.": "1 ትምህርቲ ተንቀሳቒሱ።",
+    "Moved {n} lessons.": "{n} ትምህርቲ ተንቀሳቒሱ።",
+    [BUMP_Q]: "እዚ ትምህርቲን ዝስዕብ ኩሉን ኣብ {course} ብሓደ ናይ ቤት ትምህርቲ መዓልቲ ኣንቀሳቕስ?",
+    [BUMP_HELP]: "መዓልቲ ምንቃስ እዚ ትምህርቲን ዝስዕብ ኩሉን ብሓደ ናይ ቤት ትምህርቲ መዓልቲ የንቀሳቕስ። ምምላስ የምልሶም።",
+  },
+};
+
 export function t(phrase: string, id: HubLang = copyMode()): string {
   const shared = sharedLine(phrase, id);
   if (id === "en") return shared || phrase;
   if (id === "simple") return SIMPLE[phrase] || shared || phrase;
-  return BAR[id]?.[phrase] || HALL[id]?.[phrase] || CLEAN[id]?.[phrase] || MORE[id]?.[phrase] || DICT[id]?.[phrase] || shared || phrase;
+  return BAR[id]?.[phrase] || BUMP[id]?.[phrase] || HALL[id]?.[phrase] || CLEAN[id]?.[phrase] || MORE[id]?.[phrase] || DICT[id]?.[phrase] || shared || phrase;
 }
 
 export function articleCopy(id: string, title: string, body: string, langId: LangId = storedLang()): { title: string; body: string } {
+  if (id === "planning-bump") {
+    return { title: t("Bump day", langId), body: t("Bump day moves this lesson and all later ones by one school day. Undo puts them back.", langId) };
+  }
   if (langId !== "uk" && langId !== "ru") return { title, body };
   const pack = HELP_I18N[langId][id];
   return pack ?? { title, body };

@@ -345,7 +345,7 @@ export const Dashboard = memo(function Dashboard({
                 onHang={() => {}}
                 onDrop={() => {}}
               />
-              <PlanitWeek file={file} period={shown} date={wallDate} />
+              <PlanitWeek file={file} period={shown} date={wallDate} onChange={unlocked ? onChange : undefined} />
             </>
           ) : null}
         </>

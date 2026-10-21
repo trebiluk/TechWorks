@@ -480,6 +480,10 @@ export const EXTRA_TI: Pack = {
 };
 
 export const SIMPLE: Pack = {
+  "Move this lesson and every later one in {course} by one school day?": "Move this lesson and the later ones in {course} by one school day?",
+  "Bump day moves this lesson and all later ones by one school day. Undo puts them back.": "Bump day moves this lesson and later ones by one school day. Undo puts them back.",
+  "Moved {n} lessons.": "Moved {n} lessons.",
+  "Moved 1 lesson.": "Moved 1 lesson.",
   "TW 1.94.8 — TEACH has a big timer with 2, 5, 10 minute and Cleanup buttons. Time's up shows in words.": "TW 1.94.8 — TEACH has a big timer. Tap 2, 5, 10, or Cleanup. At zero it says Time's up.",
   "Tap a Tech period on the strip.": "Tap your class.",
   "How this class works": "How class works",
