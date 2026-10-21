@@ -98,7 +98,7 @@ export function PlanitWeek({
             type="button"
             data-bump-day
             onClick={() => setAsk(true)}
-            className="tw-tap inline-flex min-h-11 shrink-0 items-center gap-1 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg"
+            className="tw-tap relative z-[1] inline-flex min-h-11 shrink-0 items-center gap-1 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg"
           >
             <span aria-hidden>⤵</span>
             {t("Bump day")}

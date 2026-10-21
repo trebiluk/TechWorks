@@ -3282,6 +3282,8 @@ html[dir="rtl"] .board-root { direction: rtl; }
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr));
   gap: 0.4rem;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 .tw-planit-day {
   min-height: 4.25rem;
