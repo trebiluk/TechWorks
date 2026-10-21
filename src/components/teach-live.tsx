@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Briefcase, Camera, Link2, MessageSquare, Pencil } from "lucide-react";
 import type { EconomyFile } from "@/lib/economy";
+import { TouchTimer } from "@/components/touch-timer";
 import { DraftField } from "@/components/draft-field";
 import { HangFrame } from "@/components/hang-frame";
 import { addTeachHang, dropTeachHang, hangOf } from "@/lib/teach";
@@ -52,6 +53,7 @@ export function TeachLive({
   return (
     <section className="tw-teach-live tw-lcars" data-teach-live>
       <div className="tw-mf-live-body">
+        <TouchTimer size="projector" presets={[2, 5, 10]} cleanupMin={3} title="Timer" />
         {pane === "guide" ? (
           <article className="tw-mf-panel">
             <p className="tw-mf-kicker">Guiding question</p>
