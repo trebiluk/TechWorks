@@ -1816,6 +1816,10 @@ html[data-look] [data-teach-hero] {
 [data-wall-edit="on"] .tw-sort-item select {
   pointer-events: none;
 }
+[data-wall-edit="on"] [data-planit-strip] button,
+[data-wall-edit="on"] [data-activity-library] button {
+  pointer-events: auto !important;
+}
 [data-wall-edit="on"] .tw-sort-item .tw-visit,
 [data-wall-edit="on"] .tw-sort-item .tw-visit-desk button,
 [data-wall-edit="on"] .tw-sort-item .tw-plate-hide,
