@@ -3278,10 +3278,13 @@ html[dir="rtl"] .board-root { direction: rtl; }
 .tw-planit-row {
   align-items: stretch;
 }
-.tw-planit-row > [data-bump-day] {
+.tw-planit-row > [data-bump-day],
+.tw-planit-row > [data-activity-library-open] {
   align-self: stretch;
   height: auto;
   min-height: 2.75rem;
+  position: relative;
+  z-index: 1;
 }
 .tw-planit-strip {
   display: grid;
