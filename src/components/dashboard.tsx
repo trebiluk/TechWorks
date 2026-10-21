@@ -1,4 +1,5 @@
 import { memo, startTransition, useEffect, useMemo, useState } from "react";
+import { BtWorldsStaff } from "@/components/bt-worlds-staff";
 import { ClipboardList, Coins, RotateCcw, Trophy } from "lucide-react";
 import { markOf } from "@/lib/nav-marks";
 import { MarkChip } from "@/components/ui";
@@ -591,6 +592,7 @@ export const Dashboard = memo(function Dashboard({
                 const fill = id === "now" || id === "class";
                 const row = DASH_ROWS.find((r) => r.id === id);
                 return (
+      <><BtWorldsStaff />
                   <SortableItem
                     key={id}
                     id={id}
