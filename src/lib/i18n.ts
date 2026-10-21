@@ -202,6 +202,7 @@ const PASS_NOTE = "Staff now sign in with a phone passkey or a code. Kids sign i
 const CLEAN_NOTE = "Cleanup no longer covers the Menu. The Menu button stays on the cleanup screen.";
 const LOGO_NOTE = "The TechWorks logo is the real lockup again.";
 const PLAN_NOTE = "The plan book is just the hour. Tools sit in the left menu.";
+const TIMER_NOTE = "TW 1.94.8 — TEACH has a big timer with 2, 5, 10 minute and Cleanup buttons. Time's up shows in words.";
 const HUB_NOTE = "My settings works inside the Hub too.";
 const REST = "Sign-in is resting. Tell Mr. K.";
 const MENU_NOTE = "The Menu opens below the top bar. My settings is in the Menu.";
@@ -212,6 +213,7 @@ const BAR: Record<LangId, Record<string, string>> = {
     [CLEAN_NOTE]: "Прибирання більше не ховає меню. Кнопка меню лишається на екрані прибирання.",
     [LOGO_NOTE]: "Логотип TechWorks знову справжній.",
     [PLAN_NOTE]: "Книга плану — це година. Інструменти в лівому меню.",
+    [TIMER_NOTE]: "TW 1.94.8 — У TEACH великий таймер: 2, 5, 10 хвилин і Прибирання. Коли час вийшов, це написано словами.",
     [REST]: "Вхід відпочиває. Скажи пану К.",
     [HUB_NOTE]: "Мої налаштування працюють і всередині Хаба.",
     [MENU_NOTE]: "Меню відкривається під верхньою смугою. Мої налаштування є в меню.",
@@ -223,6 +225,7 @@ const BAR: Record<LangId, Record<string, string>> = {
     [CLEAN_NOTE]: "Уборка больше не закрывает меню. Кнопка меню остаётся на экране уборки.",
     [LOGO_NOTE]: "Логотип TechWorks снова настоящий.",
     [PLAN_NOTE]: "Книга плана — это час. Инструменты в левом меню.",
+    [TIMER_NOTE]: "TW 1.94.8 — В TEACH большой таймер: 2, 5, 10 минут и Уборка. Когда время вышло, это написано словами.",
     [REST]: "Вход отдыхает. Скажи мистеру К.",
     [HUB_NOTE]: "Мои настройки работают и внутри Хаба.",
     [MENU_NOTE]: "Меню открывается под верхней полосой. Мои настройки — в меню.",
@@ -234,6 +237,7 @@ const BAR: Record<LangId, Record<string, string>> = {
     [CLEAN_NOTE]: "La limpieza ya no tapa el menú. El botón Menú se queda en la pantalla de limpieza.",
     [LOGO_NOTE]: "El logo de TechWorks vuelve a ser el de verdad.",
     [PLAN_NOTE]: "El libro del plan es la hora. Las herramientas están en el menú de la izquierda.",
+    [TIMER_NOTE]: "TW 1.94.8 — TEACH tiene un temporizador grande: 2, 5, 10 minutos y Limpieza. Al llegar a cero dice Se acabó el tiempo.",
     [REST]: "La entrada descansa. Dile al Sr. K.",
     [HUB_NOTE]: "Mis ajustes también funcionan dentro del Hub.",
     [MENU_NOTE]: "El menú se abre bajo la barra de arriba. Mis ajustes están en el menú.",
@@ -245,6 +249,7 @@ const BAR: Record<LangId, Record<string, string>> = {
     [CLEAN_NOTE]: "الترتيب لم يعد يغطي القائمة. زر القائمة يبقى على شاشة الترتيب.",
     [LOGO_NOTE]: "شعار TechWorks عاد إلى الشعار الأصلي.",
     [PLAN_NOTE]: "دفتر الخطة هو الحصة. الأدوات في القائمة اليسرى.",
+    [TIMER_NOTE]: "TW 1.94.8 — في التدريس مؤقت كبير: ٢ و٥ و١٠ دقائق والتنظيف. عند الصفر يقول انتهى الوقت.",
     [REST]: "الدخول يرتاح. أخبر السيد ك.",
     [HUB_NOTE]: "إعداداتي تعمل داخل المحور أيضاً.",
     [MENU_NOTE]: "القائمة تفتح تحت الشريط العلوي. إعداداتي في القائمة.",
@@ -256,6 +261,7 @@ const BAR: Record<LangId, Record<string, string>> = {
     [CLEAN_NOTE]: "پاک‌کاری دیگر فهرست را نمی‌پوشاند. دکمهٔ فهرست روی صفحهٔ پاک‌کاری می‌ماند.",
     [LOGO_NOTE]: "نشان TechWorks دوباره همان نشان اصلی است.",
     [PLAN_NOTE]: "کتاب پلان همان ساعت است. ابزارها در فهرست چپ اند.",
+    [TIMER_NOTE]: "TW 1.94.8 — در تدریس ساعت بزرگ است: ۲، ۵، ۱۰ دقیقه و پاک‌کاری. در صفر می‌نویسد وقت تمام شد.",
     [REST]: "ورود آرام است. به آقای ک بگویید.",
     [HUB_NOTE]: "تنظیمات من در هاب هم کار می‌کند.",
     [MENU_NOTE]: "فهرست زیر نوار بالا باز می‌شود. تنظیمات من در فهرست است.",
@@ -267,6 +273,7 @@ const BAR: Record<LangId, Record<string, string>> = {
     [CLEAN_NOTE]: "Isuku ntikubuza menu. Buto ya Menu iguma ku rupapuro rw'isuku.",
     [LOGO_NOTE]: "Ikirango cya TechWorks cyaragarutse nk'icy'ukuri.",
     [PLAN_NOTE]: "Igitabo cy'igishushanyo ni isaha. Ibikoresho biri mu menu y'ibumoso.",
+    [TIMER_NOTE]: "TW 1.94.8 — TEACH ifite timer ikomeye: iminota 2, 5, 10 na Isuku. Igihe kirangiye ivuga Time's up.",
     [REST]: "Kwinjira kiraruhuka. Bwira Bwana K.",
     [HUB_NOTE]: "Igenamiterere ryanjye rikora no mu Hub.",
     [MENU_NOTE]: "Ibikubiyemo bifunguka munsi y'umurongo wo hejuru. Igenamiterere ryanjye riri mu bikubiyemo.",
@@ -278,6 +285,7 @@ const BAR: Record<LangId, Record<string, string>> = {
     [CLEAN_NOTE]: "ጽሬት ዝርዝር ኣይሽፍን። ናይ ዝርዝር መልጎም ኣብ ገጽ ጽሬት ይቕመጥ።",
     [LOGO_NOTE]: "ናይ TechWorks ምልክት ነቲ ናይ ቀደም ምልክት ተመሊሱ።",
     [PLAN_NOTE]: "ናይ ውጥን መጽሓፍ እታ ሰዓት እያ። መሳርሒ ኣብ ጸጋማይ ዝርዝር ኣሎ።",
+    [TIMER_NOTE]: "TW 1.94.8 — TEACH ዓቢ ሰዓት ኣሎ፡ 2፡ 5፡ 10 ደቒቕን ጽሬትን። ሰዓት ምስ ወዲኡ ብቃላት ይብል።",
     [REST]: "ምእታው ይዕርፍ ኣሎ። ንሚስተር ኬ ንገሮ።",
     [HUB_NOTE]: "ናተይ ቅንጅት ኣብ ውሽጢ ሃብ እውን ይሰርሕ።",
     [MENU_NOTE]: "ዝርዝር ኣብ ትሕቲ ናይ ላዕሊ መስመር ይኽፈት። ናተይ ቅንጅት ኣብ ዝርዝር ኣሎ።",

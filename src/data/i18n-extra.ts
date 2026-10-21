@@ -480,6 +480,7 @@ export const EXTRA_TI: Pack = {
 };
 
 export const SIMPLE: Pack = {
+  "TW 1.94.8 — TEACH has a big timer with 2, 5, 10 minute and Cleanup buttons. Time's up shows in words.": "TW 1.94.8 — TEACH has a big timer. Tap 2, 5, 10, or Cleanup. At zero it says Time's up.",
   "Tap a Tech period on the strip.": "Tap your class.",
   "How this class works": "How class works",
   "Hold the lead": "Stay first",

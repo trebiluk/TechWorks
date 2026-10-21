@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.94.8 — 2026-10-21
+
+- TW 1.94.8 — TEACH has a big timer with 2, 5, 10 minute and Cleanup buttons. Time's up shows in words.
+
 ## 1.94.7 — 2026-10-11
 
 - Bertopia worlds can be saved in pieces. The wall looks the same.

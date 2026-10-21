@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.94.7. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.94.8. -->
 
 # TechWorks changelog
 
-App version **1.94.7**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.94.8**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.94.8 — 2026-10-21
+
+- TW 1.94.8 — TEACH has a big timer with 2, 5, 10 minute and Cleanup buttons. Time's up shows in words.
 
 ## 1.94.7 — 2026-10-11
 

@@ -224,7 +224,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Teach mode",
     tags: ["teach", "lesson", "now", "slots", "objective", "demo"],
     wall: true,
-    body: "Dash → Teach. Live board for this period (Job · Guiding Q · Prove · beats, navy plates, cyan LCARS). Gold stays on the Job crown, CLEAN, and Top XP / Top $ race — never a yellow field wash. Green dots + “n of 8 hours set” mean that hour is planned. Tools (PlanIt · Deck · Projector · Hang · Arrange · Print) live in the left Edge Pocket — one thin period row, no right ribbon. Daily goal chips and a one-line Happened sit under that period strip — not on Score. Mid-class edits write back. Deck plays TEACH. Projector is the kid wall. No names on Teach.",
+    body: "Dash → Teach. Live board for this period (Job · Guiding Q · Prove · beats, navy plates, cyan LCARS). A big timer sits on Teach: tap 2, 5, 10, or Cleanup. At zero it says Time's up and does not flash. Gold stays on the Job crown, CLEAN, and Top XP / Top $ race — never a yellow field wash. Green dots + “n of 8 hours set” mean that hour is planned. Tools (PlanIt · Deck · Projector · Hang · Arrange · Print) live in the left Edge Pocket — one thin period row, no right ribbon. Daily goal chips and a one-line Happened sit under that period strip — not on Score. Mid-class edits write back. Deck plays TEACH. Projector is the kid wall. No names on Teach.",
   },
   {
     id: "dash-plan",
