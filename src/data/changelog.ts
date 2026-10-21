@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.94.10 — 2026-10-21
+
+- TW 1.94.10 — Staff can see Bertopia school saves by alias and restore an older save.
+
 ## 1.94.9 — 2026-10-21
 
 - TW 1.94.9 — Bump day: a snow day slides every later lesson one school day, with Undo.
