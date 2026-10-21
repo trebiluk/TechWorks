@@ -821,16 +821,151 @@ const BUMP: Record<LangId, Record<string, string>> = {
   },
 };
 
+const LIB_HELP = "Activity library: filter and add an activity to a day.";
+const LIB_NEW = "TW 1.94.11 — Activity library: filter by grade, time, kit or skill and add one to a day.";
+const LIB: Record<LangId, Record<string, string>> = {
+  en: {},
+  uk: {
+    "Activity library": "Бібліотека вправ",
+    "Add to day": "Додати до дня",
+    "Grade: any": "Клас: будь-який",
+    "Grade {n}": "Клас {n}",
+    "Time: any": "Час: будь-який",
+    "≤{n} min": "≤{n} хв",
+    "Kit: any": "Набір: будь-який",
+    "Kit: {kit}": "Набір: {kit}",
+    "Skill: any": "Навичка: будь-яка",
+    "Skill: {skill}": "Навичка: {skill}",
+    Clear: "Очистити",
+    "No activities": "Немає вправ",
+    "{min} min · {kit} · {skill}": "{min} хв · {kit} · {skill}",
+    "Added to {day} P{period}.": "Додано до {day} П{period}.",
+    [LIB_HELP]: "Бібліотека вправ: фільтр і додайте вправу до дня.",
+    [LIB_NEW]: "TW 1.94.11 — Бібліотека вправ: фільтр за класом, часом, набором чи навичкою і додайте одну до дня.",
+  },
+  ru: {
+    "Activity library": "Библиотека заданий",
+    "Add to day": "Добавить в день",
+    "Grade: any": "Класс: любой",
+    "Grade {n}": "Класс {n}",
+    "Time: any": "Время: любое",
+    "≤{n} min": "≤{n} мин",
+    "Kit: any": "Набор: любой",
+    "Kit: {kit}": "Набор: {kit}",
+    "Skill: any": "Навык: любой",
+    "Skill: {skill}": "Навык: {skill}",
+    Clear: "Сбросить",
+    "No activities": "Нет заданий",
+    "{min} min · {kit} · {skill}": "{min} мин · {kit} · {skill}",
+    "Added to {day} P{period}.": "Добавлено на {day} П{period}.",
+    [LIB_HELP]: "Библиотека заданий: фильтр и добавьте задание в день.",
+    [LIB_NEW]: "TW 1.94.11 — Библиотека заданий: фильтр по классу, времени, набору или навыку и добавьте одно в день.",
+  },
+  es: {
+    "Activity library": "Biblioteca de actividades",
+    "Add to day": "Añadir al día",
+    "Grade: any": "Grado: cualquiera",
+    "Grade {n}": "Grado {n}",
+    "Time: any": "Tiempo: cualquiera",
+    "≤{n} min": "≤{n} min",
+    "Kit: any": "Kit: cualquiera",
+    "Kit: {kit}": "Kit: {kit}",
+    "Skill: any": "Habilidad: cualquiera",
+    "Skill: {skill}": "Habilidad: {skill}",
+    Clear: "Limpiar",
+    "No activities": "No hay actividades",
+    "{min} min · {kit} · {skill}": "{min} min · {kit} · {skill}",
+    "Added to {day} P{period}.": "Añadido al {day} P{period}.",
+    [LIB_HELP]: "Biblioteca de actividades: filtra y añade una actividad al día.",
+    [LIB_NEW]: "TW 1.94.11 — Biblioteca de actividades: filtra por grado, tiempo, kit o habilidad y añade una al día.",
+  },
+  ar: {
+    "Activity library": "مكتبة الأنشطة",
+    "Add to day": "أضف إلى اليوم",
+    "Grade: any": "الصف: أي",
+    "Grade {n}": "الصف {n}",
+    "Time: any": "الوقت: أي",
+    "≤{n} min": "≤{n} د",
+    "Kit: any": "العدة: أي",
+    "Kit: {kit}": "العدة: {kit}",
+    "Skill: any": "المهارة: أي",
+    "Skill: {skill}": "المهارة: {skill}",
+    Clear: "مسح",
+    "No activities": "لا أنشطة",
+    "{min} min · {kit} · {skill}": "{min} د · {kit} · {skill}",
+    "Added to {day} P{period}.": "أُضيف إلى {day} ف{period}.",
+    [LIB_HELP]: "مكتبة الأنشطة: صفِّ وأضف نشاطاً إلى يوم.",
+    [LIB_NEW]: "TW 1.94.11 — مكتبة الأنشطة: صفِّ حسب الصف أو الوقت أو العدة أو المهارة وأضف واحداً إلى يوم.",
+  },
+  "fa-AF": {
+    "Activity library": "کتابخانه فعالیت",
+    "Add to day": "به روز بیفزا",
+    "Grade: any": "صنف: هر",
+    "Grade {n}": "صنف {n}",
+    "Time: any": "وقت: هر",
+    "≤{n} min": "≤{n} دقیقه",
+    "Kit: any": "کیت: هر",
+    "Kit: {kit}": "کیت: {kit}",
+    "Skill: any": "مهارت: هر",
+    "Skill: {skill}": "مهارت: {skill}",
+    Clear: "پاک",
+    "No activities": "فعالیت نیست",
+    "{min} min · {kit} · {skill}": "{min} دقیقه · {kit} · {skill}",
+    "Added to {day} P{period}.": "به {day} ف{period} اضافه شد.",
+    [LIB_HELP]: "کتابخانه فعالیت: فیلتر کن و یک فعالیت را به روز اضافه کن.",
+    [LIB_NEW]: "TW 1.94.11 — کتابخانه فعالیت: بر اساس صنف، وقت، کیت یا مهارت فیلتر کن و یکی را به روز اضافه کن.",
+  },
+  rw: {
+    "Activity library": "Isomero ry'ibikorwa",
+    "Add to day": "Ongera ku munsi",
+    "Grade: any": "Ishuri: iryo ari ryo ryose",
+    "Grade {n}": "Ishuri {n}",
+    "Time: any": "Igihe: icyo ari cyo cyose",
+    "≤{n} min": "≤{n} min",
+    "Kit: any": "Kit: iyo ari yo yose",
+    "Kit: {kit}": "Kit: {kit}",
+    "Skill: any": "Ubuhanga: ubwo ari bwo bwose",
+    "Skill: {skill}": "Ubuhanga: {skill}",
+    Clear: "Siba",
+    "No activities": "Nta bikorwa",
+    "{min} min · {kit} · {skill}": "{min} min · {kit} · {skill}",
+    "Added to {day} P{period}.": "Byongewe ku {day} P{period}.",
+    [LIB_HELP]: "Isomero ry'ibikorwa: yungurura wongere igikorwa ku munsi.",
+    [LIB_NEW]: "TW 1.94.11 — Isomero ry'ibikorwa: yungurura ku ishuri, igihe, kit cyangwa ubuhanga wongere rimwe ku munsi.",
+  },
+  ti: {
+    "Activity library": "ቤተ-መጻሕፍቲ ንጥፈታት",
+    "Add to day": "ናብ መዓልቲ ወስኽ",
+    "Grade: any": "ክፍሊ: ዝኾነ",
+    "Grade {n}": "ክፍሊ {n}",
+    "Time: any": "ግዜ: ዝኾነ",
+    "≤{n} min": "≤{n} ደቒቕ",
+    "Kit: any": "ኪት: ዝኾነ",
+    "Kit: {kit}": "ኪት: {kit}",
+    "Skill: any": "ክእለት: ዝኾነ",
+    "Skill: {skill}": "ክእለት: {skill}",
+    Clear: "ኣጽሪ",
+    "No activities": "ንጥፈታት የለን",
+    "{min} min · {kit} · {skill}": "{min} ደቒቕ · {kit} · {skill}",
+    "Added to {day} P{period}.": "ናብ {day} P{period} ተወሰኸ።",
+    [LIB_HELP]: "ቤተ-መጻሕፍቲ ንጥፈታት፡ ኣጻርዮ ንሓደ ንጥፈት ናብ መዓልቲ ወስኽ።",
+    [LIB_NEW]: "TW 1.94.11 — ቤተ-መጻሕፍቲ ንጥፈታት፡ ብክፍሊ፡ ግዜ፡ ኪት ወይ ክእለት ኣጻሪ ንሓደ ናብ መዓልቲ ወስኽ።",
+  },
+};
+
 export function t(phrase: string, id: HubLang = copyMode()): string {
   const shared = sharedLine(phrase, id);
   if (id === "en") return shared || phrase;
   if (id === "simple") return SIMPLE[phrase] || shared || phrase;
-  return BAR[id]?.[phrase] || BUMP[id]?.[phrase] || HALL[id]?.[phrase] || CLEAN[id]?.[phrase] || MORE[id]?.[phrase] || DICT[id]?.[phrase] || shared || phrase;
+  return BAR[id]?.[phrase] || LIB[id]?.[phrase] || BUMP[id]?.[phrase] || HALL[id]?.[phrase] || CLEAN[id]?.[phrase] || MORE[id]?.[phrase] || DICT[id]?.[phrase] || shared || phrase;
 }
 
 export function articleCopy(id: string, title: string, body: string, langId: LangId = storedLang()): { title: string; body: string } {
   if (id === "planning-bump") {
     return { title: t("Bump day", langId), body: t("Bump day moves this lesson and all later ones by one school day. Undo puts them back.", langId) };
+  }
+  if (id === "planning-activity") {
+    return { title: t("Activity library", langId), body: t("Activity library: filter and add an activity to a day.", langId) };
   }
   if (langId !== "uk" && langId !== "ru") return { title, body };
   const pack = HELP_I18N[langId][id];

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { EconomyFile } from "@/lib/economy";
 import { periodTitle, shopBells } from "@/lib/economy";
 import { planitLiveWeek, planitStripHasWork } from "@/lib/planit";
+import { ActivityLibrary } from "@/components/activity-library";
 import { bumpDay, unbumpDay } from "@/lib/bump-day";
 import { useLang } from "@/lib/i18n-hook";
 import { cn } from "@/lib/utils";
@@ -24,8 +25,10 @@ export function PlanitWeek({
   const show = planitStripHasWork(days);
   const course = periodTitle(period, shopBells(file));
   const [ask, setAsk] = useState(false);
+  const [lib, setLib] = useState(false);
   const [toast, setToast] = useState<{ n: number; from: string } | null>(null);
   const trigger = useRef<HTMLButtonElement>(null);
+  const libBtn = useRef<HTMLButtonElement>(null);
   const confirmBtn = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -78,6 +81,7 @@ export function PlanitWeek({
       : t("Moved {n} lessons.").replaceAll("{n}", String(toast.n));
 
   return (
+    <>
     <article className="tw-planit-strip-card mt-1" data-planit-strip>
       <p className="tw-fill-label font-semibold uppercase tracking-wider text-muted">This week · {course}</p>
       <div className="tw-planit-row mt-2 flex flex-wrap items-start gap-2">
@@ -93,6 +97,7 @@ export function PlanitWeek({
           ))}
         </ol>
         {onChange ? (
+          <>
           <button
             ref={trigger}
             type="button"
@@ -103,6 +108,17 @@ export function PlanitWeek({
             <span aria-hidden>⤵</span>
             {t("Bump day")}
           </button>
+          <button
+            ref={libBtn}
+            type="button"
+            data-activity-library-open
+            onClick={() => setLib(true)}
+            className="tw-tap relative z-[1] inline-flex min-h-11 max-w-full shrink-0 items-center gap-1 self-stretch whitespace-normal rounded-xl bg-surface px-3 text-left text-sm font-semibold text-fg ring-1 ring-border"
+          >
+            <span aria-hidden>☰</span>
+            {t("Activity library")}
+          </button>
+        </>
         ) : null}
       </div>
       {ask ? (
@@ -141,5 +157,18 @@ export function PlanitWeek({
         </p>
       ) : null}
     </article>
+    {lib && onChange ? (
+      <ActivityLibrary
+        file={file}
+        date={date}
+        period={period}
+        onChange={onChange}
+        onClose={() => {
+          setLib(false);
+          libBtn.current?.focus();
+        }}
+      />
+    ) : null}
+    </>
   );
 }

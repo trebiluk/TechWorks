@@ -242,6 +242,13 @@ export const HELP_ARTICLES: HelpArticle[] = [
     body: "Bump day moves this lesson and all later ones by one school day. Undo puts them back.",
   },
   {
+    id: "planning-activity",
+    category: "Planning",
+    title: "Activity library",
+    tags: ["activity", "library", "filter", "grade", "kit", "skill", "plan"],
+    body: "Activity library: filter and add an activity to a day.",
+  },
+  {
     id: "dash-loop",
     category: "Dashboard",
     title: "The class loop",

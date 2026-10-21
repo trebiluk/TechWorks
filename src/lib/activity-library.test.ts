@@ -4,7 +4,7 @@ import type { EconomyFile } from "./economy.ts";
 import type { ProjectActivity, ShopProject } from "./projects.ts";
 import { listActivities } from "./activity-library.ts";
 
-function act(partial: Partial<ProjectActivity> & { id: string; name: string }): ProjectActivity {
+function act(partial: Partial<ProjectActivity> & { id: string; name: string; minutes?: number; kit?: string }): ProjectActivity {
   return { skillId: "draw", goal: "IDEA STAGE", ...partial };
 }
 
@@ -35,17 +35,17 @@ function bridge(): EconomyFile {
       title: "Bridges",
       grades: [7],
       activities: [
-        act({ id: "act-gusset", name: "Gusset plates", skillId: "structures", minutes: 25, kit: "cardboard" } as ProjectActivity),
-        act({ id: "act-paper", name: "Paper bridge test", skillId: "testing", minutes: 30, kit: "paper" } as ProjectActivity),
-        act({ id: "act-truss", name: "Truss sketch", skillId: "design", minutes: 15, kit: "pencil" } as ProjectActivity),
-        act({ id: "act-long", name: "Load lecture", skillId: "present", minutes: 50, kit: "notes" } as ProjectActivity),
+        act({ id: "act-gusset", name: "Gusset plates", skillId: "structures", minutes: 25, kit: "cardboard" }),
+        act({ id: "act-paper", name: "Paper bridge test", skillId: "testing", minutes: 30, kit: "paper" }),
+        act({ id: "act-truss", name: "Truss sketch", skillId: "design", minutes: 15, kit: "pencil" }),
+        act({ id: "act-long", name: "Load lecture", skillId: "present", minutes: 50, kit: "notes" }),
       ],
     }),
     project({
       id: "prj-saw",
       title: "Shop intro",
       grades: [6],
-      activities: [act({ id: "act-saw", name: "Saw safety", skillId: "safety", minutes: 20, kit: "goggles" } as ProjectActivity)],
+      activities: [act({ id: "act-saw", name: "Saw safety", skillId: "safety", minutes: 20, kit: "goggles" })],
     }),
   ]);
 }

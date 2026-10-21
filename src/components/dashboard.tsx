@@ -576,6 +576,7 @@ export const Dashboard = memo(function Dashboard({
           ) : null}
         </aside>
       ) : null}
+      {unlocked ? <BtWorldsStaff /> : null}
       <div className={cn("tw-arrange-stage", arrange ? "" : "flex min-h-0 flex-1 flex-col overflow-hidden")}>
         <SortableList
           enabled={sortOn}
@@ -592,7 +593,6 @@ export const Dashboard = memo(function Dashboard({
                 const fill = id === "now" || id === "class";
                 const row = DASH_ROWS.find((r) => r.id === id);
                 return (
-      <><BtWorldsStaff />
                   <SortableItem
                     key={id}
                     id={id}
