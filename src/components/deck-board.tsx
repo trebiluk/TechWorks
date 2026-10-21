@@ -496,7 +496,7 @@ export function DeckBoard({
               type="button"
               onClick={() => choose(p)}
               className={cn(
-                "tw-tap min-h-9 rounded-md px-2.5 font-mono text-xs font-bold",
+                "tw-tap min-h-11 min-w-11 rounded-md px-2.5 font-mono text-xs font-bold",
                 p === period ? "bg-accent text-accent-fg" : "bg-elevated text-muted",
               )}
             >
