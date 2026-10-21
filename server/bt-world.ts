@@ -33,6 +33,8 @@ export const BT_SQL = {
   delChunk: "DELETE FROM bt_chunks WHERE alias_ref = ? AND world = ? AND ck = ?",
   putWorld:
     "INSERT INTO bt_worlds (alias_ref, world, rev, schema, app_ver, head, bytes, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(alias_ref, world) DO UPDATE SET rev = excluded.rev, schema = excluded.schema, app_ver = excluded.app_ver, head = excluded.head, bytes = excluded.bytes, updated_at = excluded.updated_at",
+  staffWorlds: "SELECT alias_ref, world, rev, bytes, updated_at FROM bt_worlds ORDER BY updated_at DESC",
+  staffRevs: "SELECT rev, at, why FROM bt_world_revs WHERE alias_ref = ? AND world = ? ORDER BY rev DESC",
 } as const;
 
 type Bound = {
@@ -322,4 +324,23 @@ export async function writeWorld(event: unknown, worldRaw: unknown, token: strin
 
 export function ifMatchOf(event: H3Event): string | undefined {
   return getHeader(event, "if-match") ?? undefined;
+}
+
+export async function restoreRev(event: unknown, aliasRef: string, world: string, targetRev: number, ifMatch: string): Promise<Out> {
+  const db = dbOf(event);
+  if (!db) return fail(503, { ok: false, error: "no-db" });
+  const current = await db.prepare(BT_SQL.oneWorld).bind(aliasRef, world).first<WorldRow>();
+  if (!current) return fail(404, { ok: false, error: "missing" });
+  const curRev = current.rev;
+  const match = parseRev(ifMatch);
+  if (match == null || match !== curRev) return fail(409, { ok: false, rev: curRev });
+  const revRow = await db.prepare("SELECT head FROM bt_world_revs WHERE alias_ref = ? AND world = ? AND rev = ?").bind(aliasRef, world, targetRev).first<{ head: unknown }>();
+  if (!revRow) return fail(404, { ok: false, error: "rev" });
+  const now = Date.now();
+  const nextRev = curRev + 1;
+  // current head becomes a rev
+  await db.prepare(BT_SQL.putRev).bind(aliasRef, world, curRev, asBytes(current.head), now, "restore-kept").run();
+  // new head from the target rev
+  await db.prepare(BT_SQL.putWorld).bind(aliasRef, world, nextRev, current.schema, current.app_ver, asBytes(revRow.head), current.bytes, now).run();
+  return { status: 200, body: { ok: true, rev: nextRev, kept: curRev } };
 }

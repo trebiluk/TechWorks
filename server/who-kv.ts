@@ -51,7 +51,7 @@ function clean(src: unknown): WhoRow | null {
   return { id, alias, avatar: avatar || "🐾", code, pinHash };
 }
 
-async function read(event: unknown): Promise<WhoRow[]> {
+export async function read(event: unknown): Promise<WhoRow[]> {
   const kv = await openKv(event);
   if (!kv) return [PROVE];
   const raw = await kv.get(DATA_KEY);
