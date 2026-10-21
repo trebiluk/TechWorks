@@ -67,6 +67,7 @@ export const HELP_CATEGORIES = [
   "Roles",
   "Dashboard",
   "Planning",
+  "Deck",
   "Admin",
   "Crew",
   "Score",
@@ -581,6 +582,13 @@ export const HELP_ARTICLES: HelpArticle[] = [
     tags: ["deck", "slides", "projector", "theme", "navy", "violet", "powerpoint", "edit"],
     wall: true,
     body: "Dash → Deck plays this hour from PlanIt. Present is play-only (even with PIN). Same date and period chip. Write Job · Guiding Q · Prove · beats on PlanIt.",
+  },
+  {
+    id: "deck-slides",
+    category: "Deck",
+    title: "Deck slides",
+    tags: ["deck", "slides", "planit", "hour"],
+    body: "Deck builds slides from your PlanIt hour.",
   },
   {
     id: "roster-ids",

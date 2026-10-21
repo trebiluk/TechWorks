@@ -953,11 +953,136 @@ const LIB: Record<LangId, Record<string, string>> = {
   },
 };
 
+const DECK_HELP = "Deck builds slides from your PlanIt hour.";
+const DECK_NEW = "TW 1.94.12 — Deck makes the hour's slides from PlanIt.";
+const DECK: Record<LangId, Record<string, string>> = {
+  en: {},
+  uk: {
+    "No plan yet": "Плану ще немає",
+    "Write the hour in PlanIt.": "Напишіть годину в PlanIt.",
+    Need: "Потрібно",
+    "Nothing extra": "Нічого додаткового",
+    Prove: "Доведіть",
+    "Show the work.": "Покажіть роботу.",
+    Cleanup: "Прибирання",
+    "Tools, scraps, seats.": "Інструменти, обрізки, місця.",
+    "This hour": "Ця година",
+    "Edit in PlanIt": "Змінити в PlanIt",
+    Back: "Назад",
+    Next: "Далі",
+    "Slide {n} / {total}": "Слайд {n} / {total}",
+    [DECK_HELP]: "Колода будує слайди з години PlanIt.",
+    [DECK_NEW]: "TW 1.94.12 — Колода робить слайди години з PlanIt.",
+  },
+  ru: {
+    "No plan yet": "Плана ещё нет",
+    "Write the hour in PlanIt.": "Напишите час в PlanIt.",
+    Need: "Нужно",
+    "Nothing extra": "Ничего лишнего",
+    Prove: "Докажи",
+    "Show the work.": "Покажите работу.",
+    Cleanup: "Уборка",
+    "Tools, scraps, seats.": "Инструменты, обрезки, места.",
+    "This hour": "Этот час",
+    "Edit in PlanIt": "Править в PlanIt",
+    Back: "Назад",
+    Next: "Дальше",
+    "Slide {n} / {total}": "Слайд {n} / {total}",
+    [DECK_HELP]: "Колода собирает слайды из часа PlanIt.",
+    [DECK_NEW]: "TW 1.94.12 — Колода делает слайды часа из PlanIt.",
+  },
+  es: {
+    "No plan yet": "Aún no hay plan",
+    "Write the hour in PlanIt.": "Escribe la hora en PlanIt.",
+    Need: "Hace falta",
+    "Nothing extra": "Nada extra",
+    Prove: "Prueba",
+    "Show the work.": "Muestra el trabajo.",
+    Cleanup: "Recoger",
+    "Tools, scraps, seats.": "Herramientas, restos, asientos.",
+    "This hour": "Esta hora",
+    "Edit in PlanIt": "Editar en PlanIt",
+    Back: "Atrás",
+    Next: "Siguiente",
+    "Slide {n} / {total}": "Diapositiva {n} / {total}",
+    [DECK_HELP]: "Deck arma las diapositivas desde tu hora de PlanIt.",
+    [DECK_NEW]: "TW 1.94.12 — Deck hace las diapositivas de la hora desde PlanIt.",
+  },
+  ar: {
+    "No plan yet": "لا خطة بعد",
+    "Write the hour in PlanIt.": "اكتب الحصة في PlanIt.",
+    Need: "يلزم",
+    "Nothing extra": "لا شيء إضافي",
+    Prove: "أثبت",
+    "Show the work.": "أظهر العمل.",
+    Cleanup: "ترتيب",
+    "Tools, scraps, seats.": "أدوات، بقايا، مقاعد.",
+    "This hour": "هذه الحصة",
+    "Edit in PlanIt": "عدّل في PlanIt",
+    Back: "رجوع",
+    Next: "التالي",
+    "Slide {n} / {total}": "شريحة {n} / {total}",
+    [DECK_HELP]: "سطح العرض يبني الشرائح من حصة PlanIt.",
+    [DECK_NEW]: "TW 1.94.12 — سطح العرض يصنع شرائح الحصة من PlanIt.",
+  },
+  "fa-AF": {
+    "No plan yet": "هنوز پلان نیست",
+    "Write the hour in PlanIt.": "ساعت را در PlanIt بنویس.",
+    Need: "لازم",
+    "Nothing extra": "چیز اضافه نیست",
+    Prove: "ثابت کن",
+    "Show the work.": "کار را نشان بده.",
+    Cleanup: "جمع کردن",
+    "Tools, scraps, seats.": "ابزار، ریزه، چوکی.",
+    "This hour": "این ساعت",
+    "Edit in PlanIt": "در PlanIt ویرایش کن",
+    Back: "بازگشت",
+    Next: "بعدی",
+    "Slide {n} / {total}": "سلاید {n} / {total}",
+    [DECK_HELP]: "دک اسلایدها را از ساعت PlanIt می‌سازد.",
+    [DECK_NEW]: "TW 1.94.12 — دک اسلایدهای ساعت را از PlanIt می‌سازد.",
+  },
+  rw: {
+    "No plan yet": "Nta gahunda",
+    "Write the hour in PlanIt.": "Andika isaha muri PlanIt.",
+    Need: "Birakenewe",
+    "Nothing extra": "Nta kindi",
+    Prove: "Erekana",
+    "Show the work.": "Erekana akazi.",
+    Cleanup: "Isuku",
+    "Tools, scraps, seats.": "Ibikoresho, ibisigazwa, intebe.",
+    "This hour": "Iyi saha",
+    "Edit in PlanIt": "Hindura muri PlanIt",
+    Back: "Inyuma",
+    Next: "Komeza",
+    "Slide {n} / {total}": "Isilayide {n} / {total}",
+    [DECK_HELP]: "Deck yubaka amasilayide kuva ku isaha ya PlanIt.",
+    [DECK_NEW]: "TW 1.94.12 — Deck ikora amasilayide y'isaha kuva muri PlanIt.",
+  },
+  ti: {
+    "No plan yet": "ትልሚ የለን",
+    "Write the hour in PlanIt.": "ነቲ ሰዓት ኣብ PlanIt ጽሓፍ።",
+    Need: "የድሊ",
+    "Nothing extra": "ተወሳኺ የለን",
+    Prove: "ኣረጋግጽ",
+    "Show the work.": "ነቲ ስራሕ ኣርኢ።",
+    Cleanup: "ጽሬት",
+    "Tools, scraps, seats.": "መሳርሒ፡ ተረፍ፡ መንበር።",
+    "This hour": "እዚ ሰዓት",
+    "Edit in PlanIt": "ኣብ PlanIt ኣርም",
+    Back: "ተመለስ",
+    Next: "ቀጻሊ",
+    "Slide {n} / {total}": "ስላይድ {n} / {total}",
+    [DECK_HELP]: "ዴክ ስላይድ ካብ ሰዓት PlanIt ይሰርሕ።",
+    [DECK_NEW]: "TW 1.94.12 — ዴክ ስላይድ ናይቲ ሰዓት ካብ PlanIt ይሰርሕ።",
+  },
+};
+
 export function t(phrase: string, id: HubLang = copyMode()): string {
   const shared = sharedLine(phrase, id);
   if (id === "en") return shared || phrase;
   if (id === "simple") return SIMPLE[phrase] || shared || phrase;
-  return BAR[id]?.[phrase] || LIB[id]?.[phrase] || BUMP[id]?.[phrase] || HALL[id]?.[phrase] || CLEAN[id]?.[phrase] || MORE[id]?.[phrase] || DICT[id]?.[phrase] || shared || phrase;
+  return BAR[id]?.[phrase] || LIB[id]?.[phrase] || DECK[id]?.[phrase] || BUMP[id]?.[phrase] || HALL[id]?.[phrase] || CLEAN[id]?.[phrase] || MORE[id]?.[phrase] || DICT[id]?.[phrase] || shared || phrase;
 }
 
 export function articleCopy(id: string, title: string, body: string, langId: LangId = storedLang()): { title: string; body: string } {
@@ -966,6 +1091,9 @@ export function articleCopy(id: string, title: string, body: string, langId: Lan
   }
   if (id === "planning-activity") {
     return { title: t("Activity library", langId), body: t("Activity library: filter and add an activity to a day.", langId) };
+  }
+  if (id === "deck-slides") {
+    return { title: t("Deck slides", langId), body: t("Deck builds slides from your PlanIt hour.", langId) };
   }
   if (langId !== "uk" && langId !== "ru") return { title, body };
   const pack = HELP_I18N[langId][id];

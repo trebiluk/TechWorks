@@ -8,6 +8,8 @@ import type { DeckCard, DeckSlide } from "@/data/deck";
 import type { EconomyFile } from "@/lib/economy";
 import { shopBells } from "@/lib/economy";
 import { formatSchoolDate, nextOpenDay, todayIso } from "@/lib/calendar";
+import { slidesFor, type AutoSlide } from "@/lib/deck-slides";
+import { useLang } from "@/lib/i18n-hook";
 import { useShopClock } from "@/lib/use-clock";
 import { deskBellId } from "@/lib/store";
 import { teachDeckOf, patchTeachFromDeck } from "@/lib/teach-deck";
@@ -115,12 +117,19 @@ function Stage({
             value={slide.title}
             placeholder="Title"
             className={cn(
-              "block font-black uppercase tracking-tight text-[#2ee6ff] text-balance break-words",
+              "block font-black tracking-tight text-balance break-words",
               slide.kind === "title"
-                ? "text-[clamp(1.6rem,4.6vw,3.6rem)] leading-[1.08]"
+                ? "text-[clamp(1.6rem,4.6vw,3.6rem)] leading-[1.08] text-[#2ee6ff]"
                 : "text-[clamp(1.6rem,4vw,3rem)] leading-[1.1] normal-case tracking-tight",
+              slide.id.startsWith("plan-") ? "normal-case" : "uppercase",
             )}
-            style={slide.kind === "close" ? { color: "#f7f9ff" } : undefined}
+            style={
+              slide.id.startsWith("plan-")
+                ? { fontSize: 48, lineHeight: 1.15, color: "#f7f9ff", textTransform: "none" }
+                : slide.kind === "close"
+                  ? { color: "#f7f9ff" }
+                  : undefined
+            }
             onChange={(title) => onPatch({ title })}
           />
           <Field
@@ -129,6 +138,7 @@ function Stage({
             placeholder="Line"
             multiline
             className="mt-4 max-w-3xl text-xl font-medium leading-snug text-[#b7c4ea]"
+            style={slide.id.startsWith("plan-") ? { fontSize: 48, lineHeight: 1.2, color: "#d6e2ff" } : undefined}
             onChange={(line) => onPatch({ line })}
           />
           <Field
@@ -356,6 +366,25 @@ function Stage({
   );
 }
 
+function deckSlides(auto: AutoSlide[], hung: DeckSlide[], t: (phrase: string) => string): DeckSlide[] {
+  const plan = auto.map((s) => ({
+    id: `plan-${s.id}`,
+    kind: "title" as const,
+    kicker: s.id.startsWith("card-") ? t(s.kicker) : t(s.kicker),
+    title: s.id === "title" && s.title !== "This hour" ? s.title : t(s.title),
+    line: fixedLine(s, t),
+  }));
+  if (auto[0]?.id === "empty") return plan;
+  return [...plan, ...hung.filter((s) => s.kind === "embed")];
+}
+
+function fixedLine(s: AutoSlide, t: (phrase: string) => string): string {
+  if (s.id === "empty" || s.id === "clean") return t(s.line);
+  if (s.id === "need" && s.line === "Nothing extra") return t(s.line);
+  if (s.id === "prove" && s.line === "Show the work.") return t(s.line);
+  return s.line;
+}
+
 export function DeckBoard({
   file,
   unlocked = false,
@@ -371,6 +400,7 @@ export function DeckBoard({
   onTeach?: () => void;
   onChange?: (next: EconomyFile) => void;
 }) {
+  const { t } = useLang();
   const today = todayIso();
   const date = dateProp || nextOpenDay(today);
   const bellsId = deskBellId(file, today);
@@ -379,19 +409,20 @@ export function DeckBoard({
   const [pick, setPick] = useState<number | null>(() => loadHourPick());
   const period = date === today ? teachFocusPeriod(file, today, now, pick) : (pick && shop.includes(pick) ? pick : shop[0] ?? 1);
   const pack = useMemo(() => teachDeckOf(file, period, date), [file, period, date]);
+  const auto = useMemo(() => slidesFor(file, date, period), [file, date, period]);
   const [i, setI] = useState(0);
   const [full, setFull] = useState(false);
   const [paint, setPaint] = useState(false);
   const stage = useRef<HTMLDivElement>(null);
   const fileRef = useRef(file);
   fileRef.current = file;
-  const slides = pack.slides;
+  const slides = deckSlides(auto, pack.slides, t);
   const slide = slides[Math.min(i, Math.max(0, slides.length - 1))] ?? slides[0];
-  const editing = Boolean(unlocked && paint && !full && slide);
+  const editing = Boolean(unlocked && paint && !full && slide && !slide.id.startsWith("plan-"));
 
   useEffect(() => {
     setI(0);
-  }, [period, date]);
+  }, [period, date, auto[0]?.id, auto[0]?.title]);
 
   const go = useCallback(
     (d: number) => {
@@ -455,8 +486,8 @@ export function DeckBoard({
       <div className="flex flex-wrap items-center gap-2">
         <p className="text-sm font-medium uppercase tracking-wider text-subtle">{pack.title}</p>
         <span className="text-sm font-semibold text-gold">{formatSchoolDate(date)} · play only</span>
-        <span className="font-mono text-xs text-muted">
-          {Math.min(i + 1, slides.length)} / {slides.length}
+        <span className="font-mono text-xs text-muted" data-deck-count>
+          {t("Slide {n} / {total}").replaceAll("{n}", String(Math.min(i + 1, slides.length))).replaceAll("{total}", String(slides.length))}
         </span>
         <div className="flex flex-wrap gap-1">
           {shop.length ? shop.map((p) => (
@@ -476,11 +507,13 @@ export function DeckBoard({
           )}
         </div>
         <div className="ml-auto flex flex-wrap gap-1">
-          <button type="button" onClick={() => go(-1)} className="tw-tap inline-flex size-11 items-center justify-center rounded-md bg-elevated" aria-label="Previous slide">
-            <ChevronLeft className="size-5" />
+          <button type="button" onClick={() => go(-1)} className="tw-tap inline-flex min-h-11 min-w-11 items-center gap-1 rounded-md bg-elevated px-3 text-sm font-semibold" aria-label={t("Back")}>
+            <ChevronLeft className="size-5" aria-hidden />
+            {t("Back")}
           </button>
-          <button type="button" onClick={() => go(1)} className="tw-tap inline-flex size-11 items-center justify-center rounded-md bg-elevated" aria-label="Next slide">
-            <ChevronRight className="size-5" />
+          <button type="button" onClick={() => go(1)} className="tw-tap inline-flex min-h-11 min-w-11 items-center gap-1 rounded-md bg-elevated px-3 text-sm font-semibold" aria-label={t("Next")}>
+            <ChevronRight className="size-5" aria-hidden />
+            {t("Next")}
           </button>
           <button
             type="button"
@@ -491,6 +524,15 @@ export function DeckBoard({
             className="tw-tap inline-flex min-h-11 items-center gap-2 rounded-md bg-elevated px-3 text-sm font-semibold"
           >
             <Maximize2 className="size-4" /> Present
+          </button>
+          <button
+            type="button"
+            data-edit-planit
+            onClick={askTeach}
+            className="tw-tap inline-flex min-h-11 items-center gap-2 rounded-md bg-elevated px-3 text-sm font-semibold text-[#f0d48a]"
+          >
+            <span aria-hidden>✎</span>
+            {t("Edit in PlanIt")}
           </button>
           {onTeach ? (
             <button
@@ -511,20 +553,21 @@ export function DeckBoard({
           if (!editing) go(1);
         }}
         role="img"
+        data-deck-title={slide?.title ?? ""}
         aria-label={slide?.title ?? "Deck"}
       >
         {slide ? <Stage key={slide.id} slide={slide} editing={editing} onPatch={patchSlide} /> : <p className="grid h-full place-items-center text-muted">No slides for this hour.</p>}
         {full ? <span className="sr-only">Presenting</span> : null}
       </div>
-      <ol className="flex flex-wrap gap-1">
+      <ol data-deck-list className="flex flex-wrap gap-1">
         {slides.map((s, n) => (
           <li key={s.id}>
             <button
               type="button"
               onClick={() => setI(n)}
-              className={cn("min-h-9 rounded-full px-3 font-mono text-[11px] font-bold uppercase tracking-wide", n === i ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
+              className={cn("min-h-11 min-w-11 rounded-full px-3 text-left text-xs font-bold", n === i ? "bg-accent text-accent-fg" : "bg-elevated text-muted")}
             >
-              {n + 1} {s.kicker ?? s.title}
+              <bdi>{n + 1} {s.title}</bdi>
             </button>
           </li>
         ))}
