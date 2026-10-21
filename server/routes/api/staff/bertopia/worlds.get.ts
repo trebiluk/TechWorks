@@ -1,7 +1,7 @@
 import { defineEventHandler, getHeader, setHeader, setResponseStatus, type H3Event } from "h3";
-import { getStaff } from "../../../kn-session";
-import { knAudit } from "../../../kn-audit";
-import { listStaffWorlds } from "../../../bt-staff";
+import { getStaff } from "../../../../kn-session";
+import { knAudit } from "../../../../kn-audit";
+import { listStaffWorlds } from "../../../../bt-staff";
 
 const ALLOW = new Set(["https://apps.kulibert.net", "https://tw.kulibert.net"]);
 
