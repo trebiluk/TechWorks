@@ -884,7 +884,7 @@ export function Board() {
                 <LangChip />
                 {verChip}
                 <p className="px-1 text-[11px] font-bold uppercase tracking-wide text-gold">{t("What's new")}</p>
-                <p className="px-1 text-xs leading-snug text-muted">{t("TW 1.94.8 — TEACH has a big timer with 2, 5, 10 minute and Cleanup buttons. Time's up shows in words.")}</p>
+                <p className="px-1 text-xs leading-snug text-muted">{t("TW 1.94.9 — Bump day: a snow day slides every later lesson one school day, with Undo.")}</p>
                 </div>
               </EdgePocket>
               {showBack ? (

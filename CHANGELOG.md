@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.94.8. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.94.9. -->
 
 # TechWorks changelog
 
-App version **1.94.8**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.94.9**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.94.9 — 2026-10-21
+
+- TW 1.94.9 — Bump day: a snow day slides every later lesson one school day, with Undo.
 
 ## 1.94.8 — 2026-10-21
 

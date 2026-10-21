@@ -484,7 +484,7 @@ export const SIMPLE: Pack = {
   "Bump day moves this lesson and all later ones by one school day. Undo puts them back.": "Bump day moves this lesson and later ones by one school day. Undo puts them back.",
   "Moved {n} lessons.": "Moved {n} lessons.",
   "Moved 1 lesson.": "Moved 1 lesson.",
-  "TW 1.94.8 — TEACH has a big timer with 2, 5, 10 minute and Cleanup buttons. Time's up shows in words.": "TW 1.94.8 — TEACH has a big timer. Tap 2, 5, 10, or Cleanup. At zero it says Time's up.",
+  "TW 1.94.9 — Bump day: a snow day slides every later lesson one school day, with Undo.": "TW 1.94.9 — Bump day slides this lesson and later ones by one school day. Undo puts them back.",
   "Tap a Tech period on the strip.": "Tap your class.",
   "How this class works": "How class works",
   "Hold the lead": "Stay first",

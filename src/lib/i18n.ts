@@ -751,6 +751,7 @@ const BUMP: Record<LangId, Record<string, string>> = {
     "Moved {n} lessons.": "Пересунуто {n} уроків.",
     [BUMP_Q]: "Пересунути цей урок і всі наступні в {course} на один навчальний день?",
     [BUMP_HELP]: "Зсунути день переносить цей урок і всі наступні на один навчальний день. Повернути ставить їх назад.",
+    "TW 1.94.9 — Bump day: a snow day slides every later lesson one school day, with Undo.": "TW 1.94.9 — Зсунути день: сніговий день зсуває кожен наступний урок на один навчальний день, і є Повернути.",
   },
   ru: {
     "Bump day": "Сдвинуть день",
@@ -761,6 +762,7 @@ const BUMP: Record<LangId, Record<string, string>> = {
     "Moved {n} lessons.": "Сдвинуто {n} уроков.",
     [BUMP_Q]: "Сдвинуть этот урок и все следующие в {course} на один учебный день?",
     [BUMP_HELP]: "Сдвинуть день переносит этот урок и все следующие на один учебный день. Вернуть ставит их назад.",
+    "TW 1.94.9 — Bump day: a snow day slides every later lesson one school day, with Undo.": "TW 1.94.9 — Сдвинуть день: снежный день сдвигает каждый следующий урок на один учебный день, и есть Вернуть.",
   },
   es: {
     "Bump day": "Mover el día",
@@ -771,6 +773,7 @@ const BUMP: Record<LangId, Record<string, string>> = {
     "Moved {n} lessons.": "Se movieron {n} lecciones.",
     [BUMP_Q]: "¿Mover esta lección y todas las posteriores en {course} un día de clase?",
     [BUMP_HELP]: "Mover el día pasa esta lección y las siguientes un día de clase. Deshacer las devuelve.",
+    "TW 1.94.9 — Bump day: a snow day slides every later lesson one school day, with Undo.": "TW 1.94.9 — Mover el día: un día de nieve corre cada lección posterior un día de clase, con Deshacer.",
   },
   ar: {
     "Bump day": "ترحيل اليوم",
@@ -781,6 +784,7 @@ const BUMP: Record<LangId, Record<string, string>> = {
     "Moved {n} lessons.": "نُقل {n} دروس.",
     [BUMP_Q]: "أنقل هذا الدرس وكل ما بعده في {course} يوماً دراسياً واحداً؟",
     [BUMP_HELP]: "ترحيل اليوم ينقل هذا الدرس وكل ما بعده يوماً دراسياً واحداً. التراجع يعيدها.",
+    "TW 1.94.9 — Bump day: a snow day slides every later lesson one school day, with Undo.": "TW 1.94.9 — ترحيل اليوم: يوم الثلج ينقل كل درس لاحق يوماً دراسياً، مع تراجع.",
   },
   "fa-AF": {
     "Bump day": "روز را ببر",
@@ -791,6 +795,7 @@ const BUMP: Record<LangId, Record<string, string>> = {
     "Moved {n} lessons.": "{n} درس جابه‌جا شد.",
     [BUMP_Q]: "این درس و هر درس بعدی در {course} را یک روز مکتب جابه‌جا کنم؟",
     [BUMP_HELP]: "روز را ببر این درس و درس‌های بعدی را یک روز مکتب می‌برد. برگردان آن‌ها را پس می‌آورد.",
+    "TW 1.94.9 — Bump day: a snow day slides every later lesson one school day, with Undo.": "TW 1.94.9 — روز را ببر: روز برفی هر درس بعدی را یک روز مکتب می‌برد، با برگردان.",
   },
   rw: {
     "Bump day": "Imura umunsi",
@@ -801,6 +806,7 @@ const BUMP: Record<LangId, Record<string, string>> = {
     "Moved {n} lessons.": "Amasomo {n} yimuriwe.",
     [BUMP_Q]: "Imura iyi somo n'izikurikira muri {course} ku munsi umwe w'ishuri?",
     [BUMP_HELP]: "Imura umunsi yimura iyi somo n'izikurikira ku munsi umwe w'ishuri. Subiza izisubiza.",
+    "TW 1.94.9 — Bump day: a snow day slides every later lesson one school day, with Undo.": "TW 1.94.9 — Imura umunsi: umunsi w'urubura ushushanya buri somo rikurikira ku munsi umwe w'ishuri, hamwe na Subiza.",
   },
   ti: {
     "Bump day": "መዓልቲ ኣንቀሳቕስ",
@@ -811,6 +817,7 @@ const BUMP: Record<LangId, Record<string, string>> = {
     "Moved {n} lessons.": "{n} ትምህርቲ ተንቀሳቒሱ።",
     [BUMP_Q]: "እዚ ትምህርቲን ዝስዕብ ኩሉን ኣብ {course} ብሓደ ናይ ቤት ትምህርቲ መዓልቲ ኣንቀሳቕስ?",
     [BUMP_HELP]: "መዓልቲ ምንቃስ እዚ ትምህርቲን ዝስዕብ ኩሉን ብሓደ ናይ ቤት ትምህርቲ መዓልቲ የንቀሳቕስ። ምምላስ የምልሶም።",
+    "TW 1.94.9 — Bump day: a snow day slides every later lesson one school day, with Undo.": "TW 1.94.9 — መዓልቲ ምንቃስ፡ ናይ በረድ መዓልቲ ነቲ ዝስዕብ ትምህርቲ ብሓደ ናይ ቤት ትምህርቲ መዓልቲ የንቀሳቕስ፡ ምስ መልስ።",
   },
 };
 

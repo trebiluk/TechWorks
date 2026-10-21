@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.94.9 — 2026-10-21
+
+- TW 1.94.9 — Bump day: a snow day slides every later lesson one school day, with Undo.
+
 ## 1.94.8 — 2026-10-21
 
 - TW 1.94.8 — TEACH has a big timer with 2, 5, 10 minute and Cleanup buttons. Time's up shows in words.
