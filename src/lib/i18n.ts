@@ -52,37 +52,37 @@ const HELP_ADMIN = "Admin is the 🛠️ button at the bottom of the Menu. It as
 /** Machine drafts. rw, ti, and Dari (fa-AF) need a native check. */
 const LINE_I18N: Record<Exclude<LangId, "en">, Record<string, string>> = {
   uk: {
-    [WHATS_NEW_LINE]: "TW 1.94.20 — Звіти і досьє самі перезавантажуються після оновлення.",
+    [WHATS_NEW_LINE]: "TW 1.94.21 — Список мов тепер відкривається повністю на екрані.",
     [HELP_WHERE]: "Допомога є в Меню, внизу.",
     [HELP_ADMIN]: "Admin — це кнопка 🛠️ внизу Меню. Вона питає PIN учителя.",
   },
   ru: {
-    [WHATS_NEW_LINE]: "TW 1.94.20 — Отчёты и досье сами перезагружаются после обновления.",
+    [WHATS_NEW_LINE]: "TW 1.94.21 — Список языков теперь открывается полностью на экране.",
     [HELP_WHERE]: "Справка в Меню, внизу.",
     [HELP_ADMIN]: "Admin — это кнопка 🛠️ внизу Меню. Она спрашивает PIN учителя.",
   },
   es: {
-    [WHATS_NEW_LINE]: "TW 1.94.20 — Los informes y los expedientes se recargan solos después de una actualización.",
+    [WHATS_NEW_LINE]: "TW 1.94.21 — La lista de idiomas se abre completa en la pantalla.",
     [HELP_WHERE]: "La Ayuda está en el Menú, abajo.",
     [HELP_ADMIN]: "Admin es el botón 🛠️ al final del Menú. Pide el PIN del maestro.",
   },
   ar: {
-    [WHATS_NEW_LINE]: "TW 1.94.20 — التقارير والملفات تعيد تحميل نفسها بعد التحديث.",
+    [WHATS_NEW_LINE]: "TW 1.94.21 — قائمة اللغات تفتح الآن كاملة على الشاشة.",
     [HELP_WHERE]: "المساعدة في القائمة، في الأسفل.",
     [HELP_ADMIN]: "Admin هو زر 🛠️ في أسفل القائمة. يطلب رقم المعلم.",
   },
   "fa-AF": {
-    [WHATS_NEW_LINE]: "TW 1.94.20 — گزارش‌ها و پرونده‌ها بعد از به‌روزرسانی خودشان تازه می‌شوند.",
+    [WHATS_NEW_LINE]: "TW 1.94.21 — فهرست زبان‌ها حالا کامل روی صفحه باز می‌شود.",
     [HELP_WHERE]: "راهنما در فهرست است، در پایین.",
     [HELP_ADMIN]: "Admin دکمهٔ 🛠️ در پایین فهرست است. PIN معلم را می‌خواهد.",
   },
   rw: {
-    [WHATS_NEW_LINE]: "TW 1.94.20 — Raporo na dosiye zisubiramo ubwazo nyuma yo kuvugurura.",
+    [WHATS_NEW_LINE]: "TW 1.94.21 — Urutonde rw'indimi ubu rufunguka rwose kuri ecran.",
     [HELP_WHERE]: "Ubufasha buri mu Menyu, hepfo.",
     [HELP_ADMIN]: "Admin ni buto 🛠️ hepfo ya Menyu. Isaba PIN y'umwarimu.",
   },
   ti: {
-    [WHATS_NEW_LINE]: "TW 1.94.20 — ጸብጻባትን ዶሴታትን ድሕሪ ምዕራፍ ባዕሎም ይጽዕኑ።",
+    [WHATS_NEW_LINE]: "TW 1.94.21 — ዝርዝር ቋንቋታት ሕጂ ምሉእ ብምሉእ ኣብ ስክሪን ይኽፈት።",
     [HELP_WHERE]: "ሓገዝ ኣብ ዝርዝር እዩ፡ ኣብ ታሕቲ።",
     [HELP_ADMIN]: "Admin ናይ 🛠️ መጠወቒ ኣብ ታሕቲ ዝርዝር እዩ። PIN ናይ መምህር ይሓትት።",
   },
