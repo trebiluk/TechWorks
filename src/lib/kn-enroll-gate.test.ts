@@ -6,6 +6,12 @@ import { resetKnKeys } from "../../server/kn-keys.ts";
 const TEST_KEY = Buffer.alloc(32, 7).toString("base64");
 const FAKE = "x".repeat(64);
 const OTHER = "y".repeat(64);
+const TOKEN_NAME = "KN_" + "ENROLL_TOKEN";
+
+function putToken(value?: string) {
+  if (value === undefined) delete process.env[TOKEN_NAME];
+  else process.env[TOKEN_NAME] = value;
+}
 
 type Row = { n: number; exp: number };
 
@@ -51,12 +57,12 @@ function gateEvent(db: ReturnType<typeof fakeDb>, ip = "198.51.100.10") {
 
 describe("enroll gate", () => {
   beforeEach(() => {
-    delete process.env.KN_ENROLL_TOKEN;
+    putToken();
     process.env.KN_AUTH_KEY = TEST_KEY;
     resetKnKeys();
   });
   afterEach(() => {
-    delete process.env.KN_ENROLL_TOKEN;
+    putToken();
     delete process.env.KN_AUTH_KEY;
     resetKnKeys();
   });
@@ -69,23 +75,23 @@ describe("enroll gate", () => {
 
   it("stays shut when the token is unset, blank, or 31 characters", () => {
     assert.equal(enrollOpen({}), false);
-    process.env.KN_ENROLL_TOKEN = "   ";
+    putToken("   ");
     assert.equal(enrollOpen({}), false);
-    process.env.KN_ENROLL_TOKEN = "x".repeat(31);
+    putToken("x".repeat(31));
     assert.equal(enrollOpen({}), false);
-    process.env.KN_ENROLL_TOKEN = "x".repeat(32);
+    putToken("x".repeat(32));
     assert.equal(enrollOpen({}), true);
   });
 
   it("slows the 6th try from one address", async () => {
-    process.env.KN_ENROLL_TOKEN = FAKE;
+    putToken(FAKE);
     const event = gateEvent(fakeDb());
     for (let i = 1; i <= 5; i++) assert.equal(await checkEnrollToken(event, OTHER), "bad");
     assert.equal(await checkEnrollToken(event, OTHER), "slow");
   });
 
   it("rejects a token after it is marked used", async () => {
-    process.env.KN_ENROLL_TOKEN = FAKE;
+    putToken(FAKE);
     const event = gateEvent(fakeDb(), "198.51.100.11");
     assert.equal(await checkEnrollToken(event, FAKE), "ok");
     await markEnrollUsed(event, FAKE);
@@ -93,10 +99,10 @@ describe("enroll gate", () => {
   });
 
   it("accepts a different token after the secret changes", async () => {
-    process.env.KN_ENROLL_TOKEN = FAKE;
+    putToken(FAKE);
     const event = gateEvent(fakeDb(), "198.51.100.12");
     await markEnrollUsed(event, FAKE);
-    process.env.KN_ENROLL_TOKEN = OTHER;
+    putToken(OTHER);
     assert.equal(await checkEnrollToken(event, OTHER), "ok");
   });
 });

@@ -1,9 +1,10 @@
-import { defineEventHandler, getHeader, getRequestURL, setHeader, setResponseStatus, type H3Event } from "h3";
+import { defineEventHandler, getHeader, getRequestURL, readBody, setHeader, setResponseStatus, type H3Event } from "h3";
 import { generateAuthenticationOptions } from "@simplewebauthn/server";
 import { hkdfReady, recoveryKey, hmacText, b64url, randomBytes } from "../../../kn-keys";
 import { ensureKn } from "../../../kn-db";
 import { getStaff, STAFF_COOKIE } from "../../../kn-session";
 import { knDb } from "../../../cf-env";
+import { checkEnrollToken, enrollOpen } from "../../../kn-enroll-gate";
 
 const ALLOW = new Set(["https://apps.kulibert.net", "https://tw.kulibert.net"]);
 
@@ -40,6 +41,51 @@ function internal(event: H3Event, err: unknown) {
   return { error: "internal", id };
 }
 
+async function enrollDoor(event: H3Event, path: string, method: string) {
+  if (!enrollOpen(event)) {
+    setResponseStatus(event, 404);
+    return { error: "missing" };
+  }
+  if (!(method === "POST" && path.endsWith("/api/staff/enroll/start"))) {
+    setResponseStatus(event, 404);
+    return { error: "missing" };
+  }
+  const type = (getHeader(event, "content-type") ?? "").toLowerCase();
+  if (!type.includes("application/json") || getHeader(event, "x-kn-staff") !== "1") {
+    setResponseStatus(event, 403);
+    return { error: "csrf" };
+  }
+  if (!hkdfReady(event) || !knDb(event)) return notSetUp(event);
+  let token = "";
+  try {
+    const body = (await readBody(event)) as { token?: unknown } | null;
+    if (body && typeof body.token === "string") token = body.token;
+  } catch {
+    setResponseStatus(event, 400);
+    return { error: "bad-token" };
+  }
+  if (token.length < 1 || token.length > 128) {
+    setResponseStatus(event, 400);
+    return { error: "bad-token" };
+  }
+  try {
+    const verdict = await checkEnrollToken(event, token);
+    if (verdict === "ok") return { ok: true, next: "not-ready" };
+    if (verdict === "bad") {
+      setResponseStatus(event, 403);
+      return { error: "bad-token" };
+    }
+    if (verdict === "used") {
+      setResponseStatus(event, 403);
+      return { error: "used" };
+    }
+    setResponseStatus(event, 429);
+    return { error: "slow" };
+  } catch {
+    return internal(event, "enroll");
+  }
+}
+
 export default defineEventHandler(async (event) => {
   staffCors(event);
   try {
@@ -60,6 +106,9 @@ async function handle(event: H3Event) {
   ) {
     setResponseStatus(event, 404);
     return { error: "missing" };
+  }
+  if (path.includes("/api/staff/enroll") || path.includes("/api/staff/setup")) {
+    return enrollDoor(event, path, method);
   }
   if (!hkdfReady(event) || !knDb(event)) return notSetUp(event);
   if (method === "POST") {
