@@ -890,7 +890,7 @@ export function Board() {
                 <LangChip />
                 {verChip}
                 <p className="px-1 text-[11px] font-bold uppercase tracking-wide text-gold">{t("What's new")}</p>
-                <p className="px-1 text-xs leading-snug text-muted">{t("TW 1.94.12 — Deck makes the hour's slides from PlanIt.")}</p>
+                <p className="px-1 text-xs leading-snug text-muted">{t("TW 1.94.13 — Skill tracking: tap a student, set a level 1–4.")}</p>
                 </div>
               </EdgePocket>
               {showBack ? (

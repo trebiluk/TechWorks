@@ -6,6 +6,10 @@ export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.94.13 — 2026-10-21
+
+- TW 1.94.13 — Skill tracking: tap a student, set a level 1–4.
+
 ## 1.94.12 — 2026-10-21
 
 - TW 1.94.12 — Deck makes the hour's slides from PlanIt.
