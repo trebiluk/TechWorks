@@ -75,6 +75,10 @@ export function HelpPanel({ onClose, wallOnly }: { onClose: () => void; wallOnly
   }, [q, cat, wallOnly, lang, article]);
   const cats = wallOnly ? ["All", "Welcome", "Wall"] : ["All", ...HELP_CATEGORIES];
   const listed = hits.filter((a) => q.trim() || cat === "Welcome" || a.category !== "Welcome");
+  const pinLevels = !q.trim() && (cat === "All" || cat === "Welcome");
+  const levelsArticle = pinLevels ? listed.find((a) => a.id === "welcome-levels") : undefined;
+  const cards = levelsArticle ? listed.filter((a) => a.id !== "welcome-levels") : listed;
+  const levelsCopy = levelsArticle ? article(levelsArticle.id, levelsArticle.title, levelsArticle.body) : null;
 
   return (
     <div className="tw-scrim fixed inset-0 z-[120] flex items-start justify-center overflow-auto p-4 pt-12">
@@ -143,13 +147,20 @@ export function HelpPanel({ onClose, wallOnly }: { onClose: () => void; wallOnly
               {listed.length} {listed.length === 1 ? "match" : "matches"}
             </p>
           ) : null}
+          {levelsCopy ? (
+            <article data-help-levels className="tw-help-card mb-3">
+              <p className="text-xs font-semibold uppercase tracking-widest text-subtle">{t("Welcome")}</p>
+              <h2 className="mt-1 text-base font-semibold">{levelsCopy.title}</h2>
+              <p className="mt-1 text-sm leading-relaxed text-muted">{levelsCopy.body}</p>
+            </article>
+          ) : null}
           {!q.trim() && (cat === "All" || cat === "Welcome" || cat === "Wall") ? <WelcomeArea wallOnly={wallOnly} /> : null}
           {listed.length === 0 ? (
             <p className="py-8 text-sm text-muted">
               {t("No articles for")} “{q}”. Try Web, Theme, Store, PIN, or Cleanup.
             </p>
           ) : (
-            listed.map((a) => {
+            cards.map((a) => {
               const copy = article(a.id, a.title, a.body);
               return (
                 <article key={a.id} className="tw-help-card">

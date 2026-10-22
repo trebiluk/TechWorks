@@ -85,6 +85,14 @@ export const HELP_CATEGORIES = [
 
 export const HELP_ARTICLES: HelpArticle[] = [
   {
+    id: "welcome-levels",
+    category: "Welcome",
+    title: "Skill levels 1–4",
+    tags: ["skills", "level", "1-4", "beginning", "developing", "proficient", "distinguished"],
+    wall: true,
+    body: "Skill levels: 1 = Beginning, needs a demo. 2 = Developing, can do it with a check-in. 3 = Proficient, on your own, meets the standard. 4 = Distinguished, can teach a crewmate.",
+  },
+  {
     id: "welcome-what",
     category: "Welcome",
     title: "What is TechWorks?",

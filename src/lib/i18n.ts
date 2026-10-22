@@ -52,37 +52,37 @@ const HELP_ADMIN = "Admin is the 🛠️ button at the bottom of the Menu. It as
 /** Machine drafts. rw, ti, and Dari (fa-AF) need a native check. */
 const LINE_I18N: Record<Exclude<LangId, "en">, Record<string, string>> = {
   uk: {
-    [WHATS_NEW_LINE]: "TW 1.94.17 — Допомога пояснює рівні вміння 1–4, і Допомога читається іспанською.",
+    [WHATS_NEW_LINE]: "TW 1.94.18 — Допомога тепер показує, що значать рівні вміння 1–4.",
     [HELP_WHERE]: "Допомога є в Меню, внизу.",
     [HELP_ADMIN]: "Admin — це кнопка 🛠️ внизу Меню. Вона питає PIN учителя.",
   },
   ru: {
-    [WHATS_NEW_LINE]: "TW 1.94.17 — Справка объясняет уровни умения 1–4, и Справка читается по-испански.",
+    [WHATS_NEW_LINE]: "TW 1.94.18 — Справка теперь показывает, что значат уровни умения 1–4.",
     [HELP_WHERE]: "Справка в Меню, внизу.",
     [HELP_ADMIN]: "Admin — это кнопка 🛠️ внизу Меню. Она спрашивает PIN учителя.",
   },
   es: {
-    [WHATS_NEW_LINE]: "TW 1.94.17 — La Ayuda explica los niveles de destreza 1–4, y la Ayuda se lee en español.",
+    [WHATS_NEW_LINE]: "TW 1.94.18 — La Ayuda ahora muestra qué significan los niveles de destreza 1–4.",
     [HELP_WHERE]: "La Ayuda está en el Menú, abajo.",
     [HELP_ADMIN]: "Admin es el botón 🛠️ al final del Menú. Pide el PIN del maestro.",
   },
   ar: {
-    [WHATS_NEW_LINE]: "TW 1.94.17 — المساعدة تشرح مستويات المهارة 1–4، والمساعدة تُقرأ بالإسبانية.",
+    [WHATS_NEW_LINE]: "TW 1.94.18 — المساعدة الآن تُظهر معنى مستويات المهارة 1–4.",
     [HELP_WHERE]: "المساعدة في القائمة، في الأسفل.",
     [HELP_ADMIN]: "Admin هو زر 🛠️ في أسفل القائمة. يطلب رقم المعلم.",
   },
   "fa-AF": {
-    [WHATS_NEW_LINE]: "TW 1.94.17 — راهنما سطح‌های مهارت ۱ تا ۴ را شرح می‌دهد، و راهنما به اسپانوی خوانده می‌شود.",
+    [WHATS_NEW_LINE]: "TW 1.94.18 — راهنما اکنون نشان می‌دهد سطح‌های مهارت ۱ تا ۴ چه معنی دارند.",
     [HELP_WHERE]: "راهنما در فهرست است، در پایین.",
     [HELP_ADMIN]: "Admin دکمهٔ 🛠️ در پایین فهرست است. PIN معلم را می‌خواهد.",
   },
   rw: {
-    [WHATS_NEW_LINE]: "TW 1.94.17 — Ubufasha busobanura inzego z'ubumenyi 1–4, kandi Ubufasha busomwa mu Cyespanyole.",
+    [WHATS_NEW_LINE]: "TW 1.94.18 — Ubufasha ubu bwerekana icyo inzego z'ubumenyi 1–4 zivuze.",
     [HELP_WHERE]: "Ubufasha buri mu Menyu, hepfo.",
     [HELP_ADMIN]: "Admin ni buto 🛠️ hepfo ya Menyu. Isaba PIN y'umwarimu.",
   },
   ti: {
-    [WHATS_NEW_LINE]: "TW 1.94.17 — ሓገዝ ደረጃታት ክእለት 1–4 ይገልጽ፡ ሓገዝ ድማ ብስጳንኛ ይንበብ።",
+    [WHATS_NEW_LINE]: "TW 1.94.18 — ሓገዝ ሕጂ ትርጉም ደረጃታት ክእለት 1–4 የርኢ።",
     [HELP_WHERE]: "ሓገዝ ኣብ ዝርዝር እዩ፡ ኣብ ታሕቲ።",
     [HELP_ADMIN]: "Admin ናይ 🛠️ መጠወቒ ኣብ ታሕቲ ዝርዝር እዩ። PIN ናይ መምህር ይሓትት።",
   },

@@ -4,6 +4,10 @@ export type HelpBit = { title: string; body: string };
 
 export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti" | "simple", Record<string, HelpBit>> = {
   uk: {
+    "welcome-levels": {
+      title: "Рівні вміння 1–4",
+      body: "Рівні вміння: 1 = Beginning, потрібен показ. 2 = Developing, може з перевіркою. 3 = Proficient, сам, норма є. 4 = Distinguished, може навчити товариша.",
+    },
     "welcome-what": {
       title: "Що таке TechWorks?",
       body: "TechWorks — клас технологій містера Куліберта. Це майстерня, яку видно всім. Ти працюєш у малій команді. Ти вчишся міряти, різати, обробляти і ділитися. Золото (XP) — за вміння. Це головне. Гроші класу — гра за роботу. Це не оцінка. На стіні — шкільні імена, не паспортні. Так безпечно дивитись разом.",
@@ -114,6 +118,10 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
     },
   },
   ru: {
+    "welcome-levels": {
+      title: "Уровни умения 1–4",
+      body: "Уровни умения: 1 = Beginning, нужен показ. 2 = Developing, может с проверкой. 3 = Proficient, сам, норма есть. 4 = Distinguished, может научить товарища.",
+    },
     "welcome-what": {
       title: "Что такое TechWorks?",
       body: "TechWorks — класс технологий мистера Кулиберта. Это мастерская, которую видно всем. Ты работаешь в маленькой команде. Ты учишься мерить, резать, обрабатывать и делиться. Золото (XP) — за умение. Это главное. Деньги класса — игра за работу. Это не оценка. На стене — школьные имена, не паспортные. Так безопасно смотреть вместе.",
@@ -224,6 +232,10 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
     },
   },
   es: {
+    "welcome-levels": {
+      title: "Niveles de destreza 1–4",
+      body: "Niveles de destreza: 1 = Beginning, necesita una muestra. 2 = Developing, puede hacerlo con una revisión. 3 = Proficient, lo hace solo y cumple la meta. 4 = Distinguished, puede enseñar a un compañero.",
+    },
     "welcome-what": {
       title: "¿Qué es TechWorks?",
       body: "TechWorks es la clase de taller del Sr. Kulibert. Trabajas en un equipo pequeño. Practicas medir, cortar, acabar y compartir. El oro (XP) significa que mejoraste. Eso es lo importante. El dinero de clase es un juego. No es tu nota. Los nombres de la pared son alias, no nombres legales.",
@@ -334,6 +346,10 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
     },
   },
   ar: {
+    "welcome-levels": {
+      title: "مستويات المهارة 1–4",
+      body: "مستويات المهارة: 1 = Beginning، تحتاج عرضاً. 2 = Developing، تستطيع مع مراجعة. 3 = Proficient، وحدك وتبلغ المعيار. 4 = Distinguished، تستطيع أن تعلّم زميلاً.",
+    },
     "welcome-what": {
       title: "ما هو TechWorks؟",
       body: "TechWorks صف الورشة للسيد Kulibert. تعمل مع فريق صغير. تتدرب على القياس والقص والإنهاء والمشاركة. الذهب (XP) يعني أنك تحسنت. هذا هو المهم. نقود الصف لعبة، وليست درجتك. الأسماء على الحائط أسماء ورشة، لا أسماء قانونية.",
@@ -344,6 +360,10 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
     },
   },
   "fa-AF": {
+    "welcome-levels": {
+      title: "سطح‌های مهارت ۱ تا ۴",
+      body: "سطح‌های مهارت: 1 = Beginning، به نمایش نیاز داری. 2 = Developing، با یک بررسی می‌توانی. 3 = Proficient، تنها به معیار می‌رسی. 4 = Distinguished، می‌توانی به هم‌گروهی بیاموزی.",
+    },
     "welcome-what": {
       title: "TechWorks چیست؟",
       body: "TechWorks صنف کارگاه آقای Kulibert است. با یک گروه کوچک کار می‌کنی. اندازه، برش، پرداخت و شریک شدن را تمرین می‌کنی. طلا (XP) یعنی بهتر شدی. این مهم است. پول صنف یک بازی است، نمره نیست. نام‌ها روی دیوار نام کارگاه‌اند، نه نام قانونی.",
@@ -354,6 +374,10 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
     },
   },
   rw: {
+    "welcome-levels": {
+      title: "Inzego z'ubumenyi 1–4",
+      body: "Inzego z'ubumenyi: 1 = Beginning, ukeneye kwerekwa. 2 = Developing, ushobora n'ubugenzuzi. 3 = Proficient, wenyine ugeraho. 4 = Distinguished, ushobora kwigisha mugenzi.",
+    },
     "welcome-what": {
       title: "TechWorks ni iki?",
       body: "TechWorks ni ishuri ry'umwuga rya Bwana Kulibert. Ukora mu itsinda rito. Wigira gupima, gucapa, kurangiza, no gusangira. Zahabu (XP) bivuze ko warushijeho. Ibyo ni byo ngombwa. Amafaranga y'ishuri ni umukino, si amanota. Amazina ku kibaho ni amazina y'ubwuga, si amazina y'umurage.",
@@ -364,6 +388,10 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
     },
   },
   ti: {
+    "welcome-levels": {
+      title: "ደረጃታት ክእለት 1–4",
+      body: "ደረጃታት ክእለት፡ 1 = Beginning፣ ምርኢት የድልየካ። 2 = Developing፣ ምስ ምርመራ ትኽእል። 3 = Proficient፣ ብገዛእ ርእስኻ ትበጽሕ። 4 = Distinguished፣ ንጓሓይ ትምህር።",
+    },
     "welcome-what": {
       title: "TechWorks እንታይ እዩ?",
       body: "TechWorks ናይ ክፍሊ ስራሕ ኣቶ Kulibert እዩ. ምስ ንእሽቶ ጉጅለ ትሰርሕ። ምልካዕ፡ ምቑራጽ፡ ምዝዛም፡ ምክፋል ትለማመድ። ወርቂ (XP) ማለት ረቢሕካ ማለት እዩ። እዚ እዩ ነገር። ገንዘብ ክፍሊ ጸወታ እዩ፡ ውጽኢት ኣይኮነን። ኣብ መንደቕ ዘለዉ ኣስማት ናይ ዕደጋ እዮም፡ ሕጋዊ ኣስማት ኣይኮኑን።",
@@ -374,6 +402,10 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
     },
   },
   simple: {
+    "welcome-levels": {
+      title: "Skill levels 1 to 4",
+      body: "Skill levels: 1 = Beginning, you need a demo. 2 = Developing, you can do it with a check. 3 = Proficient, you can do it alone. 4 = Distinguished, you can teach a friend.",
+    },
     "welcome-what": {
       title: "What is this class?",
       body: "This is shop class. You work with a small crew. Gold XP means you got better. Class cash is a game, not your grade. Names on the wall are shop names.",

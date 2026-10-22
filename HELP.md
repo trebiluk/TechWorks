@@ -8,6 +8,10 @@ Search in the app Help panel. Categories below.
 
 ## Welcome
 
+### Skill levels 1–4
+
+Skill levels: 1 = Beginning, needs a demo. 2 = Developing, can do it with a check-in. 3 = Proficient, on your own, meets the standard. 4 = Distinguished, can teach a crewmate.
+
 ### What is TechWorks?
 
 TechWorks is Mr. Kulibert’s shop class. You work in a small crew. You practice real skills: measure, cut, finish, share. Gold XP means you got better at the work. That is the point. Class cash is a perk game. It is not your grade. Names on the wall are shop aliases, not legal names.
