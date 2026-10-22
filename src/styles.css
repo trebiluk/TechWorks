@@ -2367,9 +2367,6 @@ html[data-phone="on"] .board-root textarea,
 html[data-phone="on"] .board-root select {
   font-size: 16px;
 }
-html[data-phone="on"] .lang-chip {
-  display: none;
-}
 html[data-phone="on"] header.desk-chrome .tw-hud-row {
   gap: 0.1rem;
 }
