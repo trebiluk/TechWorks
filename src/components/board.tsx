@@ -233,6 +233,7 @@ export function Board() {
     const watch = () => {
       const box = document.getElementById("kb-drawer");
       if (box) obs.observe(box, { subtree: true, childList: true, characterData: true });
+      paint();
     };
     watch();
     const boot = new MutationObserver(watch);
