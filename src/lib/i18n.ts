@@ -2,6 +2,7 @@ import { CHROME_RU, CHROME_UK } from "../data/i18n-chrome.ts";
 import { EXTRA_AR, EXTRA_ES, EXTRA_FA, EXTRA_RW, EXTRA_TI, SIMPLE, WALL_AR, WALL_ES, WALL_FA, WALL_RU, WALL_RW, WALL_TI, WALL_UK } from "../data/i18n-extra.ts";
 import { GLOSS_I18N } from "../data/i18n-glossary.ts";
 import { HELP_I18N } from "../data/i18n-help.ts";
+import { WHATS_NEW_LINE } from "../data/changelog.ts";
 import { ensureLangFont, packOf, storedFont } from "./fonts.ts";
 
 export const LANG_KEY = "techworks-lang";
@@ -45,15 +46,49 @@ const SHARED_KEY: Record<string, string> = {
   Language: "language",
 };
 
+const HELP_WHERE = "Help is in the Menu, at the bottom.";
+
+/** Machine drafts. rw, ti, and Dari (fa-AF) need a native check. */
+const LINE_I18N: Record<Exclude<LangId, "en">, Record<string, string>> = {
+  uk: {
+    [WHATS_NEW_LINE]: "TW 1.94.15 — Меню → Допомога знову відкриває Допомогу. Вміння: поставте рівень 1–4 кожному учню.",
+    [HELP_WHERE]: "Допомога є в Меню, внизу.",
+  },
+  ru: {
+    [WHATS_NEW_LINE]: "TW 1.94.15 — Меню → Справка снова открывает Справку. Умения: поставьте уровень 1–4 каждому ученику.",
+    [HELP_WHERE]: "Справка в Меню, внизу.",
+  },
+  es: {
+    [WHATS_NEW_LINE]: "TW 1.94.15 — Menú → Ayuda abre Ayuda otra vez. Destrezas: pon un nivel 1–4 a cada alumno.",
+    [HELP_WHERE]: "La Ayuda está en el Menú, abajo.",
+  },
+  ar: {
+    [WHATS_NEW_LINE]: "TW 1.94.15 — القائمة → المساعدة تفتح المساعدة من جديد. المهارات: حدّد مستوى 1–4 لكل طالب.",
+    [HELP_WHERE]: "المساعدة في القائمة، في الأسفل.",
+  },
+  "fa-AF": {
+    [WHATS_NEW_LINE]: "TW 1.94.15 — فهرست → راهنما دوباره راهنما را باز می‌کند. مهارت‌ها: برای هر شاگرد سطح ۱ تا ۴ بگذار.",
+    [HELP_WHERE]: "راهنما در فهرست است، در پایین.",
+  },
+  rw: {
+    [WHATS_NEW_LINE]: "TW 1.94.15 — Menyu → Ubufasha busubura gufungura Ubufasha. Ubumenyi: shyira urwego 1–4 kuri buri munyeshuri.",
+    [HELP_WHERE]: "Ubufasha buri mu Menyu, hepfo.",
+  },
+  ti: {
+    [WHATS_NEW_LINE]: "TW 1.94.15 — ዝርዝር → ሓገዝ ደጊሙ ሓገዝ ይኸፍት። ክእለታት፡ ነፍሲ ወከፍ ተማሃራይ ደረጃ 1–4 ኣቐምጥ።",
+    [HELP_WHERE]: "ሓገዝ ኣብ ዝርዝር እዩ፡ ኣብ ታሕቲ።",
+  },
+};
+
 const DICT: Record<LangId, Record<string, string>> = {
   en: {},
-  uk: { ...WALL_UK, ...CHROME_UK },
-  ru: { ...WALL_RU, ...CHROME_RU },
-  es: { ...EXTRA_ES, ...WALL_ES },
-  ar: { ...EXTRA_AR, ...WALL_AR },
-  "fa-AF": { ...EXTRA_FA, ...WALL_FA },
-  rw: { ...EXTRA_RW, ...WALL_RW },
-  ti: { ...EXTRA_TI, ...WALL_TI },
+  uk: { ...WALL_UK, ...CHROME_UK, ...LINE_I18N.uk },
+  ru: { ...WALL_RU, ...CHROME_RU, ...LINE_I18N.ru },
+  es: { ...EXTRA_ES, ...WALL_ES, ...LINE_I18N.es },
+  ar: { ...EXTRA_AR, ...WALL_AR, ...LINE_I18N.ar },
+  "fa-AF": { ...EXTRA_FA, ...WALL_FA, ...LINE_I18N["fa-AF"] },
+  rw: { ...EXTRA_RW, ...WALL_RW, ...LINE_I18N.rw },
+  ti: { ...EXTRA_TI, ...WALL_TI, ...LINE_I18N.ti },
 };
 
 function normalize(raw: string | null | undefined): HubLang | null {

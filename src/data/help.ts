@@ -122,7 +122,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Who this Help is for",
     tags: ["help", "family", "crew", "teacher", "sub", "student", "search"],
     wall: true,
-    body: "Students: Welcome and Wall. Crew leads: Roles → Crew lead. Families: tap an alias → Family, or type Family in the search box. Teacher: Start, Teach, Deck, Score, Admin. Sub: do not open this app. Type a word in the search box. Teachers can Download help file for the whole book.",
+    body: "Students: Welcome and Wall. Crew leads: Roles → Crew lead. Families: tap an alias → Family, or type Family in the search box. Teacher: Start, Teach, Deck, Score, Admin. Sub: do not open this app. Type a word in the search box. Teachers can Download help file for the whole book. Help is in the Menu, at the bottom.",
   },
   {
     id: "wall-read",

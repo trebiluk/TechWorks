@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.94.14. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.94.15. -->
 
 # TechWorks changelog
 
-App version **1.94.14**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.94.15**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.94.15 — 2026-10-21
+
+- TW 1.94.15 — Menu → Help opens Help again. Skills: set a level 1–4 for each student.
 
 ## 1.94.14 — 2026-10-21
 

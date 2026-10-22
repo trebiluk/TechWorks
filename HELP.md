@@ -26,7 +26,7 @@ You: build, clean, help a crewmate. Crew lead: scores the team 3 / 2 / 1 for thi
 
 ### Who this Help is for
 
-Students: Welcome and Wall. Crew leads: Roles → Crew lead. Families: tap an alias → Family, or type Family in the search box. Teacher: Start, Teach, Deck, Score, Admin. Sub: do not open this app. Type a word in the search box. Teachers can Download help file for the whole book.
+Students: Welcome and Wall. Crew leads: Roles → Crew lead. Families: tap an alias → Family, or type Family in the search box. Teacher: Start, Teach, Deck, Score, Admin. Sub: do not open this app. Type a word in the search box. Teachers can Download help file for the whole book. Help is in the Menu, at the bottom.
 
 ## Wall
 
