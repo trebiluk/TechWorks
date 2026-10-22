@@ -60,6 +60,7 @@ const RosterWall = lazy(() => import("@/components/roster-wall").then((m) => ({ 
 const ScoreDesk = lazy(() => import("@/components/score").then((m) => ({ default: m.ScoreDesk })));
 const CrewLead = lazy(() => import("@/components/crew-lead").then((m) => ({ default: m.CrewLead })));
 const SkillsBoard = lazy(() => import("@/components/learning-center").then((m) => ({ default: m.LearningCenter })));
+const SkillTrack = lazy(() => import("@/components/skill-track").then((m) => ({ default: m.SkillTrack })));
 const WalletBoard = lazy(() => import("@/components/wallet").then((m) => ({ default: m.WalletBoard })));
 const LuckyBoard = lazy(() => import("@/components/lucky-board").then((m) => ({ default: m.LuckyBoard })));
 const Dossier = lazy(() => import("@/components/dossier").then((m) => ({ default: m.Dossier })));
@@ -80,7 +81,7 @@ const DeckBoard = lazy(() => import("@/components/deck-board").then((m) => ({ de
 
 const RANK_KEY = "techworks-rank-board";
 
-type View = "crew" | "score" | "overview" | "week" | "year" | "data" | "wallet" | "lucky" | "skills" | "store" | "prints" | "crib" | "portal" | "grades" | "studyhall" | "hallwall" | "club" | "clubwall" | "projects" | "admin" | "teach" | "polls" | "deck" | "roster" | "shop" | "mycard";
+type View = "crew" | "score" | "overview" | "week" | "year" | "data" | "wallet" | "lucky" | "skills" | "store" | "prints" | "crib" | "portal" | "grades" | "studyhall" | "hallwall" | "club" | "clubwall" | "projects" | "admin" | "teach" | "polls" | "deck" | "roster" | "shop" | "mycard" | "track";
 type DeskPanel = "score" | "schedule" | "config";
 
 function gearHint(view: string): string {
@@ -207,7 +208,7 @@ export function Board() {
       setView("overview");
       return;
     }
-    const teacher = ["admin", "score", "grades", "projects", "store", "studyhall", "club", "crew", "lucky", "roster", "data", "shop"].includes(next);
+    const teacher = ["admin", "score", "grades", "projects", "store", "studyhall", "club", "crew", "lucky", "roster", "data", "shop", "track"].includes(next);
     if (teacher && !unlocked && !(next === "crew" && crewOn)) {
       askPin(next);
       return;
@@ -764,6 +765,11 @@ export function Board() {
                     <button type="button" onClick={() => go("shop")} className="tw-tap min-h-11 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">{t("Admin")}</button>
                   </div>
                 ) : null}
+                {unlocked ? (
+                  <button type="button" data-skill-track-open onClick={() => go("track")} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-left text-sm font-semibold">
+                    {t("Skills")}
+                  </button>
+                ) : null}
                 <button
                   ref={settingsRow}
                   type="button"
@@ -949,7 +955,9 @@ export function Board() {
       ) : null}
       <CleanupStage file={wallFile} unlocked={unlocked} onChange={commitDesk} off={unlocked && view === "admin"} cover={view === "overview" || view === "hallwall"}>
       <Suspense fallback={null}>
-      {view === "roster" && unlocked ? (
+      {view === "track" && unlocked ? (
+        <SkillTrack file={file} />
+      ) : view === "roster" && unlocked ? (
         <RosterWall
           file={wallFile}
           list={list}
