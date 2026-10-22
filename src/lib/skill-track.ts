@@ -62,6 +62,38 @@ export function markOf(book: SkillBook, alias: string, skill: TrackSkill): Skill
   return book.marks.find((m) => m.alias === alias && m.skill === skill) ?? null;
 }
 
+export type SkillTally = {
+  skill: TrackSkill;
+  n1: number;
+  n2: number;
+  n3: number;
+  n4: number;
+  unset: number;
+  atLeast3: number;
+  total: number;
+};
+
+/** Counts for the aliases in this class. Marks for anyone else are ignored. */
+export function classSummary(book: SkillBook, aliases: readonly string[]): SkillTally[] {
+  const names = [...new Set(aliases.map((alias) => alias.trim()).filter(Boolean))];
+  return TRACK_SKILLS.map((skill) => {
+    let n1 = 0;
+    let n2 = 0;
+    let n3 = 0;
+    let n4 = 0;
+    let unset = 0;
+    for (const alias of names) {
+      const level = markOf(book, alias, skill)?.level;
+      if (level === 1) n1 += 1;
+      else if (level === 2) n2 += 1;
+      else if (level === 3) n3 += 1;
+      else if (level === 4) n4 += 1;
+      else unset += 1;
+    }
+    return { skill, n1, n2, n3, n4, unset, atLeast3: n3 + n4, total: names.length };
+  });
+}
+
 function csvCell(value: string): string {
   if (/[",\n]/.test(value)) return `"${value.replaceAll('"', '""')}"`;
   return value;

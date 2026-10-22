@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { bookKey, classIdOf, csvOf, emptyBook, loadBook, markOf, parseBook, saveBook, setLevel, TRACK_SKILLS } from "./skill-track.ts";
+import { bookKey, classIdOf, classSummary, csvOf, emptyBook, loadBook, markOf, parseBook, saveBook, setLevel, TRACK_SKILLS } from "./skill-track.ts";
 
 describe("skill track", () => {
   const book = emptyBook("TechWorks TEST|Q1");
@@ -55,5 +55,25 @@ describe("skill track", () => {
     assert.equal(markOf(loaded, "Vega", "team")?.proof, "photo");
     assert.equal(markOf(loadBook(other, read), "Vega", "team")?.level, 2);
     assert.equal(parseBook("{", id).marks.length, 0);
+  });
+
+  it("counts a skill across the class and skips names not on the list", () => {
+    let next = emptyBook("TechWorks TEST|Q1");
+    next = setLevel(next, "Altair", "measure", 4, "build");
+    next = setLevel(next, "Nova", "measure", 3, "demo");
+    next = setLevel(next, "Volt", "measure", 1, "oral");
+    next = setLevel(next, "Stranger", "measure", 4, "photo");
+    const before = structuredClone(next);
+    const row = classSummary(next, ["Altair", "Nova", "Volt", "Grid"]).find((r) => r.skill === "measure");
+    assert.deepEqual(next, before);
+    assert.equal(row?.n4, 1);
+    assert.equal(row?.n3, 1);
+    assert.equal(row?.n2, 0);
+    assert.equal(row?.n1, 1);
+    assert.equal(row?.unset, 1);
+    assert.equal(row?.atLeast3, 2);
+    assert.equal(row?.total, 4);
+    assert.equal(classSummary(next, ["Altair", "Nova", "Volt", "Grid"]).length, 8);
+    assert.equal(JSON.stringify(row).includes("Stranger"), false);
   });
 });
