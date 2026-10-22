@@ -840,7 +840,6 @@ export function Board() {
                     <button type="button" onClick={() => { setLearnStart("plan"); if (!unlocked) { setPendingLearn("plan"); askPin("skills"); return; } go("skills"); }} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">{t("This hour")}</button>
                     <button type="button" onClick={() => (unlocked ? goDesk() : startTransition(() => setView("mycard")))} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">{unlocked ? t("Score") : t("My card")}</button>
                     <button type="button" onClick={() => go("roster")} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-sm font-semibold">{t("People")}</button>
-                    <button type="button" onClick={() => go("shop")} className="tw-tap min-h-11 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg">{t("Admin")}</button>
                   </div>
                 ) : null}
                 {unlocked ? (
