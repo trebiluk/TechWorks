@@ -4,6 +4,7 @@ import { isLiveStudent } from "@/lib/economy";
 import { aliasWho } from "@/lib/inventory";
 import { useLang } from "@/lib/i18n-hook";
 import {
+  classSummary,
   classIdOf,
   csvOf,
   emptyBook,
@@ -20,7 +21,10 @@ import {
 import { cn } from "@/lib/utils";
 
 const EN: Record<string, string> = {
-  help: "Tap a student, pick a level 1–4 and how you saw it.",
+  help: "Tap a student, pick a level 1–4 and how you saw it. Tap a skill to see who is below 3.",
+  glance: "{name} · {n} at 3+ of {total}",
+  below: "Below 3",
+  bar: "Level",
   export: "Export CSV",
   download: "Download",
   close: "Close",
@@ -43,7 +47,10 @@ const EN: Record<string, string> = {
 
 const COPY: Record<string, Record<string, string>> = {
   simple: {
-    help: "Tap a name. Pick 1, 2, 3, or 4. Say how you saw it.",
+    help: "Tap a name. Pick 1, 2, 3, or 4. Say how you saw it. Tap a skill to see who is under 3.",
+    glance: "{name} · {n} of {total} are 3 or 4",
+    below: "Under 3",
+    bar: "Level",
     export: "Save a list",
     download: "Save file",
     close: "Close",
@@ -56,7 +63,10 @@ const COPY: Record<string, Record<string, string>> = {
     "proof:photo": "Photo",
   },
   uk: {
-    help: "Торкніться учня, оберіть рівень 1–4 і як ви це бачили.",
+    help: "Торкніться учня, оберіть рівень 1–4 і як ви це бачили. Торкніться вміння, щоб побачити, хто нижче 3.",
+    glance: "{name} · {n} на 3+ з {total}",
+    below: "Нижче 3",
+    bar: "Рівень",
     export: "Експорт CSV",
     download: "Завантажити",
     close: "Закрити",
@@ -77,7 +87,10 @@ const COPY: Record<string, Record<string, string>> = {
     "proof:photo": "Фото",
   },
   ru: {
-    help: "Нажмите ученика, выберите уровень 1–4 и как вы это видели.",
+    help: "Нажмите ученика, выберите уровень 1–4 и как вы это видели. Нажмите умение, чтобы увидеть, кто ниже 3.",
+    glance: "{name} · {n} на 3+ из {total}",
+    below: "Ниже 3",
+    bar: "Уровень",
     export: "Экспорт CSV",
     download: "Скачать",
     close: "Закрыть",
@@ -98,7 +111,10 @@ const COPY: Record<string, Record<string, string>> = {
     "proof:photo": "Фото",
   },
   es: {
-    help: "Toca a un alumno, elige un nivel 1–4 y cómo lo viste.",
+    help: "Toca a un alumno, elige un nivel 1–4 y cómo lo viste. Toca una destreza para ver quién está bajo 3.",
+    glance: "{name} · {n} en 3+ de {total}",
+    below: "Bajo 3",
+    bar: "Nivel",
     export: "Exportar CSV",
     download: "Descargar",
     close: "Cerrar",
@@ -119,7 +135,10 @@ const COPY: Record<string, Record<string, string>> = {
     "proof:photo": "Foto",
   },
   ar: {
-    help: "المس طالباً، اختر مستوى 1–4 وكيف رأيته.",
+    help: "المس طالباً، اختر مستوى 1–4 وكيف رأيته. المس مهارة لترى من هو دون 3.",
+    glance: "{name} · {n} عند 3+ من {total}",
+    below: "دون 3",
+    bar: "مستوى",
     export: "تصدير CSV",
     download: "تنزيل",
     close: "إغلاق",
@@ -140,7 +159,10 @@ const COPY: Record<string, Record<string, string>> = {
     "proof:photo": "صورة",
   },
   "fa-AF": {
-    help: "یک شاگرد را بزن، سطح ۱ تا ۴ و طریقهٔ دیدنت را انتخاب کن.",
+    help: "یک شاگرد را بزن، سطح ۱ تا ۴ و طریقهٔ دیدنت را انتخاب کن. یک مهارت را بزن تا ببینی کی زیر ۳ است.",
+    glance: "{name} · {n} در ۳+ از {total}",
+    below: "زیر ۳",
+    bar: "سطح",
     export: "خروجی CSV",
     download: "دانلود",
     close: "بستن",
@@ -161,7 +183,10 @@ const COPY: Record<string, Record<string, string>> = {
     "proof:photo": "عکس",
   },
   rw: {
-    help: "Kanda umunyeshuri, hitamo urwego 1–4 n'uko wabibonye.",
+    help: "Kanda umunyeshuri, hitamo urwego 1–4 n'uko wabibonye. Kanda ubumenyi urebe uri munsi ya 3.",
+    glance: "{name} · {n} kuri 3+ muri {total}",
+    below: "Munsi ya 3",
+    bar: "Urwego",
     export: "Ohereza CSV",
     download: "Kuramo",
     close: "Funga",
@@ -182,7 +207,10 @@ const COPY: Record<string, Record<string, string>> = {
     "proof:photo": "Ifoto",
   },
   ti: {
-    help: "ተማሃራይ ጠውቕ፡ ደረጃ 1–4 ከመይ ከም ርኢኻ ምረጽ።",
+    help: "ተማሃራይ ጠውቕ፡ ደረጃ 1–4 ከመይ ከም ርኢኻ ምረጽ። ክእለት ጠውቕ እቶም ትሕቲ 3 ንምርኣይ።",
+    glance: "{name} · {n} ኣብ 3+ ካብ {total}",
+    below: "ትሕቲ 3",
+    bar: "ደረጃ",
     export: "CSV ኣውጽእ",
     download: "ኣውርድ",
     close: "ዕጸው",
@@ -249,6 +277,7 @@ export function SkillTrack({ file }: { file: EconomyFile }) {
   const aliases = aliasesOf(file);
   const [book, setBook] = useState<SkillBook>(() => emptyBook(classId));
   const [alias, setAlias] = useState("");
+  const [focus, setFocus] = useState<TrackSkill | "">("");
   const [csvOpen, setCsvOpen] = useState(false);
   const [pending, setPending] = useState<Partial<Record<TrackSkill, TrackProof>>>({});
 
@@ -260,20 +289,27 @@ export function SkillTrack({ file }: { file: EconomyFile }) {
   useEffect(() => {
     setBook(loadBook(classId, readKey));
     setAlias("");
+    setFocus("");
     setCsvOpen(false);
     setPending({});
   }, [classId]);
 
   useEffect(() => {
-    if (!csvOpen) return;
     function onKey(e: KeyboardEvent) {
       if (e.key !== "Escape") return;
-      e.preventDefault();
-      setCsvOpen(false);
+      if (csvOpen) {
+        e.preventDefault();
+        setCsvOpen(false);
+        return;
+      }
+      if (focus) {
+        e.preventDefault();
+        setFocus("");
+      }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [csvOpen]);
+  }, [csvOpen, focus]);
 
   function commit(next: SkillBook) {
     setBook(next);
@@ -294,17 +330,52 @@ export function SkillTrack({ file }: { file: EconomyFile }) {
   }
 
   const csv = csvOf(book);
+  const summary = classSummary(book, aliases);
+  const shown = focus ? aliases.filter((name) => (markOf(book, name, focus)?.level ?? 0) < 3) : aliases;
+  function glance(skill: TrackSkill, n: number, total: number): string {
+    return say("glance").replaceAll("{name}", say(`skill:${skill}`)).replaceAll("{n}", String(n)).replaceAll("{total}", String(total));
+  }
   const chip = "tw-tap inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl px-3 text-sm font-semibold";
 
   return (
-    <section data-skill-track className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto p-3" aria-label={t("Skills")}>
+    <section data-skill-track className="flex min-h-0 flex-1 flex-col gap-3 overflow-x-hidden overflow-y-auto p-3" aria-label={t("Skills")}>
       <header className="grid gap-1">
         <h1 className="font-display text-2xl font-semibold">{t("Skills")}</h1>
         <p data-skill-help className="max-w-xl text-sm leading-snug text-muted">{say("help")}</p>
       </header>
       {aliases.length ? (
-        <div className="flex flex-wrap gap-2">
-          {aliases.map((name) => (
+        <div className="flex max-w-full flex-wrap gap-2" data-skill-overview>
+          {summary.map((row) => {
+            const counts = [row.n1, row.n2, row.n3, row.n4];
+            return (
+              <button
+                key={row.skill}
+                type="button"
+                data-skill-chip={row.skill}
+                aria-pressed={focus === row.skill}
+                onClick={() => setFocus((cur) => (cur === row.skill ? "" : row.skill))}
+                className={cn(
+                  "tw-tap grid min-h-11 max-w-full gap-1 rounded-xl px-3 py-2 text-start text-sm font-semibold",
+                  focus === row.skill ? "bg-accent text-accent-fg ring-2 ring-fg" : "bg-elevated text-fg",
+                )}
+              >
+                <span>{glance(row.skill, row.atLeast3, row.total)}</span>
+                <span className="flex flex-wrap items-center gap-2 text-xs font-semibold" data-skill-bar={row.skill}>
+                  {counts.map((count, i) => (
+                    <span key={i} data-skill-seg={i + 1}>
+                      {say("bar")} {i + 1} · {count}
+                    </span>
+                  ))}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+      {focus ? <p data-skill-filter className="text-sm font-semibold">{say("below")} · {say(`skill:${focus}`)}</p> : null}
+      {aliases.length ? (
+        <div className="flex max-w-full flex-wrap gap-2">
+          {shown.map((name) => (
             <button
               key={name}
               type="button"
