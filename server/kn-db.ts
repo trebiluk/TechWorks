@@ -25,8 +25,48 @@ export async function ensureKn(event: unknown): Promise<boolean> {
   if (!ready) {
     ready = (async () => {
       for (const sql of SCHEMA) await db.prepare(sql).bind().run();
+      await applySchema3(db);
     })();
   }
   await ready;
   return true;
+}
+
+/** Lets a local proof run ensureKn again in the same process. */
+export function resetKnReady() {
+  ready = null;
+}
+
+const SCHEMA3 = [
+  "ALTER TABLE kn_staff ADD COLUMN work_email_norm TEXT",
+  "ALTER TABLE kn_staff ADD COLUMN scope TEXT",
+  "ALTER TABLE kn_session ADD COLUMN stepup_at INTEGER",
+  "CREATE UNIQUE INDEX IF NOT EXISTS kn_staff_work_email ON kn_staff(work_email_norm)",
+  "CREATE TABLE IF NOT EXISTS kn_cred (cred_id TEXT PRIMARY KEY, uid TEXT NOT NULL, public_key TEXT NOT NULL, counter INTEGER NOT NULL DEFAULT 0, transports TEXT, created_at INTEGER NOT NULL)",
+  "CREATE TABLE IF NOT EXISTS kn_chal (h TEXT PRIMARY KEY, kind TEXT NOT NULL, uid TEXT, exp INTEGER NOT NULL)",
+  "CREATE TABLE IF NOT EXISTS kn_rcode (h TEXT PRIMARY KEY, uid TEXT NOT NULL, created_at INTEGER NOT NULL, used_at INTEGER)",
+  "CREATE INDEX IF NOT EXISTS kn_cred_uid ON kn_cred(uid)",
+  "CREATE INDEX IF NOT EXISTS kn_rcode_uid ON kn_rcode(uid)",
+];
+
+type Sql = NonNullable<ReturnType<typeof knDb>>;
+
+function duplicateColumn(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  return /duplicate column/i.test(msg);
+}
+
+async function applySchema3(db: Sql) {
+  const row = await db.prepare("SELECT v FROM kn_meta WHERE k='schema'").bind().first<{ v: string }>();
+  if (row && Number(row.v) >= 3) return;
+  for (const sql of SCHEMA3) {
+    const stmt = db.prepare(sql).bind();
+    try {
+      if (typeof db.batch === "function") await db.batch([stmt]);
+      else await stmt.run();
+    } catch (err) {
+      if (!duplicateColumn(err)) throw err;
+    }
+  }
+  await db.prepare("INSERT OR REPLACE INTO kn_meta (k,v) VALUES ('schema','3')").bind().run();
 }

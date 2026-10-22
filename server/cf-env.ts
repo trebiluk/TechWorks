@@ -79,11 +79,17 @@ export function deskKv(event: unknown): Kv | null {
   return namedKv(envOf(event));
 }
 
-export function knDb(event: unknown): { prepare: (sql: string) => { bind: (...args: unknown[]) => { first: <T>() => Promise<T | null>; all: <T>() => Promise<{ results?: T[] }>; run: () => Promise<unknown> } } } | null {
+export function knDb(event: unknown): {
+  prepare: (sql: string) => { bind: (...args: unknown[]) => { first: <T>() => Promise<T | null>; all: <T>() => Promise<{ results?: T[] }>; run: () => Promise<unknown> } };
+  batch?: (stmts: unknown[]) => Promise<unknown>;
+} | null {
   const env = envOf(event);
   const db = env?.KN_DB;
   if (db && typeof db === "object" && typeof (db as { prepare?: unknown }).prepare === "function") {
-    return db as { prepare: (sql: string) => { bind: (...args: unknown[]) => { first: <T>() => Promise<T | null>; all: <T>() => Promise<{ results?: T[] }>; run: () => Promise<unknown> } } };
+    return db as {
+      prepare: (sql: string) => { bind: (...args: unknown[]) => { first: <T>() => Promise<T | null>; all: <T>() => Promise<{ results?: T[] }>; run: () => Promise<unknown> } };
+      batch?: (stmts: unknown[]) => Promise<unknown>;
+    };
   }
   return null;
 }
