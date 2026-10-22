@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Lock, Unlock } from "lucide-react";
 import { CREW_PIN, lock, pinReady, savePin, unlockKind, type UnlockKind } from "@/lib/pin";
@@ -60,6 +60,10 @@ export function PinPad({
   want?: "teacher" | "crew";
 }) {
   const ready = pinReady();
+  const opener = useRef<HTMLElement | null>(null);
+  if (opener.current == null && typeof document !== "undefined" && document.activeElement instanceof HTMLElement) {
+    opener.current = document.activeElement;
+  }
   const [code, setCode] = useState("");
   const [next, setNext] = useState("");
   const [err, setErr] = useState("");
@@ -97,6 +101,18 @@ export function PinPad({
     if (kind) onUnlock(kind);
     onClose();
   }
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key !== "Escape") return;
+      e.preventDefault();
+      e.stopPropagation();
+      onClose();
+      opener.current?.focus();
+    }
+    document.addEventListener("keydown", onKey, true);
+    return () => document.removeEventListener("keydown", onKey, true);
+  }, [onClose]);
 
   const pad = (
     <div className="tw-scrim fixed inset-0 z-[200] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Desk PIN">
