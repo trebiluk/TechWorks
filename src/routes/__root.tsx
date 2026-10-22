@@ -1,6 +1,7 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { APP_VERSION, VERSION_LABEL } from "@/lib/version";
+import { WHATS_NEW_LINE } from "@/data/changelog";
 import appCss from "../styles.css?url";
 import twCss from "../styles.css?inline";
 
@@ -63,7 +64,7 @@ export const Route = createRootRoute({
         <HeadContent />
         <script defer src="https://apps.kulibert.net/shared/kulibert-prefs.js"></script>
         <script defer src="https://apps.kulibert.net/shared/kulibert-i18n.js"></script>
-        <script defer src="https://apps.kulibert.net/shared/kulibert-bar.js" data-app="techworks" data-version={`TW ${APP_VERSION}`} data-menu=".tw-edge-pocket-chip" />
+        <script defer src="https://apps.kulibert.net/shared/kulibert-bar.js" data-app="techworks" data-version={`TW ${APP_VERSION}`} data-whats-new={WHATS_NEW_LINE} data-menu=".tw-edge-pocket-chip" />
         <style id="tw-css" dangerouslySetInnerHTML={{ __html: twCss }} />
         <script
           dangerouslySetInnerHTML={{

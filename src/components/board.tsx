@@ -50,6 +50,7 @@ import { useShopClock } from "@/lib/use-clock";
 import { studentScreen } from "@/lib/offer";
 import { clubPulse, loadClub } from "@/lib/club";
 import { lockView } from "@/lib/lock-view";
+import { WHATS_NEW_LINE } from "@/data/changelog";
 import { cn } from "@/lib/utils";
 import { HOUSE_BERTY, HOUSE_MRK, houseHits } from "@/lib/house";
 import type { NextJob } from "@/lib/workflow";
@@ -134,7 +135,7 @@ function hideHubDrawer() {
 
 export function Board() {
   const seed = snapshot as unknown as EconomyFile;
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const settingsRow = useRef<HTMLButtonElement>(null);
   const settingsClose = useRef<HTMLButtonElement>(null);
   const [hubLangOpen, setHubLangOpen] = useState(false);
@@ -219,6 +220,28 @@ export function Board() {
       document.removeEventListener("keydown", onKey, true);
     };
   }, [helpOpen]);
+  const whatsLine = t(WHATS_NEW_LINE);
+  useEffect(() => {
+    const script = document.querySelector("script[src*='kulibert-bar.js']");
+    if (script) script.setAttribute("data-whats-new", whatsLine);
+    const paint = () => {
+      const node = document.querySelector(".kb-drawer-line");
+      if (node && node.textContent !== whatsLine) node.textContent = whatsLine;
+    };
+    paint();
+    const obs = new MutationObserver(paint);
+    const watch = () => {
+      const box = document.getElementById("kb-drawer");
+      if (box) obs.observe(box, { subtree: true, childList: true, characterData: true });
+    };
+    watch();
+    const boot = new MutationObserver(watch);
+    boot.observe(document.body, { childList: true });
+    return () => {
+      obs.disconnect();
+      boot.disconnect();
+    };
+  }, [whatsLine, lang]);
   const [describeOn, setDescribeOn] = useState(false);
   const [query, setQuery] = useState("");
   const [flash, setFlash] = useState<{ msg: string; tone?: "ok" | "warn" | "loss" } | null>(null);
@@ -944,7 +967,7 @@ export function Board() {
                 <LangChip />
                 {verChip}
                 <p className="px-1 text-[11px] font-bold uppercase tracking-wide text-gold">{t("What's new")}</p>
-                <p className="px-1 text-xs leading-snug text-muted">{t("TW 1.94.14 — Skills shows the whole class at a glance.")}</p>
+                <p className="px-1 text-xs leading-snug text-muted">{whatsLine}</p>
                 </div>
               </EdgePocket>
               {showBack ? (
