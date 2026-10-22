@@ -1,9 +1,13 @@
 import assert from "node:assert/strict";
 import { describe, it, beforeEach, afterEach } from "node:test";
 import { totpAt, totpDecision, throttleHit } from "../../server/kn-totp.ts";
-import { hkdfReady, hmacText, resetKnKeys, sessionKey, kidSessionKey } from "../../server/kn-keys.ts";
-import { staffExpiry, STAFF_MAX_MS } from "../../server/kn-session.ts";
+import { hkdfReady, hmacText, resetKnKeys, sessionKey, kidSessionKey, emailKey } from "../../server/kn-keys.ts";
+import { staffExpiry, STAFF_MAX_MS, markStepup } from "../../server/kn-session.ts";
 import { mintSession, readSession } from "../../server/who-session.ts";
+import { knVar, mailer } from "../../server/cf-env.ts";
+import { chargeThrottle } from "../../server/kn-throttle.ts";
+import { saveChallenge, takeChallenge } from "../../server/kn-challenge.ts";
+import { resetKnReady } from "../../server/kn-db.ts";
 
 const TEST_KEY = Buffer.alloc(32, 7).toString("base64");
 
@@ -50,5 +54,116 @@ describe("staff crypto", () => {
     assert.equal(totpDecision(9, 10, true), "ok");
     assert.equal(throttleHit(5).locked, true);
     assert.equal(throttleHit(4).locked, false);
+  });
+
+  it("derives an email key instead of a TOTP key", async () => {
+    const email = await emailKey({});
+    const session = await sessionKey({});
+    assert.ok(email && session);
+    assert.notEqual(email, session);
+  });
+
+  it("reads the recovery-email blocklist default and no mailer", () => {
+    delete process.env.KN_RECOVERY_EMAIL_BLOCKLIST;
+    assert.equal(knVar({}, "KN_RECOVERY_EMAIL_BLOCKLIST", "solvayschools.org"), "solvayschools.org");
+    assert.equal(mailer({}), null);
+  });
+});
+
+function memDb() {
+  const throttle = new Map<string, { n: number; exp: number }>();
+  const chal = new Map<string, { kind: string; uid: string; exp: number }>();
+  const meta = new Map<string, string>();
+  const session = new Map<string, { stepup_at: number }>();
+  const db = {
+    throttle,
+    chal,
+    session,
+    prepare(sql: string) {
+      return {
+        bind(...args: unknown[]) {
+          return {
+            async first() {
+              if (sql.includes("kn_meta")) {
+                const v = meta.get("schema");
+                return v === undefined ? null : { v };
+              }
+              if (sql.includes("kn_throttle")) return throttle.get(String(args[0])) ?? null;
+              if (sql.includes("kn_chal") && sql.startsWith("SELECT")) return chal.get(String(args[0])) ?? null;
+              return null;
+            },
+            async all() {
+              return { results: [] };
+            },
+            async run() {
+              if (sql.includes("kn_meta") && sql.includes("INSERT")) meta.set("schema", "3");
+              if (sql.includes("kn_throttle") && sql.includes("INSERT")) {
+                throttle.set(String(args[0]), { n: Number(args[1]), exp: Number(args[2]) });
+              }
+              if (sql.includes("kn_chal") && sql.includes("INSERT")) {
+                chal.set(String(args[0]), { kind: String(args[1]), uid: String(args[2]), exp: Number(args[3]) });
+              }
+              if (sql.startsWith("DELETE") && sql.includes("kn_chal")) chal.delete(String(args[0]));
+              if (sql.startsWith("UPDATE") && sql.includes("kn_session")) {
+                session.set(String(args[1]), { stepup_at: Number(args[0]) });
+              }
+            },
+          };
+        },
+      };
+    },
+    async batch(stmts: Array<{ run: () => Promise<unknown> }>) {
+      for (const stmt of stmts) await stmt.run();
+    },
+  };
+  return db;
+}
+
+describe("staff library", () => {
+  beforeEach(() => {
+    process.env.KN_AUTH_KEY = TEST_KEY;
+    resetKnKeys();
+    resetKnReady();
+  });
+  afterEach(() => {
+    delete process.env.KN_AUTH_KEY;
+    resetKnKeys();
+    resetKnReady();
+  });
+
+  it("slows the 6th try for one target and never stores the IP", async () => {
+    const db = memDb();
+    const event = {
+      context: { env: { KN_DB: db } },
+      req: { headers: new Headers({ "cf-connecting-ip": "198.51.100.20" }) },
+    };
+    for (let i = 0; i < 5; i++) assert.equal(await chargeThrottle(event, "demo", 5, 60_000), "ok");
+    assert.equal(await chargeThrottle(event, "demo", 5, 60_000), "slow");
+    const keys = [...db.throttle.keys()];
+    assert.equal(keys.some((k) => k.includes("198.51.100")), false);
+    assert.equal(keys.some((k) => k.startsWith("th:ip:")), true);
+  });
+
+  it("stores a challenge as an HMAC and spends it once", async () => {
+    const db = memDb();
+    const event = { context: { env: { KN_DB: db } } };
+    const raw = "challenge-not-stored";
+    await saveChallenge(event, "login", raw, 60_000, "staff-1");
+    const stored = [...db.chal.keys()][0] ?? "";
+    assert.notEqual(stored, raw);
+    assert.equal(stored.includes(raw), false);
+    const taken = await takeChallenge(event, "login", raw);
+    assert.equal(taken.ok, true);
+    if (taken.ok) assert.equal(taken.uid, "staff-1");
+    assert.equal((await takeChallenge(event, "login", raw)).ok, false);
+  });
+
+  it("stamps step-up time on the session hash, not a raw token", async () => {
+    const db = memDb();
+    const event = { context: { env: { KN_DB: db } } };
+    await markStepup(event, "session-hmac");
+    const row = db.session.get("session-hmac");
+    assert.ok(row && row.stepup_at > 0);
+    assert.notEqual(String(row?.stepup_at), "session-hmac");
   });
 });

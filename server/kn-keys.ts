@@ -1,3 +1,4 @@
+import { timingSafeEqual as nodeTimingSafeEqual } from "node:crypto";
 import { knSecret } from "./cf-env";
 
 const hmacKeys = new Map<string, CryptoKey>();
@@ -48,7 +49,19 @@ export const kidSessionKey = (event?: unknown) => derive(event, "tw-who-session-
 export const sessionKey = (event?: unknown) => derive(event, "kn-session-v1", "hmac");
 export const recoveryKey = (event?: unknown) => derive(event, "kn-recovery-v1", "hmac");
 export const stepupKey = (event?: unknown) => derive(event, "kn-stepup-v1", "hmac");
-export const totpKey = (event?: unknown) => derive(event, "kn-totp-v1", "aes");
+export const emailKey = (event?: unknown) => derive(event, "kn-email-v1", "aes");
+
+export function safeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  const left = new TextEncoder().encode(a);
+  const right = new TextEncoder().encode(b);
+  if (left.byteLength !== right.byteLength) return false;
+  const subtle = crypto.subtle as SubtleCrypto & {
+    timingSafeEqual?: (x: BufferSource, y: BufferSource) => boolean;
+  };
+  if (typeof subtle.timingSafeEqual === "function") return subtle.timingSafeEqual(left, right);
+  return nodeTimingSafeEqual(left, right);
+}
 
 export async function hmacText(key: CryptoKey, text: string): Promise<string> {
   const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(text));

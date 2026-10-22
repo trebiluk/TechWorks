@@ -1,7 +1,8 @@
-import { timingSafeEqual as nodeTimingSafeEqual } from "node:crypto";
 import { knDb, knSecret } from "./cf-env";
 import { ensureKn } from "./kn-db";
-import { hmacText, recoveryKey } from "./kn-keys";
+import { hmacText, recoveryKey, safeEqual } from "./kn-keys";
+
+export { safeEqual };
 
 const HOUR_MS = 60 * 60 * 1000;
 const IP_MAX = 5;
@@ -21,22 +22,6 @@ type Sql = {
 /** A blank or short value counts as unset. The real token stays out of the repo. */
 export function enrollOpen(event: unknown): boolean {
   return knSecret(event, "KN_ENROLL_TOKEN").length >= 32;
-}
-
-/**
- * Equal length, then a timing-safe compare of the UTF-8 bytes.
- * Workers have `crypto.subtle.timingSafeEqual`. Node 22's test runner does not, so the node twin is the fallback.
- */
-export function safeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  const left = new TextEncoder().encode(a);
-  const right = new TextEncoder().encode(b);
-  if (left.byteLength !== right.byteLength) return false;
-  const subtle = crypto.subtle as SubtleCrypto & {
-    timingSafeEqual?: (x: BufferSource, y: BufferSource) => boolean;
-  };
-  if (typeof subtle.timingSafeEqual === "function") return subtle.timingSafeEqual(left, right);
-  return nodeTimingSafeEqual(left, right);
 }
 
 function dbOf(event: unknown): Sql | null {

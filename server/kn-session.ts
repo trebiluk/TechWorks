@@ -58,6 +58,17 @@ export async function requireStepup(event: H3Event, action: string) {
   if (json.sessionHash !== staff.sessionHash || json.action !== action || !json.exp || json.exp < Date.now()) {
     throw createError({ statusCode: 403, data: { error: "stepup" } });
   }
+  await markStepup(event, staff.sessionHash);
+}
+
+export async function markStepup(event: unknown, sessionHash: string): Promise<void> {
+  const db = knDb(event);
+  if (!db) return;
+  try {
+    await db.prepare("UPDATE kn_session SET stepup_at = ? WHERE h = ?").bind(Date.now(), sessionHash).run();
+  } catch {
+    /* schema 3 column is not on a desk that has not migrated yet */
+  }
 }
 
 export async function newStaffId(): Promise<string> {

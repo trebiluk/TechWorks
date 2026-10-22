@@ -94,6 +94,15 @@ export function knDb(event: unknown): {
   return null;
 }
 
+export function knVar(event: unknown, name: string, fallback = ""): string {
+  return knSecret(event, name) || fallback;
+}
+
+export function mailer(event: unknown): unknown | null {
+  const env = envOf(event);
+  return env?.MAILER ?? null;
+}
+
 export function knSecret(event: unknown, name: string): string {
   const env = envOf(event);
   const fromEnv = env && typeof env[name] === "string" ? String(env[name]) : "";
