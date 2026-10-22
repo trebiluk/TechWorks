@@ -60,7 +60,8 @@ export function HelpPanel({ onClose, wallOnly }: { onClose: () => void; wallOnly
   const { t, lang, article } = useLang();
   const hits = useMemo(() => {
     const list = searchHelp(q, wallOnly);
-    const shown = cat === "All" ? [...list] : list.filter((a) => a.category === cat);
+    const open = Boolean(q.trim()) || cat === "All";
+    const shown = open ? [...list] : list.filter((a) => a.category === cat);
     if (!q.trim() || lang === "en") return shown;
     const n = q.trim().toLowerCase();
     const extra = searchHelp("", wallOnly).filter((a) => {
@@ -69,7 +70,7 @@ export function HelpPanel({ onClose, wallOnly }: { onClose: () => void; wallOnly
       return n.split(/\s+/).every((w) => blob.includes(w));
     });
     const ids = new Set(shown.map((a) => a.id));
-    for (const a of extra) if (!ids.has(a.id) && (cat === "All" || a.category === cat)) shown.push(a);
+    for (const a of extra) if (!ids.has(a.id) && (open || a.category === cat)) shown.push(a);
     return shown;
   }, [q, cat, wallOnly, lang, article]);
   const cats = wallOnly ? ["All", "Welcome", "Wall"] : ["All", ...HELP_CATEGORIES];
