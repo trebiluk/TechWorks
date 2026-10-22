@@ -506,6 +506,14 @@ export const HELP_ARTICLES: HelpArticle[] = [
     body: `The floating chip is v${APP_VERSION}. Same string as About, Help, and the changelog header. Product name TECHWORKS™. Workshop zips labeled 1.0 or 2.1.0 are not live.`,
   },
   {
+    id: "troubleshoot",
+    category: "Start",
+    title: "Troubleshooting",
+    tags: ["troubleshoot", "troubleshooting", "reload", "update", "blank", "stuck", "dossier", "report"],
+    wall: true,
+    body: "After an update, an open tab may reload once by itself. That's normal. Your marks are saved.",
+  },
+  {
     id: "grades",
     category: "Grades",
     title: "Parent-facing grades",

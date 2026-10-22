@@ -114,6 +114,10 @@ Bottom dock: Dash · Learn · Crew · Rosters · Admin (PIN on the last three). 
 
 The floating chip is v1.92.72. Same string as About, Help, and the changelog header. Product name TECHWORKS™. Workshop zips labeled 1.0 or 2.1.0 are not live.
 
+### Troubleshooting
+
+After an update, an open tab may reload once by itself. That's normal. Your marks are saved.
+
 ### Describe mode / tips
 
 Lightbulb in the top bar, or Settings → Describe mode. When on, a strip under the header names the screen, why it exists, a tip, and links (SchoolTool, lunch, Drive, Help). Hidden when off so the projector stays clean.

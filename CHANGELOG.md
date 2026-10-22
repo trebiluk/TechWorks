@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.94.19. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.94.20. -->
 
 # TechWorks changelog
 
-App version **1.94.19**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.94.20**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.94.20 — 2026-10-22
+
+- TW 1.94.20 — Reports and dossiers reload on their own after an update.
 
 ## 1.94.19 — 2026-10-22
 

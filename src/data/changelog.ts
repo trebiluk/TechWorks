@@ -3,15 +3,19 @@ import { APP_VERSION } from "@/lib/version";
 export { APP_VERSION };
 
 /** Newest What's new line. The Hub drawer and the TechWorks menu share this string. */
-export const WHATS_NEW_LINE = "TW 1.94.19 — More Help reads in Arabic, Dari, Kinyarwanda, Tigrinya and Simple.";
+export const WHATS_NEW_LINE = "TW 1.94.20 — Reports and dossiers reload on their own after an update.";
 
 export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
-## 1.94.19 — 2026-10-22
+## 1.94.20 — 2026-10-22
 
 - ${WHATS_NEW_LINE}
+
+## 1.94.19 — 2026-10-22
+
+- TW 1.94.19 — More Help reads in Arabic, Dari, Kinyarwanda, Tigrinya and Simple.
 
 ## 1.94.18 — 2026-10-22
 

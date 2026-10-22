@@ -42,3 +42,18 @@ export function clearChunkReload() {
     /* */
   }
 }
+
+/** One reload when Vite cannot preload a chunk that a publish just replaced. */
+export function installChunkRecovery() {
+  if (typeof window === "undefined") return;
+  window.addEventListener("vite:preloadError", (e) => {
+    e.preventDefault();
+    try {
+      if (sessionStorage.getItem("tw-chunk-reload") === "1") return;
+      sessionStorage.setItem("tw-chunk-reload", "1");
+    } catch {
+      /* */
+    }
+    hardReload();
+  });
+}

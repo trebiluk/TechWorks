@@ -116,6 +116,10 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
       title: "Англійська, українська, російська",
       body: "Глобус біля знака питання. Ця чверть: англійська, українська, російська. Обери мову. Допомога і Слова читаються на рівні 6 класу. Слова майстерні (kerf, grit, XP) лишаються англійською — так ти їх вчиш. Учитель → Тема → Мова ще має Cubano, арабську і фарсі, якщо треба.",
     },
+    troubleshoot: {
+      title: "Якщо сторінка зависла",
+      body: "Після оновлення відкрита вкладка може сама перезавантажитись один раз. Це нормально. Твої оцінки збережені.",
+    },
   },
   ru: {
     "welcome-levels": {
@@ -229,6 +233,10 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
     "wall-lang": {
       title: "Английский, украинский, русский",
       body: "Глобус рядом со знаком вопроса. Эта четверть: английский, украинский, русский. Выбери язык. Помощь и Слова читаются на уровне 6 класса. Слова мастерской (kerf, grit, XP) остаются на английском — так ты их учишь. Учитель → Тема → Язык ещё имеет Cubano, арабский и фарси, если нужно.",
+    },
+    troubleshoot: {
+      title: "Если страница зависла",
+      body: "После обновления открытая вкладка может сама перезагрузиться один раз. Это нормально. Твои отметки сохранены.",
     },
   },
   es: {
@@ -344,6 +352,10 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
       title: "Inglés, ucraniano, ruso, español",
       body: "El globo sigue el idioma del Hub: inglés, ucraniano, ruso, español, árabe, darí, kinyarwanda y tigriña. XP y las palabras del taller se quedan en inglés. Árabe y darí se leen de derecha a izquierda.",
     },
+    troubleshoot: {
+      title: "Si la página se traba",
+      body: "Después de una actualización, una pestaña abierta puede recargarse sola una vez. Es normal. Tus notas están guardadas.",
+    },
   },
   ar: {
     "welcome-levels": {
@@ -369,6 +381,10 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
     "wall-skills": {
       title: "مستويات المهارة 1–4",
       body: "المهارات: يلمس المعلم اسمك ويختار مستوى. 1️⃣ Beginning — تحتاج عرضاً. 2️⃣ Developing — تستطيع مع مراجعة. 3️⃣ Proficient — وحدك، تبلغ المعيار. 4️⃣ Distinguished — تستطيع أن تعلّم زميلاً. الهدف هو 3.",
+    },
+    troubleshoot: {
+      title: "إذا توقفت الصفحة",
+      body: "بعد التحديث، قد تعيد الصفحة المفتوحة تحميل نفسها مرة واحدة. هذا طبيعي. علاماتك محفوظة.",
     },
   },
   "fa-AF": {
@@ -396,6 +412,10 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
       title: "سطح‌های مهارت ۱ تا ۴",
       body: "مهارت‌ها: معلم نامت را می‌زند و یک سطح برمی‌گزیند. 1️⃣ Beginning — به نمایش نیاز داری. 2️⃣ Developing — با یک بررسی می‌توانی. 3️⃣ Proficient — تنها، به معیار می‌رسی. 4️⃣ Distinguished — می‌توانی به هم‌گروهی بیاموزی. هدف ۳ است.",
     },
+    troubleshoot: {
+      title: "اگر صفحه گیر کرد",
+      body: "بعد از به‌روزرسانی، تب باز ممکن است یک بار خودش تازه شود. این عادی است. نمره‌هایت ذخیره شده‌اند.",
+    },
   },
   rw: {
     "welcome-levels": {
@@ -422,6 +442,10 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
       title: "Inzego z'ubumenyi 1–4",
       body: "Ubumenyi: umwarimu akanda izina ryawe akahitamo urwego. 1️⃣ Beginning — ukeneye kwerekwa. 2️⃣ Developing — ushobora n'ubugenzuzi. 3️⃣ Proficient — wenyine, ugeraho. 4️⃣ Distinguished — ushobora kwigisha mugenzi. Intego ni 3.",
     },
+    troubleshoot: {
+      title: "Niba paji ihagaze",
+      body: "Nyuma yo kuvugurura, tab ifunguye ishobora kwisubiramo inshuro imwe. Ni ibisanzwe. Amanota yawe arabikwa.",
+    },
   },
   ti: {
     "welcome-levels": {
@@ -447,6 +471,10 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
     "wall-skills": {
       title: "ደረጃታት ክእለት 1–4",
       body: "ክእለታት፡ መምህር ስምካ ይጠውቕ ደረጃ ይመርጽ። 1️⃣ Beginning — ምርኢት የድልየካ። 2️⃣ Developing — ምስ ምርመራ ትኽእል። 3️⃣ Proficient — ብገዛእ ርእስኻ መለክዒ ትበጽሕ። 4️⃣ Distinguished — ንጓሓይ ትምህር። 3 እዩ ዕላማ።",
+    },
+    troubleshoot: {
+      title: "ገጽ እንተጸንሒ",
+      body: "ድሕሪ ምዕራፍ፡ ዝተኸፍተ ታብ ሓንሳእ ባዕሉ ክጽዕን ይኽእል። እዚ ንቡር እዩ። ነጥብታትካ ተዓቂቡ እዩ።",
     },
   },
   simple: {
