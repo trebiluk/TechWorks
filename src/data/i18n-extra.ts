@@ -514,6 +514,7 @@ export const SIMPLE: Pack = {
   "Slide {n} / {total}": "Slide {n} of {total}",
   "Deck slides": "Deck slides",
   "Deck builds slides from your PlanIt hour.": "Deck makes slides from the hour you wrote.",
+  "TW 1.94.14 — Skills shows the whole class at a glance.": "See the whole class at once.",
   "TW 1.94.12 — Deck makes the hour's slides from PlanIt.": "TW 1.94.12 — Deck makes this hour's slides from PlanIt.",
   "Tap a Tech period on the strip.": "Tap your class.",
   "How this class works": "How class works",
