@@ -76,8 +76,13 @@ export function HelpPanel({ onClose, wallOnly }: { onClose: () => void; wallOnly
   const listed = hits.filter((a) => q.trim() || cat === "Welcome" || a.category !== "Welcome");
 
   return (
-    <div className="tw-scrim fixed inset-0 z-[80] flex items-start justify-center overflow-auto p-4 pt-12">
-      <div className="tw-gadget tw-hud flex max-h-[88dvh] w-full max-w-3xl flex-col bg-surface">
+    <div className="tw-scrim fixed inset-0 z-[120] flex items-start justify-center overflow-auto p-4 pt-12">
+      <div
+        className="tw-gadget tw-hud flex max-h-[88dvh] w-full max-w-3xl flex-col bg-surface"
+        role="dialog"
+        aria-modal="true"
+        aria-label={t("Help")}
+      >
         <header className="flex items-center gap-2 border-b border-border p-4">
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold uppercase tracking-wider text-subtle">

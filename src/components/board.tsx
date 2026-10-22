@@ -111,6 +111,27 @@ function openHubSettings() {
   if (close instanceof HTMLElement) close.focus();
 }
 
+type HubBar = { setHelp?: (fn: (() => void) | null) => void };
+
+function hubBar(): HubBar | undefined {
+  return (window as Window & { KulibertBar?: HubBar }).KulibertBar;
+}
+
+function focusHubMenu() {
+  const btn = document.querySelector(".kb-bar .kb-menu");
+  if (btn instanceof HTMLElement) btn.focus();
+}
+
+/** The Hub drawer sits above the Help sheet. Hide it so Help is the thing you see. */
+function hideHubDrawer() {
+  const box = document.getElementById("kb-drawer");
+  if (box) box.hidden = true;
+  const back = document.getElementById("kb-drawer-backdrop");
+  if (back) back.hidden = true;
+  const btn = document.querySelector(".kb-bar .kb-menu");
+  if (btn) btn.setAttribute("aria-expanded", "false");
+}
+
 export function Board() {
   const seed = snapshot as unknown as EconomyFile;
   const { t } = useLang();
@@ -165,6 +186,39 @@ export function Board() {
   const [back, setBack] = useState<{ view: View; pane: AdminPane } | null>(null);
   const [arrangeOn, setArrangeOn] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  useEffect(() => {
+    const open = () => {
+      hideHubDrawer();
+      setHelpOpen(true);
+    };
+    function arm() {
+      const setHelp = hubBar()?.setHelp;
+      if (!setHelp) return;
+      setHelp(open);
+    }
+    arm();
+    window.addEventListener("load", arm);
+    return () => {
+      window.removeEventListener("load", arm);
+      hubBar()?.setHelp?.(null);
+    };
+  }, []);
+  useEffect(() => {
+    if (!helpOpen) return;
+    document.documentElement.setAttribute("data-kb-modal-open", "");
+    function onKey(e: KeyboardEvent) {
+      if (e.key !== "Escape") return;
+      e.preventDefault();
+      e.stopPropagation();
+      setHelpOpen(false);
+      focusHubMenu();
+    }
+    document.addEventListener("keydown", onKey, true);
+    return () => {
+      document.documentElement.removeAttribute("data-kb-modal-open");
+      document.removeEventListener("keydown", onKey, true);
+    };
+  }, [helpOpen]);
   const [describeOn, setDescribeOn] = useState(false);
   const [query, setQuery] = useState("");
   const [flash, setFlash] = useState<{ msg: string; tone?: "ok" | "warn" | "loss" } | null>(null);
@@ -1154,7 +1208,15 @@ export function Board() {
         {wallDash(unlocked && arrangeOn)}
         </ErrorGate>
       )}
-      {helpOpen && !crewOn ? <HelpPanel onClose={() => setHelpOpen(false)} wallOnly={!unlocked} /> : null}
+      {helpOpen ? (
+        <HelpPanel
+          onClose={() => {
+            setHelpOpen(false);
+            focusHubMenu();
+          }}
+          wallOnly={!unlocked || crewOn}
+        />
+      ) : null}
       {openId ? (
         <Dossier
           file={wallFile}
