@@ -58,9 +58,9 @@ XP comes from workshop skills (Beginning → Distinguished). Perks $ come from s
 
 Dash → Week. Classes and crews race on earned vs possible as of yesterday — today is still being scored, so it stays off the board. A 3 is a full share. A/E do not count against you. The gold class is shop lead; the gold crew is first in the shop. Hold it. Chase rows say how far back you are. Today’s strip is project, activity, and the Classroom assignment (project · cycle), plus what to look for (usually a 3). Classes and Roster still list every alias.
 
-### Skill words
+### Skill levels 1–4
 
-1 Beginning — needs a demo. 2 Developing — can do it with a check-in. 3 Proficient — independent, meets the standard. 4 Distinguished — can teach a crewmate.
+Skills: the teacher taps you and picks a level. 1️⃣ Beginning — needs a demo. 2️⃣ Developing — can do it with a check-in. 3️⃣ Proficient — on your own, meets the standard. 4️⃣ Distinguished — can teach a crewmate. A 3 is the goal.
 
 ### Family report
 
@@ -272,7 +272,7 @@ Watch one skill that matches today’s daily goal. The four sentences under the 
 
 ### Standard 5
 
-Skills → Standard 5. NY MST Standard 5 Technology. Seven skills S1–S7. Scores 1 Beginning, 2 Developing, 3 Proficient, 4 Advanced. One score per student × project × skill. Export CSV. This is not wallet and not the parent grade until you say so.
+Skills → Standard 5. NY MST Standard 5 Technology. Seven skills S1–S7. Scores 1 Beginning, 2 Developing, 3 Proficient, 4 Distinguished. One score per student × project × skill. Export CSV. This is not wallet and not the parent grade until you say so.
 
 ### Projects
 

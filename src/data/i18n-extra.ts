@@ -514,7 +514,7 @@ export const SIMPLE: Pack = {
   "Slide {n} / {total}": "Slide {n} of {total}",
   "Deck slides": "Deck slides",
   "Deck builds slides from your PlanIt hour.": "Deck makes slides from the hour you wrote.",
-  "TW 1.94.16 — The Menu has one Admin button.": "One Admin button now.",
+  "TW 1.94.17 — Help explains skill levels 1–4, and Help reads in Spanish.": "Help shows what levels 1 to 4 mean.",
   "Admin is the 🛠️ button at the bottom of the Menu. It asks for the teacher PIN.": "Admin is the tool button at the bottom of the Menu. It asks for the teacher PIN.",
   "TW 1.94.14 — Skills shows the whole class at a glance.": "See the whole class at once.",
   "TW 1.94.12 — Deck makes the hour's slides from PlanIt.": "TW 1.94.12 — Deck makes this hour's slides from PlanIt.",
