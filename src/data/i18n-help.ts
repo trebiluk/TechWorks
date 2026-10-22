@@ -354,6 +354,18 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
       title: "ما هو TechWorks؟",
       body: "TechWorks صف الورشة للسيد Kulibert. تعمل مع فريق صغير. تتدرب على القياس والقص والإنهاء والمشاركة. الذهب (XP) يعني أنك تحسنت. هذا هو المهم. نقود الصف لعبة، وليست درجتك. الأسماء على الحائط أسماء ورشة، لا أسماء قانونية.",
     },
+    "welcome-day": {
+      title: "حصة في أربع خطوات",
+      body: "1) ادخل واجلس مع فريقك. 2) اسمع هدف اليوم واسأل سؤالاً حقيقياً. 3) عمل الفريق: ابنِ، ارسم، صنفر، خطط. 4) التنظيف: أدوات، بقايا، مقاعد. إذا صار الحائط مرجانياً، هذه الخطوة الآن. Berty يشير إلى الأعمال. المساعدة الزائدة قد تعطي مكافأة، لا XP.",
+    },
+    "welcome-numbers": {
+      title: "ماذا تعني الأرقام",
+      body: "الذهب = XP للمهارة. أنت تتحسن في الحرفة. $ = مكافآت الصف، لعبة. قائد الفريق يضع 3 (في العمل)، 2 (يحتاج دفعة)، أو 1 (ليس مع الفريق). تقرير العائلة هو درجة المشروع بكلمات. المحفظة و Lucky Bench لا يدخلان تلك الورقة.",
+    },
+    "wall-read": {
+      title: "كيف تقرأ هذه اللوحة",
+      body: "هذه لوحة الصف. الأسماء هنا أسماء ورشة، لا أسماء قانونية. أرقام الذهب هي XP. $ مكافآت، لعبة. الحلقة هي الدقائق الباقية. المرجان يعني التنظيف: أدوات، مقاعد، أرض.",
+    },
     "wall-skills": {
       title: "مستويات المهارة 1–4",
       body: "المهارات: يلمس المعلم اسمك ويختار مستوى. 1️⃣ Beginning — تحتاج عرضاً. 2️⃣ Developing — تستطيع مع مراجعة. 3️⃣ Proficient — وحدك، تبلغ المعيار. 4️⃣ Distinguished — تستطيع أن تعلّم زميلاً. الهدف هو 3.",
@@ -367,6 +379,18 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
     "welcome-what": {
       title: "TechWorks چیست؟",
       body: "TechWorks صنف کارگاه آقای Kulibert است. با یک گروه کوچک کار می‌کنی. اندازه، برش، پرداخت و شریک شدن را تمرین می‌کنی. طلا (XP) یعنی بهتر شدی. این مهم است. پول صنف یک بازی است، نمره نیست. نام‌ها روی دیوار نام کارگاه‌اند، نه نام قانونی.",
+    },
+    "welcome-day": {
+      title: "یک ساعت در چهار گام",
+      body: "۱) داخل شو و با گروه‌ات بنشین. ۲) هدف امروز را بشنو و یک سؤال واقعی بپرس. ۳) کار گروه: بساز، رسم کن، سنباده بزن، نقشه بکش. ۴) پاک‌کاری: ابزار، ریزه‌ها، چوکی‌ها. اگر دیوار مرجانی شد، همان گام اکنون است. Berty به کارها اشاره می‌کند. کمک اضافه جایزه می‌دهد، نه XP.",
+    },
+    "welcome-numbers": {
+      title: "عددها چه معنی دارند",
+      body: "طلا = XP مهارت. در کار بهتر می‌شوی. $ = جایزهٔ صنف، یک بازی. رهبر گروه ۳ (سر کار)، ۲ (به یک تکان نیاز دارد)، یا ۱ (با گروه نیست) می‌زند. گزارش خانواده نمرهٔ پروژه به زبان ساده است. کیف پول و Lucky Bench به آن ورق نمی‌روند.",
+    },
+    "wall-read": {
+      title: "این تخته را چطور بخوانی",
+      body: "این دیوار صنف است. نام‌ها نام کارگاه‌اند، نه نام قانونی. عددهای طلا XP اند. $ جایزه است، یک بازی. حلقه دقیقه‌های مانده است. مرجانی یعنی پاک‌کاری: ابزار، چوکی، زمین.",
     },
     "wall-skills": {
       title: "سطح‌های مهارت ۱ تا ۴",
@@ -382,6 +406,18 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
       title: "TechWorks ni iki?",
       body: "TechWorks ni ishuri ry'umwuga rya Bwana Kulibert. Ukora mu itsinda rito. Wigira gupima, gucapa, kurangiza, no gusangira. Zahabu (XP) bivuze ko warushijeho. Ibyo ni byo ngombwa. Amafaranga y'ishuri ni umukino, si amanota. Amazina ku kibaho ni amazina y'ubwuga, si amazina y'umurage.",
     },
+    "welcome-day": {
+      title: "Isomo mu ntambwe enye",
+      body: "1) Injira wicare n'itsinda ryawe. 2) Umva intego y'uyu munsi, ubaze ikibazo cy'ukuri. 3) Akazi k'itsinda: ubake, ushushanye, usige, utegure. 4) Isuku: ibikoresho, ibisigarira, intebe. Iyo kibaho kiba coral, iyo ntambwe ni none. Berty yerekana akazi. Gufasha byinshi bishobora gutanga impano, si XP.",
+    },
+    "welcome-numbers": {
+      title: "Imibare ivuga iki",
+      body: "Zahabu = XP y'ubumenyi. Urushiriza mu mwuga. $ = impano z'ishuri, umukino. Umuyobozi w'itsinda ashyira 3 (ku kazi), 2 (akeneye gufashwa), cyangwa 1 (ntari mu itsinda). Raporo y'umuryango ni amanota y'umushinga mu magambo. Wallet na Lucky Bench ntibijya kuri iyo mpapuro.",
+    },
+    "wall-read": {
+      title: "Uko usoma iki kibaho",
+      body: "Iki ni kibaho cy'ishuri. Amazina ni ay'ubwuga, si ay'umurage. Imibare y'zahabu ni XP. $ ni impano, umukino. Impeta ni iminota isigaye. Coral bivuze isuku: ibikoresho, intebe, hasi.",
+    },
     "wall-skills": {
       title: "Inzego z'ubumenyi 1–4",
       body: "Ubumenyi: umwarimu akanda izina ryawe akahitamo urwego. 1️⃣ Beginning — ukeneye kwerekwa. 2️⃣ Developing — ushobora n'ubugenzuzi. 3️⃣ Proficient — wenyine, ugeraho. 4️⃣ Distinguished — ushobora kwigisha mugenzi. Intego ni 3.",
@@ -396,6 +432,18 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
       title: "TechWorks እንታይ እዩ?",
       body: "TechWorks ናይ ክፍሊ ስራሕ ኣቶ Kulibert እዩ. ምስ ንእሽቶ ጉጅለ ትሰርሕ። ምልካዕ፡ ምቑራጽ፡ ምዝዛም፡ ምክፋል ትለማመድ። ወርቂ (XP) ማለት ረቢሕካ ማለት እዩ። እዚ እዩ ነገር። ገንዘብ ክፍሊ ጸወታ እዩ፡ ውጽኢት ኣይኮነን። ኣብ መንደቕ ዘለዉ ኣስማት ናይ ዕደጋ እዮም፡ ሕጋዊ ኣስማት ኣይኮኑን።",
     },
+    "welcome-day": {
+      title: "ክፍሊ ኣብ ኣርባዕተ ስጉምትታት",
+      body: "1) እቶ ንጉጅለኻ ተቐመጥ። 2) ዕላማ ሎሚ ስማዕ፡ ሓቀኛ ሕቶ ሕተት። 3) ስራሕ ጉጅለ፡ ህነጽ፡ ስኣል፡ ሰንድ፡ ውጥን። 4) ጽሬት፡ መሳርሒ፡ ተረፍ፡ መንበር። መንደቕ ኮራል ምስ ኮነ እቲ ስጉምቲ ሕጂ እዩ። Berty ነቲ ስራሕ የመልክት። ተወሳኺ ሓገዝ ሽልማት ይህብ፡ XP ኣይኮነን።",
+    },
+    "welcome-numbers": {
+      title: "ቁጽርታት እንታይ ይብሉ",
+      body: "ወርቂ = XP ክእለት። ኣብ ዕደጋ ትመሓየሽ። $ = ሽልማት ክፍሊ፡ ጸወታ። መራሒ ጉጅለ 3 (ኣብ ስራሕ)፡ 2 (ድፍኢት የድሊ)፡ ወይ 1 (ምስ ጉጅለ የለን) ይስምር። ጸብጻብ ስድራ ደረጃ ፕሮጀክት ብቃላት እዩ። Walletን Lucky Benchን ኣብታ ወረቐት ኣይኣትዉን።",
+    },
+    "wall-read": {
+      title: "ነዚ ሰሌዳ ከመይ ትንብቦ",
+      body: "እዚ መንደቕ ክፍሊ እዩ። ኣስማት ናይ ዕደጋ እዮም፡ ሕጋዊ ኣይኮኑን። ቁጽሪ ወርቂ XP እዩ። $ ሽልማት እዩ፡ ጸወታ። ቀለቤት ዝተረፈ ደቓይቕ እዩ። ኮራል ማለት ጽሬት፡ መሳርሒ፡ መንበር፡ መሬት።",
+    },
     "wall-skills": {
       title: "ደረጃታት ክእለት 1–4",
       body: "ክእለታት፡ መምህር ስምካ ይጠውቕ ደረጃ ይመርጽ። 1️⃣ Beginning — ምርኢት የድልየካ። 2️⃣ Developing — ምስ ምርመራ ትኽእል። 3️⃣ Proficient — ብገዛእ ርእስኻ መለክዒ ትበጽሕ። 4️⃣ Distinguished — ንጓሓይ ትምህር። 3 እዩ ዕላማ።",
@@ -409,6 +457,18 @@ export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti"
     "welcome-what": {
       title: "What is this class?",
       body: "This is shop class. You work with a small crew. Gold XP means you got better. Class cash is a game, not your grade. Names on the wall are shop names.",
+    },
+    "welcome-day": {
+      title: "Four steps in class",
+      body: "Sit with your crew and listen. Then build, draw, or sand. Clean up when the board turns coral.",
+    },
+    "welcome-numbers": {
+      title: "What the numbers mean",
+      body: "Gold is skill XP. $ is a game, not your grade. A 3 is on the job, a 2 needs a nudge, and a 1 is not with the crew.",
+    },
+    "wall-read": {
+      title: "How to read this board",
+      body: "Names are shop names, not legal names. Gold is XP and $ is a game. Coral means clean up.",
     },
     "wall-skills": {
       title: "Skill levels 1 to 4",
