@@ -108,7 +108,12 @@ export function PinPad({
       e.preventDefault();
       e.stopPropagation();
       onClose();
-      opener.current?.focus();
+      const back = opener.current;
+      if (back?.isConnected) back.focus();
+      else {
+        const menu = document.querySelector(".kb-bar .kb-menu");
+        if (menu instanceof HTMLElement) menu.focus();
+      }
     }
     document.addEventListener("keydown", onKey, true);
     return () => document.removeEventListener("keydown", onKey, true);
