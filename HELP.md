@@ -4,7 +4,7 @@
 TECHWORKS™ is a trademark of Richard Kulibert.
 Classroom salary, skills, and workshop desk. Aliases only on public surfaces. Google Sheets remains the archive. Not licensed for redistribution without permission.
 
-Search in the app Help panel. Categories below.
+Search in the app Help panel. Categories below. Arabic, Dari, Kinyarwanda, Tigrinya, and Simple also read “A class period in four beats”, “What the numbers mean”, and “How to read this board”.
 
 ## Welcome
 

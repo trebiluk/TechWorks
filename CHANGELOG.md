@@ -1,8 +1,12 @@
-<!-- Twin of src/data/changelog.ts. Live desk is 1.94.18. -->
+<!-- Twin of src/data/changelog.ts. Live desk is 1.94.19. -->
 
 # TechWorks changelog
 
-App version **1.94.18**. Newest first. Sheets stay the archive; this desk is the tap pad.
+App version **1.94.19**. Newest first. Sheets stay the archive; this desk is the tap pad.
+
+## 1.94.19 — 2026-10-22
+
+- TW 1.94.19 — More Help reads in Arabic, Dari, Kinyarwanda, Tigrinya and Simple.
 
 ## 1.94.18 — 2026-10-22
 
