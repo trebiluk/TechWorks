@@ -183,10 +183,10 @@ export const HELP_ARTICLES: HelpArticle[] = [
   {
     id: "wall-skills",
     category: "Wall",
-    title: "Skill words",
-    tags: ["beginning", "developing", "proficient", "distinguished"],
+    title: "Skill levels 1–4",
+    tags: ["beginning", "developing", "proficient", "distinguished", "skills", "level", "1-4"],
     wall: true,
-    body: "1 Beginning — needs a demo. 2 Developing — can do it with a check-in. 3 Proficient — independent, meets the standard. 4 Distinguished — can teach a crewmate.",
+    body: "Skills: the teacher taps you and picks a level. 1️⃣ Beginning — needs a demo. 2️⃣ Developing — can do it with a check-in. 3️⃣ Proficient — on your own, meets the standard. 4️⃣ Distinguished — can teach a crewmate. A 3 is the goal.",
   },
   {
     id: "wall-family",
@@ -451,7 +451,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     category: "Skills",
     title: "Standard 5",
     tags: ["mst", "standard 5", "s1", "s2", "design", "tools", "1-4"],
-    body: "Skills → Standard 5. NY MST Standard 5 Technology. Seven skills S1–S7. Scores 1 Beginning, 2 Developing, 3 Proficient, 4 Advanced. One score per student × project × skill. Export CSV. This is not wallet and not the parent grade until you say so.",
+    body: "Skills → Standard 5. NY MST Standard 5 Technology. Seven skills S1–S7. Scores 1 Beginning, 2 Developing, 3 Proficient, 4 Distinguished. One score per student × project × skill. Export CSV. This is not wallet and not the parent grade until you say so.",
   },
   {
     id: "projects",
