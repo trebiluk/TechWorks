@@ -52,37 +52,37 @@ const HELP_ADMIN = "Admin is the 🛠️ button at the bottom of the Menu. It as
 /** Machine drafts. rw, ti, and Dari (fa-AF) need a native check. */
 const LINE_I18N: Record<Exclude<LangId, "en">, Record<string, string>> = {
   uk: {
-    [WHATS_NEW_LINE]: "TW 1.94.21 — Список мов тепер відкривається повністю на екрані.",
+    [WHATS_NEW_LINE]: "TW 1.94.22 — Підготовка до налаштування ключів доступу для персоналу. Поки що вона закрита.",
     [HELP_WHERE]: "Допомога є в Меню, внизу.",
     [HELP_ADMIN]: "Admin — це кнопка 🛠️ внизу Меню. Вона питає PIN учителя.",
   },
   ru: {
-    [WHATS_NEW_LINE]: "TW 1.94.21 — Список языков теперь открывается полностью на экране.",
+    [WHATS_NEW_LINE]: "TW 1.94.22 — Подготовка к настройке ключей доступа для сотрудников. Пока она закрыта.",
     [HELP_WHERE]: "Справка в Меню, внизу.",
     [HELP_ADMIN]: "Admin — это кнопка 🛠️ внизу Меню. Она спрашивает PIN учителя.",
   },
   es: {
-    [WHATS_NEW_LINE]: "TW 1.94.21 — La lista de idiomas se abre completa en la pantalla.",
+    [WHATS_NEW_LINE]: "TW 1.94.22 — Preparativos para la configuración de llaves de acceso del personal. Sigue cerrada hasta que esté lista.",
     [HELP_WHERE]: "La Ayuda está en el Menú, abajo.",
     [HELP_ADMIN]: "Admin es el botón 🛠️ al final del Menú. Pide el PIN del maestro.",
   },
   ar: {
-    [WHATS_NEW_LINE]: "TW 1.94.21 — قائمة اللغات تفتح الآن كاملة على الشاشة.",
+    [WHATS_NEW_LINE]: "TW 1.94.22 — تجهيزات لإعداد مفاتيح المرور للموظفين. ستبقى مغلقة حتى تصبح جاهزة.",
     [HELP_WHERE]: "المساعدة في القائمة، في الأسفل.",
     [HELP_ADMIN]: "Admin هو زر 🛠️ في أسفل القائمة. يطلب رقم المعلم.",
   },
   "fa-AF": {
-    [WHATS_NEW_LINE]: "TW 1.94.21 — فهرست زبان‌ها حالا کامل روی صفحه باز می‌شود.",
+    [WHATS_NEW_LINE]: "TW 1.94.22 — آماده‌سازی برای تنظیم کلیدهای ورود کارکنان. تا آماده شدن بسته می‌ماند.",
     [HELP_WHERE]: "راهنما در فهرست است، در پایین.",
     [HELP_ADMIN]: "Admin دکمهٔ 🛠️ در پایین فهرست است. PIN معلم را می‌خواهد.",
   },
   rw: {
-    [WHATS_NEW_LINE]: "TW 1.94.21 — Urutonde rw'indimi ubu rufunguka rwose kuri ecran.",
+    [WHATS_NEW_LINE]: "TW 1.94.22 — Imyiteguro yo gushyiraho passkey z'abakozi. Bizakomeza gufunga kugeza byiteguye.",
     [HELP_WHERE]: "Ubufasha buri mu Menyu, hepfo.",
     [HELP_ADMIN]: "Admin ni buto 🛠️ hepfo ya Menyu. Isaba PIN y'umwarimu.",
   },
   ti: {
-    [WHATS_NEW_LINE]: "TW 1.94.21 — ዝርዝር ቋንቋታት ሕጂ ምሉእ ብምሉእ ኣብ ስክሪን ይኽፈት።",
+    [WHATS_NEW_LINE]: "TW 1.94.22 — ንምድላው passkey ሰራሕተኛታት ምድላዋት። ክሳብ ዝዳሎ ዕጹው ይጸንሕ።",
     [HELP_WHERE]: "ሓገዝ ኣብ ዝርዝር እዩ፡ ኣብ ታሕቲ።",
     [HELP_ADMIN]: "Admin ናይ 🛠️ መጠወቒ ኣብ ታሕቲ ዝርዝር እዩ። PIN ናይ መምህር ይሓትት።",
   },
