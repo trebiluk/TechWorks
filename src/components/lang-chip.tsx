@@ -7,7 +7,9 @@ import { cn } from "@/lib/utils";
 export function LangChip({ className }: { className?: string }) {
   const { lang, t } = useLang();
   const [open, setOpen] = useState(false);
+  const [top, setTop] = useState(48);
   const box = useRef<HTMLDivElement>(null);
+  const btn = useRef<HTMLButtonElement>(null);
   const row = CLASS_LANGS.find((l) => l.id === lang) ?? CLASS_LANGS[0];
 
   useEffect(() => {
@@ -29,11 +31,16 @@ export function LangChip({ className }: { className?: string }) {
   return (
     <div ref={box} className={cn("relative lang-chip", className)} data-keep-pocket>
       <button
+        ref={btn}
         type="button"
         title={t("Read in your language")}
         aria-label={t("Language")}
         aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          const r = btn.current?.getBoundingClientRect();
+          if (r) setTop(r.bottom + 8);
+          setOpen((v) => !v);
+        }}
         className={cn(
           "tw-hud-btn tw-tap relative z-30 inline-flex h-11 min-h-11 min-w-11 shrink-0 items-center justify-center gap-1 rounded-xl px-2 text-sm font-semibold hover:bg-elevated",
           open || lang !== "en" ? "bg-elevated text-fg" : "text-fg",
@@ -45,7 +52,10 @@ export function LangChip({ className }: { className?: string }) {
         <span className="sr-only">{row.native}</span>
       </button>
       {open ? (
-        <div className="absolute right-0 top-12 z-50 w-[min(16rem,calc(100vw-1.5rem))] overflow-hidden rounded-xl bg-surface p-2 ring-1 ring-border">
+        <div
+          className="fixed left-3 z-50 w-[min(14rem,calc(100vw-2.5rem))] overflow-hidden rounded-xl bg-surface p-2 ring-1 ring-border"
+          style={{ top }}
+        >
           <p className="px-2 pt-1 text-sm font-semibold">{t("Read in your language")}</p>
           <p className="px-2 pb-2 text-xs leading-snug text-muted">{t("Wall words change. XP stays English.")}</p>
           <ul className="grid gap-1">
