@@ -40,7 +40,7 @@ The Goals plate is the job, not the filing system. Five lines: the driving quest
 
 ### Menu (Dash · Learn · Crew · Admin)
 
-Bottom dock: Dash · Learn · Crew · Rosters · Admin. Dash strip: Wall · Teach · Deck · Week · Club · Hall. Teach is the lesson. Deck plays that lesson. After class, Wall is the projector. Top chrome: Lock, Cog (Settings), Help, Web (family), language globe, NOW clock. Arrange wall / Arrange plates live on those pages.
+Bottom dock: Dash · Learn · Crew · Rosters · Admin. Dash strip: Wall · Teach · Deck · Week · Club · Hall. Teach is the lesson. Deck plays that lesson. After class, Wall is the projector. Top chrome: Lock, Cog (Settings), Help, Web (family), language globe, NOW clock. Arrange wall / Arrange plates live on those pages. Admin is the 🛠️ button at the bottom of the Menu. It asks for the teacher PIN.
 
 ### Live polls
 

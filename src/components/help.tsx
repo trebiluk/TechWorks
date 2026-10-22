@@ -90,6 +90,7 @@ export function HelpPanel({ onClose, wallOnly }: { onClose: () => void; wallOnly
             </p>
             <p className="mt-0.5 text-[11px] text-muted">{COPYRIGHT_LINE}</p>
             <p data-help-where className="mt-1 text-sm font-semibold leading-snug">{t("Help is in the Menu, at the bottom.")}</p>
+            <p data-help-admin className="mt-1 text-sm font-semibold leading-snug">{t("Admin is the 🛠️ button at the bottom of the Menu. It asks for the teacher PIN.")}</p>
             <label className="relative mt-2 block">
               <Search className="pointer-events-none absolute left-3 top-3 size-4 text-subtle" />
               <input

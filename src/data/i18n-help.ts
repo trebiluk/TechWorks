@@ -34,7 +34,7 @@ export const HELP_I18N: Record<"uk" | "ru", Record<string, HelpBit>> = {
     },
     "wall-menu": {
       title: "Меню (Dash · Learn · Crew · Admin)",
-      body: "Внизу чотири кнопки. Dash — стіна. Learn — книга, проєкти, вміння, слова. Crew — команда (код). Admin — стіл учителя (PIN). Це одне меню на стіні і на телефоні.",
+      body: "Внизу чотири кнопки. Dash — стіна. Learn — книга, проєкти, вміння, слова. Crew — команда (код). Admin — стіл учителя (PIN). Це одне меню на стіні і на телефоні. Admin — це кнопка 🛠️ внизу Меню. Вона питає PIN учителя.",
     },
     "wall-polls": {
       title: "Живі опити",
@@ -144,7 +144,7 @@ export const HELP_I18N: Record<"uk" | "ru", Record<string, HelpBit>> = {
     },
     "wall-menu": {
       title: "Меню (Dash · Learn · Crew · Admin)",
-      body: "Внизу четыре кнопки. Dash — стена. Learn — книга, проекты, навыки, слова. Crew — команда (код). Admin — стол учителя (PIN). Это одно меню на стене и на телефоне.",
+      body: "Внизу четыре кнопки. Dash — стена. Learn — книга, проекты, навыки, слова. Crew — команда (код). Admin — стол учителя (PIN). Это одно меню на стене и на телефоне. Admin — это кнопка 🛠️ внизу Меню. Она спрашивает PIN учителя.",
     },
     "wall-polls": {
       title: "Живые опросы",

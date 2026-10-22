@@ -146,7 +146,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     title: "Menu (Dash · Learn · Crew · Admin)",
     tags: ["menu", "nav", "tabs", "classic"],
     wall: true,
-    body: "Bottom dock: Dash · Learn · Crew · Rosters · Admin. Dash strip: Wall · Teach · Deck · Week · Club · Hall. Teach is the lesson. Deck plays that lesson. After class, Wall is the projector. Top chrome: Lock, Cog (Settings), Help, Web (family), language globe, NOW clock. Arrange wall lives on the projector.",
+    body: "Bottom dock: Dash · Learn · Crew · Rosters · Admin. Dash strip: Wall · Teach · Deck · Week · Club · Hall. Teach is the lesson. Deck plays that lesson. After class, Wall is the projector. Top chrome: Lock, Cog (Settings), Help, Web (family), language globe, NOW clock. Arrange wall lives on the projector. Admin is the 🛠️ button at the bottom of the Menu. It asks for the teacher PIN.",
   },
   {
     id: "wall-polls",
