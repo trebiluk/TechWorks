@@ -2,7 +2,7 @@
 
 export type HelpBit = { title: string; body: string };
 
-export const HELP_I18N: Record<"uk" | "ru", Record<string, HelpBit>> = {
+export const HELP_I18N: Record<"uk" | "ru" | "es" | "ar" | "fa-AF" | "rw" | "ti" | "simple", Record<string, HelpBit>> = {
   uk: {
     "welcome-what": {
       title: "Що таке TechWorks?",
@@ -53,8 +53,8 @@ export const HELP_I18N: Record<"uk" | "ru", Record<string, HelpBit>> = {
       body: "Dash → Тиждень. Класи і команди змагаються за вчорашню роботу. Сьогодні ще йде — його немає на табло. 3 — повна частка. A/E не шкодять. Золотий клас — лідер майстерні. Золота команда — перша. Тримай місце. Рядки погоні кажуть, наскільки ти позаду.",
     },
     "wall-skills": {
-      title: "Слова вмінь",
-      body: "1 Beginning — потрібен показ. 2 Developing — можу з перевіркою. 3 Proficient — сам, норма є. 4 Distinguished — можу навчити товариша.",
+      title: "Рівні вміння 1–4",
+      body: "Вміння: учитель торкається тебе і ставить рівень. 1️⃣ Beginning — потрібен показ. 2️⃣ Developing — можу з перевіркою. 3️⃣ Proficient — сам, норма є. 4️⃣ Distinguished — можу навчити товариша. Ціль — 3.",
     },
     "wall-family": {
       title: "Сімейний звіт",
@@ -163,8 +163,8 @@ export const HELP_I18N: Record<"uk" | "ru", Record<string, HelpBit>> = {
       body: "Dash → Неделя. Классы и команды соревнуются за вчерашнюю работу. Сегодня ещё идёт — его нет на табло. 3 — полная доля. A/E не вредят. Золотой класс — лидер мастерской. Золотая команда — первая. Держи место.",
     },
     "wall-skills": {
-      title: "Слова навыков",
-      body: "1 Beginning — нужен показ. 2 Developing — могу с проверкой. 3 Proficient — сам, норма есть. 4 Distinguished — могу научить товарища.",
+      title: "Уровни умения 1–4",
+      body: "Умения: учитель нажимает на тебя и ставит уровень. 1️⃣ Beginning — нужен показ. 2️⃣ Developing — могу с проверкой. 3️⃣ Proficient — сам, норма есть. 4️⃣ Distinguished — могу научить товарища. Цель — 3.",
     },
     "wall-family": {
       title: "Семейный отчёт",
@@ -221,6 +221,166 @@ export const HELP_I18N: Record<"uk" | "ru", Record<string, HelpBit>> = {
     "wall-lang": {
       title: "Английский, украинский, русский",
       body: "Глобус рядом со знаком вопроса. Эта четверть: английский, украинский, русский. Выбери язык. Помощь и Слова читаются на уровне 6 класса. Слова мастерской (kerf, grit, XP) остаются на английском — так ты их учишь. Учитель → Тема → Язык ещё имеет Cubano, арабский и фарси, если нужно.",
+    },
+  },
+  es: {
+    "welcome-what": {
+      title: "¿Qué es TechWorks?",
+      body: "TechWorks es la clase de taller del Sr. Kulibert. Trabajas en un equipo pequeño. Practicas medir, cortar, acabar y compartir. El oro (XP) significa que mejoraste. Eso es lo importante. El dinero de clase es un juego. No es tu nota. Los nombres de la pared son alias, no nombres legales.",
+    },
+    "welcome-day": {
+      title: "Una clase en cuatro pasos",
+      body: "1) Entra y siéntate con tu equipo. 2) Escucha la meta del día y haz una pregunta de verdad. 3) Trabajo de equipo: construye, dibuja, lija, planea. 4) Limpieza: herramientas, restos, sillas. Si la pared se pone coral, ese paso es ahora. Berty señala los trabajos. Ayudar de más puede dar un premio, no XP.",
+    },
+    "welcome-numbers": {
+      title: "Qué significan los números",
+      body: "Oro = XP de destreza. Vas mejorando en el oficio. $ = premios de clase, un juego. El líder del equipo marca 3 (en el trabajo), 2 (necesita un empujón) o 1 (no está con el equipo). El informe de familia es la nota del proyecto en palabras. El monedero y Lucky Bench no van en esa hoja.",
+    },
+    "welcome-people": {
+      title: "Quién hace qué",
+      body: "Tú: construye, limpia, ayuda a un compañero. Líder: pone 3 / 2 / 1 solo en esta clase. Maestro: las notas de verdad, las destrezas y la tienda. Familia: abre un nombre → Family. El nombre legal no va en el proyector.",
+    },
+    "welcome-help": {
+      title: "Para quién es esta Ayuda",
+      body: "Alumnos: Bienvenida y Pared. Líderes: Roles → Líder. Familia: toca un alias → Family, o escribe Family en la búsqueda. Maestro: Inicio, Teach, Deck, Nota, Admin. Sustituto: no abras esta app. La Ayuda está en el Menú, abajo.",
+    },
+    "wall-read": {
+      title: "Cómo leer esta pared",
+      body: "Esta es la pared de la clase. Los nombres son alias, no nombres legales. Los números de oro son XP. $ son premios, un juego. El anillo son los minutos que quedan. Coral significa limpiar: herramientas, sillas, piso.",
+    },
+    "wall-teach": {
+      title: "Pared y Teach",
+      body: "La pared está todo el día: la tarea, el horario, la clase. Teach es cuando el maestro está al frente. El letrero grande dice qué hacer ahora. Las mismas herramientas están en las dos (reloj, elegir alumno, elegir equipo).",
+    },
+    "wall-menu": {
+      title: "Menú (Dash · Learn · Crew · Admin)",
+      body: "Abajo: Dash · Learn · Crew · Rosters · Admin. La franja Dash: Wall · Teach · Deck · Week · Club · Hall. Teach es la lección. Deck la muestra. Después de clase, Wall es el proyector. Admin es el botón 🛠️ al final del Menú. Pide el PIN del maestro.",
+    },
+    "wall-polls": {
+      title: "Encuestas en vivo",
+      body: "El maestro abre una encuesta (Sí/No, A–D, 1–4, emoji o propia). La pared muestra barras, sin nombres. Cada alumno toca en el equipo. Cerrar y guardar deja un historial. Las encuestas no cambian notas, XP ni dinero.",
+    },
+    "wall-xp": {
+      title: "XP, premios y acciones",
+      body: "XP sale de las destrezas del taller (Beginning → Distinguished). Los $ salen de venir y hacer el trabajo, menos la tienda. Las acciones son un juego aparte. El informe de familia es la nota del proyecto, no tu monedero.",
+    },
+    "wall-effort": {
+      title: "3, 2, 1 — lo que marca el líder",
+      body: "3 = está en el trabajo. 2 = necesita un empujón. 1 = no está con el equipo. Absent / Excused / Personal son por no estar aquí. No son una nota de destreza. Un 4 (Distinguished) lo pone el maestro, no el líder.",
+    },
+    "wall-week": {
+      title: "Carrera de la semana",
+      body: "Dash → Week. Clases y equipos corren con el trabajo de ayer. Hoy todavía se anota, así que no sale en el tablero. Un 3 es la parte completa. A/E no te restan. La clase de oro va primera. El equipo de oro va primero. Los renglones de alcance dicen qué tan atrás vas.",
+    },
+    "wall-skills": {
+      title: "Niveles de destreza 1–4",
+      body: "Destrezas: el maestro te toca y elige un nivel. 1️⃣ Beginning — necesitas una muestra. 2️⃣ Developing — puedes hacerlo con una revisión. 3️⃣ Proficient — solo, cumples la meta. 4️⃣ Distinguished — puedes enseñar a un compañero. Un 3 es la meta.",
+    },
+    "wall-family": {
+      title: "Informe de familia",
+      body: "Abre un alumno (toca el nombre) → Family. Una nota de proyecto. Destrezas en palabras. El tiempo en clase se ve, pero no entra en el promedio. Premios y acciones no van en esa hoja.",
+    },
+    "wall-berty": {
+      title: "BertyBot",
+      body: "Berty es la mascota del taller. Saluda en ENTER, piensa en LISTEN, está de pie en CREW WORK, señala CLEAN UP y entre clases, y festeja SHARE. Las dos manos se ven en cada pose. Limpieza y el cambio de clase siempre lo muestran. Ábrelo desde el chip de versión.",
+    },
+    "wall-cleanup": {
+      title: "Limpieza",
+      body: "Últimos cinco minutos: pantalla coral. Berty señala los trabajos. Taller: herramientas, restos, puestos. Aula: sillas y pasillos. Ayudar de más puede dar un premio, no XP. Entre clases Berty señala ENTER → LISTEN → CREW WORK → CLEAN UP.",
+    },
+    "dash-teach": {
+      title: "Modo Teach",
+      body: "Dash → Teach. El letrero grande sigue el timbre: Entra, Escucha, Trabajo, Limpia. La limpieza siempre gana. En esa pared no hay nombres.",
+    },
+    "dash-public": {
+      title: "Proyector",
+      body: "La pared embebida muestra solo el tablero: alias y XP o premios. Coral LIMPIEZA en los últimos 5 minutos. No hay escritorio del maestro. No hay apellidos.",
+    },
+    "dash-tools": {
+      title: "Herramientas en la pared",
+      body: "Abre → Herramientas. Reloj, elegir un alumno (alias), elegir un equipo. Apágalo para esconderlo. Los nombres son alias.",
+    },
+    "roles-crew": {
+      title: "Camino del líder",
+      body: "PIN 2222, solo esta clase. Hola, líder. Marca 3 / 2 / 1 o Absent / Excused / Personal. Luego el equipo sigue solo. No tocas el monedero ni las notas.",
+    },
+    "roles-worker": {
+      title: "Camino del alumno",
+      body: "Lee la pared: oro es XP, $ son premios. Toca tu alias para la hoja de familia. Coral = limpiar. Tú no escribes dinero.",
+    },
+    "roles-family": {
+      title: "Camino de la familia",
+      body: "Perfil → Family. Una nota de proyecto. Destrezas en palabras. Sin monedero, sin acciones y sin Lucky Bench.",
+    },
+    "wall-jobs": {
+      title: "Trabajos en la pared",
+      body: "Dos listas. Agenda es el trabajo de la hora. Cleanup es la lista coral (herramientas o sillas). Need (gafas / material) se ve al entrar.",
+    },
+    "wall-looks": {
+      title: "Aspecto de la pared",
+      body: "El aspecto cambia el color de la pared. Shop wall es el azul de siempre. Back row usa letras más grandes. Los aspectos de fiesta son para días alegres. Tus puntos se quedan. El oro es XP. El coral es limpiar. Los botones de arriba (Help, Lock, Web) siguen.",
+    },
+    "chrome-hud": {
+      title: "Barra de arriba",
+      body: "La barra de arriba es una fila. Wall · Teach · Deck · Week · Club · Hall se quedan. More (el bolsillo) guarda Fake data, Find, NOW, Lock, Cog, Help, Web y el idioma. Toca, no pases el mouse. Los temas no pueden tapar esos botones.",
+    },
+    "period-now": {
+      title: "Periodos y el reloj",
+      body: "NOW es la clase de ahora. Las fichas de periodo te llevan a esa hora. P6 es Study Hall. Coral es limpiar.",
+    },
+    "wall-lang": {
+      title: "Inglés, ucraniano, ruso, español",
+      body: "El globo sigue el idioma del Hub: inglés, ucraniano, ruso, español, árabe, darí, kinyarwanda y tigriña. XP y las palabras del taller se quedan en inglés. Árabe y darí se leen de derecha a izquierda.",
+    },
+  },
+  ar: {
+    "welcome-what": {
+      title: "ما هو TechWorks؟",
+      body: "TechWorks صف الورشة للسيد Kulibert. تعمل مع فريق صغير. تتدرب على القياس والقص والإنهاء والمشاركة. الذهب (XP) يعني أنك تحسنت. هذا هو المهم. نقود الصف لعبة، وليست درجتك. الأسماء على الحائط أسماء ورشة، لا أسماء قانونية.",
+    },
+    "wall-skills": {
+      title: "مستويات المهارة 1–4",
+      body: "المهارات: يلمس المعلم اسمك ويختار مستوى. 1️⃣ Beginning — تحتاج عرضاً. 2️⃣ Developing — تستطيع مع مراجعة. 3️⃣ Proficient — وحدك، تبلغ المعيار. 4️⃣ Distinguished — تستطيع أن تعلّم زميلاً. الهدف هو 3.",
+    },
+  },
+  "fa-AF": {
+    "welcome-what": {
+      title: "TechWorks چیست؟",
+      body: "TechWorks صنف کارگاه آقای Kulibert است. با یک گروه کوچک کار می‌کنی. اندازه، برش، پرداخت و شریک شدن را تمرین می‌کنی. طلا (XP) یعنی بهتر شدی. این مهم است. پول صنف یک بازی است، نمره نیست. نام‌ها روی دیوار نام کارگاه‌اند، نه نام قانونی.",
+    },
+    "wall-skills": {
+      title: "سطح‌های مهارت ۱ تا ۴",
+      body: "مهارت‌ها: معلم نامت را می‌زند و یک سطح برمی‌گزیند. 1️⃣ Beginning — به نمایش نیاز داری. 2️⃣ Developing — با یک بررسی می‌توانی. 3️⃣ Proficient — تنها، به معیار می‌رسی. 4️⃣ Distinguished — می‌توانی به هم‌گروهی بیاموزی. هدف ۳ است.",
+    },
+  },
+  rw: {
+    "welcome-what": {
+      title: "TechWorks ni iki?",
+      body: "TechWorks ni ishuri ry'umwuga rya Bwana Kulibert. Ukora mu itsinda rito. Wigira gupima, gucapa, kurangiza, no gusangira. Zahabu (XP) bivuze ko warushijeho. Ibyo ni byo ngombwa. Amafaranga y'ishuri ni umukino, si amanota. Amazina ku kibaho ni amazina y'ubwuga, si amazina y'umurage.",
+    },
+    "wall-skills": {
+      title: "Inzego z'ubumenyi 1–4",
+      body: "Ubumenyi: umwarimu akanda izina ryawe akahitamo urwego. 1️⃣ Beginning — ukeneye kwerekwa. 2️⃣ Developing — ushobora n'ubugenzuzi. 3️⃣ Proficient — wenyine, ugeraho. 4️⃣ Distinguished — ushobora kwigisha mugenzi. Intego ni 3.",
+    },
+  },
+  ti: {
+    "welcome-what": {
+      title: "TechWorks እንታይ እዩ?",
+      body: "TechWorks ናይ ክፍሊ ስራሕ ኣቶ Kulibert እዩ. ምስ ንእሽቶ ጉጅለ ትሰርሕ። ምልካዕ፡ ምቑራጽ፡ ምዝዛም፡ ምክፋል ትለማመድ። ወርቂ (XP) ማለት ረቢሕካ ማለት እዩ። እዚ እዩ ነገር። ገንዘብ ክፍሊ ጸወታ እዩ፡ ውጽኢት ኣይኮነን። ኣብ መንደቕ ዘለዉ ኣስማት ናይ ዕደጋ እዮም፡ ሕጋዊ ኣስማት ኣይኮኑን።",
+    },
+    "wall-skills": {
+      title: "ደረጃታት ክእለት 1–4",
+      body: "ክእለታት፡ መምህር ስምካ ይጠውቕ ደረጃ ይመርጽ። 1️⃣ Beginning — ምርኢት የድልየካ። 2️⃣ Developing — ምስ ምርመራ ትኽእል። 3️⃣ Proficient — ብገዛእ ርእስኻ መለክዒ ትበጽሕ። 4️⃣ Distinguished — ንጓሓይ ትምህር። 3 እዩ ዕላማ።",
+    },
+  },
+  simple: {
+    "welcome-what": {
+      title: "What is this class?",
+      body: "This is shop class. You work with a small crew. Gold XP means you got better. Class cash is a game, not your grade. Names on the wall are shop names.",
+    },
+    "wall-skills": {
+      title: "Skill levels 1 to 4",
+      body: "The teacher taps your name and picks 1, 2, 3, or 4. 1️⃣ Beginning — you need a demo. 2️⃣ Developing — you can do it with a check. 3️⃣ Proficient — you can do it alone. 4️⃣ Distinguished — you can teach a friend. 3 is the goal.",
     },
   },
 };

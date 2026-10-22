@@ -12,7 +12,7 @@ export function useLang(): {
   return {
     lang,
     t: (phrase: string) => t(phrase, copyMode()),
-    article: (id, title, body) => articleCopy(id, title, body, lang),
+    article: (id, title, body) => articleCopy(id, title, body, copyMode()),
     gloss: (id, def, use) => glossCopy(id, def, use, lang),
   };
 }

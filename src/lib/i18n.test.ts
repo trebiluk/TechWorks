@@ -64,6 +64,20 @@ describe("help and words packs", () => {
     assert.equal(copy.body, "Body");
   });
 
+  it("returns Spanish help and a short simple skills card", () => {
+    const es = articleCopy("welcome-what", "What is TechWorks?", "English body", "es");
+    assert.match(es.body, /taller/);
+    const skills = articleCopy("wall-skills", "Skill levels 1–4", "English", "es");
+    assert.match(skills.body, /1️⃣ Beginning/);
+    assert.match(skills.body, /4️⃣ Distinguished/);
+    const miss = articleCopy("no-such", "Title", "Body", "es");
+    assert.equal(miss.body, "Body");
+    const simple = articleCopy("wall-skills", "Skill levels 1–4", "English", "simple");
+    assert.match(simple.body, /1, 2, 3, or 4/);
+    const ar = articleCopy("wall-skills", "Skill levels 1–4", "English", "ar");
+    assert.match(ar.body, /Distinguished/);
+  });
+
   it("returns a grade-6 Ukrainian shop definition", () => {
     const copy = glossCopy("ppe", "English def", "English use", "uk");
     assert.match(copy.def, /одягаєш/);

@@ -1128,7 +1128,7 @@ export function t(phrase: string, id: HubLang = copyMode()): string {
   return BAR[id]?.[phrase] || LIB[id]?.[phrase] || DECK[id]?.[phrase] || BUMP[id]?.[phrase] || HALL[id]?.[phrase] || CLEAN[id]?.[phrase] || MORE[id]?.[phrase] || DICT[id]?.[phrase] || shared || phrase;
 }
 
-export function articleCopy(id: string, title: string, body: string, langId: LangId = storedLang()): { title: string; body: string } {
+export function articleCopy(id: string, title: string, body: string, langId: HubLang = storedLang()): { title: string; body: string } {
   if (id === "planning-bump") {
     return { title: t("Bump day", langId), body: t("Bump day moves this lesson and all later ones by one school day. Undo puts them back.", langId) };
   }
@@ -1138,9 +1138,11 @@ export function articleCopy(id: string, title: string, body: string, langId: Lan
   if (id === "deck-slides") {
     return { title: t("Deck slides", langId), body: t("Deck builds slides from your PlanIt hour.", langId) };
   }
-  if (langId !== "uk" && langId !== "ru") return { title, body };
-  const pack = HELP_I18N[langId][id];
-  return pack ?? { title, body };
+  if (langId !== "en") {
+    const pack = HELP_I18N[langId][id];
+    if (pack) return pack;
+  }
+  return { title, body };
 }
 
 export function glossCopy(id: string, def: string, use: string, langId: LangId = storedLang()): { def: string; use: string } {
