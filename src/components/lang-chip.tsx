@@ -69,7 +69,7 @@ export function LangChip({ className }: { className?: string }) {
                     setOpen(false);
                   }}
                   className={cn(
-                    "tw-tap flex min-h-11 w-full items-center gap-2 rounded-md px-3 text-left",
+                    "tw-tap flex min-h-11 w-full items-center gap-2 rounded-md px-3 text-start",
                     lang === l.id ? "bg-gold text-bg" : "bg-elevated text-fg hover:bg-elevated",
                   )}
                 >
