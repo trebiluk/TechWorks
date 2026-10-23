@@ -8,6 +8,7 @@ import { knVar, mailer } from "../../server/cf-env.ts";
 import { chargeThrottle } from "../../server/kn-throttle.ts";
 import { saveChallenge, takeChallenge } from "../../server/kn-challenge.ts";
 import { resetKnReady } from "../../server/kn-db.ts";
+import { claimRecoveryCode, normalizeRecoveryEmail, openEmail, recoveryBlocklist, sealEmail, storeRecoveryCode } from "../../server/kn-recovery.ts";
 
 const TEST_KEY = Buffer.alloc(32, 7).toString("base64");
 
@@ -75,10 +76,12 @@ function memDb() {
   const chal = new Map<string, { kind: string; uid: string; exp: number }>();
   const meta = new Map<string, string>();
   const session = new Map<string, { stepup_at: number }>();
+  const rcodes = new Map<string, { uid: string; used_at: number | null }>();
   const db = {
     throttle,
     chal,
     session,
+    rcodes,
     prepare(sql: string) {
       return {
         bind(...args: unknown[]) {
@@ -90,6 +93,7 @@ function memDb() {
               }
               if (sql.includes("kn_throttle")) return throttle.get(String(args[0])) ?? null;
               if (sql.includes("kn_chal") && sql.startsWith("SELECT")) return chal.get(String(args[0])) ?? null;
+              if (sql.includes("kn_rcode") && sql.startsWith("SELECT")) return rcodes.get(String(args[0])) ?? null;
               return null;
             },
             async all() {
@@ -106,6 +110,13 @@ function memDb() {
               if (sql.startsWith("DELETE") && sql.includes("kn_chal")) chal.delete(String(args[0]));
               if (sql.startsWith("UPDATE") && sql.includes("kn_session")) {
                 session.set(String(args[1]), { stepup_at: Number(args[0]) });
+              }
+              if (sql.includes("kn_rcode") && sql.includes("INSERT")) {
+                rcodes.set(String(args[0]), { uid: String(args[1]), used_at: null });
+              }
+              if (sql.startsWith("UPDATE") && sql.includes("kn_rcode")) {
+                const row = rcodes.get(String(args[1]));
+                if (row) row.used_at = Number(args[0]);
               }
             },
           };
@@ -165,5 +176,23 @@ describe("staff library", () => {
     const row = db.session.get("session-hmac");
     assert.ok(row && row.stepup_at > 0);
     assert.notEqual(String(row?.stepup_at), "session-hmac");
+  });
+
+  it("keeps recovery codes as HMACs and seals email to the staff id", async () => {
+    const db = memDb();
+    const event = { context: { env: { KN_DB: db } } };
+    assert.equal(normalizeRecoveryEmail("x@example.test", recoveryBlocklist(event)), "x@example.test");
+    assert.equal(normalizeRecoveryEmail("Person@SolvaySchools.org", recoveryBlocklist(event)), null);
+    const code = "code-not-stored";
+    await storeRecoveryCode(event, "staff-1", code);
+    const stored = [...db.rcodes.keys()][0] ?? "";
+    assert.notEqual(stored, code);
+    assert.equal(stored.includes(code), false);
+    assert.equal(await claimRecoveryCode(event, "staff-1", code), "ok");
+    assert.equal(await claimRecoveryCode(event, "staff-1", code), "used");
+    const sealed = await sealEmail(event, "staff-1", "x@example.test");
+    assert.equal(sealed.includes("example.test"), false);
+    assert.equal(await openEmail(event, "staff-1", sealed), "x@example.test");
+    assert.equal(await openEmail(event, "other-staff", sealed), null);
   });
 });
