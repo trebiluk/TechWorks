@@ -177,6 +177,47 @@ export function buildCloudPack(file: EconomyFile): CloudPack {
   };
 }
 
+export function whoPayload(file: EconomyFile) {
+  const real = stripFakeDemo(file);
+  return real.students
+    .filter((s) => s.first && s.first.trim().length >= 2 && !s.removedAt)
+    .slice(0, 399)
+    .map((s) => ({
+      id: s.id,
+      alias: s.first.trim().slice(0, 16),
+      avatar: avatarOf(s.icon, s.id),
+      code: publicHandle(s.id),
+      pinHash: s.pinHash || "",
+      ...(s.test === true ? { test: true as const } : {}),
+    }));
+}
+
+async function putWho(file: EconomyFile, token: string): Promise<boolean> {
+  const who = await fetch("/api/who", {
+    method: "PUT",
+    headers: { "content-type": "application/json", "x-tw-desk": token },
+    body: JSON.stringify({ people: whoPayload(file) }),
+  });
+  return who.ok;
+}
+
+/** Push the current test flags, then delete those rows and their Bertopia saves. */
+export async function wipeCloudTests(file: EconomyFile): Promise<{ ok: true; n: number; aliases: string[]; saves: number } | { ok: false; error: string }> {
+  if (typeof window === "undefined" || !isUnlocked()) return { ok: false, error: "locked" };
+  const pass = storedDeskKey();
+  if (!pass) return { ok: false, error: "need-key" };
+  const token = await deskToken(pass);
+  if (!(await putWho(file, token))) return { ok: false, error: "codes" };
+  const res = await fetch("/api/who/test-wipe", {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-tw-desk": token },
+    body: "{}",
+  });
+  if (!res.ok) return { ok: false, error: "wipe" };
+  const body = (await res.json()) as { n?: number; aliases?: string[]; saves?: number };
+  return { ok: true, n: Number(body.n ?? 0), aliases: Array.isArray(body.aliases) ? body.aliases : [], saves: Number(body.saves ?? 0) };
+}
+
 export async function pushCloud(file: EconomyFile): Promise<boolean> {
   if (typeof window === "undefined") return false;
   if (!isUnlocked()) return false;
@@ -208,22 +249,7 @@ export async function pushCloud(file: EconomyFile): Promise<boolean> {
       return false;
     }
     lastSaved = pack.saved;
-    const people = real.students
-      .filter((s) => s.first && s.first.trim().length >= 2 && !s.removedAt)
-      .slice(0, 399)
-      .map((s) => ({
-        id: s.id,
-        alias: s.first.trim().slice(0, 16),
-        avatar: avatarOf(s.icon, s.id),
-        code: publicHandle(s.id),
-        pinHash: s.pinHash || "",
-      }));
-    const who = await fetch("/api/who", {
-      method: "PUT",
-      headers: { "content-type": "application/json", "x-tw-desk": token },
-      body: JSON.stringify({ people }),
-    });
-    if (!who.ok) {
+    if (!(await putWho(real, token))) {
       setStatus("error", "codes");
       return false;
     }

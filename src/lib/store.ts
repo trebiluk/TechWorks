@@ -997,6 +997,27 @@ export function setAlias(file: EconomyFile, id: string, first: string): EconomyF
   return next;
 }
 
+/** Staff roster only. Optional flag. No desk-key bump. */
+export function setStudentTest(file: EconomyFile, id: string, on: boolean): EconomyFile {
+  const next = clone(file);
+  next.students = next.students.map((s) => {
+    if (s.id !== id) return s;
+    if (on) return { ...s, test: true as const };
+    if (!s.test) return s;
+    const { test: _drop, ...rest } = s;
+    return rest;
+  });
+  return next;
+}
+
+/** Drops test rows from this desk. Does not touch classmates. */
+export function dropTestStudents(file: EconomyFile): { file: EconomyFile; aliases: string[] } {
+  const aliases = file.students.filter((s) => s.test === true).map((s) => s.first);
+  const next = clone(file);
+  next.students = next.students.filter((s) => s.test !== true);
+  return { file: next, aliases };
+}
+
 export function setLegalNames(file: EconomyFile, _id: string, _legal: { legalFirst?: string; legalLast?: string }): EconomyFile {
   return file;
 }

@@ -10,6 +10,7 @@ import { LOG_HEADER, MASTER_HEADER, ledgerTsv, logRows, masterRows, toTsv, weekl
 import { applySort, decorateRank, type SortKey } from "@/lib/rank";
 import { SortBar } from "@/components/sort-bar";
 import { QuarterChip } from "@/components/quarter-chip";
+import { TestPill } from "@/components/roster-onboard";
 import { XpBit, PerkBit } from "@/components/marks";
 import { ensurePriorYear, PRIOR_YEAR } from "@/lib/prior-year";
 import { loadClub } from "@/lib/club";
@@ -71,18 +72,20 @@ export function DataBoard({
     };
   }, [shelf]);
   const src = shelf === "archive" && arch ? arch : file;
+  const counted = useMemo(() => ({ ...src, students: src.students.filter((s) => s.test !== true) }), [src]);
   const archived = shelf === "archive";
-  const real = showFirstReal(src);
-  const bells = mixSh ? bellFor(src) : shopBells(src);
+  const real = showFirstReal(counted);
+  const bells = mixSh ? bellFor(counted) : shopBells(counted);
   const cards = useMemo(
-    () => workerCards(src).filter((s) => mixSh || s.period !== 6),
-    [src, mixSh],
+    () => workerCards(counted).filter((s) => mixSh || s.period !== 6),
+    [counted, mixSh],
   );
+  const testRows = src.students.filter((s) => s.test === true && !s.removedAt);
   const [metric, setMetric] = useState<Metric>("xp");
   const [group, setGroup] = useState<"worker" | "period">("worker");
   const [chart, setChart] = useState<"bar" | "line">("bar");
   const [sort, setSort] = useState<SortKey>("level");
-  const ranked = applySort(decorateRank(src, cards), sort);
+  const ranked = applySort(decorateRank(counted, cards), sort);
   const [sheet, setSheet] = useState(false);
   const [id, setId] = useState(cards[0]?.id ?? "");
   const [copied, setCopied] = useState("");
@@ -105,7 +108,7 @@ export function DataBoard({
     const wallet = [...kids].sort((a, b) => b.quarter - a.quarter).slice(0, 3);
     return { lead, behind, need3, wallet };
   }, [cards]);
-  const weeks = useMemo(() => weeklyTrend(src, mixSh), [src, mixSh]);
+  const weeks = useMemo(() => weeklyTrend(counted, mixSh), [counted, mixSh]);
   const chartRows =
     chart === "line"
       ? weeks.map((w) => {
@@ -129,7 +132,7 @@ export function DataBoard({
 
   async function copy(kind: "log" | "master" | "ledger") {
     const text =
-      kind === "log" ? toTsv(LOG_HEADER, logRows(src, mixSh)) : kind === "master" ? toTsv(MASTER_HEADER, masterRows(src, mixSh)) : ledgerTsv(src);
+      kind === "log" ? toTsv(LOG_HEADER, logRows(counted, mixSh)) : kind === "master" ? toTsv(MASTER_HEADER, masterRows(counted, mixSh)) : ledgerTsv(counted);
     try {
       await navigator.clipboard.writeText(text);
       setCopied(kind);
@@ -177,8 +180,18 @@ export function DataBoard({
         <p className="mt-1 text-sm text-muted">
           {archived
             ? "2025-26 fake year · 72 workshop + 14 study hall · four sessions. Not your live roster. Charts and Sheets copy only."
-            : "Charts and the Google book. Tech classes only unless you mix study hall (fun / building-wide)."}
+            : "Charts and the Google book. Tech classes only unless you mix study hall (fun / building-wide). Class count skips test students."}
         </p>
+        {testRows.length ? (
+          <p className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+            <span className="text-muted">Staff · test students stay off the board</span>
+            {testRows.map((s) => (
+              <span key={s.id} className="inline-flex items-center gap-1">
+                {s.first} <TestPill />
+              </span>
+            ))}
+          </p>
+        ) : null}
         {archived && !arch ? <p className="mt-2 text-sm text-gold">{archErr || "Building 2025-26…"}</p> : null}
         {archived && arch?.meta.sessions?.length ? (
           <ul className="mt-2 flex flex-wrap gap-2 text-sm">

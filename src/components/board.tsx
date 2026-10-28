@@ -164,6 +164,7 @@ export function Board() {
   }, [hubLangOpen]);
   const overlayOn = featureOn(file, "debug") && demoId !== "off";
   const list = useMemo(() => score(wallFile), [wallFile]);
+  const publicList = useMemo(() => list.filter((s) => s.test !== true), [list]);
   const bells = useMemo(() => bellFor(wallFile), [wallFile]);
   const [view, setView] = useState<View>("overview");
   const [wallFocus, setWallFocus] = useState<{ date: string; period: number } | null>(null);
@@ -262,7 +263,7 @@ export function Board() {
   const houseMatch = qFind ? houseHits(qFind) : [];
   const hits = qFind
     ? wallFile.students
-        .filter((s) => isLiveStudent(s, wallFile.meta.quarterName) && (view === "studyhall" || view === "data" || s.period !== 6))
+        .filter((s) => isLiveStudent(s, wallFile.meta.quarterName) && (unlocked || s.test !== true) && (view === "studyhall" || view === "data" || s.period !== 6))
         .filter((s) => {
           return s.first.toLowerCase().includes(qFind) || publicHandle(s.id).toLowerCase().includes(qFind) || s.id.toLowerCase().includes(qFind);
         })
@@ -732,7 +733,7 @@ export function Board() {
 
   const wallDash = (arrange: boolean) => (
         <Dashboard
-          list={list}
+          list={publicList}
           bells={bells}
           file={wallFile}
           unlocked={unlocked}
@@ -1215,7 +1216,7 @@ export function Board() {
       ) : view === "week" ? (
         <WeekBoard
           file={wallFile}
-          list={list}
+          list={publicList}
           bells={bells}
           cycle={file.meta.config?.currentCycle ?? 1}
           onPeriod={(p) => { setJumpPeriod(p); goDesk("score"); }}

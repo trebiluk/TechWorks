@@ -8,6 +8,7 @@ import { periodNow } from "@/lib/bells";
 import { applySort, byCombo } from "@/lib/rank";
 import { titleOf } from "@/lib/flair";
 import { CrewBanner, WorkerCard } from "@/components/shop-cards";
+import { TestPill } from "@/components/roster-onboard";
 import { useShopClock } from "@/lib/use-clock";
 import { cn } from "@/lib/utils";
 
@@ -39,9 +40,10 @@ export function RosterWall({
     () => applySort(byCombo(file, list.filter((s) => s.period === shown)), "level"),
     [file, list, shown],
   );
+  const testIds = useMemo(() => new Set(file.students.filter((s) => s.test === true).map((s) => s.id)), [file.students]);
   const byId = useMemo(() => new Map(ranked.map((s) => [s.id, s])), [ranked]);
-  const leadId = ranked[0]?.id;
-  const n = ranked.length;
+  const leadId = ranked.find((s) => !testIds.has(s.id))?.id;
+  const n = ranked.filter((s) => !testIds.has(s.id)).length;
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col gap-3 overflow-y-auto overscroll-y-contain pb-3">
@@ -102,12 +104,13 @@ export function RosterWall({
                 color={crew.color}
                 logo={crew.logo}
                 period={shown}
-                n={crew.kids.length}
+                n={crew.kids.filter((k) => !testIds.has(k.id)).length}
               />
               <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
                 {rows.length ? (
                   rows.map((s) => (
-                    <li key={s!.id}>
+                    <li key={s!.id} className="space-y-1">
+                      {s!.test === true ? <TestPill /> : null}
                       <WorkerCard
                         id={s!.id}
                         name={s!.first}

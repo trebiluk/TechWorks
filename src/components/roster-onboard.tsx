@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { X } from "lucide-react";
 import { bellFor, type EconomyFile } from "@/lib/economy";
 import { parseLegalRosterText } from "@/lib/alias-bank";
-import { importLegalRoster, rerollAlias, setAlias, saveDeskNow } from "@/lib/store";
+import { importLegalRoster, rerollAlias, setAlias, setStudentTest, saveDeskNow } from "@/lib/store";
 import { snapshotNow } from "@/lib/vault";
 import { publicHandle } from "@/lib/live";
 import { cn } from "@/lib/utils";
@@ -117,6 +117,7 @@ export function RosterOnboard({
                   <th className="px-2 py-2">Alias</th>
                   <th className="px-2 py-2">P</th>
                   <th className="px-2 py-2">Class</th>
+                  <th className="px-2 py-2">Test</th>
                   <th className="px-2 py-2" />
                 </tr>
               </thead>
@@ -132,6 +133,21 @@ export function RosterOnboard({
                     </td>
                     <td className="px-2 py-1.5 font-mono text-xs">{s.period}</td>
                     <td className="px-2 py-1.5 font-mono text-xs text-subtle">{publicHandle(s.id)}</td>
+                    <td className="px-2 py-1.5">
+                      <label className="inline-flex min-h-9 items-center gap-2 text-xs font-semibold">
+                        <input
+                          type="checkbox"
+                          checked={s.test === true}
+                          onChange={(e) => {
+                            const next = setStudentTest(file, s.id, e.target.checked);
+                            saveDeskNow(next);
+                            onChange(next);
+                          }}
+                        />
+                        Test student
+                        {s.test === true ? <TestPill /> : null}
+                      </label>
+                    </td>
                     <td className="px-2 py-1.5">
                       <button
                         type="button"
@@ -159,5 +175,13 @@ export function RosterOnboard({
         </div>
       </div>
     </div>
+  );
+}
+
+export function TestPill() {
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-gold/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-fg">
+      <span aria-hidden>🧪</span> TEST
+    </span>
   );
 }

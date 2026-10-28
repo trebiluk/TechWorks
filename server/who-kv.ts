@@ -11,6 +11,8 @@ export type WhoRow = {
   avatar: string;
   code: string;
   pinHash: string;
+  /** Set only from the staff roster. Never a verified flag. */
+  test?: true;
 };
 
 const DATA_KEY = "tw-who-v1";
@@ -40,7 +42,7 @@ function pinHashOf(id: string, pin: string) {
 
 function clean(src: unknown): WhoRow | null {
   if (!src || typeof src !== "object") return null;
-  const row = src as { id?: unknown; alias?: unknown; avatar?: unknown; code?: unknown; pinHash?: unknown };
+  const row = src as { id?: unknown; alias?: unknown; avatar?: unknown; code?: unknown; pinHash?: unknown; test?: unknown };
   const id = clip(row.id, 40);
   const alias = clip(row.alias, 16);
   const avatar = clip(row.avatar, 8);
@@ -48,7 +50,9 @@ function clean(src: unknown): WhoRow | null {
   const pinHash = clip(row.pinHash, 16);
   if (!id || alias.length < 2 || code.length !== 5) return null;
   if (pinHash && !/^[0-9a-f]{16}$/.test(pinHash)) return null;
-  return { id, alias, avatar: avatar || "🐾", code, pinHash };
+  const next: WhoRow = { id, alias, avatar: avatar || "🐾", code, pinHash };
+  if (row.test === true) next.test = true;
+  return next;
 }
 
 export async function read(event: unknown): Promise<WhoRow[]> {
@@ -105,7 +109,7 @@ export async function enterWho(event: unknown, alias: string, code: string, pin:
   if (!hit) return { ok: false as const, error: name.length >= 2 ? "That name and code do not match." : "That code is not on the list." };
   if (!hit.pinHash) return { ok: false as const, error: "Ask your teacher to set your PIN in TechWorks." };
   if (pinHashOf(hit.id, digits) !== hit.pinHash) return { ok: false as const, error: "That PIN does not match." };
-  return { ok: true as const, alias: hit.alias, code: hit.code, verified: true as const, picture: hit.avatar };
+  return { ok: true as const, alias: hit.alias, code: hit.code, verified: true as const, picture: hit.avatar, ...(hit.test ? { test: true as const } : {}) };
 }
 
 export async function saveWho(event: unknown, token: string, incoming: unknown[]) {
@@ -116,4 +120,21 @@ export async function saveWho(event: unknown, token: string, incoming: unknown[]
   const people = withProve(incoming.map(clean).filter((item): item is WhoRow => !!item));
   await kv.put(DATA_KEY, JSON.stringify({ v: 1, people }));
   return "kv" as const;
+}
+
+/** Test rows only. The prove bot is never a test student. */
+export async function listTestWho(event: unknown): Promise<WhoRow[]> {
+  const rows = await read(event);
+  return rows.filter((row) => row.test === true && row.id !== PROVE.id);
+}
+
+/** Removes test rows from the alias book. Classmates and the prove bot stay. */
+export async function dropTestWho(event: unknown): Promise<{ n: number; aliases: string[] } | "none"> {
+  const kv = await openKv(event);
+  if (!kv) return "none";
+  const rows = await read(event);
+  const gone = rows.filter((row) => row.test === true && row.id !== PROVE.id);
+  const keep = rows.filter((row) => row.test !== true || row.id === PROVE.id);
+  await kv.put(DATA_KEY, JSON.stringify({ v: 1, people: withProve(keep) }));
+  return { n: gone.length, aliases: gone.map((row) => row.alias) };
 }

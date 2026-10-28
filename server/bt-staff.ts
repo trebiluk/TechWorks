@@ -1,7 +1,7 @@
 import { knDb } from "./cf-env";
-import { BT_SQL, restoreRev } from "./bt-world";
-import { hmacText } from "./kn-keys";
-import { read as readWho } from "./who-kv";
+import { BT_SQL, restoreRev, aliasRefOf, deleteAliasSaves } from "./bt-world";
+import { listTestWho, dropTestWho, read as readWho } from "./who-kv";
+import { loadRow } from "./desk-kv";
 
 type WorldRow = { alias_ref: string; world: string; rev: number; bytes: number; updated_at: number };
 
@@ -43,4 +43,22 @@ export async function listStaffRevs(event: unknown, aliasRef: string, world: str
 
 export async function restoreStaffRev(event: unknown, aliasRef: string, world: string, rev: number, ifMatch: string) {
   return restoreRev(event, aliasRef, world, rev, ifMatch);
+}
+
+/** Desk key required. Deletes test alias rows and their Bertopia saves. Nothing else. */
+export async function wipeTestStudents(event: unknown, token: string): Promise<
+  { ok: true; n: number; aliases: string[]; saves: number } | { ok: false; error: "deny" | "none" }
+> {
+  const { row } = await loadRow(event);
+  if (!row || row.keyHash !== token) return { ok: false, error: "deny" };
+  const gone = await listTestWho(event);
+  let saves = 0;
+  for (const person of gone) {
+    const ref = await aliasRefOf(event, person.code);
+    if (!ref) continue;
+    saves += await deleteAliasSaves(event, ref);
+  }
+  const dropped = await dropTestWho(event);
+  if (dropped === "none") return { ok: false, error: "none" };
+  return { ok: true, n: dropped.n, aliases: dropped.aliases, saves };
 }

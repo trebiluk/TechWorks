@@ -48,7 +48,7 @@ function rowOf(s: { id: string; first: string; period: number; xp: number; quart
 
 /** Gilded Top XP / Top $ plus the classic alias list. Shop only. Never legal names. */
 export function liveBoardRanks(file: EconomyFile): LiveBoardRanks {
-  const shop = score(file).filter((s) => s.period !== 6);
+  const shop = score(file).filter((s) => s.period !== 6 && s.test !== true);
   const ranked = byCombo(file, shop);
   const xp = applySort(ranked, "level");
   const money = applySort(ranked, "wallet");

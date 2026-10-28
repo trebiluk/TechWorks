@@ -79,6 +79,8 @@ export type RawStudent = {
   hallLeft?: boolean;
   /** Last time this alias signed in with a pin. */
   lastSeen?: string;
+  /** Staff mark. Hidden from the public board, leaderboards, and class counts. */
+  test?: true;
 };
 
 export function legalLastOf(_s: Pick<RawStudent, "legalLast" | "last">): string {
@@ -443,6 +445,11 @@ export function isLiveStudent(s: RawStudent, quarterName?: string): boolean {
   const sem = String(s.sem ?? "Q1").toUpperCase();
   if (sem === "YEAR" || (sem.includes("Q1") && sem.includes("Q4"))) return true;
   return sem === sessionCode(quarterName);
+}
+
+/** Public board, leaderboards, and class counts skip these. Staff roster still shows them. */
+export function isTestStudent(s: { test?: boolean } | null | undefined): boolean {
+  return s?.test === true;
 }
 
 export function dayPay(code: string, rates: Record<string, number>): number {

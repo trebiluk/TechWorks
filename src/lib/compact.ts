@@ -84,6 +84,7 @@ export function compactStudent(s: RawStudent): RawStudent {
   if (s.hallOf?.length) next.hallOf = s.hallOf.filter((n) => Number.isFinite(n));
   if (s.hallLeft) next.hallLeft = true;
   if (s.lastSeen) next.lastSeen = s.lastSeen;
+  if (s.test === true) next.test = true;
   const grades = slimMap(s.gradeOverrides as Record<string, unknown> | undefined);
   if (grades) next.gradeOverrides = grades as RawStudent["gradeOverrides"];
   const excuse = slimMap(s.gradeExcuse as Record<string, unknown> | undefined);

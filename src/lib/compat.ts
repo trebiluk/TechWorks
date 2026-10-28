@@ -94,4 +94,5 @@ export const STUDENT_KNOWN = [
   "hallOf",
   "hallLeft",
   "lastSeen",
+  "test",
 ] as const;

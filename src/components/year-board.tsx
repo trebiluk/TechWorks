@@ -24,7 +24,7 @@ export function YearBoard({
   const today = todayIso();
   const blocks = sessions();
   const archive = file.meta.sessions ?? [];
-  const live = score(file).filter((s) => s.period !== 6);
+  const live = score(file).filter((s) => s.period !== 6 && s.test !== true);
   const liveXp = live.reduce((n, s) => n + skillXp(file, s.id), 0);
   const liveCash = live.reduce((n, s) => n + s.quarter, 0);
   const yearCash = archive.reduce((n, a) => n + a.cash, 0) + liveCash;

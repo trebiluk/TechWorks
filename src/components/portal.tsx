@@ -23,7 +23,7 @@ export function WorkerPortal({ file }: { file: EconomyFile }) {
     () =>
       decorateRank(
         file,
-        score(file).filter((s) => isLiveStudent(s, file.meta.quarterName)),
+        score(file).filter((s) => isLiveStudent(s, file.meta.quarterName) && s.test !== true),
       ),
     [file],
   );

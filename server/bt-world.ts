@@ -35,6 +35,9 @@ export const BT_SQL = {
     "INSERT INTO bt_worlds (alias_ref, world, rev, schema, app_ver, head, bytes, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(alias_ref, world) DO UPDATE SET rev = excluded.rev, schema = excluded.schema, app_ver = excluded.app_ver, head = excluded.head, bytes = excluded.bytes, updated_at = excluded.updated_at",
   staffWorlds: "SELECT alias_ref, world, rev, bytes, updated_at FROM bt_worlds ORDER BY updated_at DESC",
   staffRevs: "SELECT rev, at, why FROM bt_world_revs WHERE alias_ref = ? AND world = ? ORDER BY rev DESC",
+  delWorlds: "DELETE FROM bt_worlds WHERE alias_ref = ?",
+  delChunks: "DELETE FROM bt_chunks WHERE alias_ref = ?",
+  delRevs: "DELETE FROM bt_world_revs WHERE alias_ref = ?",
 } as const;
 
 type Bound = {
@@ -89,6 +92,27 @@ async function aliasKey(event: unknown): Promise<CryptoKey | null> {
   );
   aliasKeys.set(id, key);
   return key;
+}
+
+/** HMAC of the shop code. Same ref the kid gate stores. Null when the server key is missing. */
+export async function aliasRefOf(event: unknown, code: string): Promise<string | null> {
+  const key = await aliasKey(event);
+  if (!key) return null;
+  const shop = code.toUpperCase().replace(/[^A-Z2-9]/g, "");
+  if (shop.length !== 5) return null;
+  return hmacText(key, shop);
+}
+
+/** Drops every Bertopia world, chunk, and rev for one alias. Returns how many worlds were listed first. */
+export async function deleteAliasSaves(event: unknown, aliasRef: string): Promise<number> {
+  const db = dbOf(event);
+  if (!db || !aliasRef) return 0;
+  const listed = await db.prepare(BT_SQL.listWorlds).bind(aliasRef).all<{ world: string }>();
+  const n = listed.results?.length ?? 0;
+  await db.prepare(BT_SQL.delChunks).bind(aliasRef).run();
+  await db.prepare(BT_SQL.delRevs).bind(aliasRef).run();
+  await db.prepare(BT_SQL.delWorlds).bind(aliasRef).run();
+  return n;
 }
 
 async function gate(event: unknown, token: string | undefined): Promise<{ ref: string } | Out> {

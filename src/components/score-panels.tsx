@@ -9,9 +9,12 @@ import {
   setCycleGoal,
   setSchedule,
   setShop,
+  dropTestStudents,
+  saveDeskNow,
 } from "@/lib/store";
 import { formatBell, bellTimes, scheduleOf, SCHEDULES } from "@/lib/bells";
 import { RosterOnboard } from "@/components/roster-onboard";
+import { pushCloud, wipeCloudTests } from "@/lib/desk-cloud";
 import { RewardBar, RewardEditor } from "@/components/reward-bar";
 import { GradeGoalChips } from "@/components/goal-chips";
 import { ChangelogCard } from "@/components/changelog-card";
@@ -88,12 +91,59 @@ export function ScoreConfigPanel({
   const cycle = file.meta.config?.currentCycle ?? 1;
   const goals = { ...DEFAULT_CYCLE_GOALS, ...(file.meta.config?.cycleGoals ?? {}) };
   const [rosterOpen, setRosterOpen] = useState(false);
+  const [wipeArm, setWipeArm] = useState(false);
+  const [wipeNote, setWipeNote] = useState("");
+  const [wiping, setWiping] = useState(false);
+  const testRows = file.students.filter((s) => s.test === true);
+  const classN = file.students.filter((s) => s.test !== true && !s.removedAt && !s.archivedAt && s.period !== 6).length;
+  async function wipe() {
+    if (wiping) return;
+    setWiping(true);
+    const names = testRows.map((s) => s.first);
+    const cloud = await wipeCloudTests(file);
+    const dropped = dropTestStudents(file);
+    saveDeskNow(dropped.file);
+    onChange(dropped.file);
+    if (cloud.ok) void pushCloud(dropped.file);
+    setWipeArm(false);
+    setWiping(false);
+    setWipeNote(
+      cloud.ok
+        ? `Wiped ${names.length}: ${names.join(", ")}. Bertopia saves removed: ${cloud.saves}.`
+        : `Removed ${names.length} from this desk: ${names.join(", ")}. Bertopia saves stay until the desk is saved online.`,
+    );
+  }
   return (
     <div className="min-h-0 flex-1 overflow-auto rounded-xl bg-surface p-4">
       <p className="text-sm font-medium uppercase tracking-wider text-subtle">Cycle {cycle}</p>
       <button type="button" onClick={() => setRosterOpen(true)} className="mt-2 min-h-11 rounded-md bg-gold px-3 text-sm font-semibold text-bg">
         4-tap · add a class
       </button>
+      <p className="mt-2 text-sm text-muted">Class count · {classN}. Test students stay off the public board.</p>
+      {testRows.length ? (
+        <div className="mt-2 rounded-md bg-elevated p-3">
+          <p className="text-sm font-semibold">Test students · {testRows.length}</p>
+          <p className="mt-1 text-sm">{testRows.map((s) => s.first).join(", ")}</p>
+          {wipeArm ? (
+            <div className="mt-2 flex flex-wrap gap-2">
+              <p className="w-full text-sm">
+                Wipe {testRows.length} test student{testRows.length === 1 ? "" : "s"}: {testRows.map((s) => s.first).join(", ")}? Their Bertopia saves go too. Classmates stay.
+              </p>
+              <button type="button" disabled={wiping} onClick={() => void wipe()} className="min-h-11 rounded-md bg-loss px-3 text-sm font-semibold text-accent-fg">
+                Yes, wipe {testRows.length}
+              </button>
+              <button type="button" onClick={() => setWipeArm(false)} className="min-h-11 rounded-md bg-surface px-3 text-sm font-semibold">
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button type="button" onClick={() => setWipeArm(true)} className="mt-2 min-h-11 rounded-md bg-surface px-3 text-sm font-semibold">
+              Wipe test students
+            </button>
+          )}
+        </div>
+      ) : null}
+      {wipeNote ? <p className="mt-2 text-sm font-semibold">{wipeNote}</p> : null}
       {rosterOpen ? (
         <RosterOnboard file={file} onChange={onChange} onClose={() => setRosterOpen(false)} onDesk={() => setRosterOpen(false)} />
       ) : null}

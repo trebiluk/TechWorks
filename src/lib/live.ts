@@ -52,7 +52,7 @@ export function periodPulses(file: EconomyFile, today = todayIso()) {
   const q = file.meta.quarterName;
   const out: Record<number, { due: number; overdue: number; head: number }> = {};
   for (const s of file.students) {
-    if (!isLiveStudent(s, q)) continue;
+    if (!isLiveStudent(s, q) || s.test === true) continue;
     const row = (out[s.period] ??= { due: 0, overdue: 0, head: 0 });
     for (let i = 0; i < days.length; i++) {
       const d = days[i];
