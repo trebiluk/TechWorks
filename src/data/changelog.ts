@@ -3,15 +3,19 @@ import { APP_VERSION } from "@/lib/version";
 export { APP_VERSION };
 
 /** Newest What's new line. The Hub drawer and the TechWorks menu share this string. */
-export const WHATS_NEW_LINE = "TW 1.94.23 — Groundwork for staff passkey setup. It stays closed until it's ready.";
+export const WHATS_NEW_LINE = "TW 1.94.24 — Test students stay off the public board. Staff can wipe them together.";
 
 export const CHANGELOG_MD = `# TechWorks changelog
 
 App version **${APP_VERSION}**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
-## 1.94.23 — 2026-10-22
+## 1.94.24 — 2026-10-28
 
 - ${WHATS_NEW_LINE}
+
+## 1.94.23 — 2026-10-22
+
+- TW 1.94.23 — Groundwork for staff passkey setup. It stays closed until it's ready.
 
 ## 1.94.22 — 2026-10-22
 
