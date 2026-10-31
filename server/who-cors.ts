@@ -1,6 +1,9 @@
 import { getHeader, getRequestURL, setHeader, type H3Event } from "h3";
 
-/** School doors and the local preview. Credentials require a specific origin, never *. */
+/** Vercel preview deployments of apps-kulibert: https://apps-kulibert-<branch>-cnyguy815-8651.vercel.app. Nothing else on vercel.app. */
+const VERCEL_PREVIEW = /^apps-kulibert-[a-z0-9-]+-cnyguy815-8651\.vercel\.app$/;
+
+/** School doors, the Vercel preview of apps-kulibert, and the local preview. Credentials require a specific origin, never *. */
 export function whoAllowOrigin(origin: string): string | null {
   if (!origin) return null;
   let host = "";
@@ -15,6 +18,7 @@ export function whoAllowOrigin(origin: string): string | null {
   const local = host === "localhost" || host === "127.0.0.1";
   const school = host === "kulibert.net" || host.endsWith(".kulibert.net");
   if (school && proto === "https:") return origin;
+  if (VERCEL_PREVIEW.test(host) && proto === "https:") return origin;
   if (local && (proto === "http:" || proto === "https:")) return origin;
   return null;
 }
