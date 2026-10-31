@@ -1,0 +1,21 @@
+# Used only by vitest-pool-workers (npm test). Same object and migration as wrangler.toml, plus a LOCAL D1
+# so the copy-to-D1 paths run in workerd. The database_id is a placeholder: the test runner uses a local
+# simulator, nothing is created in any Cloudflare account.
+name = "bertopia-live-test"
+main = "src/index.ts"
+compatibility_date = "2026-09-08"
+workers_dev = false
+
+[[durable_objects.bindings]]
+name = "BERTOPIA_WORLD"
+class_name = "BertopiaWorld"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["BertopiaWorld"]
+
+[[d1_databases]]
+binding = "LIVE_DB"
+database_name = "bertopia-live-test"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"

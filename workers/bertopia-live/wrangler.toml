@@ -24,3 +24,4 @@ enabled = false
 # binding = "LIVE_DB"
 # database_name = "bertopia-live"
 # database_id = "<set at deploy>"
+# migrations_dir = "migrations"

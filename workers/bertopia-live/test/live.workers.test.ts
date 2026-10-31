@@ -1,35 +1,13 @@
-// Bertopia live P2 in workerd: the real Durable Object, real SQLite storage, real hibernating sockets.
+// Bertopia live P2 in workerd (the D1 paths are in live.d1.workers.test.ts): the real Durable Object, real SQLite storage, real hibernating sockets.
 //   cd workers/bertopia-live && npm install && npm test
 // Not run when this file was written (the package registry was blocked); ShipCheck runs it.
-import { SELF, env, runDurableObjectAlarm, runInDurableObject } from "cloudflare:test";
-import { describe, expect, it } from "vitest";
+import { env, runDurableObjectAlarm, runInDurableObject } from "cloudflare:test";
+import { afterEach, describe, expect, it } from "vitest";
+import { type Conn, closeAll, edit, open, sleep, until } from "./workers-helpers.ts";
 
-type Msg = Record<string, unknown>;
-type Conn = { ws: WebSocket; inbox: Msg[]; closed: { code: number; reason: string } | null };
-
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-async function until(fn: () => boolean, label: string) {
-  for (let i = 0; i < 300; i++) {
-    if (fn()) return;
-    await sleep(10);
-  }
-  throw new Error("timed out waiting for " + label);
-}
-
-async function open(world: string, alias: string): Promise<Conn> {
-  const res = await SELF.fetch(`https://live/live?world=${world}`, {
-    headers: { Upgrade: "websocket", "x-bt-ref": `ref-${alias}-aaaaaaaaaa`, "x-bt-alias": alias, "x-bt-role": "kid" },
-  });
-  const ws = (res as unknown as { webSocket: WebSocket }).webSocket;
-  ws.accept();
-  const conn: Conn = { ws, inbox: [], closed: null };
-  ws.addEventListener("message", (e: MessageEvent) => conn.inbox.push(JSON.parse(String(e.data))));
-  ws.addEventListener("close", (e: CloseEvent) => { conn.closed = { code: e.code, reason: e.reason }; });
-  return conn;
-}
-
-const edit = (c: Conn, x: number, y: number, z: number, block: number, rev: number) => c.ws.send(JSON.stringify({ t: "edit", x, y, z, block, rev }));
 const stubFor = (world: string) => env.BERTOPIA_WORLD.get(env.BERTOPIA_WORLD.idFromName(world));
+
+afterEach(closeAll);
 
 describe("bertopia live P2 (workerd)", () => {
   it("rev reject: a stale edit gets {t:'reject', chunk, rev} and nothing is broadcast", async () => {
