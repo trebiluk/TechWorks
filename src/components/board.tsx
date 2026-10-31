@@ -832,6 +832,62 @@ export function Board() {
                       {t("Admin")}
                       {unlocked && dueN ? <span className="rounded-full bg-black/30 px-2 py-0.5 text-xs">⚠ {dueN}</span> : null}
                     </button>
+                    <button
+                      ref={settingsRow}
+                      type="button"
+                      onClick={(e) => {
+                        if (document.documentElement.classList.contains("kb-framed")) {
+                          e.stopPropagation();
+                          setHubLangOpen(true);
+                          return;
+                        }
+                        openHubSettings();
+                      }}
+                      className="tw-tap inline-flex min-h-11 items-center gap-2 rounded-xl bg-elevated px-3 text-left text-sm font-semibold"
+                    >
+                      <span aria-hidden>⚙</span> {t("My settings")}
+                    </button>
+                    {hubLangOpen ? (
+                      <div className="grid gap-1" data-keep-pocket role="dialog" aria-label={t("My settings")} onClick={(e) => e.stopPropagation()}>
+                        <button
+                          ref={settingsClose}
+                          type="button"
+                          onClick={() => {
+                            setHubLangOpen(false);
+                            settingsRow.current?.focus();
+                          }}
+                          className="tw-tap min-h-11 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg"
+                        >
+                          {t("Close")}
+                        </button>
+                        {(
+                          [
+                            ["en", "English"],
+                            ["uk", "Українська"],
+                            ["ru", "Русский"],
+                            ["es", "Español"],
+                            ["ar", "العربية"],
+                            ["fa-AF", "دری"],
+                            ["rw", "Ikinyarwanda"],
+                            ["ti", "ትግርኛ"],
+                          ] as const
+                        ).map(([code, label]) => (
+                          <button
+                            key={code}
+                            type="button"
+                            lang={code === "fa-AF" ? "fa" : code}
+                            dir={code === "ar" || code === "fa-AF" ? "rtl" : "ltr"}
+                            onClick={() => {
+                              const prefs = (window as Window & { KulibertPrefs?: { acceptLang?: (c: string) => void } }).KulibertPrefs;
+                              prefs?.acceptLang?.(code);
+                            }}
+                            className="tw-tap min-h-11 min-w-11 rounded-xl bg-elevated px-3 text-left text-sm font-semibold"
+                          >
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
                   </>
                 }
               >
@@ -847,62 +903,6 @@ export function Board() {
                   <button type="button" data-skill-track-open onClick={() => go("track")} className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-left text-sm font-semibold">
                     {t("Skills")}
                   </button>
-                ) : null}
-                <button
-                  ref={settingsRow}
-                  type="button"
-                  onClick={(e) => {
-                    if (document.documentElement.classList.contains("kb-framed")) {
-                      e.stopPropagation();
-                      setHubLangOpen(true);
-                      return;
-                    }
-                    openHubSettings();
-                  }}
-                  className="tw-tap min-h-11 rounded-xl bg-elevated px-3 text-left text-sm font-semibold"
-                >
-                  {t("My settings")}
-                </button>
-                {hubLangOpen ? (
-                  <div className="grid gap-1" data-keep-pocket role="dialog" aria-label={t("My settings")} onClick={(e) => e.stopPropagation()}>
-                    <button
-                      ref={settingsClose}
-                      type="button"
-                      onClick={() => {
-                        setHubLangOpen(false);
-                        settingsRow.current?.focus();
-                      }}
-                      className="tw-tap min-h-11 rounded-xl bg-accent px-3 text-sm font-semibold text-accent-fg"
-                    >
-                      {t("Close")}
-                    </button>
-                    {(
-                      [
-                        ["en", "English"],
-                        ["uk", "Українська"],
-                        ["ru", "Русский"],
-                        ["es", "Español"],
-                        ["ar", "العربية"],
-                        ["fa-AF", "دری"],
-                        ["rw", "Ikinyarwanda"],
-                        ["ti", "ትግርኛ"],
-                      ] as const
-                    ).map(([code, label]) => (
-                      <button
-                        key={code}
-                        type="button"
-                        lang={code === "fa-AF" ? "fa" : code}
-                        dir={code === "ar" || code === "fa-AF" ? "rtl" : "ltr"}
-                        onClick={() => {
-                          const prefs = (window as Window & { KulibertPrefs?: { acceptLang?: (c: string) => void } }).KulibertPrefs;
-                          prefs?.acceptLang?.(code);
-                        }}
-                        className="tw-tap min-h-11 min-w-11 rounded-xl bg-elevated px-3 text-left text-sm font-semibold"
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
                 ) : null}
                 {view === "skills" && learnStart === "plan" ? (
                   <div className="grid grid-cols-2 gap-1">
