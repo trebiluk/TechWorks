@@ -1,138 +1,85 @@
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, it } from "node:test";
 import { mockEvent, type H3Event } from "h3";
-import { BT_SQL } from "./bt-world.ts";
+import { DatabaseSync } from "node:sqlite";
+import { restoreRev } from "./bt-world.ts";
 import worldGet from "./routes/api/bertopia/world.get.ts";
 import worldPut from "./routes/api/bertopia/world.put.ts";
 import { resetKnKeys } from "./kn-keys.ts";
+import { resetKnReady } from "./kn-db.ts";
 import { WHO_COOKIE, mintSession } from "./who-session.ts";
 
-type World = {
-  alias_ref: string;
-  world: string;
-  rev: number;
-  schema: number;
-  app_ver: string | null;
-  head: Uint8Array;
-  bytes: number;
-  updated_at: number;
-};
-type Chunk = { alias_ref: string; world: string; ck: string; hash: string; rev: number; data: string };
-type Rev = { alias_ref: string; world: string; rev: number; head: Uint8Array; at: number; why: string };
+type Stmt = { sql: string; args: unknown[]; first: <T>() => Promise<T | null>; all: <T>() => Promise<{ results: T[] }>; run: () => Promise<unknown> };
 
+/** Real SQLite behind the D1 surface bt-world uses. db.batch is one transaction, like D1. */
 class Mem {
-  worlds = new Map<string, World>();
-  chunks = new Map<string, Chunk>();
-  revs = new Map<string, Rev>();
-  throttle = new Map<string, { n: number; exp: number }>();
+  sql = new DatabaseSync(":memory:");
+  /** Test hooks: drop db.batch, or throw inside a batch right after a statement matching this pattern ran. */
+  noBatch = false;
+  failAfter: RegExp | null = null;
+  batches = 0;
+  constructor() {
+    for (const ddl of SCHEMA) this.sql.exec(ddl);
+  }
+  private exec(sql: string, args: unknown[], how: "first" | "all" | "run") {
+    const st = this.sql.prepare(sql);
+    if (how === "first") return (st.get(...(args as never[])) as unknown) ?? null;
+    if (how === "all") return st.all(...(args as never[]));
+    const r = st.run(...(args as never[]));
+    return { success: true, meta: { changes: Number(r.changes) } };
+  }
   prepare(sql: string) {
     return {
-      bind: (...args: unknown[]) => ({
-        first: async <T>() => run(this, sql, args, "first") as T | null,
-        all: async <T>() => ({ results: run(this, sql, args, "all") as T[] }),
-        run: async () => {
-          run(this, sql, args, "run");
-          return { success: true };
-        },
+      bind: (...args: unknown[]): Stmt => ({
+        sql,
+        args,
+        first: async <T>() => this.exec(sql, args, "first") as T | null,
+        all: async <T>() => ({ results: this.exec(sql, args, "all") as T[] }),
+        run: async () => this.exec(sql, args, "run"),
       }),
     };
   }
-  async batch(stmts: { run: () => Promise<unknown> }[]) {
-    const out = [];
-    for (const stmt of stmts) out.push(await stmt.run());
-    return out;
+  get batch() {
+    if (this.noBatch) return undefined;
+    return async (stmts: Stmt[]) => {
+      this.batches++;
+      this.sql.exec("BEGIN");
+      try {
+        const out: unknown[] = [];
+        for (const st of stmts) {
+          out.push(this.exec(st.sql, st.args, "run"));
+          if (this.failAfter?.test(st.sql)) throw new Error("forced");
+        }
+        this.sql.exec("COMMIT");
+        return out;
+      } catch (err) {
+        this.sql.exec("ROLLBACK");
+        throw err;
+      }
+    };
+  }
+  count(table: string) {
+    return Number((this.sql.prepare(`SELECT COUNT(*) AS n FROM ${table}`).get() as { n: number }).n);
   }
   revsFor(world: string) {
-    return [...this.revs.values()].filter((row) => row.world === world).map((row) => row.rev);
+    return (this.sql.prepare("SELECT rev FROM bt_world_revs WHERE world = ?").all(world) as { rev: number }[]).map((row) => row.rev);
   }
   worldRefs(world: string) {
-    return [...this.worlds.values()].filter((row) => row.world === world).map((row) => row.alias_ref);
+    return (this.sql.prepare("SELECT alias_ref FROM bt_worlds WHERE world = ?").all(world) as { alias_ref: string }[]).map((row) => row.alias_ref);
+  }
+  world(ref: string, world: string) {
+    return this.sql.prepare("SELECT rev, head, bytes FROM bt_worlds WHERE alias_ref = ? AND world = ?").get(ref, world) as
+      | { rev: number; head: Uint8Array; bytes: number }
+      | undefined;
   }
 }
 
-function wk(alias: string, world: string) {
-  return `${alias}\0${world}`;
-}
-function ck(alias: string, world: string, key: string) {
-  return `${alias}\0${world}\0${key}`;
-}
-
-function run(db: Mem, sql: string, args: unknown[], how: "first" | "all" | "run"): unknown {
-  if (sql.startsWith("CREATE")) return how === "all" ? [] : null;
-  if (sql === BT_SQL.listWorlds) {
-    const rows = [...db.worlds.values()].filter((row) => row.alias_ref === args[0]);
-    return how === "first" ? (rows[0] ?? null) : rows;
-  }
-  if (sql === BT_SQL.oneWorld) {
-    return db.worlds.get(wk(String(args[0]), String(args[1]))) ?? null;
-  }
-  if (sql === BT_SQL.chunks) {
-    const rows = [...db.chunks.values()].filter((row) => row.alias_ref === args[0] && row.world === args[1]);
-    return how === "first" ? (rows[0] ?? null) : rows;
-  }
-  if (sql === BT_SQL.countWorlds) {
-    const n = [...db.worlds.values()].filter((row) => row.alias_ref === args[0]).length;
-    return { n };
-  }
-  if (sql === BT_SQL.revs) {
-    const rows = [...db.revs.values()]
-      .filter((row) => row.alias_ref === args[0] && row.world === args[1])
-      .map((row) => ({ rev: row.rev }));
-    return how === "first" ? (rows[0] ?? null) : rows;
-  }
-  if (sql === BT_SQL.throttle) return db.throttle.get(String(args[0])) ?? null;
-  if (sql === BT_SQL.putThrottle) {
-    db.throttle.set(String(args[0]), { n: Number(args[1]), exp: Number(args[2]) });
-    return null;
-  }
-  if (sql === BT_SQL.putRev) {
-    const row: Rev = {
-      alias_ref: String(args[0]),
-      world: String(args[1]),
-      rev: Number(args[2]),
-      head: args[3] as Uint8Array,
-      at: Number(args[4]),
-      why: String(args[5]),
-    };
-    db.revs.set(`${row.alias_ref}\0${row.world}\0${row.rev}`, row);
-    return null;
-  }
-  if (sql === BT_SQL.delRev) {
-    db.revs.delete(`${args[0]}\0${args[1]}\0${args[2]}`);
-    return null;
-  }
-  if (sql === BT_SQL.putChunk) {
-    const row: Chunk = {
-      alias_ref: String(args[0]),
-      world: String(args[1]),
-      ck: String(args[2]),
-      hash: String(args[3]),
-      rev: Number(args[4]),
-      data: String(args[5]),
-    };
-    db.chunks.set(ck(row.alias_ref, row.world, row.ck), row);
-    return null;
-  }
-  if (sql === BT_SQL.delChunk) {
-    db.chunks.delete(ck(String(args[0]), String(args[1]), String(args[2])));
-    return null;
-  }
-  if (sql === BT_SQL.putWorld) {
-    const row: World = {
-      alias_ref: String(args[0]),
-      world: String(args[1]),
-      rev: Number(args[2]),
-      schema: Number(args[3]),
-      app_ver: args[4] == null ? null : String(args[4]),
-      head: args[5] as Uint8Array,
-      bytes: Number(args[6]),
-      updated_at: Number(args[7]),
-    };
-    db.worlds.set(wk(row.alias_ref, row.world), row);
-    return null;
-  }
-  throw new Error("sql " + sql);
-}
+const SCHEMA = [
+  "CREATE TABLE kn_throttle (k TEXT PRIMARY KEY, n INTEGER NOT NULL, exp INTEGER NOT NULL)",
+  "CREATE TABLE bt_worlds (alias_ref TEXT, world TEXT, rev INTEGER NOT NULL, schema INTEGER NOT NULL, app_ver TEXT, head BLOB NOT NULL, bytes INTEGER NOT NULL, updated_at INTEGER NOT NULL, PRIMARY KEY(alias_ref, world))",
+  "CREATE TABLE bt_chunks (alias_ref TEXT, world TEXT, ck TEXT, hash TEXT NOT NULL, rev INTEGER NOT NULL, data BLOB NOT NULL, PRIMARY KEY(alias_ref, world, ck))",
+  "CREATE TABLE bt_world_revs (alias_ref TEXT, world TEXT, rev INTEGER, head BLOB, at INTEGER, why TEXT, PRIMARY KEY(alias_ref, world, rev))",
+];
 
 const KEY = Buffer.alloc(32, 7).toString("base64");
 let clock = Date.parse("2026-10-11T14:00:00.000Z");
@@ -182,6 +129,7 @@ describe("bertopia world store", () => {
   beforeEach(() => {
     clock = Date.parse("2026-10-11T14:00:00.000Z");
     Date.now = () => clock;
+    resetKnReady();
     process.env.KN_AUTH_KEY = KEY;
     resetKnKeys();
   });
@@ -281,7 +229,7 @@ describe("bertopia world store", () => {
     const big = await put(db, kid, "survival", 0, { head: head(), chunks: { "0,0,0": "A".repeat(2 * 1024 * 1024 + 8) } });
     assert.equal(big.status, 413);
     assert.equal(big.body.error, "size");
-    assert.equal(db.worlds.size, 0);
+    assert.equal(db.count("bt_worlds"), 0);
   });
 
   it("6th world rejected", async () => {
@@ -330,7 +278,7 @@ describe("bertopia world store", () => {
     const res = await put(db, kid, "survival", 0, { head: { format: "blocks", v: 2, schema: 6 } });
     assert.equal(res.status, 400);
     assert.equal(res.body.error, "format");
-    assert.equal(db.worlds.size, 0);
+    assert.equal(db.count("bt_worlds"), 0);
   });
 
   it("missing key or db is 503", async () => {
@@ -344,6 +292,144 @@ describe("bertopia world store", () => {
     const noDb = await get(null as unknown as Mem, kid, "", KEY);
     assert.equal(noDb.status, 503);
     assert.equal(noDb.body.error, "no-db");
+  });
+
+  it("two parallel PUTs with the same If-Match: one 200, one 409, loser writes nothing", async () => {
+    const db = new Mem();
+    const kid = await token("AB23C");
+    const [a, b] = await Promise.all([
+      put(db, kid, "survival", 0, { head: head({ n: "a" }), chunks: { "0,0,0": "from-a" } }),
+      put(db, kid, "survival", 0, { head: head({ n: "b" }), chunks: { "0,0,0": "from-b", "9,9,9": "only-b" } }),
+    ]);
+    const codes = [a.status, b.status].sort();
+    assert.deepEqual(codes, [200, 409]);
+    const win = a.status === 200 ? a : b;
+    const lose = a.status === 200 ? b : a;
+    assert.equal(win.body.rev, 1);
+    assert.equal(lose.body.rev, 1);
+    assert.equal(db.count("bt_worlds"), 1);
+    const kid2 = await get(db, kid, "?world=survival&ck=0,0,0;9,9,9");
+    const want = a.status === 200 ? { "0,0,0": "from-a" } : { "0,0,0": "from-b", "9,9,9": "only-b" };
+    assert.deepEqual(kid2.body.chunks, want);
+    assert.equal(db.count("kn_throttle"), 1, "claim row is released");
+  });
+
+  it("two parallel PUTs on an existing world: rev +1 once", async () => {
+    const db = new Mem();
+    const kid = await token("AB23C");
+    await put(db, kid, "survival", 0, { head: head(), chunks: { "0,0,0": "base" } });
+    clock += 21_000;
+    const [a, b] = await Promise.all([
+      put(db, kid, "survival", 1, { head: head({ n: "a" }), chunks: { "0,0,0": "A" }, drop: [] }),
+      put(db, kid, "survival", 1, { head: head({ n: "b" }), chunks: { "0,0,0": "B" } }),
+    ]);
+    assert.deepEqual([a.status, b.status].sort(), [200, 409]);
+    const loaded = await get(db, kid, "?world=survival");
+    assert.equal(loaded.body.rev, 2);
+    assert.deepEqual(db.revsFor("survival"), [1]);
+    const parts = await get(db, kid, "?world=survival&ck=0,0,0");
+    assert.deepEqual(parts.body.chunks, { "0,0,0": a.status === 200 ? "A" : "B" });
+  });
+
+  it("two saves in a row advance rev by exactly 1 each", async () => {
+    const db = new Mem();
+    const kid = await token("AB23C");
+    const one = await put(db, kid, "survival", 0, { head: head() });
+    clock += 21_000;
+    const two = await put(db, kid, "survival", Number(one.body.rev), { head: head({ n: 2 }) });
+    assert.equal(one.body.rev, 1);
+    assert.equal(two.body.rev, 2);
+  });
+
+  it("no db.batch: PUT is 503 and nothing is written", async () => {
+    const db = new Mem();
+    db.noBatch = true;
+    const kid = await token("AB23C");
+    const res = await put(db, kid, "survival", 0, { head: head(), chunks: { "0,0,0": "aaa" } });
+    assert.equal(res.status, 503);
+    assert.equal(db.count("bt_worlds"), 0);
+    assert.equal(db.count("bt_chunks"), 0);
+    assert.equal(db.count("bt_world_revs"), 0);
+    assert.equal(db.count("kn_throttle"), 0);
+  });
+
+  it("a throw inside the save batch rolls everything back", async () => {
+    const db = new Mem();
+    const kid = await token("AB23C");
+    await put(db, kid, "survival", 0, { head: head(), chunks: { "0,0,0": "base" } });
+    clock += 21_000;
+    const before = db.world(db.worldRefs("survival")[0]!, "survival")!;
+    db.failAfter = /INSERT INTO bt_chunks/;
+    await assert.rejects(put(db, kid, "survival", 1, { head: head({ n: 2 }), chunks: { "0,0,0": "new" } }));
+    db.failAfter = null;
+    const after = db.world(db.worldRefs("survival")[0]!, "survival")!;
+    assert.equal(after.rev, before.rev);
+    assert.deepEqual(after.head, before.head);
+    const parts = await get(db, kid, "?world=survival&ck=0,0,0");
+    assert.deepEqual(parts.body.chunks, { "0,0,0": "base" });
+    assert.deepEqual(db.revsFor("survival"), []);
+  });
+
+  describe("staff head-only restore", () => {
+    async function seeded() {
+      const db = new Mem();
+      const kid = await token("AB23C");
+      await put(db, kid, "survival", 0, { head: head({ player: { bag: 1 } }), chunks: { "0,0,0": "c1" } });
+      clock += 21_000;
+      await put(db, kid, "survival", 1, { head: head({ player: { bag: 2 } }), chunks: { "0,0,0": "c2" } });
+      const ref = db.worldRefs("survival")[0]!;
+      return { db, kid, ref };
+    }
+    const call = (db: Mem, ref: string, target: number, ifMatch: string) =>
+      restoreRev(attach(mockEvent("http://127.0.0.1/api/staff/bertopia/restore", { method: "POST" }), db), ref, "survival", target, ifMatch);
+
+    it("restores rev 1 as the new head, keeps the old head, leaves chunks alone", async () => {
+      const { db, kid, ref } = await seeded();
+      const rev1 = db.sql.prepare("SELECT head FROM bt_world_revs WHERE rev = 1").get() as { head: Uint8Array };
+      const out = await call(db, ref, 1, "2");
+      assert.equal(out.status, 200);
+      assert.equal(out.body.ok, true);
+      assert.equal(out.body.mode, "head-only");
+      assert.equal(out.body.rev, 3);
+      assert.equal(out.body.kept, 2);
+      assert.deepEqual(db.world(ref, "survival")!.head, rev1.head);
+      assert.deepEqual(db.revsFor("survival").sort(), [1, 2]);
+      const parts = await get(db, kid, "?world=survival&ck=0,0,0");
+      assert.deepEqual(parts.body.chunks, { "0,0,0": "c2" });
+      assert.equal(db.count("kn_throttle"), 1, "only the save throttle row stays");
+    });
+
+    it("stale If-Match is 409 with the current rev", async () => {
+      const { db, ref } = await seeded();
+      const out = await call(db, ref, 1, "1");
+      assert.equal(out.status, 409);
+      assert.equal(out.body.rev, 2);
+      assert.equal(db.world(ref, "survival")!.rev, 2);
+    });
+
+    it("forced throw after putRev leaves the head unchanged", async () => {
+      const { db, ref } = await seeded();
+      const before = db.world(ref, "survival")!;
+      const revsBefore = db.revsFor("survival").sort();
+      db.failAfter = /INSERT INTO bt_world_revs/;
+      await assert.rejects(call(db, ref, 1, "2"));
+      db.failAfter = null;
+      const after = db.world(ref, "survival")!;
+      assert.equal(after.rev, before.rev);
+      assert.deepEqual(after.head, before.head);
+      assert.deepEqual(db.revsFor("survival").sort(), revsBefore);
+      assert.equal(db.count("kn_throttle"), 1);
+    });
+
+    it("no db.batch: restore is 503 and writes nothing", async () => {
+      const { db, ref } = await seeded();
+      const before = db.world(ref, "survival")!;
+      db.noBatch = true;
+      const out = await call(db, ref, 1, "2");
+      assert.equal(out.status, 503);
+      assert.equal(db.world(ref, "survival")!.rev, before.rev);
+      assert.deepEqual(db.revsFor("survival"), [1]);
+    });
   });
 });
 
