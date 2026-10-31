@@ -25,14 +25,24 @@ export const BT_SQL = {
   throttle: "SELECT n, exp FROM kn_throttle WHERE k = ?",
   putThrottle:
     "INSERT INTO kn_throttle (k, n, exp) VALUES (?, ?, ?) ON CONFLICT(k) DO UPDATE SET n = excluded.n, exp = excluded.exp",
+  // Every write below the world UPDATE/INSERT is guarded by a claim row (see claimed()), so a save that lost the rev race writes nothing.
   putRev:
-    "INSERT INTO bt_world_revs (alias_ref, world, rev, head, at, why) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(alias_ref, world, rev) DO UPDATE SET head = excluded.head, at = excluded.at, why = excluded.why",
-  delRev: "DELETE FROM bt_world_revs WHERE alias_ref = ? AND world = ? AND rev = ?",
+    "INSERT INTO bt_world_revs (alias_ref, world, rev, head, at, why) SELECT ?, ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM kn_throttle WHERE k = ?) ON CONFLICT(alias_ref, world, rev) DO UPDATE SET head = excluded.head, at = excluded.at, why = excluded.why",
+  delRev: "DELETE FROM bt_world_revs WHERE alias_ref = ? AND world = ? AND rev = ? AND EXISTS (SELECT 1 FROM kn_throttle WHERE k = ?)",
   putChunk:
-    "INSERT INTO bt_chunks (alias_ref, world, ck, hash, rev, data) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(alias_ref, world, ck) DO UPDATE SET hash = excluded.hash, rev = excluded.rev, data = excluded.data",
-  delChunk: "DELETE FROM bt_chunks WHERE alias_ref = ? AND world = ? AND ck = ?",
-  putWorld:
-    "INSERT INTO bt_worlds (alias_ref, world, rev, schema, app_ver, head, bytes, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(alias_ref, world) DO UPDATE SET rev = excluded.rev, schema = excluded.schema, app_ver = excluded.app_ver, head = excluded.head, bytes = excluded.bytes, updated_at = excluded.updated_at",
+    "INSERT INTO bt_chunks (alias_ref, world, ck, hash, rev, data) SELECT ?, ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM kn_throttle WHERE k = ?) ON CONFLICT(alias_ref, world, ck) DO UPDATE SET hash = excluded.hash, rev = excluded.rev, data = excluded.data",
+  delChunk: "DELETE FROM bt_chunks WHERE alias_ref = ? AND world = ? AND ck = ? AND EXISTS (SELECT 1 FROM kn_throttle WHERE k = ?)",
+  /** Rev-checked head swap. changes = 1 only when the world is still at the expected rev. */
+  bumpWorld:
+    "UPDATE bt_worlds SET rev = ?, schema = ?, app_ver = ?, head = ?, bytes = ?, updated_at = ? WHERE alias_ref = ? AND world = ? AND rev = ?",
+  /** First save of a world. A parallel first save leaves changes = 0. */
+  newWorld:
+    "INSERT INTO bt_worlds (alias_ref, world, rev, schema, app_ver, head, bytes, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(alias_ref, world) DO NOTHING",
+  /** Must run right after bumpWorld/newWorld: changes() is that statement's row count. */
+  claim: "INSERT INTO kn_throttle (k, n, exp) SELECT ?, 1, ? WHERE changes() > 0",
+  release: "DELETE FROM kn_throttle WHERE k = ?",
+  guardedThrottle:
+    "INSERT INTO kn_throttle (k, n, exp) SELECT ?, ?, ? WHERE EXISTS (SELECT 1 FROM kn_throttle WHERE k = ?) ON CONFLICT(k) DO UPDATE SET n = excluded.n, exp = excluded.exp",
   staffWorlds: "SELECT alias_ref, world, rev, bytes, updated_at FROM bt_worlds ORDER BY updated_at DESC",
   staffRevs: "SELECT rev, at, why FROM bt_world_revs WHERE alias_ref = ? AND world = ? ORDER BY rev DESC",
   delWorlds: "DELETE FROM bt_worlds WHERE alias_ref = ?",
@@ -241,12 +251,22 @@ function checkDrop(raw: unknown): string[] | string {
   return out;
 }
 
-async function applyBatch(db: Sql, stmts: Bound[]) {
-  if (typeof db.batch === "function") {
-    await db.batch.call(db, stmts);
-    return;
-  }
-  for (const row of stmts) await row.run();
+const NO_BATCH: Out = { status: 503, body: { ok: false, error: "no-batch" } };
+
+/** One atomic db.batch or nothing. Without db.batch there is no atomic write, so never write one by one. */
+async function applyBatch(db: Sql, stmts: Bound[]): Promise<unknown[] | null> {
+  if (typeof db.batch !== "function") return null;
+  const out = await db.batch.call(db, stmts);
+  return Array.isArray(out) ? out : [];
+}
+
+function changesOf(res: unknown): number | null {
+  const n = (res as { meta?: { changes?: unknown } } | undefined)?.meta?.changes;
+  return typeof n === "number" ? n : null;
+}
+
+function claimKey(): string {
+  return `btc:${crypto.randomUUID()}`;
 }
 
 export async function readWorld(event: unknown, q: { world?: unknown; ck?: unknown }, token: string | undefined): Promise<Out> {
@@ -324,25 +344,41 @@ export async function writeWorld(event: unknown, worldRaw: unknown, token: strin
   const throttleKey = `bt:${who.ref}:${world}`;
   const hit = await db.prepare(BT_SQL.throttle).bind(throttleKey).first<{ n: number; exp: number }>();
   if (hit && hit.exp > now) return fail(429, { ok: false, error: "throttle" });
+  if (typeof db.batch !== "function") return NO_BATCH;
   const nextRev = curRev + 1;
   const hashes: Record<string, string> = {};
   for (const [ck, data] of Object.entries(chunks)) hashes[ck] = await sha256Hex(data);
+  const tok = claimKey();
+  // 1. rev-checked head write first, 2. claim (only if it won), 3. everything else only under the claim.
   const stmts: Bound[] = [];
   if (current) {
-    stmts.push(db.prepare(BT_SQL.putRev).bind(who.ref, world, current.rev, asBytes(current.head), now, "save"));
+    stmts.push(db.prepare(BT_SQL.bumpWorld).bind(nextRev, head.schema, head.app, gzip, bytes, now, who.ref, world, curRev));
+  } else {
+    stmts.push(db.prepare(BT_SQL.newWorld).bind(who.ref, world, nextRev, head.schema, head.app, gzip, bytes, now));
+  }
+  stmts.push(db.prepare(BT_SQL.claim).bind(tok, now + THROTTLE_MS));
+  if (current) {
+    stmts.push(db.prepare(BT_SQL.putRev).bind(who.ref, world, current.rev, asBytes(current.head), now, "save", tok));
     const prev = await db.prepare(BT_SQL.revs).bind(who.ref, world).all<{ rev: number }>();
     const nums = (prev.results ?? []).map((row) => row.rev);
     if (!nums.includes(current.rev)) nums.push(current.rev);
     const keep = new Set([...nums].sort((a, b) => b - a).slice(0, MAX_REVS));
-    for (const rev of nums) if (!keep.has(rev)) stmts.push(db.prepare(BT_SQL.delRev).bind(who.ref, world, rev));
+    for (const rev of nums) if (!keep.has(rev)) stmts.push(db.prepare(BT_SQL.delRev).bind(who.ref, world, rev, tok));
   }
   for (const [ck, data] of Object.entries(chunks)) {
-    stmts.push(db.prepare(BT_SQL.putChunk).bind(who.ref, world, ck, hashes[ck], nextRev, data));
+    stmts.push(db.prepare(BT_SQL.putChunk).bind(who.ref, world, ck, hashes[ck], nextRev, data, tok));
   }
-  for (const ck of drop) if (!(ck in chunks)) stmts.push(db.prepare(BT_SQL.delChunk).bind(who.ref, world, ck));
-  stmts.push(db.prepare(BT_SQL.putWorld).bind(who.ref, world, nextRev, head.schema, head.app, gzip, bytes, now));
-  stmts.push(db.prepare(BT_SQL.putThrottle).bind(throttleKey, 1, now + THROTTLE_MS));
-  await applyBatch(db, stmts);
+  for (const ck of drop) if (!(ck in chunks)) stmts.push(db.prepare(BT_SQL.delChunk).bind(who.ref, world, ck, tok));
+  stmts.push(db.prepare(BT_SQL.guardedThrottle).bind(throttleKey, 1, now + THROTTLE_MS, tok));
+  stmts.push(db.prepare(BT_SQL.release).bind(tok));
+  const res = await applyBatch(db, stmts);
+  if (!res) return NO_BATCH;
+  const won = changesOf(res[0]);
+  if (won == null) return fail(500, { ok: false, error: "batch-result" });
+  if (won === 0) {
+    const now2 = await db.prepare(BT_SQL.oneWorld).bind(who.ref, world).first<WorldRow>();
+    return fail(409, { ok: false, rev: now2?.rev ?? curRev });
+  }
   return { status: 200, body: { ok: true, rev: nextRev, hashes } };
 }
 
@@ -360,11 +396,23 @@ export async function restoreRev(event: unknown, aliasRef: string, world: string
   if (match == null || match !== curRev) return fail(409, { ok: false, rev: curRev });
   const revRow = await db.prepare("SELECT head FROM bt_world_revs WHERE alias_ref = ? AND world = ? AND rev = ?").bind(aliasRef, world, targetRev).first<{ head: unknown }>();
   if (!revRow) return fail(404, { ok: false, error: "rev" });
+  if (typeof db.batch !== "function") return NO_BATCH;
   const now = Date.now();
   const nextRev = curRev + 1;
-  // current head becomes a rev
-  await db.prepare(BT_SQL.putRev).bind(aliasRef, world, curRev, asBytes(current.head), now, "restore-kept").run();
-  // new head from the target rev
-  await db.prepare(BT_SQL.putWorld).bind(aliasRef, world, nextRev, current.schema, current.app_ver, asBytes(revRow.head), current.bytes, now).run();
-  return { status: 200, body: { ok: true, rev: nextRev, kept: curRev } };
+  const tok = claimKey();
+  // Head-only restore: the head swaps to the target rev, the chunks stay as they are. One batch, rev-checked.
+  const res = await applyBatch(db, [
+    db.prepare(BT_SQL.bumpWorld).bind(nextRev, current.schema, current.app_ver, asBytes(revRow.head), current.bytes, now, aliasRef, world, curRev),
+    db.prepare(BT_SQL.claim).bind(tok, now + THROTTLE_MS),
+    db.prepare(BT_SQL.putRev).bind(aliasRef, world, curRev, asBytes(current.head), now, "restore-kept", tok),
+    db.prepare(BT_SQL.release).bind(tok),
+  ]);
+  if (!res) return NO_BATCH;
+  const won = changesOf(res[0]);
+  if (won == null) return fail(500, { ok: false, error: "batch-result" });
+  if (won === 0) {
+    const now2 = await db.prepare(BT_SQL.oneWorld).bind(aliasRef, world).first<WorldRow>();
+    return fail(409, { ok: false, rev: now2?.rev ?? curRev });
+  }
+  return { status: 200, body: { ok: true, mode: "head-only", rev: nextRev, kept: curRev } };
 }

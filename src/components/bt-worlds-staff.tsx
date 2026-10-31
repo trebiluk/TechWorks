@@ -33,7 +33,7 @@ export function BtWorldsStaff() {
       body: JSON.stringify({ world: confirm.world, alias_ref: confirm.alias_ref, rev: confirm.rev, if_match: String(confirm.current) }),
     });
     const j = await res.json();
-    setMsg(j.ok ? `Restored. New head rev ${j.rev}. Old head kept.` : "Restore failed");
+    setMsg(j.ok ? `Head-only restore done. New head rev ${j.rev}. Old head kept. World chunks were not changed.` : j.rev != null ? `Not restored. This world is now at rev ${j.rev}. Reload and try again.` : "Restore failed");
     setConfirm(null);
   }
 
@@ -78,8 +78,8 @@ export function BtWorldsStaff() {
       {confirm && (
         <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 }}>
           <div style={{ background: "#fff", padding: 24, borderRadius: 12, maxWidth: 420 }}>
-            <p style={{ margin: "0 0 8px", fontWeight: 600 }}>Restore rev {confirm.rev} as the new head?</p>
-            <p style={{ margin: "0 0 16px", color: "#475569" }}>Rev {confirm.current} is kept. This is logged.</p>
+            <p style={{ margin: "0 0 8px", fontWeight: 600 }}>Head-only restore: use rev {confirm.rev} as the new head?</p>
+            <p style={{ margin: "0 0 16px", color: "#475569" }}>Rev {confirm.current} is kept. World chunks are not changed. This is logged.</p>
             <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
               <button type="button" onClick={doRestore} style={{ minHeight: 44, padding: "10px 20px", background: "#2563eb", color: "#fff", border: 0, borderRadius: 8 }}>Restore</button>
               <button type="button" onClick={() => setConfirm(null)} style={{ minHeight: 44, padding: "10px 20px", background: "#fff", border: "1px solid #cbd5e1", borderRadius: 8 }}>Cancel</button>

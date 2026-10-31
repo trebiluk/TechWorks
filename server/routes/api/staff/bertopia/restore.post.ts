@@ -42,6 +42,6 @@ export default defineEventHandler(async (event) => {
   }
   const out = await restoreStaffRev(event, aliasRef, world, rev, ifMatch);
   if (out.status !== 200) setResponseStatus(event, out.status);
-  await knAudit(event, staff.id || "staff", "bt-restore", world, JSON.stringify({ alias_ref: aliasRef.slice(0, 16), rev, if_match: ifMatch }));
+  await knAudit(event, staff.uid, "bt-restore", world, JSON.stringify({ alias_ref: aliasRef.slice(0, 16), rev, if_match: ifMatch, mode: "head-only", status: out.status }));
   return out.body;
 });

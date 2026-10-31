@@ -32,6 +32,6 @@ export default defineEventHandler(async (event) => {
     return { ok: false, error: "staff" };
   }
   const worlds = await listStaffWorlds(event);
-  await knAudit(event, staff.id || "staff", "bt-worlds-list", "", JSON.stringify({ n: worlds.length }));
+  await knAudit(event, staff.uid, "bt-worlds-list", "", JSON.stringify({ n: worlds.length }));
   return { ok: true, worlds };
 });

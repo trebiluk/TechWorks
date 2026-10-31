@@ -1,7 +1,7 @@
 {
   "name": "techworks",
   "private": true,
-  "version": "1.94.24",
+  "version": "1.94.25",
   "license": "UNLICENSED",
   "author": "Richard Kulibert",
   "engines": {
@@ -23,7 +23,7 @@
     "preview:stop": "node scripts/preview.mjs stop",
     "typecheck": "tsc --noEmit",
     "check:auth": "node scripts/check-auth-invariant.mjs",
-    "test": "npx tsx --test src/lib/*.test.ts",
+    "test": "npx tsx --test src/lib/*.test.ts server/*.test.ts",
     "test:scripts": "node --test 'scripts/**/*.test.mjs'",
     "lint": "eslint .",
     "format": "prettier --write ."

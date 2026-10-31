@@ -39,6 +39,6 @@ export default defineEventHandler(async (event) => {
     return { ok: false, error: "need world and alias_ref" };
   }
   const revs = await listStaffRevs(event, aliasRef, world);
-  await knAudit(event, staff.id || "staff", "bt-revs-list", world, JSON.stringify({ alias_ref: aliasRef.slice(0, 16) }));
+  await knAudit(event, staff.uid, "bt-revs-list", world, JSON.stringify({ alias_ref: aliasRef.slice(0, 16) }));
   return { ok: true, revs };
 });
