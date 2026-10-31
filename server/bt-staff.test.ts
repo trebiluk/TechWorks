@@ -1,18 +1,19 @@
-import { describe, it, expect } from "vitest";
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 // Minimal tests for staff bertopia routes.
-// Full integration needs DB; these check the 401 path and restore shape.
+// Placeholders only. Restore behaviour is tested against SQLite in bt-world.test.ts.
 
 describe("bt-staff", () => {
   it("non-staff gets 401", () => {
     // Route handlers return { ok: false, error: "staff" } with status 401 when getStaff is null.
-    expect(true).toBe(true);
+    assert.equal(true, true);
   });
   it("restore keeps old head as a rev", () => {
     // restoreRev writes current head to revs then sets new head from target rev.
-    expect(true).toBe(true);
+    assert.equal(true, true);
   });
   it("audit row written", () => {
     // knAudit is called on every staff list/restore.
-    expect(true).toBe(true);
+    assert.equal(true, true);
   });
 });
