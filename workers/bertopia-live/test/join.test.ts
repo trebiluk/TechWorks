@@ -5,50 +5,14 @@ import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, it } from "node:test";
 import { mockEvent, type H3Event } from "h3";
 import worker, { BertopiaWorld, MAX_SOCKETS } from "../src/index.ts";
+import { FakeCtx, FakeSocket, clientsFor } from "./fakes.ts";
 import liveGet from "../../../server/routes/api/bertopia/live.get.ts";
 import { aliasRefOf } from "../../../server/bt-world.ts";
 import { resetKnKeys } from "../../../server/kn-keys.ts";
 import { WHO_COOKIE, mintSession } from "../../../server/who-session.ts";
 
-class FakeSocket {
-  sent: string[] = [];
-  closed: { code?: number; reason?: string } | null = null;
-  attachment: unknown = null;
-  send(data: string) { this.sent.push(data); }
-  close(code?: number, reason?: string) { this.closed = { code, reason }; }
-  serializeAttachment(v: unknown) { this.attachment = JSON.parse(JSON.stringify(v)); }
-  deserializeAttachment() { return this.attachment; }
-}
-
-class FakeCtx {
-  accepted: FakeSocket[] = [];
-  autoResponse: unknown = null;
-  acceptWebSocket(ws: FakeSocket) { this.accepted.push(ws); }
-  getWebSockets() { return this.accepted.filter((w) => !w.closed); }
-  setWebSocketAutoResponse(pair: unknown) { this.autoResponse = pair; }
-  // There is deliberately no storage property: P1 must not write.
-}
-
-const clientsFor = new Map<FakeSocket, FakeSocket>();
 const g = globalThis as Record<string, unknown>;
-g.WebSocketPair = class {
-  0: FakeSocket;
-  1: FakeSocket;
-  constructor() {
-    this[0] = new FakeSocket();
-    this[1] = new FakeSocket();
-    clientsFor.set(this[0], this[1]);
-  }
-};
-g.WebSocketRequestResponsePair = class {
-  request: string;
-  response: string;
-  constructor(request: string, response: string) {
-    this.request = request;
-    this.response = response;
-  }
-};
-BertopiaWorld.respond = (client) => ({ status: 101, webSocket: client }) as unknown as Response;
+void g;
 
 const KEY = Buffer.alloc(32, 7).toString("base64");
 let ctxs: Record<string, FakeCtx>;
@@ -173,10 +137,11 @@ describe("bertopia live join (P1, dark)", () => {
     assert.equal(sent.url, "https://bertopia-live/live?world=main");
   });
 
-  it("the socket attachment is {aliasRef, alias, role, joinedAt} and nothing else", async () => {
+  it("the socket attachment is {aliasRef, alias, role, joinedAt, world} and nothing else", async () => {
     const out = await connect({ world: "main", alias: "Pixel" });
     const att = serverSocket(out.res).attachment as Record<string, unknown>;
-    assert.deepEqual(Object.keys(att).sort(), ["alias", "aliasRef", "joinedAt", "role"]);
+    assert.deepEqual(Object.keys(att).sort(), ["alias", "aliasRef", "joinedAt", "role", "world"]);
+    assert.equal(att.world, "main");
     assert.equal(att.alias, "Pixel");
     assert.equal(att.role, "kid");
     assert.equal(typeof att.joinedAt, "number");
@@ -229,11 +194,12 @@ describe("bertopia live join (P1, dark)", () => {
     assert.equal(b.closed?.code, 1011);
   });
 
-  it("ping and pong are answered by the runtime, and the DO never touches storage", async () => {
+  it("ping and pong are answered by the runtime, and joining writes nothing", async () => {
     await connect({ world: "main" });
     const pair = ctxs.main!.autoResponse as { request: string; response: string };
     assert.deepEqual({ request: pair.request, response: pair.response }, { request: "ping", response: "pong" });
-    assert.equal("storage" in ctxs.main!, false);
+    for (const table of ["chunks", "blocks", "chat"]) assert.equal(Number(ctxs.main!.storage.rows(`SELECT COUNT(*) AS n FROM ${table}`)[0]!.n), 0, table);
+    assert.equal(ctxs.main!.storage.alarm, null);
   });
 
   it("not an upgrade is 426; no binding is 503", async () => {

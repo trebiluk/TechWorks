@@ -10,7 +10,7 @@ workers_dev = false
 name = "BERTOPIA_WORLD"
 class_name = "BertopiaWorld"
 
-# SQLite-backed Durable Object. P1 writes nothing to it yet.
+# SQLite-backed Durable Object. P2 keeps chunk revs, the edit layer and 30 days of chat in it.
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["BertopiaWorld"]

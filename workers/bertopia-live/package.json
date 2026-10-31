@@ -1,0 +1,16 @@
+{
+  "name": "bertopia-live",
+  "private": true,
+  "type": "module",
+  "description": "Bertopia live server (dark). Own package so the Pages app's lockfile and build stay untouched.",
+  "scripts": {
+    "test": "vitest run",
+    "test:node": "tsx --test test/join.test.ts test/live.test.ts"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.8.0",
+    "tsx": "^4.19.0",
+    "vitest": "~3.2.0",
+    "wrangler": "^4.0.0"
+  }
+}
