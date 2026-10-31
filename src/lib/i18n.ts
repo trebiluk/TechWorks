@@ -52,37 +52,37 @@ const HELP_ADMIN = "Admin is the 🛠️ button at the bottom of the Menu. It as
 /** Machine drafts. rw, ti, and Dari (fa-AF) need a native check. */
 const LINE_I18N: Record<Exclude<LangId, "en">, Record<string, string>> = {
   uk: {
-    [WHATS_NEW_LINE]: "TW 1.94.24 — Тестові учні не потрапляють на публічну дошку. Персонал може стерти їх разом.",
+    [WHATS_NEW_LINE]: "TW 1.94.31 — Меню відкривається під верхньою смугою. Мої налаштування є в меню.",
     [HELP_WHERE]: "Допомога є в Меню, внизу.",
     [HELP_ADMIN]: "Admin — це кнопка 🛠️ внизу Меню. Вона питає PIN учителя.",
   },
   ru: {
-    [WHATS_NEW_LINE]: "TW 1.94.24 — Тестовые ученики не попадают на общую доску. Персонал может стереть их вместе.",
+    [WHATS_NEW_LINE]: "TW 1.94.31 — Меню открывается под верхней полосой. Мои настройки — в меню.",
     [HELP_WHERE]: "Справка в Меню, внизу.",
     [HELP_ADMIN]: "Admin — это кнопка 🛠️ внизу Меню. Она спрашивает PIN учителя.",
   },
   es: {
-    [WHATS_NEW_LINE]: "TW 1.94.24 — Los alumnos de prueba no salen en el tablero público. El personal puede borrarlos juntos.",
+    [WHATS_NEW_LINE]: "TW 1.94.31 — El menú se abre bajo la barra de arriba. Mis ajustes están en el menú.",
     [HELP_WHERE]: "La Ayuda está en el Menú, abajo.",
     [HELP_ADMIN]: "Admin es el botón 🛠️ al final del Menú. Pide el PIN del maestro.",
   },
   ar: {
-    [WHATS_NEW_LINE]: "TW 1.94.24 — طلاب التجربة لا يظهرون على اللوحة العامة. يمكن للموظفين مسحهم معًا.",
+    [WHATS_NEW_LINE]: "TW 1.94.31 — القائمة تفتح تحت الشريط العلوي. إعداداتي في القائمة.",
     [HELP_WHERE]: "المساعدة في القائمة، في الأسفل.",
     [HELP_ADMIN]: "Admin هو زر 🛠️ في أسفل القائمة. يطلب رقم المعلم.",
   },
   "fa-AF": {
-    [WHATS_NEW_LINE]: "TW 1.94.24 — شاگردان آزمایشی روی تختهٔ عمومی دیده نمی‌شوند. کارکنان می‌توانند همه را یکجا پاک کنند.",
+    [WHATS_NEW_LINE]: "TW 1.94.31 — فهرست زیر نوار بالا باز می‌شود. تنظیمات من در فهرست است.",
     [HELP_WHERE]: "راهنما در فهرست است، در پایین.",
     [HELP_ADMIN]: "Admin دکمهٔ 🛠️ در پایین فهرست است. PIN معلم را می‌خواهد.",
   },
   rw: {
-    [WHATS_NEW_LINE]: "TW 1.94.24 — Abanyeshuri b'igerageza ntibagaragara ku rubuga rusange. Abakozi barabashobora kubasiba hamwe.",
+    [WHATS_NEW_LINE]: "TW 1.94.31 — Ibikubiyemo bifunguka munsi y'umurongo wo hejuru. Igenamiterere ryanjye riri mu bikubiyemo.",
     [HELP_WHERE]: "Ubufasha buri mu Menyu, hepfo.",
     [HELP_ADMIN]: "Admin ni buto 🛠️ hepfo ya Menyu. Isaba PIN y'umwarimu.",
   },
   ti: {
-    [WHATS_NEW_LINE]: "TW 1.94.24 — ናይ ፈተነ ተማሃሮ ኣብ ህዝባዊ ሰሌዳ ኣይረኣዩን። ሰራሕተኛታት ብሓደ ክድምስስዎም ይኽእሉ።",
+    [WHATS_NEW_LINE]: "TW 1.94.31 — ዝርዝር ኣብ ትሕቲ ናይ ላዕሊ መስመር ይኽፈት። ናተይ ቅንጅት ኣብ ዝርዝር ኣሎ።",
     [HELP_WHERE]: "ሓገዝ ኣብ ዝርዝር እዩ፡ ኣብ ታሕቲ።",
     [HELP_ADMIN]: "Admin ናይ 🛠️ መጠወቒ ኣብ ታሕቲ ዝርዝር እዩ። PIN ናይ መምህር ይሓትት።",
   },
