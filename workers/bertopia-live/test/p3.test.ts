@@ -298,4 +298,58 @@ describe("bertopia live P3 (dark)", () => {
       assert.equal(String(ctx.storage.rows("SELECT v FROM meta WHERE k = 'hydrated'")[0]!.v), "1");
     });
   });
+  describe("the same scenarios as the workerd suite (so its expected values are checked here too)", () => {
+    it("round trip: snapshot rows moved to a never-used world are restored exactly", async () => {
+      const d1 = new FakeD1();
+      const one = make(d1);
+      const a = await join(one.room, "main", "Ann");
+      await edit(one.room, a, 1, 1, 1, 5, 0);
+      await edit(one.room, a, 2, 1, 1, 6, 1);
+      await edit(one.room, a, 30, 0, 0, 7, 0);
+      await fire(one.room);
+      d1.db.prepare("UPDATE bt_live_chunks SET world = ? WHERE world = ?").run("game-2", "main");
+      const two = make(d1);
+      const b = await join(two.room, "game-2", "Bo");
+      await send(two.room, b, { t: "sync" });
+      assert.deepEqual(last(b), { t: "revs", chunks: { "0,0,0": 2, "1,0,0": 1 }, more: false });
+      await send(two.room, b, { t: "chunk", chunk: "0,0,0" });
+      const m = last(b);
+      assert.equal(m.rev, 2);
+      assert.deepEqual((m.cells as number[][]).sort((p, q) => p[0]! - q[0]!), [[1, 1, 1, 5], [2, 1, 1, 6]]);
+      await send(two.room, b, { t: "chunk", chunk: "1,0,0" });
+      assert.deepEqual(last(b), { t: "cells", chunk: "1,0,0", rev: 1, cells: [[30, 0, 0, 7]] });
+      await edit(two.room, b, 3, 3, 3, 8, 2);
+      assert.deepEqual(last(b), { t: "ack", chunk: "0,0,0", rev: 3 });
+    });
+
+    it("rev conflict: reject, refetch the chunk, edit again with the new rev; the other editor hears only the good edit", async () => {
+      const { room } = make();
+      const a = await join(room, "main", "Ann");
+      await edit(room, a, 1, 1, 1, 5, 0);
+      const b = await join(room, "main", "Bo");
+      await send(room, b, { t: "sync" });
+      assert.deepEqual(last(b).chunks, { "0,0,0": 1 });
+      await edit(room, b, 2, 2, 2, 9, 0);
+      assert.deepEqual(last(b), { t: "reject", chunk: "0,0,0", rev: 1 });
+      await send(room, b, { t: "chunk", chunk: "0,0,0" });
+      assert.deepEqual(last(b), { t: "cells", chunk: "0,0,0", rev: 1, cells: [[1, 1, 1, 5]] });
+      await edit(room, b, 2, 2, 2, 9, 1);
+      assert.deepEqual(last(b), { t: "ack", chunk: "0,0,0", rev: 2 });
+      assert.deepEqual(a.msgs().filter((m) => m.t === "edit"), [{ t: "edit", x: 2, y: 2, z: 2, block: 9, rev: 2, chunk: "0,0,0", from: "Bo" }]);
+    });
+
+    it("no LIVE_DB: edit leaves no alarm and no meta; a chat alarm runs and the edit mark stays", async () => {
+      const { ctx, room } = make();
+      const a = await join(room, "main", "Ann");
+      await edit(room, a, 1, 1, 1, 5, 0);
+      assert.equal(ctx.storage.alarm, null);
+      await send(room, a, { t: "chat", text: "hi" });
+      assert.notEqual(ctx.storage.alarm, null);
+      await fire(room);
+      assert.equal(count(ctx, "chat"), 1);
+      assert.equal(count(ctx, "dirty"), 1);
+      assert.equal(count(ctx, "meta"), 0);
+      assert.notEqual(ctx.storage.alarm, null);
+    });
+  });
 });

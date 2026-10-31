@@ -99,6 +99,59 @@ describe("bertopia live P3 (workerd + D1)", () => {
     a.ws.close();
   });
 
+  it("round trip: what a snapshot writes is exactly what a fresh object restores", async () => {
+    const a = await open("main", "Ann");
+    await ready(a);
+    edit(a, 1, 1, 1, 5, 0);
+    edit(a, 2, 1, 1, 6, 1);
+    edit(a, 30, 0, 0, 7, 0); // a second chunk
+    await until(() => a.inbox.filter((m) => m.t === "ack").length === 3, "three acks");
+    expect(await runDurableObjectAlarm(stubFor("main"))).toBe(true); // snapshot written by the real alarm
+    // Hand the copy to a world whose object has never run: that is what a lost or brand-new object sees.
+    await env.LIVE_DB.prepare("UPDATE bt_live_chunks SET world = ? WHERE world = ?").bind("game-2", "main").run();
+    const b = await open("game-2", "Bo");
+    await ready(b);
+    b.ws.send(JSON.stringify({ t: "sync" }));
+    await until(() => b.inbox.some((m) => m.t === "revs"), "revs");
+    expect(b.inbox.find((m) => m.t === "revs")).toEqual({ t: "revs", chunks: { "0,0,0": 2, "1,0,0": 1 }, more: false });
+    b.ws.send(JSON.stringify({ t: "chunk", chunk: "0,0,0" }));
+    b.ws.send(JSON.stringify({ t: "chunk", chunk: "1,0,0" }));
+    await until(() => b.inbox.filter((m) => m.t === "cells").length === 2, "both chunks");
+    const got = Object.fromEntries(b.inbox.filter((m) => m.t === "cells").map((m) => [String(m.chunk), m as { rev: number; cells: number[][] }]));
+    expect(got["0,0,0"]!.rev).toBe(2);
+    expect(got["0,0,0"]!.cells.sort((p, q) => p[0]! - q[0]!)).toEqual([[1, 1, 1, 5], [2, 1, 1, 6]]);
+    expect(got["1,0,0"]).toMatchObject({ rev: 1, cells: [[30, 0, 0, 7]] });
+    // and the restored world keeps going from the restored revs
+    edit(b, 3, 3, 3, 8, 2);
+    await until(() => b.inbox.some((m) => m.t === "ack"), "ack");
+    expect(b.inbox.find((m) => m.t === "ack")).toEqual({ t: "ack", chunk: "0,0,0", rev: 3 });
+  });
+
+  it("chunk sync and rev conflict: a stale editor is rejected, refetches the chunk with {t:'chunk'}, and then succeeds", async () => {
+    const a = await open("main", "Ann");
+    await ready(a);
+    edit(a, 1, 1, 1, 5, 0);
+    await until(() => a.inbox.some((m) => m.t === "ack"), "ack");
+    const b = await open("main", "Bo"); // joins after Ann's edit, still believes rev 0
+    await ready(b);
+    b.ws.send(JSON.stringify({ t: "sync" }));
+    await until(() => b.inbox.some((m) => m.t === "revs"), "revs");
+    expect((b.inbox.find((m) => m.t === "revs") as { chunks: Record<string, number> }).chunks).toEqual({ "0,0,0": 1 });
+    edit(b, 2, 2, 2, 9, 0); // stale
+    await until(() => b.inbox.some((m) => m.t === "reject"), "reject");
+    expect(b.inbox.find((m) => m.t === "reject")).toEqual({ t: "reject", chunk: "0,0,0", rev: 1 });
+    b.ws.send(JSON.stringify({ t: "chunk", chunk: "0,0,0" }));
+    await until(() => b.inbox.some((m) => m.t === "cells"), "cells");
+    const cells = b.inbox.find((m) => m.t === "cells") as { rev: number; cells: number[][] };
+    expect(cells.rev).toBe(1);
+    expect(cells.cells).toEqual([[1, 1, 1, 5]]);
+    edit(b, 2, 2, 2, 9, cells.rev);
+    await until(() => b.inbox.some((m) => m.t === "ack"), "ack");
+    expect(b.inbox.find((m) => m.t === "ack")).toEqual({ t: "ack", chunk: "0,0,0", rev: 2 });
+    await until(() => a.inbox.some((m) => m.t === "edit"), "broadcast to Ann");
+    expect(a.inbox.filter((m) => m.t === "edit")).toEqual([{ t: "edit", x: 2, y: 2, z: 2, block: 9, rev: 2, chunk: "0,0,0", from: "Bo" }]);
+  });
+
   it("a fresh object refills from D1: sync and chunk requests see it, and edits continue from its rev", async () => {
     await putD1("game-2", "0,0,0", 4, [[1, 1, 1, 5], [2, 2, 2, 6]]);
     await putD1("game-2", "2,0,0", 1, [[50, 1, 1, 9]]);

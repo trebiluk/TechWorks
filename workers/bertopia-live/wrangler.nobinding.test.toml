@@ -1,0 +1,14 @@
+# Used only by vitest.nobinding.config.ts: the same Worker with NO LIVE_DB, to prove the missing-binding path
+# fails safe (the world keeps working and nothing is copied anywhere). No D1 here on purpose.
+name = "bertopia-live-nobinding-test"
+main = "src/index.ts"
+compatibility_date = "2026-09-08"
+workers_dev = false
+
+[[durable_objects.bindings]]
+name = "BERTOPIA_WORLD"
+class_name = "BertopiaWorld"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["BertopiaWorld"]

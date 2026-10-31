@@ -4,9 +4,10 @@
   "type": "module",
   "description": "Bertopia live server (dark). Own package so the Pages app's lockfile and build stay untouched.",
   "scripts": {
-    "test": "vitest run",
+    "test": "vitest run && vitest run -c vitest.nobinding.config.ts",
     "test:node": "tsx --test test/join.test.ts test/live.test.ts test/p3.test.ts",
-    "test:workerd": "vitest run"
+    "test:workerd": "vitest run && vitest run -c vitest.nobinding.config.ts",
+    "test:workerd:nobinding": "vitest run -c vitest.nobinding.config.ts"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.8.0",
