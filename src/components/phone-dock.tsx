@@ -41,12 +41,12 @@ export function PhoneDock({
       { id: "learn", label: t("Hour"), go: onSkills },
       { id: "crew", label: kid ? t("My card") : t("Score"), go: onCrew },
       { id: "roster", label: t("People"), go: onRoster ?? onOther ?? onDesk },
-      { id: "admin", label: t("Admin"), go: onOther ?? onDesk },
     ];
+    if (!kid) items.push({ id: "admin", label: t("Admin"), go: onOther ?? onDesk });
     const on = sec;
     return (
       <nav className="phone-dock shrink-0 border-t border-border bg-surface" aria-label={t("Place")}>
-        <ul className="mx-auto grid w-full max-w-lg grid-cols-5">
+        <ul className={cn("mx-auto grid w-full max-w-lg", kid ? "grid-cols-4" : "grid-cols-5")}>
           {items.map((it) => {
             const Icon = markOf(it.id) ?? LayoutDashboard;
             return (

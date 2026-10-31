@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
+import { LogIn } from "lucide-react";
 import { badgesOf, weekXp, type ProgressMark } from "@/lib/app-progress";
 import { doorName } from "@/lib/hub-doors";
 import { LEVEL_MAX, XP_PER_LEVEL } from "@/lib/skills";
 import { clearShopSession, loadShopSession, type ShopSession } from "@/lib/shop-session";
+import { useLang } from "@/lib/i18n-hook";
+
+const JOB_PAY = "Sign in to see your job and pay";
 
 export function ShopName() {
   const [alias, setAlias] = useState("");
@@ -16,6 +20,7 @@ export function ShopName() {
   return <span className="max-w-32 truncate text-sm font-semibold">{alias}</span>;
 }
 export function ShopCard({ pinned = false }: { pinned?: boolean }) {
+  const { t } = useLang();
   const [session, setSession] = useState<ShopSession | null>(null);
   const [marks, setMarks] = useState<ProgressMark[]>([]);
 
@@ -40,7 +45,21 @@ export function ShopCard({ pinned = false }: { pinned?: boolean }) {
     };
   }, [session]);
 
-  if (!session) return pinned ? null : <p className="text-sm text-muted">Sign in with your code to see your card.</p>;
+  if (!session) {
+    return (
+      <section className="shrink-0 rounded-xl bg-surface p-3" data-job-pay={pinned ? "wall" : "card"}>
+        <p className="text-base font-semibold">{t(JOB_PAY)}</p>
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new Event("tw-open-claim"))}
+          className="tw-tap mt-2 inline-flex min-h-11 items-center gap-2 rounded-xl bg-accent px-3 text-base font-semibold text-accent-fg"
+        >
+          <LogIn className="size-5 shrink-0" aria-hidden />
+          {t("Sign in")}
+        </button>
+      </section>
+    );
+  }
 
   const xp = marks.reduce((sum, row) => sum + Math.max(0, Number(row.xp) || 0), 0);
   const week = weekXp(marks);

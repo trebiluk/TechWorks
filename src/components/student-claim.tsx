@@ -22,7 +22,12 @@ export function StudentClaim({ file, onChange }: { file: EconomyFile; onChange: 
     const sync = () => setSigned(Boolean(loadShopSession()));
     sync();
     window.addEventListener("tw-shop", sync);
-    return () => window.removeEventListener("tw-shop", sync);
+    const openIt = () => setOpen(true);
+    window.addEventListener("tw-open-claim", openIt);
+    return () => {
+      window.removeEventListener("tw-shop", sync);
+      window.removeEventListener("tw-open-claim", openIt);
+    };
   }, []);
 
   function setBox(i: number, raw: string) {

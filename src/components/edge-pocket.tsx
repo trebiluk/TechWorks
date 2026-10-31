@@ -26,6 +26,24 @@ export function EdgePocket({
   const [sheetTop, setSheetTop] = useState(0);
   const box = useRef<HTMLDivElement>(null);
   const menu = useRef<HTMLDivElement>(null);
+  const skipToggle = useRef(false);
+
+  function inChip(e: { clientX: number; clientY: number }) {
+    const r = box.current?.getBoundingClientRect();
+    if (!r || r.width < 8) return false;
+    return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+  }
+
+  function swallowChipTap(e: { clientX: number; clientY: number; preventDefault: () => void; stopPropagation: () => void }) {
+    if (!inChip(e)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    skipToggle.current = true;
+    setOpen(false);
+    window.setTimeout(() => {
+      skipToggle.current = false;
+    }, 400);
+  }
 
   useEffect(() => setMounted(true), []);
 
@@ -68,13 +86,15 @@ export function EdgePocket({
   const panel = open && mounted ? (
     createPortal(
       <>
-        <button type="button" className="tw-edge-pocket-scrim" aria-label="Close" onClick={() => setOpen(false)} />
+        <button type="button" className="tw-edge-pocket-scrim" aria-label="Close" onClick={() => setOpen(false)} onPointerDownCapture={swallowChipTap} />
         <div
           ref={menu}
           className="tw-edge-pocket-menu"
           role="menu"
           data-edge-pocket-menu=""
           style={{ top: sheetTop, maxHeight: `calc(var(--vvh, 100dvh) - ${sheetTop}px)` }}
+          onPointerDownCapture={swallowChipTap}
+          onClickCapture={swallowChipTap}
           onClick={(e) => {
             const node = e.target as HTMLElement;
             if (node.closest("input, textarea, [data-keep-pocket]")) return;
@@ -97,7 +117,13 @@ export function EdgePocket({
         aria-label={label}
         aria-expanded={open}
         aria-haspopup="menu"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          if (skipToggle.current) {
+            skipToggle.current = false;
+            return;
+          }
+          setOpen((v) => !v);
+        }}
         className={cn(
           "tw-edge-pocket-chip tw-hud-btn tw-tap relative z-30 inline-flex h-11 min-h-11 min-w-11 shrink-0 items-center justify-center gap-1 rounded-xl px-2 text-sm font-semibold text-fg hover:bg-elevated",
           open ? "bg-accent text-accent-fg" : "",
