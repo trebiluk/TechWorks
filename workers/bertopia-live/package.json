@@ -5,7 +5,7 @@
   "description": "Bertopia live server (dark). Own package so the Pages app's lockfile and build stay untouched.",
   "scripts": {
     "test": "vitest run",
-    "test:node": "tsx --test test/join.test.ts test/live.test.ts"
+    "test:node": "tsx --test test/join.test.ts test/live.test.ts test/p3.test.ts"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.8.0",

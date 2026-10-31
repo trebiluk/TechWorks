@@ -17,3 +17,10 @@ new_sqlite_classes = ["BertopiaWorld"]
 
 [observability]
 enabled = false
+
+# D1 copy of the shared worlds (see migrations/0001_live_chunks.sql). Not bound yet: the database is created and
+# bound at deploy time, and without LIVE_DB the object keeps everything in its own storage only.
+# [[d1_databases]]
+# binding = "LIVE_DB"
+# database_name = "bertopia-live"
+# database_id = "<set at deploy>"

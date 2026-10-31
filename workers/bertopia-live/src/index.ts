@@ -9,6 +9,11 @@
  *
  * P2 (still dark): block edits with a per-chunk rev, per-socket rate limits, and a chat hook.
  * The Durable Object's SQLite holds chunk revs, the edit layer and 30 days of chat. Aliases only.
+ *
+ * P3 (still dark): the object is the source of truth for a shared world. Joining clients ask for the chunk
+ * revs ({t:'sync'}) and for the edited cells of the chunks they draw ({t:'chunk'}). Changed chunks are copied to
+ * D1 (env.LIVE_DB, when bound) a few minutes after an edit, and a fresh object refills itself from D1 on its
+ * first join, so losing the object never loses a world. Without LIVE_DB all of that stays off.
  */
 
 export const WORLDS = ["main", "game-1", "game-2"] as const;
@@ -22,9 +27,16 @@ export const STRIKE_WINDOW_MS = 60_000;
 export const CHAT_MAX_CHARS = 200;
 export const CHAT_KEEP_MS = 30 * 24 * 60 * 60 * 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;
+export const SNAPSHOT_DELAY_MS = 5 * 60_000; // edits settle this long before a copy goes to D1
+export const SNAPSHOT_BATCH = 50; // chunks per alarm run
+export const SNAPSHOT_RETRY_MS = 30_000; // first retry; doubles up to 15 minutes
+export const SNAPSHOT_RETRY_MAX_MS = 15 * 60_000;
+export const REVS_LIMIT = 5000;
 
 export type Role = "kid" | "teacher";
 export type Attachment = { aliasRef: string; alias: string; role: Role; joinedAt: number; world: string };
+
+type Row = Record<string, unknown>;
 
 type Sock = {
   send: (data: string) => void;
@@ -33,7 +45,6 @@ type Sock = {
   deserializeAttachment: () => unknown;
 };
 
-type Row = Record<string, unknown>;
 type Storage = {
   sql: { exec: (query: string, ...bindings: unknown[]) => { toArray: () => Row[] } };
   transactionSync: <T>(fn: () => T) => T;
@@ -50,7 +61,9 @@ type Ctx = {
 
 type Stub = { fetch: (request: Request) => Promise<Response> };
 type Ns = { idFromName: (name: string) => unknown; get: (id: unknown) => Stub };
-export type Env = { BERTOPIA_WORLD: Ns };
+type D1Stmt = { bind: (...v: unknown[]) => D1Stmt; run: () => Promise<unknown>; all: () => Promise<{ results?: Row[] }> };
+export type D1 = { prepare: (q: string) => D1Stmt; batch: (stmts: D1Stmt[]) => Promise<unknown> };
+export type Env = { BERTOPIA_WORLD: Ns; LIVE_DB?: D1 };
 
 declare const WebSocketPair: new () => { 0: Sock; 1: Sock };
 declare const WebSocketRequestResponsePair: new (request: string, response: string) => unknown;
@@ -85,12 +98,20 @@ export class BertopiaWorld {
   // Rate-limit state lives in memory per socket. It resets if the object hibernates, which only happens when idle.
   private limits = new WeakMap<Sock, Limits>();
 
-  constructor(ctx: Ctx, _env: unknown) {
+  private env: Partial<Env>;
+  private world = "";
+  private hydrating: Promise<boolean> | null = null;
+  private snapFails = 0;
+
+  constructor(ctx: Ctx, env: unknown) {
     this.ctx = ctx;
+    this.env = (env ?? {}) as Partial<Env>;
     this.ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair("ping", "pong"));
     const sql = this.ctx.storage.sql;
     sql.exec("CREATE TABLE IF NOT EXISTS chunks (ck TEXT PRIMARY KEY, rev INTEGER NOT NULL)");
     sql.exec("CREATE TABLE IF NOT EXISTS blocks (x INTEGER NOT NULL, y INTEGER NOT NULL, z INTEGER NOT NULL, ck TEXT NOT NULL, block INTEGER NOT NULL, PRIMARY KEY (x, y, z))");
+    sql.exec("CREATE TABLE IF NOT EXISTS dirty (ck TEXT PRIMARY KEY)");
+    sql.exec("CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT NOT NULL)");
     sql.exec("CREATE TABLE IF NOT EXISTS chat (id INTEGER PRIMARY KEY AUTOINCREMENT, alias TEXT NOT NULL, world TEXT NOT NULL, text TEXT NOT NULL, at INTEGER NOT NULL, hidden INTEGER NOT NULL DEFAULT 0)");
   }
 
@@ -100,6 +121,9 @@ export class BertopiaWorld {
     const who = identityOf(request);
     if (!who) return json(401, "signin");
     if (!isUpgrade(request)) return json(426, "upgrade");
+    // With a D1 copy bound, a fresh object loads it before anyone joins. If that fails, nobody joins:
+    // starting empty could later write an older world over the copy.
+    if (!(await this.hydrate(world))) return json(503, "hydrate");
 
     const full = this.ctx.getWebSockets().length >= MAX_SOCKETS;
     const pair = new WebSocketPair();
@@ -142,7 +166,9 @@ export class BertopiaWorld {
       return;
     }
     if (!this.take(ws, "ops", now)) return;
-    if (m.t === "edit") this.edit(ws, att, m);
+    if (m.t === "edit") await this.edit(ws, att, m);
+    else if (m.t === "sync") this.sendRevs(ws);
+    else if (m.t === "chunk") this.sendCells(ws, m);
     else this.say(ws, { t: "error", code: "type" });
   }
 
@@ -155,13 +181,25 @@ export class BertopiaWorld {
     try { ws.close(1011, "error"); } catch { /* already closed */ }
   }
 
-  /** Purges chat older than 30 days, then looks again tomorrow if any is left. */
+  /** Purges chat older than 30 days and copies changed chunks to D1, then sets the next alarm. */
   async alarm(): Promise<void> {
     const now = Date.now();
     const sql = this.ctx.storage.sql;
     sql.exec("DELETE FROM chat WHERE at < ?", now - CHAT_KEEP_MS);
-    const left = Number(sql.exec("SELECT COUNT(*) AS n FROM chat").toArray()[0]?.n ?? 0);
-    if (left > 0) await this.ctx.storage.setAlarm(now + DAY_MS);
+    let next: number | null = null;
+    if (Number(sql.exec("SELECT COUNT(*) AS n FROM chat").toArray()[0]?.n ?? 0) > 0) next = now + DAY_MS;
+    const snap = await this.snapshot(now);
+    if (snap === "retry") {
+      this.snapFails += 1;
+      const wait = Math.min(SNAPSHOT_RETRY_MAX_MS, SNAPSHOT_RETRY_MS * 2 ** (this.snapFails - 1));
+      next = next == null ? now + wait : Math.min(next, now + wait);
+    } else {
+      this.snapFails = 0;
+      if (this.env.LIVE_DB && Number(sql.exec("SELECT COUNT(*) AS n FROM dirty").toArray()[0]?.n ?? 0) > 0) {
+        next = next == null ? now + SNAPSHOT_DELAY_MS : Math.min(next, now + SNAPSHOT_DELAY_MS);
+      }
+    }
+    if (next != null) await this.ctx.storage.setAlarm(next);
   }
 
   // ---- limits: fixed one-second windows per socket and bucket; one strike per violating window ----
@@ -198,7 +236,7 @@ export class BertopiaWorld {
 
   // ---- block edits: the rev rule of the world store (bt-world.ts): the sender's rev must equal the stored rev, a write bumps it by one ----
 
-  private edit(ws: Sock, att: Attachment, m: Row): void {
+  private async edit(ws: Sock, att: Attachment, m: Row): Promise<void> {
     const x = m.x, y = m.y, z = m.z, block = m.block, rev = m.rev;
     if (!isInt(x, -1_000_000, 1_000_000) || !isInt(y, -4096, 4096) || !isInt(z, -1_000_000, 1_000_000) || !isInt(block, 0, 65535) || !isInt(rev, 0, Number.MAX_SAFE_INTEGER)) {
       this.say(ws, { t: "error", code: "bad" });
@@ -215,6 +253,7 @@ export class BertopiaWorld {
       next = cur + 1;
       sql.exec("INSERT INTO chunks (ck, rev) VALUES (?, ?) ON CONFLICT(ck) DO UPDATE SET rev = excluded.rev", ck, next);
       sql.exec("INSERT INTO blocks (x, y, z, ck, block) VALUES (?, ?, ?, ?, ?) ON CONFLICT(x, y, z) DO UPDATE SET block = excluded.block, ck = excluded.ck", x, y, z, ck, block);
+      sql.exec("INSERT OR IGNORE INTO dirty (ck) VALUES (?)", ck);
     });
     if (stale !== null) {
       this.say(ws, { t: "reject", chunk: ck, rev: stale });
@@ -222,6 +261,100 @@ export class BertopiaWorld {
     }
     this.say(ws, { t: "ack", chunk: ck, rev: next });
     this.broadcast({ t: "edit", x, y, z, block, rev: next, chunk: ck, from: att.alias }, ws);
+    if (this.env.LIVE_DB) await this.schedule(Date.now() + SNAPSHOT_DELAY_MS);
+  }
+
+  // ---- sync for joining clients: revs of every edited chunk, then the edited cells of the chunks they draw ----
+
+  private sendRevs(ws: Sock): void {
+    const rows = this.ctx.storage.sql.exec("SELECT ck, rev FROM chunks ORDER BY ck LIMIT ?", REVS_LIMIT).toArray();
+    const chunks: Record<string, number> = {};
+    for (const r of rows) chunks[String(r.ck)] = Number(r.rev);
+    this.say(ws, { t: "revs", chunks, more: rows.length >= REVS_LIMIT });
+  }
+
+  private sendCells(ws: Sock, m: Row): void {
+    const ck = m.chunk;
+    if (typeof ck !== "string" || !/^-?\d{1,7},-?\d{1,7},-?\d{1,7}$/.test(ck)) { this.say(ws, { t: "error", code: "bad" }); return; }
+    const sql = this.ctx.storage.sql;
+    const rev = Number(sql.exec("SELECT rev FROM chunks WHERE ck = ?", ck).toArray()[0]?.rev ?? 0);
+    const cells = sql.exec("SELECT x, y, z, block FROM blocks WHERE ck = ?", ck).toArray().map((r) => [Number(r.x), Number(r.y), Number(r.z), Number(r.block)]);
+    this.say(ws, { t: "cells", chunk: ck, rev, cells });
+  }
+
+  // ---- one alarm slot: the earliest of the daily chat purge and the next copy to D1 ----
+
+  private async schedule(when: number): Promise<void> {
+    const cur = await this.ctx.storage.getAlarm();
+    if (cur == null || when < cur) await this.ctx.storage.setAlarm(when);
+  }
+
+  private meta(k: string): string | null {
+    const r = this.ctx.storage.sql.exec("SELECT v FROM meta WHERE k = ?", k).toArray()[0];
+    return r ? String(r.v) : null;
+  }
+
+  private setMeta(k: string, v: string): void {
+    this.ctx.storage.sql.exec("INSERT INTO meta (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v", k, v);
+  }
+
+  /** First join of a fresh object with a D1 bound: load the stored world once. Returns false if it could not. */
+  private hydrate(world: string): Promise<boolean> {
+    const db = this.env.LIVE_DB;
+    if (!db) return Promise.resolve(true);
+    if (!this.hydrating) {
+      this.hydrating = (async () => {
+        try {
+          if (this.meta("hydrated") === "1") { this.world = this.meta("world") ?? world; return true; }
+          const got = await db.prepare("SELECT ck, rev, cells FROM bt_live_chunks WHERE world = ?").bind(world).all();
+          const rows = got.results ?? [];
+          this.ctx.storage.transactionSync(() => {
+            const sql = this.ctx.storage.sql;
+            for (const r of rows) {
+              const cells = JSON.parse(String(r.cells)) as number[][];
+              sql.exec("INSERT INTO chunks (ck, rev) VALUES (?, ?) ON CONFLICT(ck) DO UPDATE SET rev = excluded.rev", String(r.ck), Number(r.rev));
+              for (const c of cells) {
+                sql.exec("INSERT INTO blocks (x, y, z, ck, block) VALUES (?, ?, ?, ?, ?) ON CONFLICT(x, y, z) DO UPDATE SET block = excluded.block, ck = excluded.ck", c[0], c[1], c[2], String(r.ck), c[3]);
+              }
+            }
+            this.setMeta("world", world);
+            this.setMeta("hydrated", "1");
+          });
+          this.world = world;
+          return true;
+        } catch {
+          return false;
+        }
+      })();
+    }
+    return this.hydrating.then((ok) => { if (!ok) this.hydrating = null; return ok; });
+  }
+
+  /** Copies up to SNAPSHOT_BATCH changed chunks to D1. 'none' = nothing to do, 'retry' = D1 failed, edits stay marked. */
+  private async snapshot(now: number): Promise<"none" | "ok" | "retry"> {
+    const db = this.env.LIVE_DB;
+    if (!db) return "none";
+    const sql = this.ctx.storage.sql;
+    const rows = sql.exec("SELECT d.ck AS ck, c.rev AS rev FROM dirty d JOIN chunks c ON c.ck = d.ck ORDER BY d.ck LIMIT ?", SNAPSHOT_BATCH).toArray();
+    if (!rows.length) { sql.exec("DELETE FROM dirty"); return "none"; }
+    const world = this.world || this.meta("world") || "";
+    if (!world) return "retry";
+    const stmts = rows.map((r) => {
+      const cells = sql.exec("SELECT x, y, z, block FROM blocks WHERE ck = ?", String(r.ck)).toArray().map((c) => [Number(c.x), Number(c.y), Number(c.z), Number(c.block)]);
+      return db
+        .prepare("INSERT INTO bt_live_chunks (world, ck, rev, cells, at) VALUES (?, ?, ?, ?, ?) ON CONFLICT(world, ck) DO UPDATE SET rev = excluded.rev, cells = excluded.cells, at = excluded.at WHERE excluded.rev >= bt_live_chunks.rev")
+        .bind(world, String(r.ck), Number(r.rev), JSON.stringify(cells), now);
+    });
+    try {
+      await db.batch(stmts);
+    } catch {
+      return "retry";
+    }
+    // An edit may have landed while D1 was answering: only chunks still at the copied rev are marked clean.
+    this.ctx.storage.transactionSync(() => {
+      for (const r of rows) sql.exec("DELETE FROM dirty WHERE ck = ? AND (SELECT rev FROM chunks WHERE ck = ?) = ?", String(r.ck), String(r.ck), Number(r.rev));
+    });
+    return "ok";
   }
 
   // ---- chat hook: stored for 30 days, then sent to everyone in the world. No UI yet. ----
@@ -234,7 +367,7 @@ export class BertopiaWorld {
     if (verdict === "block") { this.say(ws, { t: "error", code: "blocked" }); return; }
     const hidden = verdict === "hide" ? 1 : 0;
     this.ctx.storage.sql.exec("INSERT INTO chat (alias, world, text, at, hidden) VALUES (?, ?, ?, ?, ?)", att.alias, att.world, text, now, hidden);
-    if ((await this.ctx.storage.getAlarm()) == null) await this.ctx.storage.setAlarm(now + DAY_MS);
+    await this.schedule(now + DAY_MS);
     const out = { t: "chat", alias: att.alias, text, at: now };
     if (hidden) this.say(ws, out); // a held line is only shown to its sender
     else this.broadcast(out, null);

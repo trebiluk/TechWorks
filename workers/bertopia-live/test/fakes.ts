@@ -1,4 +1,5 @@
 // Fakes for running the live Worker outside workerd (node:test). Real SQLite stands in for Durable Object storage.
+import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import { BertopiaWorld } from "../src/index.ts";
 
@@ -84,4 +85,55 @@ export function joinRequest(world: string, alias: string, role = "kid", ref = "r
 export async function join(dobj: BertopiaWorld, world: string, alias: string): Promise<FakeSocket> {
   const res = (await dobj.fetch(joinRequest(world, alias))) as unknown as { webSocket: FakeSocket };
   return clientsFor.get(res.webSocket)!;
+}
+
+type Stmt = { bind: (...v: unknown[]) => Stmt; run: () => Promise<unknown>; all: () => Promise<{ results: Array<Record<string, unknown>> }>; q: string; args: () => unknown[] };
+
+/** D1 stand-in on real SQLite, created from the real migration file. */
+export class FakeD1 {
+  db = new DatabaseSync(":memory:");
+  failBatches = 0; // the next N batches throw
+  failReads = false;
+  reads = 0;
+  batches: string[][] = []; // the chunk keys written by each successful batch
+  onBatch: (() => void) | null = null; // runs while a batch is "in flight"
+  constructor() {
+    this.db.exec(readFileSync(new URL("../migrations/0001_live_chunks.sql", import.meta.url), "utf8"));
+  }
+  prepare(q: string): Stmt {
+    let held: unknown[] = [];
+    const st: Stmt = {
+      q,
+      args: () => held,
+      bind: (...v) => { held = v; return st; },
+      run: async () => { this.db.prepare(q).run(...(held as never[])); },
+      all: async () => {
+        this.reads++;
+        if (this.failReads) throw new Error("d1 down");
+        return { results: this.db.prepare(q).all(...(held as never[])) as Array<Record<string, unknown>> };
+      },
+    };
+    return st;
+  }
+  async batch(stmts: Stmt[]) {
+    if (this.onBatch) { const f = this.onBatch; this.onBatch = null; f(); }
+    await Promise.resolve();
+    if (this.failBatches > 0) { this.failBatches--; throw new Error("d1 down"); }
+    this.db.exec("BEGIN");
+    try {
+      for (const st of stmts) this.db.prepare(st.q).run(...(st.args() as never[]));
+      this.db.exec("COMMIT");
+    } catch (err) {
+      this.db.exec("ROLLBACK");
+      throw err;
+    }
+    this.batches.push(stmts.map((st) => String(st.args()[1])));
+  }
+  rows(world?: string) {
+    const q = world ? "SELECT * FROM bt_live_chunks WHERE world = ? ORDER BY ck" : "SELECT * FROM bt_live_chunks ORDER BY world, ck";
+    return (world ? this.db.prepare(q).all(world) : this.db.prepare(q).all()) as Array<Record<string, unknown>>;
+  }
+  put(world: string, ck: string, rev: number, cells: number[][]) {
+    this.db.prepare("INSERT OR REPLACE INTO bt_live_chunks (world, ck, rev, cells, at) VALUES (?, ?, ?, ?, 1)").run(world, ck, rev, JSON.stringify(cells));
+  }
 }
