@@ -4,6 +4,10 @@
 
 App version **1.94.24**. Newest first. Sheets stay the archive; this desk is the tap pad.
 
+## 1.94.26 — 2026-10-31
+
+- TW 1.94.26 — Groundwork for Bertopia live play. It stays closed until it's ready.
+
 ## 1.94.24 — 2026-10-28
 
 - TW 1.94.24 — Test students stay off the public board. Staff can wipe them together.

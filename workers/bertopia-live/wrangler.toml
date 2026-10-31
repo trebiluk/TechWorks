@@ -1,0 +1,19 @@
+# Bertopia live server, P1 (dark). Not deployed yet.
+# Only the TechWorks Pages project reaches this Worker, through a service binding named BT_LIVE
+# (added to the Pages project at deploy time, not in this PR). There is no public route.
+name = "bertopia-live"
+main = "src/index.ts"
+compatibility_date = "2026-09-08"
+workers_dev = false
+
+[[durable_objects.bindings]]
+name = "BERTOPIA_WORLD"
+class_name = "BertopiaWorld"
+
+# SQLite-backed Durable Object. P1 writes nothing to it yet.
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["BertopiaWorld"]
+
+[observability]
+enabled = false
