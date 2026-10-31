@@ -110,6 +110,17 @@ function openHubSettings() {
   if (langs instanceof HTMLElement && langs.hidden && settings instanceof HTMLElement) settings.click();
   const close = box.querySelector(".kb-drawer-close");
   if (close instanceof HTMLElement) close.focus();
+  const row = document.activeElement === close ? document.querySelector("[data-tw-settings-row]") : null;
+  const watch = new MutationObserver(() => {
+    if (!box.hidden) return;
+    watch.disconnect();
+    // Menu still open: back to the My settings row. Menu closed: the Hub bar keeps ☰ focus.
+    requestAnimationFrame(() => {
+      const r = row ?? document.querySelector("[data-tw-settings-row]");
+      if (r instanceof HTMLElement && r.isConnected && r.offsetParent) r.focus();
+    });
+  });
+  watch.observe(box, { attributes: true, attributeFilter: ["hidden"] });
 }
 
 type HubBar = { setHelp?: (fn: (() => void) | null) => void };
@@ -834,6 +845,7 @@ export function Board() {
                     </button>
                     <button
                       ref={settingsRow}
+                    data-tw-settings-row
                       type="button"
                       onClick={(e) => {
                         if (document.documentElement.classList.contains("kb-framed")) {
